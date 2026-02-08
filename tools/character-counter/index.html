@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Character Counter – Count Characters with or without Spaces | Clickoz</title>
+  <meta name="description" content="Free Character Counter by Clickoz. Count characters with or without spaces, estimate word count, and copy clean output instantly. Browser-only, no signup." />
+  <link rel="canonical" href="https://clickoz.com/tools/character-counter/" />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#0b0f19" />
+
+  <meta property="og:site_name" content="Clickoz" />
+  <meta property="og:title" content="Character Counter – Free Online Tool | Clickoz" />
+  <meta property="og:description" content="Count characters with or without spaces instantly. Browser-only, privacy-first." />
+  <meta property="og:url" content="https://clickoz.com/tools/character-counter/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://clickoz.com/assets/og/word-counter.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Character Counter – Free Online Tool | Clickoz" />
+  <meta name="twitter:description" content="Count characters with or without spaces instantly. Browser-only, privacy-first." />
+  <meta name="twitter:image" content="https://clickoz.com/assets/og/word-counter.png" />
+
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/assets/site.css?v=5" />
+  <link rel="stylesheet" href="/tools/json-formatter/json-formatter.css?v=2" />
+</head>
+
+<body class="bigtext jf">
+  <div id="clickozParticles" aria-hidden="true"></div>
+  <canvas id="spaceParticles" aria-hidden="true"></canvas>
+  <div class="__grain" aria-hidden="true"></div>
+
+  <nav class="nav" aria-label="Primary navigation" id="topNav">
+    <div class="container nav-inner">
+      <a class="logo" href="/" aria-label="Clickoz Home">
+        <span class="logo-badge" id="logoBadge" aria-hidden="true">
+          <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
+            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6"
+              fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="logo-text">Click<span class="logo-oz">oz</span></span>
+      </a>
+
+      <div class="nav-links" aria-label="Sections">
+        <a href="/">Home</a>
+        <a href="/tools/">Tools</a>
+        <a href="/guides/">Guides</a>
+        <a href="/updates/">Updates</a>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="nav-actions" aria-label="Preferences">
+        <div id="gtNavWrap" aria-label="Translate">
+          <div id="google_translate_element"></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section container tool-shell">
+    <div class="tool-hero">
+      <nav class="crumbs">
+        <a href="/">Home</a><span class="sep">›</span>
+        <a href="/tools/">Tools</a><span class="sep">›</span>
+        <span>Character Counter</span>
+      </nav>
+
+      <h1 class="section-title">Character Counter</h1>
+      <p class="kicker">Count characters with and without spaces, plus quick word and line stats. Perfect for social posts, SEO snippets, and UI labels.</p>
+
+      <div class="mini-trust">
+        <span class="mini-pill">🔒 Browser-only</span>
+        <span class="mini-pill">⚡ Instant</span>
+        <span class="mini-pill">📋 Copy-ready</span>
+      </div>
+    </div>
+
+    <div class="tool-panel">
+      <div class="tool-grid">
+        <div>
+          <label class="field-label" for="ccInput">Paste or type text</label>
+          <textarea id="ccInput" class="jf-editor" placeholder="Start typing or paste text here..."></textarea>
+          <div class="tool-actions">
+            <button class="btn ghost" type="button" id="ccClear">🧼 Clear</button>
+            <button class="btn primary" type="button" id="ccCopy">📋 Copy text</button>
+          </div>
+          <p class="hint">Counts update live as you type.</p>
+        </div>
+        <div>
+          <div class="stat-grid" aria-live="polite">
+            <div class="stat-card">
+              <div class="k">Characters (with spaces)</div>
+              <div class="v" id="ccWithSpaces">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="k">Characters (no spaces)</div>
+              <div class="v" id="ccWithoutSpaces">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="k">Words</div>
+              <div class="v" id="ccWords">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="k">Lines</div>
+              <div class="v" id="ccLines">0</div>
+            </div>
+          </div>
+          <p class="hint">Tip: use the no-spaces count for strict character limits.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="/assets/site.js" defer></script>
+  <script>
+    const input = document.getElementById('ccInput');
+    const withSpaces = document.getElementById('ccWithSpaces');
+    const withoutSpaces = document.getElementById('ccWithoutSpaces');
+    const words = document.getElementById('ccWords');
+    const lines = document.getElementById('ccLines');
+    const clearBtn = document.getElementById('ccClear');
+    const copyBtn = document.getElementById('ccCopy');
+
+    const wordRegex = /[\p{L}\p{N}]+/gu;
+
+    const updateCounts = () => {
+      const text = input.value || '';
+      withSpaces.textContent = text.length;
+      withoutSpaces.textContent = text.replace(/\s+/g, '').length;
+      const wordMatches = text.match(wordRegex) || [];
+      words.textContent = wordMatches.length;
+      const lineCount = text.length ? text.split(/\r?\n/).length : 0;
+      lines.textContent = lineCount;
+    };
+
+    input.addEventListener('input', updateCounts);
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      updateCounts();
+      input.focus();
+    });
+    copyBtn.addEventListener('click', async () => {
+      if (!input.value) return;
+      await navigator.clipboard.writeText(input.value);
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = 'Copy text'; }, 1200);
+    });
+
+    updateCounts();
+  </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Text Case Converter – Uppercase, Lowercase, Title Case | Clickoz</title>
+  <meta name="description" content="Free Text Case Converter by Clickoz. Convert text to uppercase, lowercase, sentence case, title case, or toggle case. Browser-only, privacy-first." />
+  <link rel="canonical" href="https://clickoz.com/tools/text-case-converter/" />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#0b0f19" />
+
+  <meta property="og:site_name" content="Clickoz" />
+  <meta property="og:title" content="Text Case Converter – Free Online Tool | Clickoz" />
+  <meta property="og:description" content="Convert text to uppercase, lowercase, title case, and more. Browser-only, privacy-first." />
+  <meta property="og:url" content="https://clickoz.com/tools/text-case-converter/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://clickoz.com/assets/og/text-case.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Text Case Converter – Free Online Tool | Clickoz" />
+  <meta name="twitter:description" content="Convert text to uppercase, lowercase, title case, and more. Browser-only, privacy-first." />
+  <meta name="twitter:image" content="https://clickoz.com/assets/og/text-case.png" />
+
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/assets/site.css?v=5" />
+  <link rel="stylesheet" href="/tools/json-formatter/json-formatter.css?v=2" />
+</head>
+
+<body class="bigtext jf">
+  <div id="clickozParticles" aria-hidden="true"></div>
+  <canvas id="spaceParticles" aria-hidden="true"></canvas>
+  <div class="__grain" aria-hidden="true"></div>
+
+  <nav class="nav" aria-label="Primary navigation" id="topNav">
+    <div class="container nav-inner">
+      <a class="logo" href="/" aria-label="Clickoz Home">
+        <span class="logo-badge" id="logoBadge" aria-hidden="true">
+          <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
+            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6"
+              fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="logo-text">Click<span class="logo-oz">oz</span></span>
+      </a>
+
+      <div class="nav-links" aria-label="Sections">
+        <a href="/">Home</a>
+        <a href="/tools/">Tools</a>
+        <a href="/guides/">Guides</a>
+        <a href="/updates/">Updates</a>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="nav-actions" aria-label="Preferences">
+        <div id="gtNavWrap" aria-label="Translate">
+          <div id="google_translate_element"></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section container tool-shell">
+    <div class="tool-hero">
+      <nav class="crumbs">
+        <a href="/">Home</a><span class="sep">›</span>
+        <a href="/tools/">Tools</a><span class="sep">›</span>
+        <span>Text Case Converter</span>
+      </nav>
+
+      <h1 class="section-title">Text Case Converter</h1>
+      <p class="kicker">Convert your text to uppercase, lowercase, sentence case, title case, or toggle case in one click.</p>
+
+      <div class="mini-trust">
+        <span class="mini-pill">🔒 Browser-only</span>
+        <span class="mini-pill">🧩 Fast conversions</span>
+        <span class="mini-pill">📋 Copy-ready</span>
+      </div>
+    </div>
+
+    <div class="tool-panel">
+      <div class="tool-grid">
+        <div>
+          <label class="field-label" for="tcInput">Your text</label>
+          <textarea id="tcInput" class="jf-editor" placeholder="Paste your text here..."></textarea>
+          <div class="tool-actions">
+            <button class="btn ghost" type="button" data-action="upper">UPPERCASE</button>
+            <button class="btn ghost" type="button" data-action="lower">lowercase</button>
+            <button class="btn ghost" type="button" data-action="title">Title Case</button>
+            <button class="btn ghost" type="button" data-action="sentence">Sentence case</button>
+            <button class="btn ghost" type="button" data-action="toggle">tOGGLE cASE</button>
+          </div>
+          <div class="tool-actions">
+            <button class="btn ghost" type="button" id="tcClear">🧼 Clear</button>
+            <button class="btn primary" type="button" id="tcCopy">📋 Copy output</button>
+          </div>
+        </div>
+        <div>
+          <label class="field-label" for="tcOutput">Converted text</label>
+          <textarea id="tcOutput" class="jf-editor" readonly>Paste text and choose a conversion.</textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="/assets/site.js" defer></script>
+  <script>
+    const input = document.getElementById('tcInput');
+    const output = document.getElementById('tcOutput');
+    const clearBtn = document.getElementById('tcClear');
+    const copyBtn = document.getElementById('tcCopy');
+
+    const toTitleCase = (text) => text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+    const toSentenceCase = (text) => text.toLowerCase().replace(/(^\s*\w|[.!?]\s+\w)/g, (char) => char.toUpperCase());
+    const toToggleCase = (text) => text.split('').map((char) => {
+      const upper = char.toUpperCase();
+      const lower = char.toLowerCase();
+      return char === upper ? lower : upper;
+    }).join('');
+
+    const applyCase = (action) => {
+      const value = input.value || '';
+      if (!value.trim()) {
+        output.value = 'Paste text and choose a conversion.';
+        return;
+      }
+      let result = value;
+      if (action === 'upper') result = value.toUpperCase();
+      if (action === 'lower') result = value.toLowerCase();
+      if (action === 'title') result = toTitleCase(value);
+      if (action === 'sentence') result = toSentenceCase(value);
+      if (action === 'toggle') result = toToggleCase(value);
+      output.value = result;
+    };
+
+    document.querySelectorAll('[data-action]').forEach((button) => {
+      button.addEventListener('click', () => applyCase(button.dataset.action));
+    });
+
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      output.value = 'Paste text and choose a conversion.';
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      if (!output.value || output.value.includes('Paste text')) return;
+      await navigator.clipboard.writeText(output.value);
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = 'Copy output'; }, 1200);
+    });
+  </script>
+</body>
+</html>
