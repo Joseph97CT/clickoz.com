@@ -4,30 +4,39 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Clickoz Guides – Practical SEO, Writing & Dev Guides (Fast, Copy-Ready)</title>
-  <meta name="description" content="Practical guides for SEO, writing, and developer workflows. Short steps, examples, and tool links you can apply immediately. Privacy-first, mobile-friendly." />
+  <title>Clickoz Guides – Practical SEO, Writing & Developer Workflows</title>
+  <meta name="description" content="Read Clickoz Guides: practical step-by-step workflows for SEO, writing, developers and creators. Clear checklists, examples, and copy-ready templates. Privacy-first tools and guides that work together." />
 
   <link rel="canonical" href="https://clickoz.com/guides/" />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f19" />
 
+  <!-- Open Graph -->
   <meta property="og:site_name" content="Clickoz" />
-  <meta property="og:title" content="Clickoz Guides – Practical SEO, Writing & Dev Guides" />
-  <meta property="og:description" content="Short, intent-first guides with examples + tool links. Built for fast results." />
+  <meta property="og:title" content="Clickoz Guides – Practical SEO, Writing & Dev Workflows" />
+  <meta property="og:description" content="Step-by-step guides with checklists and examples. Built for real workflows and paired with browser-only tools." />
   <meta property="og:url" content="https://clickoz.com/guides/" />
   <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://clickoz.com/assets/og/guides.png" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Clickoz Guides – Practical SEO, Writing & Dev Workflows" />
+  <meta name="twitter:description" content="Step-by-step guides with checklists and examples. Built for real workflows." />
+  <meta name="twitter:image" content="https://clickoz.com/assets/og/guides.png" />
 
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
 
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet" />
 
+  <!-- CSS -->
   <link rel="stylesheet" href="/assets/site.css?v=5" />
-  <!-- Optional: small guides layer (below) -->
-  <link rel="stylesheet" href="/guides/guides.css?v=1" />
+  <link rel="stylesheet" href="/guides/guides.css?v=2" />
 
-  <!-- JSON-LD -->
+  <!-- ✅ JSON-LD -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -46,25 +55,56 @@
     "name":"Clickoz Guides",
     "url":"https://clickoz.com/guides/",
     "isPartOf":{"@type":"WebSite","name":"Clickoz","url":"https://clickoz.com/"},
-    "about":["SEO guides","Writing guides","Developer guides","Tool website SEO"],
+    "about":["SEO guides","Writing guides","Developer guides","Creator workflows"],
     "mainEntity":{
       "@type":"ItemList",
       "name":"Clickoz Guides List",
       "itemListOrder":"https://schema.org/ItemListUnordered",
-      "numberOfItems":10,
+      "numberOfItems":12,
       "itemListElement":[
-        {"@type":"ListItem","position":1,"url":"https://clickoz.com/guides/meta-tags-length/","name":"Meta Title & Description Length (2026)"},
-        {"@type":"ListItem","position":2,"url":"https://clickoz.com/guides/serp-preview/","name":"SERP Preview: How to Improve Clicks"},
-        {"@type":"ListItem","position":3,"url":"https://clickoz.com/guides/word-count-for-seo/","name":"Word Count for SEO: Intent & Structure"},
-        {"@type":"ListItem","position":4,"url":"https://clickoz.com/guides/readability-score/","name":"Readability Score: What It Means & How to Improve"},
-        {"@type":"ListItem","position":5,"url":"https://clickoz.com/guides/keyword-variations/","name":"Keyword Variations: Avoid Stuffing"},
-        {"@type":"ListItem","position":6,"url":"https://clickoz.com/guides/json-formatter-online/","name":"JSON Formatter Online: Prettify, Validate & Minify"},
-        {"@type":"ListItem","position":7,"url":"https://clickoz.com/guides/base64-encode-decode/","name":"Base64 Encode/Decode: Common Use Cases"},
-        {"@type":"ListItem","position":8,"url":"https://clickoz.com/guides/url-encoding-explained/","name":"URL Encoding Explained: When to Encode"},
-        {"@type":"ListItem","position":9,"url":"https://clickoz.com/guides/internal-linking-tools-sites/","name":"Internal Linking for Tool Websites"},
-        {"@type":"ListItem","position":10,"url":"https://clickoz.com/guides/core-web-vitals-tools-sites/","name":"Core Web Vitals for Tool Sites"}
+        {"@type":"ListItem","position":1,"url":"https://clickoz.com/guides/seo-content-checklist/","name":"SEO Content Checklist"},
+        {"@type":"ListItem","position":2,"url":"https://clickoz.com/guides/how-to-write-meta-title-description/","name":"How to Write Meta Titles & Descriptions"},
+        {"@type":"ListItem","position":3,"url":"https://clickoz.com/guides/keyword-density-explained/","name":"Keyword Density: What It Is and How to Use It"},
+        {"@type":"ListItem","position":4,"url":"https://clickoz.com/guides/readability-for-seo/","name":"Readability for SEO: Make Text Easy to Scan"},
+        {"@type":"ListItem","position":5,"url":"https://clickoz.com/guides/utm-builder-guide/","name":"UTM Builder Guide: Track Campaign Links"},
+        {"@type":"ListItem","position":6,"url":"https://clickoz.com/guides/json-formatting-debug/","name":"Fix JSON Errors: Formatting and Debugging"},
+        {"@type":"ListItem","position":7,"url":"https://clickoz.com/guides/url-encoding/","name":"URL Encoding Explained"},
+        {"@type":"ListItem","position":8,"url":"https://clickoz.com/guides/base64-decode/","name":"Base64 Decode: What It Is and How to Use It"},
+        {"@type":"ListItem","position":9,"url":"https://clickoz.com/guides/text-cleanup-workflow/","name":"Text Cleanup Workflow: Whitespace + Casing"},
+        {"@type":"ListItem","position":10,"url":"https://clickoz.com/guides/serp-snippet-ctr/","name":"SERP Snippets and CTR: What to Test"},
+        {"@type":"ListItem","position":11,"url":"https://clickoz.com/guides/slug-best-practices/","name":"Slug Best Practices for SEO URLs"},
+        {"@type":"ListItem","position":12,"url":"https://clickoz.com/guides/content-brief-template/","name":"Content Brief Template (Copy-Ready)"}
       ]
     }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {
+        "@type":"Question",
+        "name":"Are Clickoz guides beginner-friendly?",
+        "acceptedAnswer":{"@type":"Answer","text":"Yes. Guides are written as step-by-step workflows with short checklists and examples, so you can apply them quickly even if you are new to SEO or content writing."}
+      },
+      {
+        "@type":"Question",
+        "name":"Do I need an account to use Clickoz tools mentioned in the guides?",
+        "acceptedAnswer":{"@type":"Answer","text":"No. Clickoz tools are browser-only and do not require signup. Guides link to the matching tools so you can apply each step instantly."}
+      },
+      {
+        "@type":"Question",
+        "name":"How do I choose the right guide?",
+        "acceptedAnswer":{"@type":"Answer","text":"Use the category chips (SEO, Writing, Dev, Creator) and the search bar. Start with the SEO Content Checklist if you want a complete end-to-end workflow."}
+      },
+      {
+        "@type":"Question",
+        "name":"Can I use these guides on mobile?",
+        "acceptedAnswer":{"@type":"Answer","text":"Yes. The layout is designed to be stable on mobile, with short sections, clear headings, and scannable blocks."}
+      }
+    ]
   }
   </script>
 </head>
@@ -75,7 +115,7 @@
   <canvas id="spaceParticles" aria-hidden="true"></canvas>
   <div class="__grain" aria-hidden="true"></div>
 
-  <!-- NAV (HOME ADDED ✅) -->
+  <!-- NAV (same as Tools) -->
   <nav class="nav" aria-label="Primary navigation" id="topNav">
     <div class="container nav-inner">
       <a class="logo" href="/" aria-label="Clickoz Home">
@@ -91,7 +131,7 @@
       <div class="nav-links" aria-label="Sections">
         <a href="/">Home</a>
         <a href="/tools/">Tools</a>
-        <a class="active" href="/guides/" aria-current="page">Guides</a>
+        <a href="/guides/" class="active" aria-current="page">Guides</a>
         <a href="/updates/">Updates</a>
       </div>
 
@@ -129,7 +169,7 @@
     </div>
   </nav>
 
-  <!-- Mobile menu (HOME ADDED ✅) -->
+  <!-- Mobile menu (same as Tools) -->
   <div class="m-overlay" id="mOverlay" hidden></div>
   <aside class="m-menu" id="mobileMenu" aria-hidden="true">
     <div class="m-head">
@@ -168,209 +208,267 @@
     </div>
   </aside>
 
-  <!-- HERO -->
-  <header class="section container" aria-label="Guides index">
-    <div class="guides-hero hero-box">
-      <div class="crumbs" aria-label="Breadcrumb">
-        <a href="/">Home</a><span class="sep">›</span><span>Guides</span>
-      </div>
+  <!-- MAIN -->
+  <section class="section container" aria-label="Guides directory">
 
+    <!-- HERO -->
+    <div class="guides-hero" aria-label="Guides hero">
       <div class="guides-hero-top">
-        <div style="flex:1 1 520px;">
-          <h1 class="section-title" style="margin-top:0;">Guides that ship results.</h1>
-          <p class="section-sub" style="margin-bottom:0;">
-            Short, intent-first playbooks with examples and direct tool links. Built for SEO clarity, writing improvements,
-            and fast dev fixes — without fluff.
+        <div>
+          <h1 class="section-title">Guides built for real workflows.</h1>
+          <p class="section-sub">
+            Step-by-step checklists and examples that pair perfectly with Clickoz tools.
+            Pick a category, open a guide, and apply it immediately.
           </p>
 
-          <div class="guides-metrics" aria-label="Guide highlights">
-            <div class="metric-pill">🧠 <b>Practical</b> • steps & examples</div>
-            <div class="metric-pill">🎯 <b>Intent-first</b> • SERP aligned</div>
-            <div class="metric-pill">⚡ <b>Fast</b> • skim-friendly</div>
-            <div class="metric-pill">🔗 <b>Tool-linked</b> • apply instantly</div>
+          <div class="guides-metrics" aria-label="Guides highlights">
+            <div class="metric-pill">🧠 <b>Practical</b> • Real steps</div>
+            <div class="metric-pill">✅ <b>Checklists</b> • Clear actions</div>
+            <div class="metric-pill">🔗 <b>Tool-linked</b> • Apply instantly</div>
+            <div class="metric-pill">📱 <b>Mobile-first</b> • Easy scanning</div>
           </div>
         </div>
 
-        <div class="guides-search" style="flex:1 1 360px;">
-          <input class="search" id="guidesSearch" placeholder="Search guides (meta, serp, readability, json, internal links…)" aria-label="Search guides" autocomplete="off" />
-          <div class="guides-quick">
-            <a class="btn" href="/tools/">Browse Tools</a>
-            <a class="btn primary" href="/tools/meta-tags/">Open Meta Tags</a>
+        <!-- Chips -->
+        <div class="chips" id="guidesChips" aria-label="Guide category filters">
+          <div class="chip active" data-filter="all" role="button" tabindex="0">All</div>
+          <div class="chip" data-filter="seo" role="button" tabindex="0">SEO</div>
+          <div class="chip" data-filter="writing" role="button" tabindex="0">Writing</div>
+          <div class="chip" data-filter="dev" role="button" tabindex="0">Dev</div>
+          <div class="chip" data-filter="creator" role="button" tabindex="0">Creator</div>
+        </div>
+
+        <!-- Search (centered under chips) -->
+        <div class="guides-search" aria-label="Guides search">
+          <input
+            class="search"
+            id="guidesSearch"
+            placeholder="Search guides (meta titles, CTR, readability, JSON errors, UTM…)"
+            aria-label="Search guides"
+            autocomplete="off"
+          />
+
+          <div class="guides-quick" aria-label="Quick links">
+            <a class="btn" href="/tools/" style="text-decoration:none;">Open Tools</a>
+            <a class="btn" href="/updates/" style="text-decoration:none;">Latest Updates</a>
+            <a class="btn" href="/privacy/" style="text-decoration:none;">Privacy-first</a>
           </div>
         </div>
-      </div>
-
-      <!-- Category chips (optional now, future-proof) -->
-      <div class="chips" id="guidesChips" aria-label="Guide categories">
-        <div class="chip active" data-filter="all" role="button" tabindex="0">All</div>
-        <div class="chip" data-filter="seo" role="button" tabindex="0">SEO</div>
-        <div class="chip" data-filter="writing" role="button" tabindex="0">Writing</div>
-        <div class="chip" data-filter="dev" role="button" tabindex="0">Dev</div>
-        <div class="chip" data-filter="growth" role="button" tabindex="0">Growth</div>
       </div>
     </div>
-  </header>
 
-  <!-- GUIDES GRID -->
-  <main class="section container" aria-label="All guides">
-    <div class="hero-box">
-      <h2 class="section-title" style="margin-top:0;">Popular guides</h2>
+    <!-- LIST -->
+    <div class="hero-box" style="margin-top:18px;">
+      <h2 class="section-title" style="margin-top:0;">Browse Guides</h2>
       <p class="section-sub" style="margin-bottom:14px;">
-        Start here. Each guide includes quick steps + a tool link so you can apply changes immediately.
+        Each guide is a workflow you can finish fast. Use the chips and search to find what you need, then follow the checklist.
       </p>
 
-      <div class="guides-grid" id="guidesGrid">
+      <div class="guides-grid" id="guidesGrid" aria-label="Guides list">
+
         <!-- SEO -->
-        <a class="card guide-x" href="/guides/meta-tags-length/" data-cat="seo" data-hay="meta tags title description length ctr snippet">
+        <a class="guide-x" href="/guides/seo-content-checklist/" data-cat="seo writing" data-keywords="seo checklist publish on-page internal links meta title description readability">
           <div class="guide-top">
-            <span class="guide-ico" aria-hidden="true">🏷️</span>
-            <h3>Meta Title &amp; Description Length (2026)</h3>
+            <div class="guide-ico" aria-hidden="true">🔎</div>
+            <div>
+              <h3>SEO Content Checklist</h3>
+              <p>A practical end-to-end checklist before you publish: titles, snippets, structure, links, and quick checks.</p>
+            </div>
           </div>
-          <p>Prevent truncation, write clearer snippets, and improve CTR with intent-first messaging.</p>
           <div class="guide-bottom">
-            <span class="guide-tag">SEO</span>
-            <span class="tool-cta">Read guide</span>
+            <div class="guide-tag">SEO • Checklist</div>
+            <div class="guide-cta">Read guide</div>
           </div>
         </a>
 
-        <a class="card guide-x" href="/guides/serp-preview/" data-cat="seo" data-hay="serp preview snippet google title description ctr">
+        <a class="guide-x" href="/guides/how-to-write-meta-title-description/" data-cat="seo writing" data-keywords="meta title meta description ctr serp snippet length">
           <div class="guide-top">
-            <span class="guide-ico" aria-hidden="true">🧩</span>
-            <h3>SERP Preview: How to Improve Clicks</h3>
+            <div class="guide-ico" aria-hidden="true">🏷️</div>
+            <div>
+              <h3>How to Write Meta Titles & Descriptions</h3>
+              <p>Write better snippets with intent, length checks, and simple patterns that improve CTR without stuffing.</p>
+            </div>
           </div>
-          <p>Match query intent, earn clicks, and avoid vague titles that lose the user.</p>
           <div class="guide-bottom">
-            <span class="guide-tag">SEO</span>
-            <span class="tool-cta">Read guide</span>
+            <div class="guide-tag">SEO • Snippets</div>
+            <div class="guide-cta">Read guide</div>
           </div>
         </a>
 
-        <a class="card guide-x" href="/guides/internal-linking-tools-sites/" data-cat="growth" data-hay="internal linking tool sites categories clusters anchors seo">
+        <a class="guide-x" href="/guides/serp-snippet-ctr/" data-cat="seo writing" data-keywords="serp ctr testing titles descriptions faq schema">
           <div class="guide-top">
-            <span class="guide-ico" aria-hidden="true">🧭</span>
-            <h3>Internal Linking for Tool Websites</h3>
+            <div class="guide-ico" aria-hidden="true">🧩</div>
+            <div>
+              <h3>SERP Snippets and CTR: What to Test</h3>
+              <p>What to test in titles and descriptions, how to compare variants, and what not to optimize for.</p>
+            </div>
           </div>
-          <p>Categories, anchors, and topical clusters that strengthen SEO and keep users moving.</p>
           <div class="guide-bottom">
-            <span class="guide-tag">Growth</span>
-            <span class="tool-cta">Read guide</span>
+            <div class="guide-tag">SEO • CTR</div>
+            <div class="guide-cta">Read guide</div>
           </div>
         </a>
 
-        <a class="card guide-x" href="/guides/core-web-vitals-tools-sites/" data-cat="growth" data-hay="core web vitals tools sites cls inp lcp performance">
+        <a class="guide-x" href="/guides/slug-best-practices/" data-cat="seo writing" data-keywords="slug generator url seo hyphens stop words">
           <div class="guide-top">
-            <span class="guide-ico" aria-hidden="true">⚡</span>
-            <h3>Core Web Vitals for Tool Sites</h3>
+            <div class="guide-ico" aria-hidden="true">🔗</div>
+            <div>
+              <h3>Slug Best Practices for SEO URLs</h3>
+              <p>Make clean slugs that are readable, consistent, and safe for sharing. Includes patterns and pitfalls.</p>
+            </div>
           </div>
-          <p>Fast UX + stable layout = better retention and better search performance.</p>
           <div class="guide-bottom">
-            <span class="guide-tag">Growth</span>
-            <span class="tool-cta">Read guide</span>
+            <div class="guide-tag">SEO • URLs</div>
+            <div class="guide-cta">Read guide</div>
           </div>
         </a>
 
-        <!-- WRITING -->
-        <a class="card guide-x" href="/guides/word-count-for-seo/" data-cat="writing" data-hay="word count seo intent structure headings length">
+        <!-- Writing -->
+        <a class="guide-x" href="/guides/readability-for-seo/" data-cat="writing seo" data-keywords="readability score scanning headings short sentences">
           <div class="guide-top">
-            <span class="guide-ico" aria-hidden="true">🔢</span>
-            <h3>Word Count for SEO: Intent &amp; Structure</h3>
+            <div class="guide-ico" aria-hidden="true">📚</div>
+            <div>
+              <h3>Readability for SEO: Make Text Easy to Scan</h3>
+              <p>Improve clarity with structure and rhythm: headings, sentence length, paragraphs, and quick edits.</p>
+            </div>
           </div>
-          <p>How long a page should be, based on intent — not generic word targets.</p>
           <div class="guide-bottom">
-            <span class="guide-tag">Writing</span>
-            <span class="tool-cta">Read guide</span>
+            <div class="guide-tag">Writing • Clarity</div>
+            <div class="guide-cta">Read guide</div>
           </div>
         </a>
 
-        <a class="card guide-x" href="/guides/readability-score/" data-cat="writing" data-hay="readability score grade level scan mobile clarity">
+        <a class="guide-x" href="/guides/keyword-density-explained/" data-cat="seo writing" data-keywords="keyword density stuffing natural writing frequency">
           <div class="guide-top">
-            <span class="guide-ico" aria-hidden="true">📚</span>
-            <h3>Readability Score: Meaning &amp; Improvements</h3>
+            <div class="guide-ico" aria-hidden="true">📈</div>
+            <div>
+              <h3>Keyword Density: What It Is and How to Use It</h3>
+              <p>Use keyword checks as a safety mechanism. Learn healthy ranges and what to optimize instead.</p>
+            </div>
           </div>
-          <p>Make content easier to skim: short sentences, clean sections, better flow.</p>
           <div class="guide-bottom">
-            <span class="guide-tag">Writing</span>
-            <span class="tool-cta">Read guide</span>
+            <div class="guide-tag">SEO • Keywords</div>
+            <div class="guide-cta">Read guide</div>
           </div>
         </a>
 
-        <a class="card guide-x" href="/guides/keyword-variations/" data-cat="seo" data-hay="keyword variations synonyms avoid stuffing intent terms">
+        <a class="guide-x" href="/guides/text-cleanup-workflow/" data-cat="writing dev" data-keywords="whitespace cleaner case converter formatting clean text">
           <div class="guide-top">
-            <span class="guide-ico" aria-hidden="true">📈</span>
-            <h3>Keyword Variations: Avoid Stuffing</h3>
+            <div class="guide-ico" aria-hidden="true">🧼</div>
+            <div>
+              <h3>Text Cleanup Workflow: Whitespace + Casing</h3>
+              <p>Fast copy cleanup for docs and posts: normalize spaces, fix casing, and keep outputs consistent.</p>
+            </div>
           </div>
-          <p>Use intent terms and synonyms naturally without repeating the same keyword.</p>
           <div class="guide-bottom">
-            <span class="guide-tag">SEO</span>
-            <span class="tool-cta">Read guide</span>
+            <div class="guide-tag">Writing • Cleanup</div>
+            <div class="guide-cta">Read guide</div>
           </div>
         </a>
 
-        <!-- DEV -->
-        <a class="card guide-x" href="/guides/json-formatter-online/" data-cat="dev" data-hay="json formatter validate minify parse error debugging">
+        <a class="guide-x" href="/guides/content-brief-template/" data-cat="writing creator" data-keywords="content brief template outline headings requirements">
           <div class="guide-top">
-            <span class="guide-ico" aria-hidden="true">🧾</span>
-            <h3>JSON Formatter: Prettify, Validate &amp; Minify</h3>
+            <div class="guide-ico" aria-hidden="true">📝</div>
+            <div>
+              <h3>Content Brief Template (Copy-Ready)</h3>
+              <p>A copy-ready brief structure to align topics, intent, sections, and constraints before writing.</p>
+            </div>
           </div>
-          <p>Fix parse errors fast and keep payloads clean for APIs and configs.</p>
           <div class="guide-bottom">
-            <span class="guide-tag">Dev</span>
-            <span class="tool-cta">Read guide</span>
+            <div class="guide-tag">Writing • Template</div>
+            <div class="guide-cta">Read guide</div>
           </div>
         </a>
 
-        <a class="card guide-x" href="/guides/url-encoding-explained/" data-cat="dev" data-hay="url encoding encode decode query string parameters">
+        <!-- Dev -->
+        <a class="guide-x" href="/guides/json-formatting-debug/" data-cat="dev" data-keywords="json errors parse format validate trailing comma">
           <div class="guide-top">
-            <span class="guide-ico" aria-hidden="true">🔗</span>
-            <h3>URL Encoding Explained: When to Encode</h3>
+            <div class="guide-ico" aria-hidden="true">🧾</div>
+            <div>
+              <h3>Fix JSON Errors: Formatting and Debugging</h3>
+              <p>Common JSON breaks (quotes, commas, nesting) and a quick routine to validate and fix payloads.</p>
+            </div>
           </div>
-          <p>Fix broken parameters, redirects, and special characters safely.</p>
           <div class="guide-bottom">
-            <span class="guide-tag">Dev</span>
-            <span class="tool-cta">Read guide</span>
+            <div class="guide-tag">Dev • JSON</div>
+            <div class="guide-cta">Read guide</div>
           </div>
         </a>
 
-        <a class="card guide-x" href="/guides/base64-encode-decode/" data-cat="dev" data-hay="base64 decode encode jwt token payload">
+        <a class="guide-x" href="/guides/url-encoding/" data-cat="dev seo" data-keywords="url encode decode query string parameters special characters">
           <div class="guide-top">
-            <span class="guide-ico" aria-hidden="true">🔐</span>
-            <h3>Base64 Encode/Decode: Common Use Cases</h3>
+            <div class="guide-ico" aria-hidden="true">🔐</div>
+            <div>
+              <h3>URL Encoding Explained</h3>
+              <p>When you need encoding, what breaks without it, and how to safely handle query strings.</p>
+            </div>
           </div>
-          <p>Tokens, payloads, quick debugging, and safe copy-ready output.</p>
           <div class="guide-bottom">
-            <span class="guide-tag">Dev</span>
-            <span class="tool-cta">Read guide</span>
+            <div class="guide-tag">Dev • URLs</div>
+            <div class="guide-cta">Read guide</div>
           </div>
         </a>
+
+        <a class="guide-x" href="/guides/base64-decode/" data-cat="dev" data-keywords="base64 decode encode token jwt payload inspect">
+          <div class="guide-top">
+            <div class="guide-ico" aria-hidden="true">🧬</div>
+            <div>
+              <h3>Base64 Decode: What It Is and How to Use It</h3>
+              <p>Decode payloads for inspection and debugging. Understand what Base64 is (and what it is not).</p>
+            </div>
+          </div>
+          <div class="guide-bottom">
+            <div class="guide-tag">Dev • Base64</div>
+            <div class="guide-cta">Read guide</div>
+          </div>
+        </a>
+
+        <!-- Creator -->
+        <a class="guide-x" href="/guides/utm-builder-guide/" data-cat="creator seo" data-keywords="utm builder campaign tracking tiktok instagram youtube newsletter">
+          <div class="guide-top">
+            <div class="guide-ico" aria-hidden="true">🧭</div>
+            <div>
+              <h3>UTM Builder Guide: Track Campaign Links</h3>
+              <p>Build clean UTM links and set naming conventions that keep analytics readable and useful.</p>
+            </div>
+          </div>
+          <div class="guide-bottom">
+            <div class="guide-tag">Creator • Tracking</div>
+            <div class="guide-cta">Read guide</div>
+          </div>
+        </a>
+
       </div>
 
-      <!-- Small internal linking block (SEO boost) -->
-      <div class="seo-boost" aria-label="Guides internal links">
-        <h3>Most-used paths (start here)</h3>
+      <!-- SEO Boost -->
+      <div class="seo-boost" aria-label="Guides SEO boost">
+        <h3>Start with these workflows</h3>
         <p>
-          For SEO snippets: read <b>Meta Tags Length</b> → use <b>Meta Tag Optimizer</b> → verify with <b>SERP Preview</b>.
-          For content quality: read <b>Readability Score</b> → use <b>Readability Analyzer</b> + <b>Word Counter</b>.
-          For debugging: start with <b>JSON Formatter</b> → then <b>URL Encoder</b> / <b>Base64</b>.
+          If you want an end-to-end publishing routine, start with <b>SEO Content Checklist</b>,
+          then refine your snippet using <b>Meta Titles & Descriptions</b> and <b>SERP CTR Testing</b>.
+          For technical fixes, use <b>Fix JSON Errors</b>, <b>URL Encoding</b>, and <b>Base64 Decode</b>.
+          For creators, set conventions with the <b>UTM Builder Guide</b>.
         </p>
-        <div class="seo-boost-links" aria-label="Popular links">
-          <a href="/tools/meta-tags/">Meta Tag Optimizer</a>
-          <a href="/tools/serp-preview/">SERP Preview</a>
-          <a href="/tools/readability-analyzer/">Readability Analyzer</a>
-          <a href="/tools/word-counter/">Word Counter</a>
-          <a href="/tools/json-formatter/">JSON Formatter</a>
-          <a href="/tools/url-encoder/">URL Encoder</a>
-          <a href="/tools/base64/">Base64</a>
+
+        <div class="seo-boost-links" aria-label="Popular guide links">
+          <a href="/guides/seo-content-checklist/">SEO Content Checklist</a>
+          <a href="/guides/how-to-write-meta-title-description/">Meta Titles & Descriptions</a>
+          <a href="/guides/serp-snippet-ctr/">SERP CTR Testing</a>
+          <a href="/guides/json-formatting-debug/">Fix JSON Errors</a>
+          <a href="/guides/url-encoding/">URL Encoding</a>
+          <a href="/guides/base64-decode/">Base64 Decode</a>
+          <a href="/guides/utm-builder-guide/">UTM Builder Guide</a>
         </div>
       </div>
     </div>
-  </main>
+  </section>
 
+  <!-- FOOTER (same as Tools) -->
   <footer class="footer">
     <div class="container footer-grid">
       <div>
         <h4>Clickoz</h4>
         <div class="footer-links">
-          <a href="/">Home</a>
           <a href="/tools/">Tools</a>
           <a href="/guides/">Guides</a>
           <a href="/updates/">Updates</a>
@@ -378,7 +476,7 @@
       </div>
 
       <div>
-        <h4>Popular</h4>
+        <h4>Popular tools</h4>
         <div class="footer-links">
           <a href="/tools/word-counter/">Word Counter</a>
           <a href="/tools/readability-analyzer/">Readability</a>
@@ -400,12 +498,12 @@
     <div class="container" style="margin-top:14px">
       <hr class="sep" />
       <div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">
-        © 2026 Clickoz • Practical guides + fast tools
+        © 2026 Clickoz • Fast tools for SEO, writing and developers
       </div>
     </div>
   </footer>
 
-  <!-- Cookie banner (same as others) -->
+  <!-- Cookie banner (same as Tools) -->
   <div class="cookie" role="dialog" aria-live="polite" aria-label="Cookie preferences">
     <div class="cookie-card">
       <button class="cookie-x" id="cookieClose" type="button" aria-label="Close">×</button>
@@ -426,61 +524,10 @@
     </div>
   </div>
 
+  <!-- Base site behavior -->
   <script src="/assets/site.js" defer></script>
 
-  <!-- Tiny guides logic: search + chips -->
-  <script>
-    (function(){
-      const $  = (s, r=document) => r.querySelector(s);
-      const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-      const grid = $("#guidesGrid");
-      const search = $("#guidesSearch");
-      const chips = $("#guidesChips");
-      if(!grid) return;
-
-      const cards = $$("#guidesGrid a.card");
-      let filter = "all";
-
-      const norm = (s) => (s||"").toLowerCase().trim();
-
-      function render(){
-        const term = search ? norm(search.value) : "";
-        cards.forEach(c => {
-          const cat = norm(c.dataset.cat || "");
-          const hay = norm((c.dataset.hay||"") + " " + (c.textContent||""));
-          const okCat = (filter === "all") || (cat === filter);
-          const okTerm = !term || hay.includes(term);
-          c.style.display = (okCat && okTerm) ? "" : "none";
-        });
-      }
-
-      if(chips){
-        chips.addEventListener("click", (e) => {
-          const chip = e.target.closest(".chip");
-          if(!chip) return;
-          $$("#guidesChips .chip").forEach(x => x.classList.remove("active"));
-          chip.classList.add("active");
-          filter = chip.dataset.filter || "all";
-          render();
-        });
-      }
-
-      if(search){
-        let t=null;
-        search.addEventListener("input", () => {
-          clearTimeout(t);
-          t=setTimeout(render, 70);
-        });
-        document.addEventListener("keydown", (e) => {
-          if(e.key === "/" && !e.metaKey && !e.ctrlKey && document.activeElement !== search){
-            e.preventDefault();
-            search.focus();
-          }
-        });
-      }
-
-      render();
-    })();
-  </script>
+  <!-- Guides behavior -->
+  <script src="/guides/guides.js" defer></script>
 </body>
 </html>
