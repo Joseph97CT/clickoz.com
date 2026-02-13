@@ -1,117 +1,509 @@
-/* Updates micro-layer (optional, keeps site.css intact) */
+/* /updates/updates.css?v=1
+   Clickoz Updates – “innovative & futuristic” changelog / release notes
+   Goals:
+   - Premium hero (centered) that communicates continuous rewrites + iteration culture
+   - Timeline / release cards with “version badge”, date, highlights, impact tags
+   - Filters row (All / Major / Minor / Fix / Design / SEO / Performance)
+   - “Milestones” strip: total releases, last update, improvements count
+   - Donation box (“Offer a coffee”) styled like a futuristic glass card
+   - Mobile-first, accessible focus states, works with your existing site.css
 
+   Expected HTML classes/ids (you’ll get full HTML later):
+   - .updates-shell, .updates-hero, #updatesChips, #updatesSearch
+   - .updates-grid, .release-card, .release-meta, .release-tags
+   - .donate-box, .donate-actions, .donate-note
+*/
+
+:root{
+  --u-radius: 22px;
+  --u-radius-sm: 16px;
+  --u-border: rgba(255,255,255,.10);
+  --u-border-2: rgba(255,255,255,.14);
+  --u-dim: rgba(242,242,255,.74);
+  --u-dimmer: rgba(242,242,255,.60);
+  --u-title: rgba(255,255,255,.94);
+  --u-bg: rgba(0,0,0,.18);
+  --u-bg2: rgba(255,255,255,.05);
+  --u-shadow: 0 22px 60px rgba(0,0,0,.45);
+  --u-shadow-soft: 0 16px 40px rgba(0,0,0,.30);
+  --u-glowA: rgba(34,211,238,.18);
+  --u-glowB: rgba(99,102,241,.16);
+  --u-glowC: rgba(236,72,153,.12);
+}
+
+/* Shell spacing */
+.updates-shell{
+  position: relative;
+}
+
+/* -----------------------------
+   HERO
+------------------------------ */
 .updates-hero{
   position: relative;
   overflow: hidden;
+  border: 1px solid var(--u-border);
+  border-radius: var(--u-radius);
+  background:
+    radial-gradient(1200px 720px at 15% -10%, var(--u-glowA), transparent 55%),
+    radial-gradient(900px 620px at 105% 10%, var(--u-glowB), transparent 55%),
+    radial-gradient(700px 520px at 50% 115%, var(--u-glowC), transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  box-shadow: var(--u-shadow);
+  padding: 28px 22px 18px;
 }
 
-.updates-hero::after{
+.updates-hero::before{
   content:"";
   position:absolute;
   inset:-2px;
-  background:
-    radial-gradient(860px 280px at 18% 0%, rgba(34,211,238,.14), transparent 60%),
-    radial-gradient(760px 260px at 82% 10%, rgba(99,102,241,.12), transparent 62%);
   pointer-events:none;
+  opacity:.6;
+  background:
+    radial-gradient(900px 460px at 50% 0%, rgba(255,255,255,.08), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.10), transparent 38%);
 }
 
 .updates-hero-top{
-  display:flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  align-items:flex-start;
-}
-
-.updates-metrics{
-  display:flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 14px;
-}
-
-.updates-search{
+  position: relative;
   display:flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 10px;
-  margin-top: 6px;
 }
 
-.updates-quick{
+.updates-title{
+  margin: 0;
+  font-weight: 1000;
+  letter-spacing: -.02em;
+  line-height: 1.06;
+  color: var(--u-title);
+  font-size: clamp(34px, 5vw, 56px);
+  text-shadow: 0 10px 40px rgba(0,0,0,.35);
+}
+
+.updates-sub{
+  margin: 0 auto;
+  max-width: 980px;
+  color: var(--u-dim);
+  line-height: 1.6;
+  font-size: clamp(16px, 2vw, 18px);
+}
+
+/* Statement strip (the “we rewrite even for small improvements”) */
+.updates-manifesto{
+  margin-top: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.16);
+  border-radius: 999px;
+  padding: 10px 14px;
+  display:inline-flex;
+  align-items:center;
+  gap: 10px;
+  box-shadow: 0 14px 34px rgba(0,0,0,.28);
+  color: rgba(255,255,255,.86);
+  font-weight: 900;
+  letter-spacing: .01em;
+  font-size: 13px;
+}
+
+.updates-manifesto .dot{
+  width: 9px; height: 9px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.75);
+  box-shadow: 0 0 0 6px rgba(255,255,255,.06), 0 0 24px rgba(255,255,255,.18);
+}
+
+/* Milestones / stats */
+.updates-stats{
+  width: 100%;
+  margin-top: 14px;
+  display:flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.stat-pill{
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.16);
+  border-radius: 999px;
+  padding: 10px 12px;
+  box-shadow: 0 12px 26px rgba(0,0,0,.22);
+  color: rgba(255,255,255,.86);
+  font-size: 12.5px;
+  font-weight: 900;
+}
+.stat-pill b{
+  color: rgba(255,255,255,.94);
+  font-weight: 1000;
+}
+
+/* Chips + Search row */
+.updates-controls{
+  margin-top: 14px;
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  gap: 10px;
+}
+
+#updatesChips{
   display:flex;
   gap: 10px;
   flex-wrap: wrap;
+  justify-content:center;
 }
 
-.updates-list{
+#updatesChips .chip{
+  border: 1px solid var(--u-border);
+  background: rgba(0,0,0,.18);
+  color: rgba(255,255,255,.86);
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .02em;
+  cursor:pointer;
+  user-select:none;
+  transition: transform .12s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+  box-shadow: 0 10px 26px rgba(0,0,0,.24);
+}
+
+#updatesChips .chip:hover{
+  transform: translateY(-1px);
+  border-color: var(--u-border-2);
+}
+
+#updatesChips .chip.active{
+  border-color: rgba(255,255,255,.20);
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+  box-shadow: 0 14px 34px rgba(0,0,0,.30);
+}
+
+#updatesSearch{
+  width: min(760px, 100%);
+  border-radius: 14px;
+  padding: 14px 14px;
+  border: 1px solid var(--u-border);
+  background: rgba(0,0,0,.22);
+  color: rgba(255,255,255,.92);
+  outline: none;
+  box-shadow: 0 14px 38px rgba(0,0,0,.34);
+  transition: border-color .15s ease, transform .12s ease, box-shadow .15s ease;
+}
+
+#updatesSearch::placeholder{
+  color: rgba(242,242,255,.55);
+}
+#updatesSearch:focus{
+  border-color: rgba(255,255,255,.22);
+  box-shadow: 0 16px 44px rgba(0,0,0,.38);
+  transform: translateY(-1px);
+}
+
+/* -----------------------------
+   LIST CONTAINER (match Tools/Guides hero-box)
+------------------------------ */
+.updates-box{
+  margin-top: 18px;
+  border: 1px solid var(--u-border);
+  border-radius: var(--u-radius);
+  background:
+    radial-gradient(900px 520px at 20% 0%, rgba(255,255,255,.08), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  box-shadow: var(--u-shadow-soft);
+  padding: 22px 18px 18px;
+}
+
+/* Title/sub inside updates-box */
+.updates-box .section-title{
+  margin-top: 0 !important;
+}
+.updates-box .section-sub{
+  color: var(--u-dim) !important;
+}
+
+/* -----------------------------
+   RELEASE GRID
+------------------------------ */
+.updates-grid{
+  margin-top: 12px;
   display:grid;
   grid-template-columns: 1fr;
   gap: 12px;
 }
 
-.update-card{
-  padding: 16px;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,.10);
-  background:
-    radial-gradient(320px 110px at 18% 0%, rgba(34,211,238,.10), transparent 60%),
-    radial-gradient(320px 110px at 82% 0%, rgba(99,102,241,.08), transparent 62%),
-    rgba(0,0,0,.14);
-  box-shadow: 0 16px 50px rgba(0,0,0,.22);
+@media (min-width: 820px){
+  .updates-grid{
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 14px;
+  }
+}
+@media (min-width: 1120px){
+  .updates-grid{
+    grid-template-columns: repeat(3, minmax(0,1fr));
+  }
 }
 
-.update-head{
+/* Release card */
+.release-card{
+  position: relative;
+  overflow:hidden;
+  border: 1px solid var(--u-border);
+  border-radius: var(--u-radius-sm);
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  box-shadow: 0 14px 34px rgba(0,0,0,.30);
+  padding: 14px 14px 12px;
+  transition: transform .12s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.release-card::before{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none;
+  opacity:.55;
+  background: radial-gradient(520px 220px at 20% 0%, rgba(255,255,255,.10), transparent 62%);
+}
+
+.release-card:hover{
+  transform: translateY(-2px);
+  border-color: var(--u-border-2);
+  box-shadow: 0 20px 48px rgba(0,0,0,.38);
+}
+
+/* Header row */
+.release-meta{
+  position: relative;
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content: space-between;
   gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 6px;
 }
 
-.update-date{
-  font-size: 12.8px;
+.release-left{
+  display:flex;
+  align-items:flex-start;
+  gap: 10px;
+}
+
+.release-badge{
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--u-border);
+  background: rgba(0,0,0,.18);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 12px 24px rgba(0,0,0,.22);
+  font-size: 13px;
   font-weight: 1000;
-  opacity: .78;
+  letter-spacing: .02em;
+  color: rgba(255,255,255,.92);
+  flex: 0 0 auto;
 }
 
-.update-tags{
+.release-title{
+  margin: 0;
+  font-size: 16px;
+  font-weight: 1000;
+  letter-spacing: -.01em;
+  color: rgba(255,255,255,.92);
+  line-height: 1.25;
+}
+
+.release-date{
+  margin-top: 4px;
+  font-size: 12.5px;
+  font-weight: 900;
+  color: rgba(242,242,255,.58);
+}
+
+/* Right: type label (Major/Minor/Hotfix) */
+.release-type{
+  flex: 0 0 auto;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.16);
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 1000;
+  color: rgba(255,255,255,.82);
+}
+
+/* Body text */
+.release-desc{
+  position: relative;
+  margin: 10px 0 0;
+  color: var(--u-dim);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+/* Highlight list */
+.release-highlights{
+  position: relative;
+  margin: 10px 0 0;
+  padding-left: 16px;
+  color: rgba(242,242,255,.70);
+  font-size: 13.3px;
+  line-height: 1.6;
+}
+.release-highlights li{ margin: 6px 0; }
+.release-highlights b{ color: rgba(255,255,255,.90); }
+
+/* Tags row */
+.release-tags{
+  position: relative;
+  margin-top: 12px;
   display:flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.u-tag{
-  font-size: 12.5px;
-  font-weight: 1000;
-  color: rgba(255,255,255,.72);
+.tag{
   border: 1px solid rgba(255,255,255,.10);
   background: rgba(0,0,0,.16);
-  padding: 7px 10px;
+  padding: 8px 10px;
   border-radius: 999px;
-}
-
-.update-card h3{
-  margin: 0 0 6px;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 1000;
-  letter-spacing: -0.01em;
+  color: rgba(255,255,255,.74);
 }
 
-.update-card p{
-  margin: 0;
-  color: rgba(255,255,255,.76);
-  line-height: 1.75;
-  font-size: 14.8px;
+/* Expand/collapse link (optional JS will toggle) */
+.release-more{
+  position: relative;
+  margin-top: 10px;
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  font-weight: 1000;
+  font-size: 13px;
+  color: rgba(255,255,255,.88);
+  cursor:pointer;
+  user-select:none;
+  text-decoration:none;
+}
+.release-more::after{
+  content:"→";
+  transition: transform .12s ease;
+}
+.release-card:hover .release-more::after{
+  transform: translateX(3px);
 }
 
-.u-points{
-  margin: 10px 0 0;
-  padding-left: 18px;
-  color: rgba(255,255,255,.76);
+/* Collapsible long content area */
+.release-details{
+  display:none; /* JS toggles */
+  margin-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.10);
+  padding-top: 10px;
+  color: rgba(242,242,255,.70);
+  font-size: 13.3px;
   line-height: 1.7;
-  font-size: 14.4px;
 }
 
-.u-points li{
-  margin: 6px 0;
+/* -----------------------------
+   DONATION BOX (PayPal / “Offer a coffee”)
+------------------------------ */
+.donate-box{
+  margin-top: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background:
+    radial-gradient(900px 420px at 25% 0%, rgba(255,255,255,.10), transparent 60%),
+    rgba(0,0,0,.18);
+  border-radius: var(--u-radius-sm);
+  padding: 16px 14px 14px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.28);
+  text-align:center;
+  position: relative;
+  overflow:hidden;
+}
+
+.donate-box::before{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none;
+  opacity:.55;
+  background: radial-gradient(600px 220px at 50% 0%, rgba(255,255,255,.10), transparent 62%);
+}
+
+.donate-box h3{
+  position: relative;
+  margin: 0 0 8px;
+  font-weight: 1000;
+  letter-spacing: -.01em;
+  color: rgba(255,255,255,.94);
+  font-size: 16px;
+}
+
+.donate-box p{
+  position: relative;
+  margin: 0 auto 12px;
+  max-width: 980px;
+  color: var(--u-dim);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+.donate-actions{
+  position: relative;
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content:center;
+}
+
+/* Button-like links (works with your .btn but adds glow) */
+.donate-actions a{
+  text-decoration:none;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.18);
+  padding: 10px 12px;
+  border-radius: 999px;
+  font-weight: 1000;
+  font-size: 12.5px;
+  color: rgba(255,255,255,.92);
+  box-shadow: 0 12px 26px rgba(0,0,0,.24);
+  transition: transform .12s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.donate-actions a:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,.22);
+  box-shadow: 0 16px 34px rgba(0,0,0,.30);
+}
+
+.donate-note{
+  position: relative;
+  margin-top: 10px;
+  color: rgba(242,242,255,.58);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+/* -----------------------------
+   Empty state (JS will insert)
+------------------------------ */
+.updates-empty{
+  margin-top: 12px;
+}
+
+/* -----------------------------
+   Focus accessibility
+------------------------------ */
+#updatesChips .chip:focus,
+#updatesSearch:focus,
+.release-card:focus-within,
+.donate-actions a:focus{
+  outline: 2px solid rgba(255,255,255,.22);
+  outline-offset: 3px;
+}
+
+/* Small screens */
+@media (max-width: 920px){
+  .updates-hero{ padding: 24px 16px 16px; }
+  .updates-box{ padding: 18px 14px 14px; }
 }
