@@ -1,23 +1,17 @@
-/* /updates/updates.js?v=1
-   Clickoz Updates page behavior:
-   - Category chips filter (All / major / minor / fix / design / seo / performance)
-   - Search live (title + short desc + highlights + tags)
-   - Expand/collapse per-release details (optional .release-details)
-   - Hash sync (#all, #major, #seo, ...)
-   - Keyboard accessible chips (Enter/Space + arrows)
-   - ESC clears search
-   - Elegant empty state
+/* /updates/updates.js?v=2
+   ✅ Optimized + ALL 3 upgrades:
+   - chips filter (NO search)
+   - timeline friendly (no assumptions about layout)
+   - expand/collapse per release details
+   - collapsible donation box (PayPal ready)
+   - hash sync (#all, #major, #seo, ...)
+   - keyboard accessible chips
 
    Expected markup:
-   - Chips wrapper: #updatesChips .chip[data-filter="all|major|minor|fix|design|seo|performance"]
-   - Search input: #updatesSearch
-   - Release cards: .release-card[data-type="major|minor|fix"][data-tags="seo performance design ..."]
-       * title element: .release-title (or h3)
-       * desc element: .release-desc (optional)
-       * highlights list: .release-highlights (optional)
-       * tags: .tag (optional)
-       * toggle: .release-more (optional) OR button[data-action="toggle-details"]
-       * details: .release-details (optional)
+   - #updatesChips .chip[data-filter="all|major|minor|fix|design|seo|performance"]
+   - .release-card[data-type="major|minor|fix"][data-tags="seo performance design ..."]
+   - optional: .release-more + .release-details
+   - donation: .donate-box + #donateToggle + .donate-body
 */
 
 (() => {
@@ -25,71 +19,29 @@
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-
-  const norm = (s) =>
-    (s || "")
-      .toLowerCase()
-      .replace(/\s+/g, " ")
-      .trim();
-
-  const debounce = (fn, wait = 120) => {
-    let t = null;
-    return (...args) => {
-      window.clearTimeout(t);
-      t = window.setTimeout(() => fn(...args), wait);
-    };
-  };
+  const norm = (s) => (s || "").toLowerCase().replace(/\s+/g, " ").trim();
 
   function safeHashSet(key) {
     const h = `#${encodeURIComponent(key)}`;
     if (location.hash !== h) history.replaceState(null, "", h);
   }
 
-  // DOM
+  // --------- Chips filter ---------
   const chipsWrap = $("#updatesChips");
   const chips = chipsWrap ? $$(".chip", chipsWrap) : [];
-  const searchInput = $("#updatesSearch");
   const grid = $(".updates-grid") || $("#updatesGrid") || document.body;
 
   if (!chipsWrap || chips.length === 0) return;
 
-  // Release cards
   const cards = $$(".release-card");
   const meta = cards.map((el) => {
-    const titleEl = $(".release-title", el) || $("h3", el);
-    const descEl = $(".release-desc", el) || $("p", el);
-    const highlightsEl = $(".release-highlights", el);
-    const tagsEls = $$(".tag", el);
-
-    const dataType = norm(el.getAttribute("data-type") || "");
-    const dataTags = norm(el.getAttribute("data-tags") || "");
-
-    const highlightsText = highlightsEl ? norm(highlightsEl.textContent) : "";
-    const tagsText = tagsEls.length ? norm(tagsEls.map(t => t.textContent).join(" ")) : "";
-
-    // also include meta pills if present
-    const typeEl = $(".release-type", el);
-    const typeText = typeEl ? norm(typeEl.textContent) : "";
-
-    return {
-      el,
-      type: dataType || typeText,
-      tags: dataTags.split(" ").filter(Boolean),
-      hay: norm(
-        [
-          titleEl ? titleEl.textContent : "",
-          descEl ? descEl.textContent : "",
-          highlightsText,
-          tagsText,
-          dataTags,
-          dataType,
-          typeText
-        ].join(" ")
-      )
-    };
+    const type = norm(el.getAttribute("data-type") || "");
+    const tags = norm(el.getAttribute("data-tags") || "")
+      .split(" ")
+      .filter(Boolean);
+    return { el, type, tags };
   });
 
-  // Empty state (insert once)
   const emptyState = document.createElement("div");
   emptyState.className = "updates-empty";
   emptyState.setAttribute("role", "status");
@@ -110,18 +62,13 @@
         No updates found
       </div>
       <div style="color:rgba(242,242,255,.72);font-size:13.5px;line-height:1.6;">
-        Try another keyword, or switch filters. Press <b>Esc</b> to clear the search.
+        Switch filters to explore other releases.
       </div>
     </div>
   `;
+  if (grid && !$(".updates-empty")) grid.parentElement.insertBefore(emptyState, grid);
 
-  if (grid && !$(".updates-empty")) {
-    grid.parentElement.insertBefore(emptyState, grid);
-  }
-
-  // State
-  let activeFilter = "all"; // one of the chip keys
-  let activeQuery = "";
+  let activeFilter = "all";
 
   function setActiveChip(key, { focus = false } = {}) {
     chips.forEach((c) => {
@@ -139,32 +86,21 @@
   function passFilter(m) {
     const f = activeFilter;
     if (!f || f === "all") return true;
-
-    // filter matches either type or tags
     if (m.type === f) return true;
     if (m.tags && m.tags.includes(f)) return true;
-
     return false;
-  }
-
-  function passQuery(m) {
-    if (!activeQuery) return true;
-    return m.hay.includes(activeQuery);
   }
 
   function apply() {
     let shown = 0;
-
     meta.forEach((m) => {
-      const ok = passFilter(m) && passQuery(m);
+      const ok = passFilter(m);
       m.el.style.display = ok ? "" : "none";
       if (ok) shown++;
     });
-
     emptyState.style.display = shown === 0 ? "" : "none";
   }
 
-  // Chip interaction
   function activateChip(chipEl, { doHash = true } = {}) {
     const key = (chipEl.getAttribute("data-filter") || "").trim();
     if (!key) return;
@@ -173,10 +109,9 @@
     setActiveChip(key);
     if (doHash) safeHashSet(key);
 
-    // If user switches filter, keep current query (good UX)
     apply();
 
-    // Optional: smooth scroll to grid if user is deep
+    // gentle scroll to grid
     if (grid) {
       const nav = $("#topNav");
       const navH = nav ? nav.getBoundingClientRect().height : 0;
@@ -212,30 +147,29 @@
     });
   });
 
-  // Search
-  function setQuery(v) {
-    activeQuery = norm(v);
+  // Init from hash
+  function initFromHash() {
+    const raw = decodeURIComponent((location.hash || "").replace("#", "").trim());
+    const has = chips.some((c) => c.getAttribute("data-filter") === raw);
+    const start = has ? raw : "all";
+
+    activeFilter = start;
+    setActiveChip(start);
+    safeHashSet(start);
     apply();
   }
+  initFromHash();
 
-  if (searchInput) {
-    const onInput = debounce(() => setQuery(searchInput.value), 120);
-    searchInput.addEventListener("input", onInput);
+  window.addEventListener("hashchange", () => {
+    const raw = decodeURIComponent((location.hash || "").replace("#", "").trim());
+    const target = chips.find((c) => c.getAttribute("data-filter") === raw);
+    if (!target) return;
+    activateChip(target, { doHash: false });
+  });
 
-    searchInput.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        searchInput.value = "";
-        setQuery("");
-        searchInput.blur();
-      }
-    });
-  }
-
-  // Expand/collapse details (event delegation)
+  // --------- Per-release details toggle (optional) ---------
   document.addEventListener("click", (e) => {
     const t = e.target;
-
-    // .release-more OR explicit toggle button
     const toggle =
       t.closest?.(".release-more") ||
       t.closest?.('button[data-action="toggle-details"]');
@@ -251,38 +185,34 @@
     const isOpen = details.style.display === "block";
     details.style.display = isOpen ? "none" : "block";
 
-    // update label if it's a button/link
     if (toggle.tagName === "BUTTON") {
       toggle.setAttribute("aria-expanded", String(!isOpen));
     } else {
-      // optional: if you set data-open-text/data-close-text
       const openText = toggle.getAttribute("data-open-text") || "View details";
       const closeText = toggle.getAttribute("data-close-text") || "Hide details";
       toggle.textContent = isOpen ? openText : closeText;
     }
   });
 
-  // Init from hash
-  function initFromHash() {
-    const raw = decodeURIComponent((location.hash || "").replace("#", "").trim());
-    const has = chips.some((c) => c.getAttribute("data-filter") === raw);
-    const start = has ? raw : "all";
+  // --------- Donation collapsible (PayPal box) ---------
+  const donateBox = $(".donate-box");
+  const donateToggle = $("#donateToggle");
 
-    activeFilter = start;
-    setActiveChip(start);
-    safeHashSet(start);
+  if (donateBox && donateToggle) {
+    const KEY = "clickoz_donate_open";
+    const saved = localStorage.getItem(KEY);
+    const startOpen = saved === "1";
 
-    activeQuery = norm(searchInput ? searchInput.value : "");
-    apply();
+    donateBox.setAttribute("data-open", startOpen ? "true" : "false");
+    donateToggle.setAttribute("aria-expanded", startOpen ? "true" : "false");
+
+    donateToggle.addEventListener("click", () => {
+      const isOpen = donateBox.getAttribute("data-open") === "true";
+      const next = !isOpen;
+
+      donateBox.setAttribute("data-open", next ? "true" : "false");
+      donateToggle.setAttribute("aria-expanded", next ? "true" : "false");
+      localStorage.setItem(KEY, next ? "1" : "0");
+    });
   }
-
-  initFromHash();
-
-  window.addEventListener("hashchange", () => {
-    const raw = decodeURIComponent((location.hash || "").replace("#", "").trim());
-    const target = chips.find((c) => c.getAttribute("data-filter") === raw);
-    if (!target) return;
-    activateChip(target, { doHash: false });
-  });
 })();
-
