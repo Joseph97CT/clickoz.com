@@ -11,7 +11,6 @@
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f19" />
 
-  <!-- Open Graph -->
   <meta property="og:site_name" content="Clickoz" />
   <meta property="og:title" content="Clickoz Guides – Practical SEO, Writing & Dev Workflows" />
   <meta property="og:description" content="Step-by-step guides with checklists and examples. Built for real workflows and paired with browser-only tools." />
@@ -19,7 +18,6 @@
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://clickoz.com/assets/og/guides.png" />
 
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Clickoz Guides – Practical SEO, Writing & Dev Workflows" />
   <meta name="twitter:description" content="Step-by-step guides with checklists and examples. Built for real workflows." />
@@ -27,16 +25,14 @@
 
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet" />
 
-  <!-- CSS -->
   <link rel="stylesheet" href="/assets/site.css?v=5" />
-  <link rel="stylesheet" href="/guides/guides.css?v=2" />
+  <link rel="stylesheet" href="/guides/guides.css?v=3" />
 
-  <!-- ✅ JSON-LD -->
+  <!-- JSON-LD -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -115,7 +111,7 @@
   <canvas id="spaceParticles" aria-hidden="true"></canvas>
   <div class="__grain" aria-hidden="true"></div>
 
-  <!-- NAV (same as Tools) -->
+  <!-- NAV -->
   <nav class="nav" aria-label="Primary navigation" id="topNav">
     <div class="container nav-inner">
       <a class="logo" href="/" aria-label="Clickoz Home">
@@ -169,7 +165,7 @@
     </div>
   </nav>
 
-  <!-- Mobile menu (same as Tools) -->
+  <!-- Mobile menu -->
   <div class="m-overlay" id="mOverlay" hidden></div>
   <aside class="m-menu" id="mobileMenu" aria-hidden="true">
     <div class="m-head">
@@ -210,7 +206,6 @@
 
   <!-- MAIN -->
   <section class="section container" aria-label="Guides directory">
-
     <!-- HERO -->
     <div class="guides-hero" aria-label="Guides hero">
       <div class="guides-hero-top">
@@ -220,13 +215,6 @@
             Step-by-step checklists and examples that pair perfectly with Clickoz tools.
             Pick a category, open a guide, and apply it immediately.
           </p>
-
-          <div class="guides-metrics" aria-label="Guides highlights">
-            <div class="metric-pill">🧠 <b>Practical</b> • Real steps</div>
-            <div class="metric-pill">✅ <b>Checklists</b> • Clear actions</div>
-            <div class="metric-pill">🔗 <b>Tool-linked</b> • Apply instantly</div>
-            <div class="metric-pill">📱 <b>Mobile-first</b> • Easy scanning</div>
-          </div>
         </div>
 
         <!-- Chips -->
@@ -247,12 +235,6 @@
             aria-label="Search guides"
             autocomplete="off"
           />
-
-          <div class="guides-quick" aria-label="Quick links">
-            <a class="btn" href="/tools/" style="text-decoration:none;">Open Tools</a>
-            <a class="btn" href="/updates/" style="text-decoration:none;">Latest Updates</a>
-            <a class="btn" href="/privacy/" style="text-decoration:none;">Privacy-first</a>
-          </div>
         </div>
       </div>
     </div>
@@ -265,8 +247,8 @@
       </p>
 
       <div class="guides-grid" id="guidesGrid" aria-label="Guides list">
+        <!-- guides cards (same as previous version) -->
 
-        <!-- SEO -->
         <a class="guide-x" href="/guides/seo-content-checklist/" data-cat="seo writing" data-keywords="seo checklist publish on-page internal links meta title description readability">
           <div class="guide-top">
             <div class="guide-ico" aria-hidden="true">🔎</div>
@@ -323,7 +305,6 @@
           </div>
         </a>
 
-        <!-- Writing -->
         <a class="guide-x" href="/guides/readability-for-seo/" data-cat="writing seo" data-keywords="readability score scanning headings short sentences">
           <div class="guide-top">
             <div class="guide-ico" aria-hidden="true">📚</div>
@@ -380,7 +361,6 @@
           </div>
         </a>
 
-        <!-- Dev -->
         <a class="guide-x" href="/guides/json-formatting-debug/" data-cat="dev" data-keywords="json errors parse format validate trailing comma">
           <div class="guide-top">
             <div class="guide-ico" aria-hidden="true">🧾</div>
@@ -423,7 +403,6 @@
           </div>
         </a>
 
-        <!-- Creator -->
         <a class="guide-x" href="/guides/utm-builder-guide/" data-cat="creator seo" data-keywords="utm builder campaign tracking tiktok instagram youtube newsletter">
           <div class="guide-top">
             <div class="guide-ico" aria-hidden="true">🧭</div>
@@ -440,7 +419,6 @@
 
       </div>
 
-      <!-- SEO Boost -->
       <div class="seo-boost" aria-label="Guides SEO boost">
         <h3>Start with these workflows</h3>
         <p>
@@ -463,7 +441,7 @@
     </div>
   </section>
 
-  <!-- FOOTER (same as Tools) -->
+  <!-- FOOTER -->
   <footer class="footer">
     <div class="container footer-grid">
       <div>
@@ -503,7 +481,7 @@
     </div>
   </footer>
 
-  <!-- Cookie banner (same as Tools) -->
+  <!-- Cookie banner -->
   <div class="cookie" role="dialog" aria-live="polite" aria-label="Cookie preferences">
     <div class="cookie-card">
       <button class="cookie-x" id="cookieClose" type="button" aria-label="Close">×</button>
@@ -524,10 +502,7 @@
     </div>
   </div>
 
-  <!-- Base site behavior -->
   <script src="/assets/site.js" defer></script>
-
-  <!-- Guides behavior -->
   <script src="/guides/guides.js" defer></script>
 </body>
 </html>
