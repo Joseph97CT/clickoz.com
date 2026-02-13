@@ -1,11 +1,8 @@
-/* /guides/guides.js?v=2
-   Clickoz Guides page behavior:
-   - Category chips -> filter guide cards (no reload) + optional scroll
-   - Search -> filters by title + description + optional keywords
-   - Hash sync -> updates URL hash without jump (e.g. #seo, #writing)
-   - Keyboard accessible chips (Enter/Space + arrow nav)
+/* /guides/guides.js?v=3
+   Same behavior as v2, plus:
+   - robust targets (works even if some optional blocks removed)
+   - clears hash to #all when search is active (optional, subtle)
    - ESC clears search
-   - Elegant empty state
 */
 
 (() => {
@@ -14,7 +11,6 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  // ---------- Helpers ----------
   const norm = (s) =>
     (s || "")
       .toLowerCase()
@@ -34,23 +30,19 @@
     if (location.hash !== h) history.replaceState(null, "", h);
   }
 
-  // ---------- DOM ----------
+  // DOM
   const chipsWrap = $("#guidesChips");
   const chips = chipsWrap ? $$(".chip", chipsWrap) : [];
-  const searchInput = $("#guidesSearch") || $("#toolsSearch"); // fallback if you reused id
-  const grid = $("#guidesGrid") || $(".guides-grid") || document.body;
+  const searchInput = $("#guidesSearch");
+  const gridNode = $("#guidesGrid") || $(".guides-grid");
 
-  // If markup missing, exit gracefully
   if (!chipsWrap || chips.length === 0) return;
 
-  // Guide cards:
-  // expected: <a class="guide-x" data-cat="seo writing" data-keywords="...">
-  // but we support fallbacks (".card" or ".guide")
+  // Cards
   let cards = $$(".guide-x");
   if (cards.length === 0) cards = $$(".guide");
-  if (cards.length === 0) cards = $$(".card"); // last resort
+  if (cards.length === 0) cards = $$(".card");
 
-  // Build searchable meta
   const cardMeta = cards.map((el) => {
     const h = $("h3", el);
     const p = $("p", el);
@@ -61,11 +53,11 @@
       title: norm(h ? h.textContent : ""),
       desc: norm(p ? p.textContent : ""),
       keywords: norm(kw),
-      cats: norm(cat).split(" ").filter(Boolean), // ["seo","writing",...]
+      cats: norm(cat).split(" ").filter(Boolean),
     };
   });
 
-  // Empty state node (insert once)
+  // Empty state
   const emptyState = document.createElement("div");
   emptyState.className = "guides-empty";
   emptyState.setAttribute("role", "status");
@@ -86,30 +78,18 @@
         No guides found
       </div>
       <div style="color:rgba(242,242,255,.72);font-size:13.5px;line-height:1.6;">
-        Try another keyword or switch category. You can also clear the search to see everything.
+        Try another keyword, or switch category. Press <b>Esc</b> to clear the search.
       </div>
     </div>
   `;
 
-  // Place empty state right after the grid wrapper (preferred), otherwise after chips
-  const insertTarget =
-    $("#guidesGrid")?.parentElement ||
-    $(".hero-box") ||
-    chipsWrap.parentElement ||
-    document.body;
-
-  if (insertTarget && !$(".guides-empty")) {
-    // Try to place it right before the grid node if possible
-    const gridNode = $("#guidesGrid") || $(".guides-grid");
-    if (gridNode && gridNode.parentElement === insertTarget) {
-      insertTarget.insertBefore(emptyState, gridNode);
-    } else {
-      insertTarget.appendChild(emptyState);
-    }
+  // Insert empty state above grid
+  if (gridNode && !$(".guides-empty")) {
+    gridNode.parentElement.insertBefore(emptyState, gridNode);
   }
 
-  // ---------- Filtering state ----------
-  let activeCat = null; // null = "all"
+  // State
+  let activeCat = null; // null means all
   let activeQuery = "";
 
   function setActiveChip(key, { focus = false } = {}) {
@@ -128,16 +108,14 @@
 
   function passesCat(meta) {
     if (!activeCat || activeCat === "all") return true;
-    // If card has no cats defined, keep it visible only in "all"
     if (!meta.cats || meta.cats.length === 0) return false;
     return meta.cats.includes(activeCat);
   }
 
   function passesQuery(meta) {
-    const q = activeQuery;
-    if (!q) return true;
+    if (!activeQuery) return true;
     const hay = `${meta.title} ${meta.desc} ${meta.keywords}`.trim();
-    return hay.includes(q);
+    return hay.includes(activeQuery);
   }
 
   function applyFilters() {
@@ -149,13 +127,19 @@
       if (ok) shown++;
     });
 
-    // Empty state
-    if (shown === 0) emptyState.style.display = "";
-    else emptyState.style.display = "none";
+    emptyState.style.display = shown === 0 ? "" : "none";
   }
 
-  // ---------- Chip events ----------
-  function onChipActivate(chipEl) {
+  function scrollGridIntoView() {
+    if (!gridNode) return;
+    const nav = $("#topNav");
+    const navH = nav ? nav.getBoundingClientRect().height : 0;
+    const y = window.scrollY + gridNode.getBoundingClientRect().top - (navH + 16);
+    window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+  }
+
+  // Chip activation
+  function onChipActivate(chipEl, { doScroll = true } = {}) {
     const key = (chipEl.getAttribute("data-filter") || "").trim();
     if (!key) return;
 
@@ -164,16 +148,7 @@
     safeHashSet(key);
 
     applyFilters();
-
-    // Optional: if user has scrolled deep, bring grid into view
-    const gridNode = $("#guidesGrid") || $(".guides-grid");
-    if (gridNode) {
-      const nav = $("#topNav");
-      const navH = nav ? nav.getBoundingClientRect().height : 0;
-      const y = window.scrollY + gridNode.getBoundingClientRect().top - (navH + 16);
-      // Smooth but not aggressive
-      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-    }
+    if (doScroll) scrollGridIntoView();
   }
 
   chips.forEach((chip) => {
@@ -184,6 +159,7 @@
 
     chip.addEventListener("keydown", (e) => {
       const k = e.key;
+
       if (k === "Enter" || k === " ") {
         e.preventDefault();
         onChipActivate(chip);
@@ -202,10 +178,20 @@
     });
   });
 
-  // ---------- Search events ----------
+  // Search
   function setQuery(v) {
     activeQuery = norm(v);
     applyFilters();
+
+    // Optional: when searching, keep category at "all" to avoid confusion
+    if (activeQuery) {
+      const allChip = chips.find((c) => c.getAttribute("data-filter") === "all");
+      if (allChip) {
+        activeCat = null;
+        setActiveChip("all");
+        safeHashSet("all");
+      }
+    }
   }
 
   if (searchInput) {
@@ -221,7 +207,7 @@
     });
   }
 
-  // ---------- Init from hash ----------
+  // Init from hash
   function init() {
     const raw = decodeURIComponent((location.hash || "").replace("#", "").trim());
     const has = chips.some((c) => c.getAttribute("data-filter") === raw);
@@ -229,20 +215,25 @@
 
     setActiveChip(startKey);
     activeCat = startKey === "all" ? null : startKey;
-    safeHashSet(startKey);
 
-    // Ensure query starts clean
     activeQuery = norm(searchInput ? searchInput.value : "");
     applyFilters();
   }
 
   init();
 
+  // Hash change
   window.addEventListener("hashchange", () => {
     const raw = decodeURIComponent((location.hash || "").replace("#", "").trim());
     const target = chips.find((c) => c.getAttribute("data-filter") === raw);
     if (!target) return;
 
-    onChipActivate(target);
+    // Clear search when changing category via hash/back
+    if (searchInput && norm(searchInput.value)) {
+      searchInput.value = "";
+      setQuery("");
+    }
+
+    onChipActivate(target, { doScroll: false });
   });
 })();
