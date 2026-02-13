@@ -4,25 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Clickoz Updates – Changelog & Project Updates</title>
-  <meta name="description" content="Changelog and project updates for Clickoz: server setup, tool launches, design upgrades, SEO improvements, and performance fixes. Short, transparent updates." />
+  <title>Clickoz Updates – Continuous Rewrites, Improvements & Releases</title>
+  <meta name="description" content="See how Clickoz evolves over time. Major rewrites, small improvements, performance tweaks and design updates. Every version is rebuilt to be better, even by a little." />
 
   <link rel="canonical" href="https://clickoz.com/updates/" />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f19" />
 
+  <!-- Open Graph -->
   <meta property="og:site_name" content="Clickoz" />
-  <meta property="og:title" content="Clickoz Updates – Changelog & Project Updates" />
-  <meta property="og:description" content="Server, tools, design, SEO and performance updates — short and transparent." />
+  <meta property="og:title" content="Clickoz Updates – Continuous Rewrites & Improvements" />
+  <meta property="og:description" content="A transparent changelog of Clickoz. Every release is a rewrite, focused on clarity, performance, and UX." />
   <meta property="og:url" content="https://clickoz.com/updates/" />
   <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://clickoz.com/assets/og/updates.png" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Clickoz Updates – Continuous Rewrites & Improvements" />
+  <meta name="twitter:description" content="Major releases, small improvements, and constant rewrites to improve Clickoz." />
+  <meta name="twitter:image" content="https://clickoz.com/assets/og/updates.png" />
 
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
 
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet" />
 
+  <!-- CSS -->
   <link rel="stylesheet" href="/assets/site.css?v=5" />
   <link rel="stylesheet" href="/updates/updates.css?v=1" />
 
@@ -30,22 +40,11 @@
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
-    "@type":"BreadcrumbList",
-    "itemListElement":[
-      {"@type":"ListItem","position":1,"name":"Home","item":"https://clickoz.com/"},
-      {"@type":"ListItem","position":2,"name":"Updates","item":"https://clickoz.com/updates/"}
-    ]
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
     "@type":"CollectionPage",
     "name":"Clickoz Updates",
     "url":"https://clickoz.com/updates/",
     "isPartOf":{"@type":"WebSite","name":"Clickoz","url":"https://clickoz.com/"},
-    "about":["Product updates","Changelog","SEO improvements","Performance updates","Tool releases"]
+    "about":["Product updates","Changelog","Releases","UX improvements","SEO improvements"]
   }
   </script>
 </head>
@@ -56,318 +55,200 @@
   <canvas id="spaceParticles" aria-hidden="true"></canvas>
   <div class="__grain" aria-hidden="true"></div>
 
-  <!-- NAV (HOME ✅) -->
+  <!-- NAV -->
   <nav class="nav" aria-label="Primary navigation" id="topNav">
     <div class="container nav-inner">
       <a class="logo" href="/" aria-label="Clickoz Home">
-        <span class="logo-badge" id="logoBadge" aria-hidden="true">
-          <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
+        <span class="logo-badge" aria-hidden="true">
+          <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em">
             <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6"
-                  fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+              fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
         <span class="logo-text">Click<span class="logo-oz">oz</span></span>
       </a>
 
-      <div class="nav-links" aria-label="Sections">
+      <div class="nav-links">
         <a href="/">Home</a>
         <a href="/tools/">Tools</a>
         <a href="/guides/">Guides</a>
-        <a class="active" href="/updates/" aria-current="page">Updates</a>
+        <a href="/updates/" class="active" aria-current="page">Updates</a>
       </div>
 
       <div class="spacer"></div>
 
-      <div class="nav-actions" aria-label="Preferences">
-        <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <div class="nav-actions">
+        <button class="burger" id="burger" type="button" aria-label="Open menu">
           <span></span><span></span><span></span>
         </button>
-
-        <div class="dropdown">
-          <button class="dot-btn" id="colorToggle" type="button" aria-haspopup="true" aria-expanded="false" title="Theme color">
-            <span class="dot" id="colorDot" aria-hidden="true"></span>
-          </button>
-
-          <div class="menu" id="colorMenu" role="menu" aria-label="Pick theme color">
-            <div class="menu-title">Theme color</div>
-            <div class="color-grid">
-              <div class="color-option active" data-accent="#6366f1" data-accent2="#8b5cf6" style="background:#6366f1" title="Purple" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#3b82f6" data-accent2="#60a5fa" style="background:#3b82f6" title="Blue" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#10b981" data-accent2="#34d399" style="background:#10b981" title="Green" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#f59e0b" data-accent2="#fbbf24" style="background:#f59e0b" title="Yellow" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#f97316" data-accent2="#fb923c" style="background:#f97316" title="Orange" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#ef4444" data-accent2="#f87171" style="background:#ef4444" title="Red" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#ec4899" data-accent2="#f472b6" style="background:#ec4899" title="Pink" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#06b6d4" data-accent2="#22d3ee" style="background:#06b6d4" title="Cyan" role="menuitem" tabindex="0"></div>
-            </div>
-          </div>
-        </div>
-
-        <div id="gtNavWrap" aria-label="Translate">
-          <div id="google_translate_element"></div>
-        </div>
       </div>
     </div>
   </nav>
 
-  <!-- Mobile menu (HOME ✅) -->
-  <div class="m-overlay" id="mOverlay" hidden></div>
-  <aside class="m-menu" id="mobileMenu" aria-hidden="true">
-    <div class="m-head">
-      <div class="m-title">Menu</div>
-      <button class="m-close" id="mClose" type="button" aria-label="Close menu">×</button>
-    </div>
+  <!-- MAIN -->
+  <section class="section container updates-shell" aria-label="Updates and releases">
 
-    <div class="m-links">
-      <a class="m-link" href="/">Home</a>
-      <a class="m-link" href="/tools/">Tools</a>
-      <a class="m-link" href="/guides/">Guides</a>
-      <a class="m-link active" href="/updates/" aria-current="page">Updates</a>
-      <a class="m-link" href="/privacy/">Privacy</a>
-    </div>
-
-    <div class="m-block">
-      <div class="m-label">Theme color</div>
-      <div class="color-grid m-colors" id="mobileColorGrid">
-        <div class="color-option active" data-accent="#6366f1" data-accent2="#8b5cf6" style="background:#6366f1" title="Purple" tabindex="0"></div>
-        <div class="color-option" data-accent="#3b82f6" data-accent2="#60a5fa" style="background:#3b82f6" title="Blue" tabindex="0"></div>
-        <div class="color-option" data-accent="#10b981" data-accent2="#34d399" style="background:#10b981" title="Green" tabindex="0"></div>
-        <div class="color-option" data-accent="#f59e0b" data-accent2="#fbbf24" style="background:#f59e0b" title="Yellow" tabindex="0"></div>
-        <div class="color-option" data-accent="#f97316" data-accent2="#fb923c" style="background:#f97316" title="Orange" tabindex="0"></div>
-        <div class="color-option" data-accent="#ef4444" data-accent2="#f87171" style="background:#ef4444" title="Red" tabindex="0"></div>
-        <div class="color-option" data-accent="#ec4899" data-accent2="#f472b6" style="background:#ec4899" title="Pink" tabindex="0"></div>
-        <div class="color-option" data-accent="#06b6d4" data-accent2="#22d3ee" style="background:#06b6d4" title="Cyan" tabindex="0"></div>
-      </div>
-    </div>
-
-    <div class="m-block">
-      <div class="m-label">Language</div>
-      <div id="google_translate_element_mobile"></div>
-      <div style="margin-top:10px;font-size:13px;opacity:.78;line-height:1.5;">
-        Translation loads only if you accept “All” cookies.
-      </div>
-    </div>
-  </aside>
-
-  <!-- HERO -->
-  <header class="section container" aria-label="Updates hero">
-    <div class="updates-hero hero-box">
-      <div class="crumbs" aria-label="Breadcrumb">
-        <a href="/">Home</a><span class="sep">›</span><span>Updates</span>
-      </div>
-
+    <!-- HERO -->
+    <div class="updates-hero">
       <div class="updates-hero-top">
-        <div style="flex:1 1 560px;">
-          <h1 class="section-title" style="margin-top:0;">Updates & changelog</h1>
-          <p class="section-sub" style="margin-bottom:0;">
-            A transparent log of what changed in Clickoz: project setup, server/hosting changes, new tools,
-            design upgrades, SEO improvements, and performance fixes.
-          </p>
+        <h1 class="updates-title">We rewrite Clickoz. Constantly.</h1>
+        <p class="updates-sub">
+          From the first version to today, Clickoz has been rebuilt again and again.
+          Sometimes the change is big. Sometimes it’s small.
+          Every time, it’s done to make things clearer, faster, and more useful.
+        </p>
 
-          <div class="updates-metrics" aria-label="Update highlights">
-            <div class="metric-pill">🛠️ <b>Build log</b> • real changes</div>
-            <div class="metric-pill">⚡ <b>Performance</b> • mobile-first</div>
-            <div class="metric-pill">🔎 <b>SEO</b> • intent-first</div>
-            <div class="metric-pill">🧠 <b>Quality</b> • clean UI</div>
-          </div>
+        <div class="updates-manifesto">
+          <span class="dot"></span>
+          Continuous rewrites, not patchwork fixes
         </div>
 
-        <div class="updates-search" style="flex:1 1 360px;">
-          <input class="search" id="updatesSearch" placeholder="Search updates (server, tools, seo, particles, mobile…)" aria-label="Search updates" autocomplete="off" />
-          <div class="updates-quick">
-            <a class="btn" href="/tools/">Browse Tools</a>
-            <a class="btn primary" href="/guides/">Read Guides</a>
-          </div>
+        <div class="updates-stats">
+          <div class="stat-pill"><b>100%</b> browser-first</div>
+          <div class="stat-pill"><b>0</b> legacy UI kept</div>
+          <div class="stat-pill"><b>∞</b> small improvements</div>
         </div>
-      </div>
 
-      <div class="chips" id="updatesChips" aria-label="Update filters">
-        <div class="chip active" data-filter="all" role="button" tabindex="0">All</div>
-        <div class="chip" data-filter="infra" role="button" tabindex="0">Infra</div>
-        <div class="chip" data-filter="tools" role="button" tabindex="0">Tools</div>
-        <div class="chip" data-filter="design" role="button" tabindex="0">Design</div>
-        <div class="chip" data-filter="seo" role="button" tabindex="0">SEO</div>
-        <div class="chip" data-filter="perf" role="button" tabindex="0">Performance</div>
+        <div class="updates-controls">
+          <div class="chips" id="updatesChips">
+            <div class="chip active" data-filter="all">All</div>
+            <div class="chip" data-filter="major">Major</div>
+            <div class="chip" data-filter="minor">Minor</div>
+            <div class="chip" data-filter="fix">Fix</div>
+            <div class="chip" data-filter="design">Design</div>
+            <div class="chip" data-filter="seo">SEO</div>
+            <div class="chip" data-filter="performance">Performance</div>
+          </div>
+
+          <input
+            id="updatesSearch"
+            type="search"
+            placeholder="Search updates (rewrite, performance, SEO, UI…)"
+            aria-label="Search updates"
+          />
+        </div>
       </div>
     </div>
-  </header>
 
-  <!-- UPDATES LIST -->
-  <main class="section container" aria-label="Updates timeline">
-    <div class="hero-box">
-      <h2 class="section-title" style="margin-top:0;">Latest changes</h2>
-      <p class="section-sub" style="margin-bottom:14px;">
-        Each entry is short and actionable: what changed, why it matters, and what to check.
+    <!-- LIST -->
+    <div class="updates-box">
+      <h2 class="section-title">Release history</h2>
+      <p class="section-sub">
+        This is not a traditional changelog. Most releases are full rewrites,
+        even when the visible change looks small.
       </p>
 
-      <div class="updates-list" id="updatesList">
+      <div class="updates-grid">
 
-        <!-- Newest -->
-        <article class="update-card" data-cat="design" data-hay="particles stronger glow canvas boost background neon">
-          <div class="update-head">
-            <div class="update-date">2026 • Latest</div>
-            <div class="update-tags">
-              <span class="u-tag">Design</span>
-              <span class="u-tag">FX</span>
+        <!-- RELEASE -->
+        <article class="release-card" data-type="major" data-tags="rewrite design performance seo">
+          <div class="release-meta">
+            <div class="release-left">
+              <div class="release-badge">v3</div>
+              <div>
+                <h3 class="release-title">Complete Tools & Guides rewrite</h3>
+                <div class="release-date">January 2026</div>
+              </div>
             </div>
+            <div class="release-type">Major</div>
           </div>
-          <h3>Particles & glow boosted (stronger background)</h3>
-          <p>
-            Increased particle visibility and glow so the background feels alive without killing readability.
-            Kept mobile performance safe with caps and reduced-motion support.
+
+          <p class="release-desc">
+            Entire tools and guides architecture rebuilt from scratch.
+            Focus on mobile stability, clarity, and copy-ready outputs.
           </p>
-          <ul class="u-points">
-            <li>Canvas particles engine boosted (density + glow + trails).</li>
-            <li>Visual balance: stronger presence behind hero and cards.</li>
-            <li>Performance: DPR capped + mobile counts.</li>
+
+          <ul class="release-highlights">
+            <li><b>Unified design system</b> across Tools, Guides, Updates</li>
+            <li>New SEO structure and internal linking</li>
+            <li>Better performance on low-end devices</li>
           </ul>
+
+          <div class="release-tags">
+            <span class="tag">Rewrite</span>
+            <span class="tag">Design</span>
+            <span class="tag">SEO</span>
+            <span class="tag">Performance</span>
+          </div>
         </article>
 
-        <article class="update-card" data-cat="tools" data-hay="tools page categories sections chips scroll spy dev seo text creator">
-          <div class="update-head">
-            <div class="update-date">2026</div>
-            <div class="update-tags">
-              <span class="u-tag">Tools</span>
-              <span class="u-tag">UX</span>
+        <!-- RELEASE -->
+        <article class="release-card" data-type="minor" data-tags="design ux">
+          <div class="release-meta">
+            <div class="release-left">
+              <div class="release-badge">v3.1</div>
+              <div>
+                <h3 class="release-title">Navigation & spacing refinement</h3>
+                <div class="release-date">February 2026</div>
+              </div>
             </div>
+            <div class="release-type">Minor</div>
           </div>
-          <h3>Tools page rebuilt with real categories</h3>
-          <p>
-            Replaced “fake anchors” with real category sections and premium chips that scroll to SEO / Text / Dev / Creator.
-            Added scroll-spy and hash sync for better navigation and linkability.
+
+          <p class="release-desc">
+            Small visual changes, large readability gains.
+            Navigation spacing and hierarchy improved.
           </p>
-          <ul class="u-points">
-            <li>Category chips now jump to real sections (#seo #text #dev #creator).</li>
-            <li>Cards improved: consistent CTA alignment and “premium” styling.</li>
-            <li>SEO boost block under FAQ for internal linking.</li>
-          </ul>
+
+          <div class="release-tags">
+            <span class="tag">Design</span>
+            <span class="tag">UX</span>
+          </div>
         </article>
 
-        <article class="update-card" data-cat="seo" data-hay="seo schema json-ld canonical meta og twitter internal linking faq">
-          <div class="update-head">
-            <div class="update-date">2026</div>
-            <div class="update-tags">
-              <span class="u-tag">SEO</span>
-              <span class="u-tag">Schema</span>
+        <!-- RELEASE -->
+        <article class="release-card" data-type="fix" data-tags="performance bugfix">
+          <div class="release-meta">
+            <div class="release-left">
+              <div class="release-badge">v3.1.2</div>
+              <div>
+                <h3 class="release-title">Mobile performance fixes</h3>
+                <div class="release-date">March 2026</div>
+              </div>
             </div>
+            <div class="release-type">Fix</div>
           </div>
-          <h3>Structured data + internal linking improvements</h3>
-          <p>
-            Added clean JSON-LD (CollectionPage + BreadcrumbList + FAQPage where useful),
-            and improved internal links between tools and guides to strengthen topical clusters.
-          </p>
-          <ul class="u-points">
-            <li>Canonical + OG/Twitter kept consistent across pages.</li>
-            <li>FAQ blocks kept short and intent-aligned.</li>
-            <li>Internal linking “paths” to guide users (and Google) to the right next step.</li>
-          </ul>
-        </article>
 
-        <article class="update-card" data-cat="design" data-hay="nav home button sticky mobile menu consistency">
-          <div class="update-head">
-            <div class="update-date">2026</div>
-            <div class="update-tags">
-              <span class="u-tag">Design</span>
-              <span class="u-tag">Nav</span>
-            </div>
-          </div>
-          <h3>Navigation standardized (Home added everywhere)</h3>
-          <p>
-            Fixed nav consistency across pages and added the missing Home link on desktop + mobile menus.
-            This reduces friction and increases internal navigation flow.
+          <p class="release-desc">
+            Reduced layout shifts and improved scrolling stability on mobile browsers.
           </p>
-          <ul class="u-points">
-            <li>Desktop: Home / Tools / Guides / Updates.</li>
-            <li>Mobile menu aligned with desktop and includes Privacy.</li>
-            <li>Active state styling kept consistent.</li>
-          </ul>
-        </article>
 
-        <article class="update-card" data-cat="tools" data-hay="guides page index search chips tags internal links">
-          <div class="update-head">
-            <div class="update-date">2026</div>
-            <div class="update-tags">
-              <span class="u-tag">Tools</span>
-              <span class="u-tag">Guides</span>
-            </div>
+          <div class="release-tags">
+            <span class="tag">Performance</span>
+            <span class="tag">Mobile</span>
           </div>
-          <h3>Guides index launched (search + tags)</h3>
-          <p>
-            Created a premium Guides hub with search and categories.
-            Added internal links to key tools so every guide becomes actionable.
-          </p>
-          <ul class="u-points">
-            <li>Guides hero + grid style aligned with Tools.</li>
-            <li>Search + chips filter to find content fast.</li>
-            <li>SEO boost section: popular paths + tool links.</li>
-          </ul>
-        </article>
-
-        <article class="update-card" data-cat="perf" data-hay="android compatibility mobile layout bugs cls stable layout">
-          <div class="update-head">
-            <div class="update-date">2026</div>
-            <div class="update-tags">
-              <span class="u-tag">Performance</span>
-              <span class="u-tag">Mobile</span>
-            </div>
-          </div>
-          <h3>Mobile stability fixes (Android-first)</h3>
-          <p>
-            Reduced layout shifts, improved spacing, and fixed background FX bugs reported on Android browsers.
-            Focus: stable scroll, less “jumping”, better readability.
-          </p>
-          <ul class="u-points">
-            <li>Reduced heavy glow edges that caused harsh stutters.</li>
-            <li>Improved consistent padding and container flow.</li>
-            <li>Better default readability on small screens.</li>
-          </ul>
-        </article>
-
-        <article class="update-card" data-cat="infra" data-hay="project creation server hosting cloudflare workers domain setup">
-          <div class="update-head">
-            <div class="update-date">2026 • Early</div>
-            <div class="update-tags">
-              <span class="u-tag">Infra</span>
-              <span class="u-tag">Project</span>
-            </div>
-          </div>
-          <h3>Project + hosting foundation</h3>
-          <p>
-            Initial setup of the Clickoz project structure and hosting approach.
-            Goal: browser-only tools, fast loads, simple deployments.
-          </p>
-          <ul class="u-points">
-            <li>Established structure: /tools /guides /updates with shared site.css/site.js.</li>
-            <li>Deployment workflow prepared (static + edge-friendly).</li>
-            <li>Privacy-first baseline: no uploads by default.</li>
-          </ul>
         </article>
 
       </div>
 
-      <!-- SEO booster under timeline -->
-      <div class="seo-boost" aria-label="SEO booster">
-        <h3>What we’re building toward</h3>
+      <!-- DONATION -->
+      <div class="donate-box">
+        <h3>Support Clickoz</h3>
         <p>
-          Clickoz is structured to scale: more single-purpose tools, each with an intent-first page, a matching guide,
-          and internal linking between categories. This improves discovery, UX, and organic growth over time.
+          Clickoz is built in public, rewritten constantly, and kept free.
+          If it helps you, you can offer a coffee to support future improvements.
         </p>
-        <div class="seo-boost-links" aria-label="Quick links">
-          <a href="/tools/">Browse Tools</a>
-          <a href="/guides/">Read Guides</a>
-          <a href="/tools/meta-tags/">Meta Tag Optimizer</a>
-          <a href="/tools/json-formatter/">JSON Formatter</a>
+
+        <div class="donate-actions">
+          <!-- Replace with your PayPal.me link -->
+          <a href="https://www.paypal.me/YOURNAME" target="_blank" rel="noopener">
+            ☕ Offer a coffee
+          </a>
+        </div>
+
+        <div class="donate-note">
+          No ads. No tracking. Just support if you feel like it.
         </div>
       </div>
     </div>
-  </main>
+  </section>
 
+  <!-- FOOTER -->
   <footer class="footer">
     <div class="container footer-grid">
       <div>
         <h4>Clickoz</h4>
         <div class="footer-links">
-          <a href="/">Home</a>
           <a href="/tools/">Tools</a>
           <a href="/guides/">Guides</a>
           <a href="/updates/">Updates</a>
@@ -375,7 +256,7 @@
       </div>
 
       <div>
-        <h4>Popular</h4>
+        <h4>Popular tools</h4>
         <div class="footer-links">
           <a href="/tools/word-counter/">Word Counter</a>
           <a href="/tools/readability-analyzer/">Readability</a>
@@ -397,96 +278,13 @@
     <div class="container" style="margin-top:14px">
       <hr class="sep" />
       <div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">
-        © 2026 Clickoz • Transparent updates
+        © 2026 Clickoz • Constantly rewritten
       </div>
     </div>
   </footer>
 
-  <!-- Cookie banner -->
-  <div class="cookie" role="dialog" aria-live="polite" aria-label="Cookie preferences">
-    <div class="cookie-card">
-      <button class="cookie-x" id="cookieClose" type="button" aria-label="Close">×</button>
-      <div class="cookie-content">
-        <div class="cookie-title">Privacy choices</div>
-        <div class="cookie-text">
-          We use essential storage for core features. If you accept all, we may load third-party services like Google Translate.
-          Read more in <a href="/privacy/">Privacy</a>.
-        </div>
-      </div>
-      <div class="cookie-actions">
-        <button class="btn cookie-btn" id="cookieReject" type="button">Refuse</button>
-        <button class="btn cookie-btn" id="cookieEssential" type="button">Essential only</button>
-        <button class="btn primary cookie-btn" id="cookieAccept" type="button">Accept all</button>
-      </div>
-    </div>
-  </div>
-
+  <!-- Scripts -->
   <script src="/assets/site.js" defer></script>
-
-  <!-- Updates filtering -->
-  <script>
-    (function(){
-      const $  = (s, r=document) => r.querySelector(s);
-      const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-
-      const list = $("#updatesList");
-      const search = $("#updatesSearch");
-      const chips = $("#updatesChips");
-      if(!list) return;
-
-      const cards = $$("#updatesList .update-card");
-      let filter = "all";
-
-      const norm = (s) => (s || "").toLowerCase().trim();
-
-      function render(){
-        const term = search ? norm(search.value) : "";
-        cards.forEach(c => {
-          const cat = norm(c.dataset.cat || "");
-          const hay = norm((c.dataset.hay || "") + " " + (c.textContent || ""));
-          const okCat = (filter === "all") || (cat === filter);
-          const okTerm = !term || hay.includes(term);
-          c.style.display = (okCat && okTerm) ? "" : "none";
-        });
-      }
-
-      if(chips){
-        chips.addEventListener("click", (e) => {
-          const chip = e.target.closest(".chip");
-          if(!chip) return;
-          $$("#updatesChips .chip").forEach(x => x.classList.remove("active"));
-          chip.classList.add("active");
-          filter = chip.dataset.filter || "all";
-          render();
-        });
-
-        chips.addEventListener("keydown", (e) => {
-          const chip = e.target.closest(".chip");
-          if(!chip) return;
-          if(e.key === "Enter" || e.key === " "){
-            e.preventDefault();
-            chip.click();
-          }
-        });
-      }
-
-      if(search){
-        let t=null;
-        search.addEventListener("input", () => {
-          clearTimeout(t);
-          t=setTimeout(render, 80);
-        });
-
-        document.addEventListener("keydown", (e) => {
-          if(e.key === "/" && !e.metaKey && !e.ctrlKey && document.activeElement !== search){
-            e.preventDefault();
-            search.focus();
-          }
-        });
-      }
-
-      render();
-    })();
-  </script>
+  <script src="/updates/updates.js" defer></script>
 </body>
 </html>
