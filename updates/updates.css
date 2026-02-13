@@ -1,19 +1,13 @@
-/* /updates/updates.css?v=1
-   Clickoz Updates – “innovative & futuristic” changelog / release notes
-   Goals:
-   - Premium hero (centered) that communicates continuous rewrites + iteration culture
-   - Timeline / release cards with “version badge”, date, highlights, impact tags
-   - Filters row (All / Major / Minor / Fix / Design / SEO / Performance)
-   - “Milestones” strip: total releases, last update, improvements count
-   - Donation box (“Offer a coffee”) styled like a futuristic glass card
-   - Mobile-first, accessible focus states, works with your existing site.css
+/* /updates/updates.css?v=2
+   ✅ Adds ALL 3 upgrades:
+   1) Futuristic TIMELINE mode (desktop) + clean mobile fallback
+   2) Strong SEO section styling + internal link “clusters”
+   3) Donation box becomes COLLAPSIBLE + premium micro-UI
 
-   Expected HTML classes/ids (you’ll get full HTML later):
-   - .updates-shell, .updates-hero, #updatesChips, #updatesSearch
-   - .updates-grid, .release-card, .release-meta, .release-tags
-   - .donate-box, .donate-actions, .donate-note
+   ✅ Removes the visual need for search in Updates (no search styles required).
 */
 
+/* ---------- Base tokens ---------- */
 :root{
   --u-radius: 22px;
   --u-radius-sm: 16px;
@@ -22,8 +16,6 @@
   --u-dim: rgba(242,242,255,.74);
   --u-dimmer: rgba(242,242,255,.60);
   --u-title: rgba(255,255,255,.94);
-  --u-bg: rgba(0,0,0,.18);
-  --u-bg2: rgba(255,255,255,.05);
   --u-shadow: 0 22px 60px rgba(0,0,0,.45);
   --u-shadow-soft: 0 16px 40px rgba(0,0,0,.30);
   --u-glowA: rgba(34,211,238,.18);
@@ -31,14 +23,7 @@
   --u-glowC: rgba(236,72,153,.12);
 }
 
-/* Shell spacing */
-.updates-shell{
-  position: relative;
-}
-
-/* -----------------------------
-   HERO
------------------------------- */
+/* ---------- HERO ---------- */
 .updates-hero{
   position: relative;
   overflow: hidden;
@@ -55,8 +40,7 @@
 
 .updates-hero::before{
   content:"";
-  position:absolute;
-  inset:-2px;
+  position:absolute; inset:-2px;
   pointer-events:none;
   opacity:.6;
   background:
@@ -91,7 +75,7 @@
   font-size: clamp(16px, 2vw, 18px);
 }
 
-/* Statement strip (the “we rewrite even for small improvements”) */
+/* Manifesto strip */
 .updates-manifesto{
   margin-top: 12px;
   border: 1px solid rgba(255,255,255,.12);
@@ -115,7 +99,7 @@
   box-shadow: 0 0 0 6px rgba(255,255,255,.06), 0 0 24px rgba(255,255,255,.18);
 }
 
-/* Milestones / stats */
+/* Stats */
 .updates-stats{
   width: 100%;
   margin-top: 14px;
@@ -140,7 +124,7 @@
   font-weight: 1000;
 }
 
-/* Chips + Search row */
+/* Chips only (✅ no search in updates) */
 .updates-controls{
   margin-top: 14px;
   display:flex;
@@ -170,42 +154,14 @@
   transition: transform .12s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
   box-shadow: 0 10px 26px rgba(0,0,0,.24);
 }
-
-#updatesChips .chip:hover{
-  transform: translateY(-1px);
-  border-color: var(--u-border-2);
-}
-
+#updatesChips .chip:hover{ transform: translateY(-1px); border-color: var(--u-border-2); }
 #updatesChips .chip.active{
   border-color: rgba(255,255,255,.20);
   background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
   box-shadow: 0 14px 34px rgba(0,0,0,.30);
 }
 
-#updatesSearch{
-  width: min(760px, 100%);
-  border-radius: 14px;
-  padding: 14px 14px;
-  border: 1px solid var(--u-border);
-  background: rgba(0,0,0,.22);
-  color: rgba(255,255,255,.92);
-  outline: none;
-  box-shadow: 0 14px 38px rgba(0,0,0,.34);
-  transition: border-color .15s ease, transform .12s ease, box-shadow .15s ease;
-}
-
-#updatesSearch::placeholder{
-  color: rgba(242,242,255,.55);
-}
-#updatesSearch:focus{
-  border-color: rgba(255,255,255,.22);
-  box-shadow: 0 16px 44px rgba(0,0,0,.38);
-  transform: translateY(-1px);
-}
-
-/* -----------------------------
-   LIST CONTAINER (match Tools/Guides hero-box)
------------------------------- */
+/* ---------- LIST BOX ---------- */
 .updates-box{
   margin-top: 18px;
   border: 1px solid var(--u-border);
@@ -216,34 +172,43 @@
   box-shadow: var(--u-shadow-soft);
   padding: 22px 18px 18px;
 }
+.updates-box .section-title{ margin-top: 0 !important; }
+.updates-box .section-sub{ color: var(--u-dim) !important; }
 
-/* Title/sub inside updates-box */
-.updates-box .section-title{
-  margin-top: 0 !important;
-}
-.updates-box .section-sub{
-  color: var(--u-dim) !important;
-}
-
-/* -----------------------------
-   RELEASE GRID
------------------------------- */
-.updates-grid{
+/* ---------- (1) TIMELINE MODE ---------- */
+/* Mobile: keep simple grid. Desktop: switch to timeline list for a “futuristic” story. */
+.updates-timeline{
+  position: relative;
   margin-top: 12px;
+}
+
+/* default grid (mobile/tablet) */
+.updates-grid{
   display:grid;
   grid-template-columns: 1fr;
   gap: 12px;
 }
 
-@media (min-width: 820px){
+/* Desktop timeline layout */
+@media (min-width: 980px){
   .updates-grid{
-    grid-template-columns: repeat(2, minmax(0,1fr));
+    display:flex;
+    flex-direction: column;
     gap: 14px;
+    max-width: 980px;
+    margin: 0 auto;
   }
-}
-@media (min-width: 1120px){
-  .updates-grid{
-    grid-template-columns: repeat(3, minmax(0,1fr));
+
+  .updates-timeline::before{
+    content:"";
+    position:absolute;
+    left: 28px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+    border-radius: 999px;
+    box-shadow: 0 0 0 6px rgba(255,255,255,.03);
   }
 }
 
@@ -273,7 +238,26 @@
   box-shadow: 0 20px 48px rgba(0,0,0,.38);
 }
 
-/* Header row */
+/* Timeline marker (desktop) */
+@media (min-width: 980px){
+  .release-card{
+    padding-left: 64px;
+  }
+  .release-card::after{
+    content:"";
+    position:absolute;
+    left: 20px;
+    top: 20px;
+    width: 16px; height: 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.78);
+    box-shadow:
+      0 0 0 6px rgba(255,255,255,.06),
+      0 0 26px rgba(255,255,255,.18);
+  }
+}
+
+/* Header */
 .release-meta{
   position: relative;
   display:flex;
@@ -281,13 +265,11 @@
   justify-content: space-between;
   gap: 10px;
 }
-
 .release-left{
   display:flex;
   align-items:flex-start;
   gap: 10px;
 }
-
 .release-badge{
   width: 44px; height: 44px;
   border-radius: 14px;
@@ -303,7 +285,6 @@
   color: rgba(255,255,255,.92);
   flex: 0 0 auto;
 }
-
 .release-title{
   margin: 0;
   font-size: 16px;
@@ -312,15 +293,12 @@
   color: rgba(255,255,255,.92);
   line-height: 1.25;
 }
-
 .release-date{
   margin-top: 4px;
   font-size: 12.5px;
   font-weight: 900;
   color: rgba(242,242,255,.58);
 }
-
-/* Right: type label (Major/Minor/Hotfix) */
 .release-type{
   flex: 0 0 auto;
   border: 1px solid rgba(255,255,255,.12);
@@ -332,7 +310,6 @@
   color: rgba(255,255,255,.82);
 }
 
-/* Body text */
 .release-desc{
   position: relative;
   margin: 10px 0 0;
@@ -341,7 +318,6 @@
   line-height: 1.65;
 }
 
-/* Highlight list */
 .release-highlights{
   position: relative;
   margin: 10px 0 0;
@@ -353,7 +329,6 @@
 .release-highlights li{ margin: 6px 0; }
 .release-highlights b{ color: rgba(255,255,255,.90); }
 
-/* Tags row */
 .release-tags{
   position: relative;
   margin-top: 12px;
@@ -372,7 +347,7 @@
   color: rgba(255,255,255,.74);
 }
 
-/* Expand/collapse link (optional JS will toggle) */
+/* details toggle */
 .release-more{
   position: relative;
   margin-top: 10px;
@@ -390,13 +365,10 @@
   content:"→";
   transition: transform .12s ease;
 }
-.release-card:hover .release-more::after{
-  transform: translateX(3px);
-}
+.release-card:hover .release-more::after{ transform: translateX(3px); }
 
-/* Collapsible long content area */
 .release-details{
-  display:none; /* JS toggles */
+  display:none;
   margin-top: 10px;
   border-top: 1px solid rgba(255,255,255,.10);
   padding-top: 10px;
@@ -405,10 +377,8 @@
   line-height: 1.7;
 }
 
-/* -----------------------------
-   DONATION BOX (PayPal / “Offer a coffee”)
------------------------------- */
-.donate-box{
+/* ---------- (2) SEO CLUSTERS / Internal links section ---------- */
+.seo-clusters{
   margin-top: 14px;
   border: 1px solid rgba(255,255,255,.14);
   background:
@@ -416,6 +386,68 @@
     rgba(0,0,0,.18);
   border-radius: var(--u-radius-sm);
   padding: 16px 14px 14px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.28);
+  text-align:center;
+  position: relative;
+  overflow:hidden;
+}
+.seo-clusters::before{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none;
+  opacity:.55;
+  background: radial-gradient(600px 220px at 50% 0%, rgba(255,255,255,.10), transparent 62%);
+}
+.seo-clusters h3{
+  position: relative;
+  margin: 0 0 8px;
+  font-weight: 1000;
+  letter-spacing: -.01em;
+  color: rgba(255,255,255,.94);
+  font-size: 16px;
+}
+.seo-clusters p{
+  position: relative;
+  margin: 0 auto 10px;
+  max-width: 980px;
+  color: var(--u-dim);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+.seo-cluster-links{
+  position: relative;
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content:center;
+}
+.seo-cluster-links a{
+  text-decoration:none;
+  color: rgba(255,255,255,.92);
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.18);
+  padding: 10px 12px;
+  border-radius: 999px;
+  font-weight: 1000;
+  font-size: 12.5px;
+  box-shadow: 0 12px 26px rgba(0,0,0,.24);
+  transition: transform .12s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.seo-cluster-links a:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,.22);
+  box-shadow: 0 16px 34px rgba(0,0,0,.30);
+}
+
+/* ---------- (3) DONATION: collapsible ---------- */
+.donate-box{
+  margin-top: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background:
+    radial-gradient(900px 420px at 25% 0%, rgba(255,255,255,.10), transparent 60%),
+    rgba(0,0,0,.18);
+  border-radius: var(--u-radius-sm);
+  padding: 14px 14px 12px;
   box-shadow: 0 16px 40px rgba(0,0,0,.28);
   text-align:center;
   position: relative;
@@ -430,17 +462,60 @@
   background: radial-gradient(600px 220px at 50% 0%, rgba(255,255,255,.10), transparent 62%);
 }
 
-.donate-box h3{
+.donate-head{
   position: relative;
-  margin: 0 0 8px;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.donate-title{
+  margin: 0;
   font-weight: 1000;
   letter-spacing: -.01em;
   color: rgba(255,255,255,.94);
   font-size: 16px;
+  text-align:left;
 }
 
-.donate-box p{
+.donate-toggle{
+  appearance: none;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.18);
+  color: rgba(255,255,255,.92);
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-weight: 1000;
+  font-size: 12.5px;
+  cursor: pointer;
+  box-shadow: 0 12px 26px rgba(0,0,0,.24);
+  transition: transform .12s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.donate-toggle:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,.22);
+  box-shadow: 0 16px 34px rgba(0,0,0,.30);
+}
+.donate-toggle .chev{
+  display:inline-block;
+  margin-left: 6px;
+  transition: transform .14s ease;
+}
+.donate-box[data-open="true"] .donate-toggle .chev{
+  transform: rotate(180deg);
+}
+
+.donate-body{
   position: relative;
+  margin-top: 10px;
+  display:none;
+}
+.donate-box[data-open="true"] .donate-body{
+  display:block;
+}
+
+.donate-body p{
   margin: 0 auto 12px;
   max-width: 980px;
   color: var(--u-dim);
@@ -449,14 +524,11 @@
 }
 
 .donate-actions{
-  position: relative;
   display:flex;
   gap: 10px;
   flex-wrap: wrap;
   justify-content:center;
 }
-
-/* Button-like links (works with your .btn but adds glow) */
 .donate-actions a{
   text-decoration:none;
   border: 1px solid rgba(255,255,255,.14);
@@ -469,7 +541,6 @@
   box-shadow: 0 12px 26px rgba(0,0,0,.24);
   transition: transform .12s ease, border-color .15s ease, box-shadow .15s ease;
 }
-
 .donate-actions a:hover{
   transform: translateY(-1px);
   border-color: rgba(255,255,255,.22);
@@ -477,33 +548,28 @@
 }
 
 .donate-note{
-  position: relative;
   margin-top: 10px;
   color: rgba(242,242,255,.58);
   font-size: 12.5px;
   line-height: 1.6;
 }
 
-/* -----------------------------
-   Empty state (JS will insert)
------------------------------- */
-.updates-empty{
-  margin-top: 12px;
-}
+/* ---------- empty state ---------- */
+.updates-empty{ margin-top: 12px; }
 
-/* -----------------------------
-   Focus accessibility
------------------------------- */
+/* ---------- focus ---------- */
 #updatesChips .chip:focus,
-#updatesSearch:focus,
 .release-card:focus-within,
-.donate-actions a:focus{
+.donate-toggle:focus,
+.donate-actions a:focus,
+.seo-cluster-links a:focus{
   outline: 2px solid rgba(255,255,255,.22);
   outline-offset: 3px;
 }
 
-/* Small screens */
+/* ---------- mobile spacing ---------- */
 @media (max-width: 920px){
   .updates-hero{ padding: 24px 16px 16px; }
   .updates-box{ padding: 18px 14px 14px; }
+  .donate-title{ text-align:left; }
 }
