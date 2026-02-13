@@ -1,188 +1,333 @@
-/* =========================================================
-   Clickoz Tools — tools.js
-   - Category chips => scroll to sections
-   - Scroll-spy => highlights active chip
-   - URL hash sync (#seo #text #dev #creator)
-   - Optional search hook (ready)
-========================================================= */
+/* /tools/tools.js?v=2
+   Clickoz Tools page behavior:
+   - Category chips -> smooth scroll to section + active state
+   - Scroll spy -> updates active chip based on section in view
+   - Search -> filters tool cards across all categories (title + description)
+   - Hash sync -> updates URL hash without jump
+   - Mobile-friendly + accessible (keyboard + aria)
+*/
 
 (() => {
-  const $  = (s, r=document) => r.querySelector(s);
-  const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+  "use strict";
 
-  // ---- Config
-  const NAV_ID = "topNav";                 // your sticky nav id
-  const CHIPS_ID = "toolsChips";           // chips container id
-  const SEARCH_ID = "toolsSearch";         // optional search input id
-  const GRID_ID = "toolsGrid";             // optional grid id (if you still keep cards in one grid)
-  const SECTION_ATTR = "data-section";     // sections will have data-section="seo|text|dev|creator"
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  // Categories mapping
-  const CATS = [
-    { key: "all",    hash: "#all"     },
-    { key: "seo",    hash: "#seo"     },
-    { key: "text",   hash: "#text"    },
-    { key: "dev",    hash: "#dev"     },
-    { key: "creator",hash: "#creator" }
-  ];
+  // Elements
+  const chipsWrap = $("#toolsChips");
+  const chips = chipsWrap ? $$(".chip", chipsWrap) : [];
+  const searchInput = $("#toolsSearch");
+  const sectionsWrap = $(".tool-sections");
+  const sections = sectionsWrap ? $$(".tool-section", sectionsWrap) : [];
 
-  const nav = $("#" + NAV_ID);
-  const chips = $("#" + CHIPS_ID);
-  if (!chips) return;
-
-  // Helper: current sticky offset
-  function navOffset() {
-    if (!nav) return 12;
-    const r = nav.getBoundingClientRect();
-    // extra spacing so titles don't hide under sticky bar
-    return Math.max(12, Math.round(r.height + 14));
+  // Guards
+  if (!chipsWrap || chips.length === 0 || sections.length === 0) {
+    // Page markup not found; exit gracefully.
+    return;
   }
 
-  // Sections (you will add these in HTML as separate blocks)
-  // Example:
-  // <section class="tool-section" id="seo" data-section="seo">...</section>
-  const sections = $$(`[${SECTION_ATTR}]`);
+  // Map: filter -> section element
+  const sectionByKey = new Map();
+  sections.forEach((sec) => {
+    const key = (sec.getAttribute("data-section") || sec.id || "").trim();
+    if (key) sectionByKey.set(key, sec);
+  });
 
-  // Chips (expected markup):
-  // <div class="chip" data-filter="seo">SEO</div>
-  const chipEls = $$("#" + CHIPS_ID + " .chip");
+  // Helper: normalize text for search
+  const norm = (s) =>
+    (s || "")
+      .toLowerCase()
+      .replace(/\s+/g, " ")
+      .trim();
 
-  function setActiveChip(key) {
-    chipEls.forEach(c => c.classList.toggle("active", (c.dataset.filter || "") === key));
-  }
+  // ---------------------------
+  // Active chip management
+  // ---------------------------
+  function setActiveChip(key, { focus = false } = {}) {
+    chips.forEach((c) => {
+      const isActive = c.getAttribute("data-filter") === key;
+      c.classList.toggle("active", isActive);
+      if (isActive) c.setAttribute("aria-current", "true");
+      else c.removeAttribute("aria-current");
+    });
 
-  function scrollToSection(key) {
-    if (key === "all") {
-      // All => scroll to top of tools shell (or first section)
-      const first = sections[0];
-      const y = first ? window.scrollY + first.getBoundingClientRect().top - navOffset() : 0;
-      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-      return;
+    if (focus) {
+      const active = chips.find((c) => c.getAttribute("data-filter") === key);
+      if (active) active.focus({ preventScroll: true });
     }
-    const target = sections.find(s => (s.getAttribute(SECTION_ATTR) || "") === key) || document.getElementById(key);
-    if (!target) return;
+  }
 
-    const y = window.scrollY + target.getBoundingClientRect().top - navOffset();
+  function updateHash(key) {
+    const hash = `#${encodeURIComponent(key)}`;
+    // Avoid continuous history spam
+    if (location.hash !== hash) history.replaceState(null, "", hash);
+  }
+
+  // Smooth scroll with a small offset (to account for fixed nav)
+  function scrollToSection(key) {
+    const sec = sectionByKey.get(key);
+    if (!sec) return;
+
+    const nav = $("#topNav");
+    const navH = nav ? nav.getBoundingClientRect().height : 0;
+    const y = window.scrollY + sec.getBoundingClientRect().top - (navH + 14);
+
     window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
   }
 
-  function updateHashFor(key) {
-    const item = CATS.find(x => x.key === key);
-    if (!item) return;
-    // replaceState = no jump
-    history.replaceState(null, "", item.hash === "#all" ? "#all" : item.hash);
-  }
+  // ---------------------------
+  // Chips click + keyboard
+  // ---------------------------
+  function onChipActivate(chipEl) {
+    const key = chipEl.getAttribute("data-filter");
+    if (!key) return;
 
-  // ---- Click / keyboard on chips
-  function onChipActivate(chip) {
-    const key = (chip.dataset.filter || "all").toLowerCase();
     setActiveChip(key);
-    updateHashFor(key);
+    updateHash(key);
     scrollToSection(key);
+
+    // If user has search active, keep it (filtering still applies),
+    // but ensure section is visible even if many cards are hidden.
   }
 
-  chips.addEventListener("click", (e) => {
-    const chip = e.target.closest(".chip");
-    if (!chip) return;
-    onChipActivate(chip);
-  });
+  chips.forEach((chip) => {
+    chip.setAttribute("role", "button");
+    chip.setAttribute("tabindex", "0");
 
-  chips.addEventListener("keydown", (e) => {
-    const chip = e.target.closest(".chip");
-    if (!chip) return;
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      onChipActivate(chip);
-    }
-  });
-
-  // ---- Scroll-spy: highlight active chip while scrolling
-  let spyTicking = false;
-
-  function getCurrentSectionKey() {
-    if (!sections.length) return "all";
-
-    const off = navOffset();
-    // Find the last section whose top is above the offset line
-    let current = sections[0];
-    for (const s of sections) {
-      const top = s.getBoundingClientRect().top - off;
-      if (top <= 6) current = s;
-      else break;
-    }
-    return (current.getAttribute(SECTION_ATTR) || "all").toLowerCase();
-  }
-
-  function runSpy() {
-    const key = getCurrentSectionKey();
-    setActiveChip(key);
-
-    // Keep hash in sync but only if user is within tools page sections
-    // (avoid fighting when user scrolls into footer/faq etc.)
-    if (sections.length) {
-      const firstTop = sections[0].getBoundingClientRect().top - navOffset();
-      const lastBottom = sections[sections.length - 1].getBoundingClientRect().bottom - navOffset();
-      const inside = firstTop <= 10 && lastBottom >= 60;
-      if (inside) updateHashFor(key);
-    }
-  }
-
-  window.addEventListener("scroll", () => {
-    if (spyTicking) return;
-    spyTicking = true;
-    requestAnimationFrame(() => {
-      runSpy();
-      spyTicking = false;
-    });
-  }, { passive: true });
-
-  // ---- Handle initial hash
-  function initFromHash() {
-    const h = (location.hash || "").replace("#", "").trim().toLowerCase();
-    const allowed = new Set(CATS.map(x => x.key));
-    const key = allowed.has(h) ? h : (h ? h : "all");
-
-    setActiveChip(key);
-    // delay ensures layout is stable (fonts, etc.)
-    if (key && key !== "all") {
-      setTimeout(() => scrollToSection(key), 60);
-    }
-  }
-
-  // ---- Optional: Search (ready to be used if you keep a single grid with data-cat/data-hay)
-  // If you switch to sections-only, you can ignore this.
-  const search = $("#" + SEARCH_ID);
-  const grid = $("#" + GRID_ID);
-  const cards = grid ? $$("#" + GRID_ID + " a.card") : [];
-
-  function normalize(s){ return (s || "").toLowerCase().trim(); }
-
-  function filterCards(term) {
-    if (!grid || !cards.length) return;
-    const t = normalize(term);
-    cards.forEach(card => {
-      const hay = normalize((card.dataset.hay || "") + " " + (card.textContent || ""));
-      card.style.display = (!t || hay.includes(t)) ? "" : "none";
-    });
-  }
-
-  if (search) {
-    let t = null;
-    search.addEventListener("input", () => {
-      clearTimeout(t);
-      t = setTimeout(() => filterCards(search.value), 70);
-    });
-
-    // shortcut "/"
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "/" && !e.metaKey && !e.ctrlKey && document.activeElement !== search) {
+    chip.addEventListener("click", () => onChipActivate(chip));
+    chip.addEventListener("keydown", (e) => {
+      const k = e.key;
+      if (k === "Enter" || k === " ") {
         e.preventDefault();
-        search.focus();
+        onChipActivate(chip);
+        return;
+      }
+
+      // Optional: arrow navigation between chips
+      if (k === "ArrowRight" || k === "ArrowLeft") {
+        e.preventDefault();
+        const idx = chips.indexOf(chip);
+        const nextIdx =
+          k === "ArrowRight"
+            ? (idx + 1) % chips.length
+            : (idx - 1 + chips.length) % chips.length;
+        chips[nextIdx].focus();
+      }
+    });
+  });
+
+  // ---------------------------
+  // Search filtering (cards)
+  // ---------------------------
+  const allCards = $$(".card");
+  const cardMeta = allCards.map((card) => {
+    const h = $("h3", card);
+    const p = $("p", card);
+    return {
+      el: card,
+      text: norm(`${h ? h.textContent : ""} ${p ? p.textContent : ""}`),
+      section: card.closest(".tool-section"),
+    };
+  });
+
+  // "No results" UI (inserts once)
+  const emptyState = document.createElement("div");
+  emptyState.className = "tools-empty";
+  emptyState.setAttribute("role", "status");
+  emptyState.setAttribute("aria-live", "polite");
+  emptyState.style.display = "none";
+  emptyState.innerHTML = `
+    <div style="
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);
+      border-radius:16px;
+      padding:14px 14px 12px;
+      text-align:center;
+      box-shadow: 0 14px 34px rgba(0,0,0,.30);
+      max-width: 760px;
+      margin: 12px auto 0;
+    ">
+      <div style="font-weight:1000;letter-spacing:-.01em;color:rgba(255,255,255,.92);margin-bottom:6px;">
+        No tools found
+      </div>
+      <div style="color:rgba(242,242,255,.72);font-size:13.5px;line-height:1.6;">
+        Try a different keyword (e.g. <b>json</b>, <b>meta</b>, <b>readability</b>, <b>url</b>, <b>base64</b>)
+        or clear the search to see all tools.
+      </div>
+    </div>
+  `;
+
+  // Put empty state under hero (still inside main shell)
+  const toolsShell = $(".tools-shell");
+  if (toolsShell && !$(".tools-empty")) {
+    // Insert after the sections block starts (right before tool-sections)
+    const toolSections = $(".tool-sections", toolsShell);
+    if (toolSections) toolsShell.insertBefore(emptyState, toolSections);
+    else toolsShell.appendChild(emptyState);
+  }
+
+  function setSectionVisible(sectionEl, visible) {
+    if (!sectionEl) return;
+    sectionEl.style.display = visible ? "" : "none";
+  }
+
+  function filterCards(query) {
+    const q = norm(query);
+    let shown = 0;
+
+    // Filter cards
+    cardMeta.forEach(({ el, text }) => {
+      const ok = !q || text.includes(q);
+      el.style.display = ok ? "" : "none";
+      if (ok) shown++;
+    });
+
+    // Hide empty categories (sections with zero visible cards)
+    sections.forEach((sec) => {
+      const hasVisibleCard = $$(".card", sec).some(
+        (c) => c.style.display !== "none"
+      );
+      setSectionVisible(sec, hasVisibleCard);
+    });
+
+    // Empty state
+    if (shown === 0 && q) {
+      emptyState.style.display = "";
+    } else {
+      emptyState.style.display = "none";
+    }
+
+    // If user is searching, don't force chip changes.
+    // But if current active chip section got hidden, remove "active" highlight.
+    if (q) {
+      const activeChip = chips.find((c) => c.classList.contains("active"));
+      if (activeChip) {
+        const key = activeChip.getAttribute("data-filter");
+        const sec = sectionByKey.get(key);
+        if (sec && sec.style.display === "none") {
+          chips.forEach((c) => c.classList.remove("active"));
+        }
+      }
+    }
+  }
+
+  // Debounce
+  function debounce(fn, wait = 120) {
+    let t = null;
+    return (...args) => {
+      window.clearTimeout(t);
+      t = window.setTimeout(() => fn(...args), wait);
+    };
+  }
+
+  if (searchInput) {
+    const handler = debounce(() => filterCards(searchInput.value), 120);
+    searchInput.addEventListener("input", handler);
+
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        searchInput.value = "";
+        filterCards("");
+        searchInput.blur();
       }
     });
   }
 
-  // Init
+  // ---------------------------
+  // Scroll spy (active chip based on section)
+  // ---------------------------
+  let spyEnabled = true;
+
+  // Disable spy while user is "actively" searching (prevents chip flicker)
+  function updateSpyEnabled() {
+    const q = norm(searchInput ? searchInput.value : "");
+    spyEnabled = !q;
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", debounce(updateSpyEnabled, 50));
+  }
+
+  const nav = $("#topNav");
+  const navH = () => (nav ? nav.getBoundingClientRect().height : 0);
+
+  // Intersection observer: pick section with highest intersection ratio
+  const ratios = new Map();
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => ratios.set(e.target, e.intersectionRatio));
+
+      if (!spyEnabled) return;
+
+      // Choose best visible section
+      let best = null;
+      let bestRatio = 0;
+
+      sections.forEach((sec) => {
+        // ignore hidden sections (e.g., during search)
+        if (sec.style.display === "none") return;
+        const r = ratios.get(sec) || 0;
+        if (r > bestRatio) {
+          bestRatio = r;
+          best = sec;
+        }
+      });
+
+      if (!best || bestRatio < 0.12) return;
+
+      const key = best.getAttribute("data-section") || best.id;
+      if (!key) return;
+
+      setActiveChip(key);
+      updateHash(key);
+    },
+    {
+      root: null,
+      threshold: [0.12, 0.22, 0.35, 0.5, 0.65, 0.8],
+      rootMargin: `-${Math.round(navH() + 24)}px 0px -55% 0px`,
+    }
+  );
+
+  sections.forEach((sec) => io.observe(sec));
+
+  // ---------------------------
+  // Initial state from hash
+  // ---------------------------
+  function initFromHash() {
+    const raw = (location.hash || "").replace("#", "");
+    const key = decodeURIComponent(raw || "").trim();
+
+    // Default chip
+    const fallback = chips[0]?.getAttribute("data-filter") || "seo";
+
+    const startKey = sectionByKey.has(key) ? key : fallback;
+    setActiveChip(startKey);
+    updateHash(startKey);
+
+    // If hash existed, scroll to it (after layout)
+    if (sectionByKey.has(key)) {
+      // small delay to allow CSS/layout settle (especially on mobile)
+      window.setTimeout(() => scrollToSection(startKey), 40);
+    }
+  }
+
   initFromHash();
-  runSpy();
+
+  // If user changes hash manually (back/forward)
+  window.addEventListener("hashchange", () => {
+    const raw = (location.hash || "").replace("#", "");
+    const key = decodeURIComponent(raw || "").trim();
+    if (!sectionByKey.has(key)) return;
+
+    // If searching, clear search to restore sections
+    if (searchInput && norm(searchInput.value)) {
+      searchInput.value = "";
+      filterCards("");
+      updateSpyEnabled();
+    }
+
+    setActiveChip(key, { focus: false });
+    scrollToSection(key);
+  });
 })();
