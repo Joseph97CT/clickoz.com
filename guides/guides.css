@@ -1,11 +1,9 @@
-/* /guides/guides.css?v=2
-   Clickoz Guides – premium layer (matches Tools page style)
-   Goals:
-   - Remove breadcrumb ("Home › Guides")
-   - Center hero title/desc/metrics
-   - Move search under chips (CSS reflow; HTML stays valid)
-   - Upgrade cards + grid + SEO blocks styling
-   - Mobile-first, accessible focus states
+/* /guides/guides.css?v=3
+   Clickoz Guides – premium layer (aligned with Tools)
+   Updates requested:
+   - Remove/hide the hero metrics row (🧠 ✅ 🔗 📱)
+   - Remove/hide quick links (Open Tools / Latest Updates / Privacy-first)
+   - Fix the “second box looks black” by making hero-box background consistent on Guides
 */
 
 :root{
@@ -13,8 +11,6 @@
   --g-radius-sm: 16px;
   --g-border: rgba(255,255,255,.10);
   --g-border-2: rgba(255,255,255,.14);
-  --g-bg: rgba(255,255,255,.04);
-  --g-bg-2: rgba(255,255,255,.06);
   --g-shadow: 0 22px 60px rgba(0,0,0,.45);
   --g-shadow-soft: 0 16px 40px rgba(0,0,0,.32);
   --g-dim: rgba(242,242,255,.74);
@@ -55,7 +51,7 @@
   display:none !important;
 }
 
-/* Make hero top centered */
+/* Center hero top */
 .guides-hero-top{
   position: relative;
   display:flex;
@@ -66,25 +62,12 @@
   text-align: center;
 }
 
-/* Left text block */
 .guides-hero-top > div:first-child{
   flex: 1 1 820px !important;
   max-width: 980px;
 }
 
-/* Right block (search + quick buttons) – we reflow it under chips using order */
-.guides-search{
-  flex: 1 1 100% !important;
-  max-width: 760px !important;
-  width: 100%;
-  display:flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 12px auto 0;
-  order: 3; /* under chips */
-}
-
-/* Title/Sub used from site.css (.section-title/.section-sub) — enhance sizing just for guides */
+/* Title/Sub */
 .guides-hero .section-title{
   margin: 0 0 10px !important;
   font-weight: 1000 !important;
@@ -97,7 +80,7 @@
 }
 
 .guides-hero .section-sub{
-  margin: 0 auto 12px !important;
+  margin: 0 auto 0 !important; /* tighter since metrics removed */
   max-width: 880px;
   font-size: clamp(16px, 2.1vw, 18px) !important;
   line-height: 1.55 !important;
@@ -105,24 +88,19 @@
   text-align:center;
 }
 
-/* metrics */
-.guides-metrics{
-  display:flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 12px;
-}
+/* ✅ requested: remove metrics + quick links (safe even if HTML still has them) */
+.guides-metrics{ display:none !important; }
+.guides-quick{ display:none !important; }
 
-/* chips reuse from site.css; refine to match tools */
+/* Chips */
 #guidesChips{
   position: relative;
   display:flex;
   gap: 10px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 14px;
-  margin-bottom: 2px; /* space before search */
+  margin-top: 16px;
+  margin-bottom: 2px;
   order: 2;
 }
 
@@ -140,19 +118,28 @@
   transition: transform .12s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
   box-shadow: 0 10px 26px rgba(0,0,0,.24);
 }
-
 #guidesChips .chip:hover{
   transform: translateY(-1px);
   border-color: var(--g-border-2);
 }
-
 #guidesChips .chip.active{
   border-color: rgba(255,255,255,.20);
   background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
   box-shadow: 0 14px 34px rgba(0,0,0,.30);
 }
 
-/* search input (reuse .search from site) but refine focus/shadow */
+/* Search block centered under chips */
+.guides-search{
+  flex: 1 1 100% !important;
+  max-width: 760px !important;
+  width: 100%;
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 12px auto 0;
+  order: 3;
+}
+
 .guides-search .search{
   width: min(760px, 100%);
   margin: 0 auto;
@@ -169,27 +156,30 @@
 .guides-search .search::placeholder{
   color: rgba(242,242,255,.55);
 }
-
 .guides-search .search:focus{
   border-color: rgba(255,255,255,.22);
   box-shadow: 0 16px 44px rgba(0,0,0,.38);
   transform: translateY(-1px);
 }
 
-/* quick buttons row centered */
-.guides-quick{
-  display:flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
+/* -----------------------------
+   ✅ Fix “second box looks black”
+   We override hero-box ONLY inside the Guides directory section.
+------------------------------ */
+.section.container[aria-label="Guides directory"] .hero-box{
+  border: 1px solid var(--g-border);
+  background:
+    radial-gradient(900px 520px at 20% 0%, rgba(255,255,255,.08), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border-radius: var(--g-radius);
+  box-shadow: var(--g-shadow-soft);
+  padding: 22px 18px 18px;
 }
 
 /* -----------------------------
-   GUIDES LIST BOX (hero-box)
+   GUIDES GRID
 ------------------------------ */
-#guidesGrid{
-  margin-top: 14px;
-}
+#guidesGrid{ margin-top: 14px; }
 
 .guides-grid{
   display:grid;
@@ -204,7 +194,7 @@
   .guides-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
 }
 
-/* Cards: reuse .card but add guide-specific richness */
+/* Card */
 .guide-x{
   display:flex;
   flex-direction: column;
@@ -258,7 +248,6 @@
   line-height: 1;
 }
 
-/* Titles inside guide cards */
 .guide-x h3{
   margin: 0 0 6px;
   font-size: 16px;
@@ -275,7 +264,6 @@
   line-height: 1.55;
 }
 
-/* Bottom row */
 .guide-bottom{
   margin-top:auto;
   display:flex;
@@ -302,21 +290,17 @@
   font-size: 13px;
   color: rgba(255,255,255,.88);
 }
-
 .guide-cta::after{
   content:"→";
   opacity:.9;
   transform: translateX(0);
   transition: transform .12s ease;
 }
-
 .guide-x:hover .guide-cta::after{
   transform: translateX(3px);
 }
 
-/* -----------------------------
-   SEO BOOST block (matches Tools)
------------------------------- */
+/* SEO boost matches */
 .hero-box .seo-boost{
   margin-top: 14px;
   border: 1px solid rgba(255,255,255,.14);
@@ -371,16 +355,10 @@
   box-shadow: 0 16px 34px rgba(0,0,0,.30);
 }
 
-/* -----------------------------
-   Empty state (inserted by guides.js)
------------------------------- */
-.guides-empty{
-  margin-top: 12px;
-}
+/* Empty state inserted by guides.js */
+.guides-empty{ margin-top: 12px; }
 
-/* -----------------------------
-   Focus states
------------------------------- */
+/* Focus */
 #guidesChips .chip:focus,
 .guides-search .search:focus,
 .guide-x:focus,
@@ -389,9 +367,7 @@
   outline-offset: 3px;
 }
 
-/* -----------------------------
-   Tighten spacing on small screens
------------------------------- */
+/* Mobile spacing */
 @media (max-width: 920px){
   .guides-hero{ padding: 24px 16px 18px; }
 }
