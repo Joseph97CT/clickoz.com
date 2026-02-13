@@ -31,7 +31,7 @@
 
   <!-- Base site + tools micro layer -->
   <link rel="stylesheet" href="/assets/site.css?v=5" />
-  <link rel="stylesheet" href="/tools/tools.css?v=1" />
+  <link rel="stylesheet" href="/tools/tools.css?v=2" />
 
   <!-- ✅ JSON-LD (VALID) -->
   <script type="application/ld+json">
@@ -210,9 +210,7 @@
 
   <!-- MAIN -->
   <section class="section container tools-shell" aria-label="Tools directory">
-    <div class="crumbs" aria-label="Breadcrumb">
-      <a href="/">Home</a><span class="sep">›</span><span>Tools</span>
-    </div>
+    <!-- ❌ breadcrumb removed -->
 
     <!-- HERO -->
     <div class="tools-hero" aria-label="Tools hero">
@@ -231,11 +229,6 @@
             <div class="metric-pill">🧑‍💻 <b>Fix-it</b> • Dev moments</div>
           </div>
         </div>
-
-        <!-- Optional search (keep or remove) -->
-        <div class="tools-hero-row tools-search" aria-label="Tools search" style="flex:1 1 380px;">
-          <input class="search" id="toolsSearch" placeholder="Search tools (meta tags, readability, json, base64, url…)" aria-label="Search tools" autocomplete="off" />
-        </div>
       </div>
 
       <!-- Chips -->
@@ -245,9 +238,14 @@
         <div class="chip" data-filter="dev" role="button" tabindex="0">Dev</div>
         <div class="chip" data-filter="creator" role="button" tabindex="0">Creator</div>
       </div>
+
+      <!-- Search centered under chips (same box) -->
+      <div class="tools-hero-row tools-search" aria-label="Tools search">
+        <input class="search" id="toolsSearch" placeholder="Search tools (meta tags, readability, json, base64, url…)" aria-label="Search tools" autocomplete="off" />
+      </div>
     </div>
 
-    <!-- CATEGORY SECTIONS (chips scroll here) -->
+    <!-- CATEGORY SECTIONS -->
     <div class="tool-sections" aria-label="Tools by category">
       <!-- SEO -->
       <section class="tool-section" id="seo" data-section="seo" aria-label="SEO tools">
@@ -444,7 +442,7 @@
             <span class="tool-cta">Use Base64 Tool</span>
           </a>
 
-          <a class="card" href="/tools/entity-encoder/">
+          <a class="card" href="/tools/html-entity-encoder/">
             <div class="card-top">
               <div class="card-ico" aria-hidden="true">🧷</div>
               <div>
@@ -488,7 +486,7 @@
     </div>
   </section>
 
-  <!-- Narrative / SEO -->
+  <!-- Narrative / SEO (enhanced structure, still your content) -->
   <section class="section container" aria-label="Tools value and use cases">
     <div class="hero-box">
       <h2 class="section-title" style="margin-top:0;">How to use these tools in real situations</h2>
@@ -575,7 +573,7 @@
         </div>
       </div>
 
-      <!-- SEO BOOST (you asked: add a piece under Tool FAQ to increase SEO) -->
+      <!-- SEO BOOST -->
       <div class="seo-boost" aria-label="SEO boost content">
         <h3>Popular workflows (internal links)</h3>
         <p>
@@ -597,6 +595,7 @@
     </div>
   </section>
 
+  <!-- FOOTER (your original full footer) -->
   <footer class="footer">
     <div class="container footer-grid">
       <div>
@@ -636,7 +635,7 @@
     </div>
   </footer>
 
-  <!-- Cookie banner -->
+  <!-- Cookie banner (your original) -->
   <div class="cookie" role="dialog" aria-live="polite" aria-label="Cookie preferences">
     <div class="cookie-card">
       <button class="cookie-x" id="cookieClose" type="button" aria-label="Close">×</button>
@@ -660,7 +659,7 @@
   <!-- Base site behavior -->
   <script src="/assets/site.js" defer></script>
 
-  <!-- Tools behavior (chips -> sections + scroll spy + hash) -->
+  <!-- Tools behavior (chips -> sections + scroll spy + hash + search filter) -->
   <script src="/tools/tools.js" defer></script>
 </body>
 </html>
