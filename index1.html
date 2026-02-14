@@ -4,349 +4,533 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Clickoz – Free Online Tools for SEO, Writing & Dev</title>
-  <meta name="description" content="Clickoz is a fast hub of free tools for SEO, writing and developers: word counter, readability score, keyword density, meta tag preview, JSON formatter, URL/Base64 encoders, and more. No signup." />
+  <title>Clickoz – Free Online Tools for SEO, Writing, Developers & Creators</title>
+  <meta name="description" content="Clickoz is a privacy-first collection of free online tools for SEO, writing, developers and creators. Browser-only utilities with copy-ready outputs: meta tags, SERP preview, word count, readability, JSON, Base64, URL tools and more." />
+
   <link rel="canonical" href="https://clickoz.com/" />
   <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#0b0f19" />
 
-  <meta property="og:title" content="Clickoz – Free Online Tools for SEO, Writing & Dev" />
-  <meta property="og:description" content="Free, privacy-friendly tools that run in your browser: text analysis, SEO helpers, and dev utilities." />
+  <meta property="og:site_name" content="Clickoz" />
+  <meta property="og:title" content="Clickoz – Free Online Tools for SEO, Writing & Developers" />
+  <meta property="og:description" content="Privacy-first, browser-only tools with copy-ready outputs. Fast UI, stable on mobile." />
   <meta property="og:url" content="https://clickoz.com/" />
   <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://clickoz.com/assets/og/home.png" />
 
-  <!-- Hreflang -->
-  <link rel="alternate" hreflang="x-default" href="https://clickoz.com/" />
-  <link rel="alternate" hreflang="en" href="https://clickoz.com/" />
-  <link rel="alternate" hreflang="it" href="https://clickoz.com/it/" />
-  <link rel="alternate" hreflang="fr" href="https://clickoz.com/fr/" />
-  <link rel="alternate" hreflang="es" href="https://clickoz.com/es/" />
-  <link rel="alternate" hreflang="de" href="https://clickoz.com/de/" />
-  <link rel="alternate" hreflang="pt" href="https://clickoz.com/pt/" />
-  <link rel="alternate" hreflang="nl" href="https://clickoz.com/nl/" />
-  <link rel="alternate" hreflang="pl" href="https://clickoz.com/pl/" />
-  <link rel="alternate" hreflang="tr" href="https://clickoz.com/tr/" />
-  <link rel="alternate" hreflang="ar" href="https://clickoz.com/ar/" />
-  <link rel="alternate" hreflang="hi" href="https://clickoz.com/hi/" />
-  <link rel="alternate" hreflang="ja" href="https://clickoz.com/ja/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Clickoz – Free Online Tools for SEO, Writing & Developers" />
+  <meta name="twitter:description" content="Privacy-first, browser-only tools with copy-ready outputs. Fast UI, stable on mobile." />
+  <meta name="twitter:image" content="https://clickoz.com/assets/og/home.png" />
 
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="icon" href="/assets/favicon.svg?v=2" type="image/svg+xml" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="/assets/site.css" />
+  <!-- Base site -->
+  <link rel="stylesheet" href="/assets/site.css?v=5" />
+  <!-- Optional: add a tiny home layer later if you want (recommended) -->
+  <!-- <link rel="stylesheet" href="/assets/home.css?v=1" /> -->
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebSite",
+    "name":"Clickoz",
+    "url":"https://clickoz.com/"
+  }
+  </script>
 
   <script type="application/ld+json">
   {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Clickoz",
-    "url": "https://clickoz.com/",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://clickoz.com/search/?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"Clickoz",
+    "url":"https://clickoz.com/",
+    "logo":"https://clickoz.com/assets/favicon.svg"
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"ItemList",
+    "name":"Clickoz Tools (Top Picks)",
+    "itemListOrder":"https://schema.org/ItemListUnordered",
+    "itemListElement":[
+      {"@type":"ListItem","position":1,"url":"https://clickoz.com/tools/meta-tags/","name":"Meta Tag Optimizer"},
+      {"@type":"ListItem","position":2,"url":"https://clickoz.com/tools/serp-preview/","name":"SERP Snippet Preview"},
+      {"@type":"ListItem","position":3,"url":"https://clickoz.com/tools/word-counter/","name":"Word Counter"},
+      {"@type":"ListItem","position":4,"url":"https://clickoz.com/tools/readability-analyzer/","name":"Readability Analyzer"},
+      {"@type":"ListItem","position":5,"url":"https://clickoz.com/tools/json-formatter/","name":"JSON Formatter"},
+      {"@type":"ListItem","position":6,"url":"https://clickoz.com/tools/url-encoder/","name":"URL Encoder / Decoder"}
+    ]
   }
   </script>
 </head>
 
-<body>
-  <nav class="nav">
+<body class="bigtext">
+  <!-- FX layers -->
+  <div id="clickozParticles" aria-hidden="true"></div>
+  <canvas id="spaceParticles" aria-hidden="true"></canvas>
+  <div class="__grain" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <nav class="nav" aria-label="Primary navigation" id="topNav">
     <div class="container nav-inner">
       <a class="logo" href="/" aria-label="Clickoz Home">
-        <span class="logo-badge">⚡</span>
-        Click<span id="logoAccent">oz</span>
+        <span class="logo-badge" id="logoBadge" aria-hidden="true">
+          <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
+            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6"
+                  fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="logo-text">Click<span class="logo-oz">oz</span></span>
       </a>
 
-      <div class="nav-links">
-        <a href="/#tools">Tools</a>
-        <a href="/workflows/">Workflows</a>
+      <div class="nav-links" aria-label="Sections">
+        <a href="/" class="active" aria-current="page">Home</a>
+        <a href="/tools/">Tools</a>
         <a href="/guides/">Guides</a>
-        <a href="/glossary/">Glossary</a>
-        <a href="/about/">About</a>
+        <a href="/updates/">Updates</a>
       </div>
 
       <div class="spacer"></div>
 
-      <div class="nav-actions">
+      <div class="nav-actions" aria-label="Preferences">
+        <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
+
         <div class="dropdown">
-          <button class="icon-btn" id="langToggle" type="button" aria-haspopup="true" aria-expanded="false">
-            🌍 <span id="langLabel">EN</span>
+          <button class="dot-btn" id="colorToggle" type="button" aria-haspopup="true" aria-expanded="false" title="Theme color">
+            <span class="dot" id="colorDot" aria-hidden="true"></span>
           </button>
-          <div class="menu" id="langMenu" role="menu" aria-label="Select language">
-            <div class="menu-title">Language</div>
-            <div class="menu-item" data-lang="en" data-path="/"><span class="flag">🇬🇧</span> English</div>
-            <div class="menu-item" data-lang="it" data-path="/it/"><span class="flag">🇮🇹</span> Italiano</div>
-            <div class="menu-item" data-lang="fr" data-path="/fr/"><span class="flag">🇫🇷</span> Français</div>
-            <div class="menu-item" data-lang="es" data-path="/es/"><span class="flag">🇪🇸</span> Español</div>
-            <div class="menu-item" data-lang="de" data-path="/de/"><span class="flag">🇩🇪</span> Deutsch</div>
-            <div class="menu-item" data-lang="pt" data-path="/pt/"><span class="flag">🇵🇹</span> Português</div>
-            <div class="menu-item" data-lang="nl" data-path="/nl/"><span class="flag">🇳🇱</span> Nederlands</div>
-            <div class="menu-item" data-lang="pl" data-path="/pl/"><span class="flag">🇵🇱</span> Polski</div>
-            <div class="menu-item" data-lang="tr" data-path="/tr/"><span class="flag">🇹🇷</span> Türkçe</div>
-            <div class="menu-item" data-lang="ar" data-path="/ar/"><span class="flag">🇸🇦</span> العربية</div>
-            <div class="menu-item" data-lang="hi" data-path="/hi/"><span class="flag">🇮🇳</span> हिन्दी</div>
-            <div class="menu-item" data-lang="ja" data-path="/ja/"><span class="flag">🇯🇵</span> 日本語</div>
+
+          <div class="menu" id="colorMenu" role="menu" aria-label="Pick theme color">
+            <div class="menu-title">Theme color</div>
+            <div class="color-grid">
+              <div class="color-option active" data-accent="#6366f1" data-accent2="#8b5cf6" style="background:#6366f1" title="Purple" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#3b82f6" data-accent2="#60a5fa" style="background:#3b82f6" title="Blue" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#10b981" data-accent2="#34d399" style="background:#10b981" title="Green" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#f59e0b" data-accent2="#fbbf24" style="background:#f59e0b" title="Yellow" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#f97316" data-accent2="#fb923c" style="background:#f97316" title="Orange" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#ef4444" data-accent2="#f87171" style="background:#ef4444" title="Red" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#ec4899" data-accent2="#f472b6" style="background:#ec4899" title="Pink" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#06b6d4" data-accent2="#22d3ee" style="background:#06b6d4" title="Cyan" role="menuitem" tabindex="0"></div>
+            </div>
           </div>
         </div>
 
-        <div class="dropdown">
-          <button class="icon-btn" id="colorToggle" type="button" aria-haspopup="true" aria-expanded="false" title="Pick accent color">
-            <span class="dot" id="colorDot"></span>
-            <span>Accent</span>
-          </button>
-          <div class="menu" id="colorMenu" role="menu" aria-label="Pick accent color">
-            <div class="menu-title">Accent color</div>
-            <div class="color-grid">
-              <div class="color-option active" data-accent="#6366f1" data-accent2="#8b5cf6" style="background:#6366f1" title="Purple"></div>
-              <div class="color-option" data-accent="#3b82f6" data-accent2="#60a5fa" style="background:#3b82f6" title="Blue"></div>
-              <div class="color-option" data-accent="#10b981" data-accent2="#34d399" style="background:#10b981" title="Green"></div>
-              <div class="color-option" data-accent="#f59e0b" data-accent2="#fbbf24" style="background:#f59e0b" title="Yellow"></div>
-              <div class="color-option" data-accent="#f97316" data-accent2="#fb923c" style="background:#f97316" title="Orange"></div>
-              <div class="color-option" data-accent="#ef4444" data-accent2="#f87171" style="background:#ef4444" title="Red"></div>
-              <div class="color-option" data-accent="#ec4899" data-accent2="#f472b6" style="background:#ec4899" title="Pink"></div>
-              <div class="color-option" data-accent="#06b6d4" data-accent2="#22d3ee" style="background:#06b6d4" title="Cyan"></div>
-            </div>
-          </div>
+        <div id="gtNavWrap" aria-label="Translate">
+          <div id="google_translate_element"></div>
         </div>
       </div>
     </div>
   </nav>
 
-  <header class="hero container">
-    <div class="row" style="margin-bottom:12px">
-      <span class="badge">Free • Fast • Privacy-friendly • No account needed</span>
+  <!-- Mobile menu -->
+  <div class="m-overlay" id="mOverlay" hidden></div>
+  <aside class="m-menu" id="mobileMenu" aria-hidden="true">
+    <div class="m-head">
+      <div class="m-title">Menu</div>
+      <button class="m-close" id="mClose" type="button" aria-label="Close menu">×</button>
     </div>
 
-    <h1>
-      Tools that help you publish better content, faster.
-    </h1>
-
-    <p>
-      Clickoz is a lightweight toolkit for SEO, writing, and dev tasks. Clean outputs, quick guidance, and instant results.
-      Everything runs in your browser.
-    </p>
-
-    <div class="trust-strip" aria-label="Trust points">
-      <span class="trust-pill">🔒 Privacy-first</span>
-      <span class="trust-pill">⚡ Instant tools</span>
-      <span class="trust-pill">🧠 Examples + FAQs</span>
-      <span class="trust-pill">📱 Mobile-ready</span>
+    <div class="m-links">
+      <a class="m-link active" href="/" aria-current="page">Home</a>
+      <a class="m-link" href="/tools/">Tools</a>
+      <a class="m-link" href="/guides/">Guides</a>
+      <a class="m-link" href="/updates/">Updates</a>
+      <a class="m-link" href="/privacy/">Privacy</a>
     </div>
 
-    <div class="row" style="margin-top:14px">
-      <a class="btn primary" href="#tools">Browse tools</a>
-      <a class="btn" href="/workflows/">Popular workflows</a>
-      <a class="btn" href="/guides/">Read guides</a>
+    <div class="m-block">
+      <div class="m-label">Theme color</div>
+      <div class="color-grid m-colors" id="mobileColorGrid">
+        <div class="color-option active" data-accent="#6366f1" data-accent2="#8b5cf6" style="background:#6366f1" title="Purple" tabindex="0"></div>
+        <div class="color-option" data-accent="#3b82f6" data-accent2="#60a5fa" style="background:#3b82f6" title="Blue" tabindex="0"></div>
+        <div class="color-option" data-accent="#10b981" data-accent2="#34d399" style="background:#10b981" title="Green" tabindex="0"></div>
+        <div class="color-option" data-accent="#f59e0b" data-accent2="#fbbf24" style="background:#f59e0b" title="Yellow" tabindex="0"></div>
+        <div class="color-option" data-accent="#f97316" data-accent2="#fb923c" style="background:#f97316" title="Orange" tabindex="0"></div>
+        <div class="color-option" data-accent="#ef4444" data-accent2="#f87171" style="background:#ef4444" title="Red" tabindex="0"></div>
+        <div class="color-option" data-accent="#ec4899" data-accent2="#f472b6" style="background:#ec4899" title="Pink" tabindex="0"></div>
+        <div class="color-option" data-accent="#06b6d4" data-accent2="#22d3ee" style="background:#06b6d4" title="Cyan" tabindex="0"></div>
+      </div>
     </div>
 
-    <!-- FULL WIDTH: Recommended now -->
-    <div class="widget-row">
-      <div class="widget">
-        <h3>Recommended now</h3>
-        <p class="widget-sub">
-          Three quick picks to cover the most common needs: writing length, readability, and SERP snippets.
+    <div class="m-block">
+      <div class="m-label">Language</div>
+      <div id="google_translate_element_mobile"></div>
+      <div style="margin-top:10px;font-size:13px;opacity:.78;line-height:1.5;">
+        Translation loads only if you accept “All” cookies.
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <!-- HERO (simpler + more impact, keeps SEO value lower) -->
+    <section class="section container" aria-label="Clickoz hero">
+      <div class="hero-box" aria-label="Primary hero">
+        <h1 class="section-title" style="margin-top:0;text-align:center;">
+          Free online tools to fix, check, and improve your content.
+        </h1>
+
+        <p class="section-sub" style="margin:10px auto 0;max-width:980px;text-align:center;">
+          Browser-only tools built for real workflows: SEO, writing, developer utilities, and creator tracking.
         </p>
 
-        <div class="rec-grid">
-          <a class="card rec-card" id="randTool1" href="/tool/word-counter/">
-            <div class="thumb rec-thumb" id="randIcon1">🔢</div>
-            <h3 id="randTitle1">Word Counter</h3>
-            <p id="randDesc1">
-              Count words, characters, sentences, and estimated reading time. Useful for SEO briefs, articles, and quick checks.
-            </p>
-            <span class="tool-cta" id="randCta1">Use Word Counter</span>
+        <div style="margin:14px auto 0;max-width:980px;text-align:center;">
+          <span class="metric-pill">🔒 <b>Browser-only</b> • No uploads</span>
+          <span class="metric-pill" style="margin-left:8px;">📋 <b>Copy-ready</b> • Clean output</span>
+          <span class="metric-pill" style="margin-left:8px;">📱 <b>Mobile-stable</b> • Fast UI</span>
+        </div>
+
+        <div style="margin:14px auto 0;max-width:980px;text-align:center;font-weight:900;opacity:.86;">
+          Paste → Fix → Copy → Ship
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+          <a class="btn primary" href="/tools/" style="text-decoration:none;">Browse all tools</a>
+          <a class="btn" href="/guides/" style="text-decoration:none;">Read guides</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATEGORIES EARLY (clear choice) -->
+    <section class="section container" aria-label="Explore by category">
+      <div class="hero-box">
+        <h2 class="section-title" style="margin-top:0;text-align:center;">Pick a workflow</h2>
+        <p class="section-sub" style="margin-bottom:14px;text-align:center;">
+          Jump straight into SEO checks, writing clarity, or developer utilities.
+        </p>
+
+        <div class="cards-grid" style="margin-top:10px;">
+          <a class="card" href="/tools/#seo" aria-label="SEO tools">
+            <div class="card-top">
+              <div class="card-ico" aria-hidden="true">🔎</div>
+              <div>
+                <h3 style="font-weight:1000;">SEO Tools</h3>
+                <p>Titles, snippets, keywords and URLs — built to improve clarity and CTR without stuffing.</p>
+              </div>
+            </div>
+            <span class="tool-cta">Open SEO tools</span>
           </a>
 
-          <a class="card rec-card" id="randTool2" href="/tool/readability-analyzer/">
-            <div class="thumb rec-thumb" id="randIcon2">📚</div>
-            <h3 id="randTitle2">Readability Analyzer</h3>
-            <p id="randDesc2">
-              Get a readability score and practical tips to make your text clearer, more scannable, and easier to understand.
-            </p>
-            <span class="tool-cta" id="randCta2">Use Readability Analyzer</span>
+          <a class="card" href="/tools/#text" aria-label="Writing tools">
+            <div class="card-top">
+              <div class="card-ico" aria-hidden="true">✍️</div>
+              <div>
+                <h3 style="font-weight:1000;">Writing Tools</h3>
+                <p>Word count, readability, cleanup and formatting — copy-ready outputs that stay stable on mobile.</p>
+              </div>
+            </div>
+            <span class="tool-cta">Open writing tools</span>
           </a>
 
-          <a class="card rec-card" id="randTool3" href="/tool/meta-tags/">
-            <div class="thumb rec-thumb" id="randIcon3">🏷️</div>
-            <h3 id="randTitle3">Meta Tag Optimizer</h3>
-            <p id="randDesc3">
-              Preview title and description like a real snippet, check length limits, and improve copy for higher CTR.
-            </p>
-            <span class="tool-cta" id="randCta3">Use Meta Tag Optimizer</span>
+          <a class="card" href="/tools/#dev" aria-label="Developer utilities">
+            <div class="card-top">
+              <div class="card-ico" aria-hidden="true">🖥️</div>
+              <div>
+                <h3 style="font-weight:1000;">Developer Utilities</h3>
+                <p>JSON, encoding, payload inspection and safe escaping — quick fixes when something breaks.</p>
+              </div>
+            </div>
+            <span class="tool-cta">Open dev utilities</span>
           </a>
         </div>
 
-        <div class="widget-foot">
-          Shortcut: press <b>/</b> to focus search instantly.
+        <div style="margin-top:12px;text-align:center;opacity:.9;">
+          <a href="/tools/" style="text-decoration:none;font-weight:900;">View the full tools list →</a>
         </div>
       </div>
-    </div>
-  </header>
+    </section>
 
-  <section class="section container" aria-label="Why Clickoz">
-    <h2 class="section-title">Why Clickoz</h2>
-    <p class="section-sub">
-      Built for real workflows: fast inputs, clear results, and guidance that helps you act immediately.
-    </p>
+    <!-- 4 PILLARS (replaces long pill list) -->
+    <section class="section container" aria-label="Why Clickoz">
+      <div class="hero-box">
+        <h2 class="section-title" style="margin-top:0;text-align:center;">Built to remove friction</h2>
+        <p class="section-sub" style="margin-bottom:14px;text-align:center;">
+          Four principles that keep Clickoz fast, clear, and reliable.
+        </p>
 
-    <div class="small-grid">
-      <div class="small-card">
-        <h3>Clean outputs</h3>
-        <p>Simple inputs, readable results, and consistent formatting you can copy in one click.</p>
+        <div class="lanes" aria-label="Core principles">
+          <div class="lane">
+            <div class="lane-head">
+              <div class="lane-ico" aria-hidden="true">🔒</div>
+              <h3>Privacy-first</h3>
+            </div>
+            <p>Most tools run in your browser. No signup. No “upload your text” surprises.</p>
+          </div>
+
+          <div class="lane">
+            <div class="lane-head">
+              <div class="lane-ico" aria-hidden="true">⚡</div>
+              <h3>Fast & stable</h3>
+            </div>
+            <p>Quick interactions with predictable layout — designed to stay smooth on mobile browsers.</p>
+          </div>
+
+          <div class="lane">
+            <div class="lane-head">
+              <div class="lane-ico" aria-hidden="true">📋</div>
+              <h3>Copy-ready output</h3>
+            </div>
+            <p>Clean results you can paste instantly into docs, CMS fields, code editors, and config files.</p>
+          </div>
+
+          <div class="lane">
+            <div class="lane-head">
+              <div class="lane-ico" aria-hidden="true">🧑‍💻</div>
+              <h3>Real workflows</h3>
+            </div>
+            <p>Built around actual tasks: publish checks, debugging moments, writing clarity, and campaign tracking.</p>
+          </div>
+        </div>
       </div>
-      <div class="small-card">
-        <h3>SEO-aligned by intent</h3>
-        <p>Tools map to what people actually search: checkers, previews, analyzers, and generators.</p>
+    </section>
+
+    <!-- RECOMMENDED NOW (kept useful, lighter) -->
+    <section class="section container" aria-label="Recommended tools">
+      <div class="hero-box">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div>
+            <h2 class="section-title" style="margin-top:0;">Recommended now</h2>
+            <p class="section-sub" style="margin-bottom:0;">
+              Quick picks for common tasks. Open a tool, paste, copy, move on.
+            </p>
+          </div>
+
+          <!-- If your existing home JS updates recommendations, keep the ID -->
+          <button class="btn" id="refreshPicks" type="button" aria-label="Refresh recommended tools">
+            Refresh picks
+          </button>
+        </div>
+
+        <div class="cards-grid" style="margin-top:14px;">
+          <a class="card" href="/tools/meta-tags/">
+            <div class="card-top">
+              <div class="card-ico" aria-hidden="true">🏷️</div>
+              <div>
+                <h3>Meta Tag Optimizer</h3>
+                <p>Write better titles and descriptions with length checks and snippet intent.</p>
+              </div>
+            </div>
+            <span class="tool-cta">Open Meta Tag Optimizer</span>
+          </a>
+
+          <a class="card" href="/tools/serp-preview/">
+            <div class="card-top">
+              <div class="card-ico" aria-hidden="true">🧩</div>
+              <div>
+                <h3>SERP Snippet Preview</h3>
+                <p>Preview how your snippet may look before publishing.</p>
+              </div>
+            </div>
+            <span class="tool-cta">Open SERP Preview</span>
+          </a>
+
+          <a class="card" href="/tools/word-counter/">
+            <div class="card-top">
+              <div class="card-ico" aria-hidden="true">🔢</div>
+              <div>
+                <h3>Word Counter</h3>
+                <p>Words, sentences, paragraphs and estimated reading time.</p>
+              </div>
+            </div>
+            <span class="tool-cta">Open Word Counter</span>
+          </a>
+
+          <a class="card" href="/tools/readability-analyzer/">
+            <div class="card-top">
+              <div class="card-ico" aria-hidden="true">📚</div>
+              <div>
+                <h3>Readability Analyzer</h3>
+                <p>Get a readability score and quick suggestions to improve scanning.</p>
+              </div>
+            </div>
+            <span class="tool-cta">Open Readability Analyzer</span>
+          </a>
+
+          <a class="card" href="/tools/json-formatter/">
+            <div class="card-top">
+              <div class="card-ico" aria-hidden="true">🧾</div>
+              <div>
+                <h3>JSON Formatter</h3>
+                <p>Format and validate JSON instantly for debugging and clean output.</p>
+              </div>
+            </div>
+            <span class="tool-cta">Open JSON Formatter</span>
+          </a>
+
+          <a class="card" href="/tools/url-encoder/">
+            <div class="card-top">
+              <div class="card-ico" aria-hidden="true">🔗</div>
+              <div>
+                <h3>URL Encoder / Decoder</h3>
+                <p>Fix broken parameters by encoding or decoding safely.</p>
+              </div>
+            </div>
+            <span class="tool-cta">Open URL Encoder</span>
+          </a>
+        </div>
+
+        <div style="margin-top:12px;text-align:center;opacity:.9;">
+          <a href="/tools/" style="text-decoration:none;font-weight:900;">View all tools →</a>
+        </div>
       </div>
-      <div class="small-card">
-        <h3>Fast by design</h3>
-        <p>No friction. Open a tool, do the task, move on. Optimized for speed on mobile and desktop.</p>
+    </section>
+
+    <!-- GUIDES + UPDATES (2 columns, structured) -->
+    <section class="section container" aria-label="Guides and updates">
+      <div class="hero-box">
+        <h2 class="section-title" style="margin-top:0;text-align:center;">Learn the workflows, follow the changes</h2>
+        <p class="section-sub" style="margin-bottom:14px;text-align:center;">
+          Guides help you apply the tools. Updates show what improved — from small tweaks to full rewrites.
+        </p>
+
+        <div class="lanes" aria-label="Guides and updates lanes">
+          <div class="lane">
+            <div class="lane-head">
+              <div class="lane-ico" aria-hidden="true">📘</div>
+              <h3>Start here (Guides)</h3>
+            </div>
+            <p style="margin-bottom:10px;">
+              Short, step-by-step workflows you can apply immediately.
+            </p>
+
+            <div class="seo-boost-links" aria-label="Top guides">
+              <a href="/guides/seo-content-checklist/">SEO Content Checklist</a>
+              <a href="/guides/how-to-write-meta-title-description/">Meta Titles & Descriptions</a>
+              <a href="/guides/json-formatting-debug/">Fix JSON Errors</a>
+              <a href="/guides/utm-builder-guide/">UTM Builder Guide</a>
+            </div>
+
+            <div style="margin-top:10px;">
+              <a href="/guides/" style="text-decoration:none;font-weight:900;">Browse all guides →</a>
+            </div>
+          </div>
+
+          <div class="lane">
+            <div class="lane-head">
+              <div class="lane-ico" aria-hidden="true">🛰️</div>
+              <h3>Latest improvements (Updates)</h3>
+            </div>
+            <p style="margin-bottom:10px;">
+              Clickoz is rewritten continuously — even small changes ship as clean rebuilds.
+            </p>
+
+            <div class="seo-boost-links" aria-label="Latest updates">
+              <!-- Keep these as simple links; you can later create per-release pages -->
+              <a href="/updates/#major">Major rewrites</a>
+              <a href="/updates/#performance">Performance improvements</a>
+              <a href="/updates/#seo">SEO & internal linking upgrades</a>
+              <a href="/updates/">View release history</a>
+            </div>
+
+            <div style="margin-top:10px;">
+              <a href="/updates/" style="text-decoration:none;font-weight:900;">Open Updates →</a>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section container" id="tools">
-    <h2 class="section-title">Tools hub</h2>
-    <p class="section-sub">
-      Search tools or browse by category. Each tool has examples and quick tips on the page.
-    </p>
+    <!-- SEO TEXT BLOCK (keeps longer copy for search, but below) -->
+    <section class="section container" aria-label="What Clickoz is (SEO)">
+      <div class="hero-box">
+        <h2 class="section-title" style="margin-top:0;">What Clickoz helps you do</h2>
+        <p class="section-sub" style="margin-bottom:14px;">
+          People search for tasks: word count, snippet preview, keyword checks, JSON errors, broken URLs,
+          Base64 decoding, or campaign tracking. Clickoz tools are built for quick workflows: paste → fix → copy → move on.
+        </p>
 
-    <div class="row">
-      <input class="search" id="toolSearch" placeholder="Search tools (readability, meta, json, base64…)" aria-label="Search tools" />
-    </div>
+        <div class="lanes">
+          <div class="lane">
+            <div class="lane-head">
+              <div class="lane-ico" aria-hidden="true">🔎</div>
+              <h3>SEO checks before publishing</h3>
+            </div>
+            <p>
+              Refine titles and descriptions, preview snippets, and keep keywords natural.
+              Pair <a href="/tools/meta-tags/">Meta Tag Optimizer</a> with <a href="/tools/serp-preview/">SERP Preview</a> for stronger CTR signals.
+            </p>
+          </div>
 
-    <div class="chips" id="chips" aria-label="Categories">
-      <div class="chip active" data-filter="all">All</div>
-      <div class="chip" data-filter="seo">SEO</div>
-      <div class="chip" data-filter="text">Text</div>
-      <div class="chip" data-filter="dev">Dev</div>
-    </div>
+          <div class="lane">
+            <div class="lane-head">
+              <div class="lane-ico" aria-hidden="true">🖥️</div>
+              <h3>Developer utilities when something breaks</h3>
+            </div>
+            <p>
+              Format and validate JSON, encode URLs safely, and decode Base64 payloads for inspection.
+              Use <a href="/tools/json-formatter/">JSON Formatter</a>, <a href="/tools/url-encoder/">URL Encoder</a>, and <a href="/tools/base64/">Base64</a>.
+            </p>
+          </div>
 
-    <div class="grid" id="grid">
-      <a class="card" href="/tool/word-counter/" data-slug="word-counter" data-hay="word counter character counter reading time count words sentences paragraphs">
-        <div class="thumb">🔢</div>
-        <h3>Word Counter</h3>
-        <p>Words, characters, sentences, paragraphs, and reading time for fast content checks.</p>
-        <span class="tool-cta">Use Word Counter</span>
-      </a>
+          <div class="lane">
+            <div class="lane-head">
+              <div class="lane-ico" aria-hidden="true">✍️</div>
+              <h3>Writing clarity and platform limits</h3>
+            </div>
+            <p>
+              Keep content scannable and within limits.
+              Use <a href="/tools/word-counter/">Word Counter</a>, <a href="/tools/character-counter/">Character Counter</a>,
+              and <a href="/tools/readability-analyzer/">Readability Analyzer</a>.
+            </p>
+          </div>
 
-      <a class="card" href="/tool/word-counter-pro/" data-slug="word-counter-pro" data-hay="advanced word counter speaking time top keywords">
-        <div class="thumb">✨</div>
-        <h3>Word Counter Pro</h3>
-        <p>Deeper analysis: reading + speaking time and quick keyword hints for structure.</p>
-        <span class="tool-cta">Use Word Counter Pro</span>
-      </a>
+          <div class="lane">
+            <div class="lane-head">
+              <div class="lane-ico" aria-hidden="true">🎥</div>
+              <h3>Creators and tracking</h3>
+            </div>
+            <p>
+              Track what content actually performs with clean campaign links.
+              Build them with <a href="/tools/utm-builder/">UTM Builder</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
-      <a class="card" href="/tool/readability-analyzer/" data-slug="readability-analyzer" data-hay="readability score flesch grade level clarity">
-        <div class="thumb">📚</div>
-        <h3>Readability Analyzer</h3>
-        <p>Score your text and get suggestions to improve clarity and scanning.</p>
-        <span class="tool-cta">Use Readability Analyzer</span>
-      </a>
-
-      <a class="card" href="/tool/keyword-density/" data-slug="keyword-density" data-hay="keyword density checker frequency highlight phrases">
-        <div class="thumb">🎯</div>
-        <h3>Keyword Density</h3>
-        <p>Measure keyword frequency, spot repetition, and keep relevance without stuffing.</p>
-        <span class="tool-cta">Use Keyword Density</span>
-      </a>
-
-      <a class="card" href="/tool/meta-tags/" data-slug="meta-tags" data-hay="meta tag optimizer title description serp preview length">
-        <div class="thumb">🏷️</div>
-        <h3>Meta Tag Optimizer</h3>
-        <p>Preview snippets, check length limits, and refine titles/descriptions for CTR.</p>
-        <span class="tool-cta">Use Meta Tag Optimizer</span>
-      </a>
-
-      <a class="card" href="/tool/json-formatter/" data-slug="json-formatter" data-hay="json formatter validate minify prettify">
-        <div class="thumb">🧾</div>
-        <h3>JSON Formatter</h3>
-        <p>Prettify, minify, and validate JSON instantly. Great for APIs and config files.</p>
-        <span class="tool-cta">Use JSON Formatter</span>
-      </a>
-
-      <a class="card" href="/tool/url-encoder/" data-slug="url-encoder" data-hay="url encoder decoder querystring encodeURIComponent decodeURIComponent">
-        <div class="thumb">🔗</div>
-        <h3>URL Encoder</h3>
-        <p>Encode/decode query strings safely for tracking links, UTMs, and debugging.</p>
-        <span class="tool-cta">Use URL Encoder</span>
-      </a>
-
-      <a class="card" href="/tool/base64/" data-slug="base64" data-hay="base64 encoder decoder text">
-        <div class="thumb">🔐</div>
-        <h3>Base64 Encoder</h3>
-        <p>Encode/decode Base64 for quick checks of tokens, payloads, and text.</p>
-        <span class="tool-cta">Use Base64</span>
-      </a>
-
-      <a class="card" href="/tool/title-description/" data-slug="title-description" data-hay="seo title generator meta description generator ideas">
-        <div class="thumb">📝</div>
-        <h3>Title & Description</h3>
-        <p>Generate title + meta description ideas from a keyword with intent-friendly variants.</p>
-        <span class="tool-cta">Use Title & Description</span>
-      </a>
-
-      <a class="card" href="/tool/alt-text/" data-slug="alt-text" data-hay="alt text generator accessibility seo images">
-        <div class="thumb">🖼️</div>
-        <h3>Alt Text Generator</h3>
-        <p>Generate descriptive alt text optimized for accessibility and SEO.</p>
-        <span class="tool-cta">Use Alt Text Generator</span>
-      </a>
-
-      <a class="card" href="/tool/seo-outline/" data-slug="seo-outline" data-hay="seo outline helper h1 h2 h3 faq ideas">
-        <div class="thumb">🧠</div>
-        <h3>SEO Outline Helper</h3>
-        <p>Build an H1/H2/H3 outline with FAQ ideas aligned to search intent.</p>
-        <span class="tool-cta">Use SEO Outline Helper</span>
-      </a>
-    </div>
-  </section>
-
-  <section class="section container">
-    <h2 class="section-title">Guides & Updates</h2>
-    <p class="section-sub">Short guides that explain what to do, why it matters, and how to apply it.</p>
-    <div class="small-grid">
-      <a class="small-card" href="/guides/word-count-for-seo/"><h3>Word Count for SEO (2026)</h3><p>Structure, intent, and clarity: what matters now.</p></a>
-      <a class="small-card" href="/guides/readability-for-ranking/"><h3>Readability for Ranking</h3><p>How readability impacts engagement and SEO signals.</p></a>
-      <a class="small-card" href="/guides/meta-tags-checklist/"><h3>Meta Tags Checklist</h3><p>Titles and descriptions that earn clicks.</p></a>
-      <a class="small-card" href="/guides/keyword-research-basics/"><h3>Keyword Research Basics</h3><p>Find intent and build topical coverage.</p></a>
-    </div>
-  </section>
-
+  <!-- FOOTER -->
   <footer class="footer">
     <div class="container footer-grid">
       <div>
         <h4>Clickoz</h4>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <a href="/about/">About</a>
-          <a href="/workflows/">Workflows</a>
+        <div class="footer-links">
+          <a href="/tools/">Tools</a>
           <a href="/guides/">Guides</a>
-          <a href="/glossary/">Glossary</a>
           <a href="/updates/">Updates</a>
         </div>
       </div>
+
       <div>
         <h4>Popular tools</h4>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <a href="/tool/word-counter/">Word Counter</a>
-          <a href="/tool/readability-analyzer/">Readability</a>
-          <a href="/tool/meta-tags/">Meta Tags</a>
-          <a href="/tool/json-formatter/">JSON Formatter</a>
+        <div class="footer-links">
+          <a href="/tools/word-counter/">Word Counter</a>
+          <a href="/tools/readability-analyzer/">Readability</a>
+          <a href="/tools/meta-tags/">Meta Tags</a>
+          <a href="/tools/json-formatter/">JSON Formatter</a>
         </div>
       </div>
+
       <div>
         <h4>Legal</h4>
-        <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="footer-links">
           <a href="/privacy/">Privacy</a>
           <a href="/terms/">Terms</a>
           <a href="/contact/">Contact</a>
         </div>
       </div>
     </div>
+
     <div class="container" style="margin-top:14px">
       <hr class="sep" />
       <div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">
@@ -355,148 +539,34 @@
     </div>
   </footer>
 
-  <script>
-    // dropdown helpers
-    function toggleMenu(btn, menu){
-      const isOpen = menu.classList.contains('active');
-      document.querySelectorAll('.menu.active').forEach(m => m.classList.remove('active'));
-      menu.classList.toggle('active', !isOpen);
-      btn.setAttribute('aria-expanded', String(!isOpen));
-    }
-    function closeAll(){
-      document.querySelectorAll('.menu.active').forEach(m => m.classList.remove('active'));
-      document.querySelectorAll('[aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded','false'));
-    }
-    document.addEventListener('click', (e)=>{ if(!e.target.closest('.dropdown')) closeAll(); });
+  <!-- Cookie banner -->
+  <div class="cookie" role="dialog" aria-live="polite" aria-label="Cookie preferences">
+    <div class="cookie-card">
+      <button class="cookie-x" id="cookieClose" type="button" aria-label="Close">×</button>
 
-    function hexToRgbTriplet(hex){
-      const h = (hex || '').replace('#','').trim();
-      if(h.length === 3){
-        const r = parseInt(h[0]+h[0], 16);
-        const g = parseInt(h[1]+h[1], 16);
-        const b = parseInt(h[2]+h[2], 16);
-        return `${r},${g},${b}`;
-      }
-      if(h.length === 6){
-        const r = parseInt(h.slice(0,2), 16);
-        const g = parseInt(h.slice(2,4), 16);
-        const b = parseInt(h.slice(4,6), 16);
-        return `${r},${g},${b}`;
-      }
-      return `99,102,241`;
-    }
+      <div class="cookie-content">
+        <div class="cookie-title">Privacy choices</div>
+        <div class="cookie-text">
+          We use essential storage for core features. If you accept all, we may load third-party services like Google Translate.
+          Read more in <a href="/privacy/">Privacy</a>.
+        </div>
+      </div>
 
-    // accent color
-    const colorToggle = document.getElementById('colorToggle');
-    const colorMenu   = document.getElementById('colorMenu');
-    const colorDot    = document.getElementById('colorDot');
-    const logoAccent  = document.getElementById('logoAccent');
+      <div class="cookie-actions">
+        <button class="btn cookie-btn" id="cookieReject" type="button">Refuse</button>
+        <button class="btn cookie-btn" id="cookieEssential" type="button">Essential only</button>
+        <button class="btn primary cookie-btn" id="cookieAccept" type="button">Accept all</button>
+      </div>
+    </div>
+  </div>
 
-    function setAccent(a1, a2){
-      document.documentElement.style.setProperty('--accent', a1);
-      document.documentElement.style.setProperty('--accent2', a2);
-      document.documentElement.style.setProperty('--accent-rgb', hexToRgbTriplet(a1));
-      colorDot.style.background = a1;
-      logoAccent.style.color = a1;
-      localStorage.setItem('clickoz_accent', JSON.stringify({a1, a2}));
-    }
+  <!-- Base site behavior -->
+  <script src="/assets/site.js" defer></script>
 
-    colorToggle.addEventListener('click', (e)=>{ e.stopPropagation(); toggleMenu(colorToggle, colorMenu); });
-    colorMenu.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      const opt = e.target.closest('.color-option');
-      if(!opt) return;
-      document.querySelectorAll('.color-option').forEach(x=>x.classList.remove('active'));
-      opt.classList.add('active');
-      setAccent(opt.dataset.accent, opt.dataset.accent2);
-      closeAll();
-    });
-
-    try{
-      const saved = JSON.parse(localStorage.getItem('clickoz_accent') || 'null');
-      if(saved && saved.a1 && saved.a2){
-        setAccent(saved.a1, saved.a2);
-        const match = Array.from(document.querySelectorAll('.color-option')).find(x => x.dataset.accent === saved.a1);
-        if(match){
-          document.querySelectorAll('.color-option').forEach(x=>x.classList.remove('active'));
-          match.classList.add('active');
-        }
-      }else{
-        const a = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#6366f1';
-        document.documentElement.style.setProperty('--accent-rgb', hexToRgbTriplet(a));
-        colorDot.style.background = a;
-        logoAccent.style.color = a;
-      }
-    }catch(_){}
-
-    // language picker
-    const langToggle = document.getElementById('langToggle');
-    const langMenu   = document.getElementById('langMenu');
-    const langLabel  = document.getElementById('langLabel');
-
-    langToggle.addEventListener('click', (e)=>{ e.stopPropagation(); toggleMenu(langToggle, langMenu); });
-    function setLangLabel(code){ langLabel.textContent = (code||'en').toUpperCase(); localStorage.setItem('clickoz_lang', (code||'en')); }
-    const savedLang = localStorage.getItem('clickoz_lang'); if(savedLang) setLangLabel(savedLang);
-    langMenu.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      const item = e.target.closest('.menu-item');
-      if(!item) return;
-      setLangLabel(item.dataset.lang);
-      closeAll();
-      window.location.href = item.dataset.path;
-    });
-
-    // shortcuts
-    const search = document.getElementById('toolSearch');
-    document.addEventListener('keydown', (e)=>{
-      if(e.key === '/' && !e.metaKey && !e.ctrlKey && document.activeElement !== search){
-        e.preventDefault(); search?.focus();
-      }
-      if(e.key.toLowerCase() === 'c' && !e.metaKey && !e.ctrlKey) toggleMenu(colorToggle, colorMenu);
-      if(e.key.toLowerCase() === 'l' && !e.metaKey && !e.ctrlKey) toggleMenu(langToggle, langMenu);
-      if(e.key === 'Escape') closeAll();
-    });
-
-    // random recommendations from hub cards (3 distinct)
-    (function(){
-      const cards = Array.from(document.querySelectorAll('#grid a.card'));
-      if(cards.length < 3) return;
-
-      function pickDistinct(n){
-        const idx = new Set();
-        while(idx.size < n) idx.add(Math.floor(Math.random()*cards.length));
-        return Array.from(idx).map(i => cards[i]);
-      }
-
-      function extract(card){
-        const title = (card.querySelector('h3')?.textContent || 'Tool').trim();
-        const icon = (card.querySelector('.thumb')?.textContent || '✨').trim();
-        const href = card.getAttribute('href') || '#';
-        const desc = (card.querySelector('p')?.textContent || '').trim();
-        return { href, icon, title, desc };
-      }
-
-      const picks = pickDistinct(3).map(extract);
-
-      const slots = [
-        {a:'randTool1', i:'randIcon1', t:'randTitle1', d:'randDesc1', c:'randCta1'},
-        {a:'randTool2', i:'randIcon2', t:'randTitle2', d:'randDesc2', c:'randCta2'},
-        {a:'randTool3', i:'randIcon3', t:'randTitle3', d:'randDesc3', c:'randCta3'},
-      ];
-
-      slots.forEach((slot, k) => {
-        const p = picks[k];
-        const a = document.getElementById(slot.a);
-        if(!a) return;
-        a.href = p.href;
-        document.getElementById(slot.i).textContent = p.icon;
-        document.getElementById(slot.t).textContent = p.title;
-        document.getElementById(slot.d).textContent = p.desc || document.getElementById(slot.d).textContent;
-        document.getElementById(slot.c).textContent = `Use ${p.title}`;
-      });
-    })();
-  </script>
-
-  <script src="/assets/site.js"></script>
+  <!-- NOTE:
+    If your old home relied on a dedicated home script for "Refresh picks",
+    we should re-add it (e.g. /assets/home.js) or move that logic into site.js.
+  -->
+  <!-- <script src="/assets/home.js" defer></script> -->
 </body>
 </html>
