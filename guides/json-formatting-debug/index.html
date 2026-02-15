@@ -1,35 +1,70 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Fix JSON Errors: Formatting & Debugging Guide (2026) | Clickoz</title>
-  <meta name="description" content="Fix JSON parse errors fast. Learn the exact workflow to validate, prettify, debug syntax, and minify JSON safely. Includes copy-ready examples, common fixes, and tool shortcuts." />
-  <meta name="robots" content="index,follow" />
+  <title>Fix JSON Parse Errors (Missing Commas, Quotes, Trailing Commas) | Clickoz</title>
+  <meta name="description" content="Fix invalid JSON fast. Learn a simple step-by-step routine to find missing commas, wrong quotes, trailing commas, and bracket issues. Includes copy-ready examples and a direct JSON Formatter shortcut." />
+
   <link rel="canonical" href="https://clickoz.com/guides/json-formatting-debug/" />
-
+  <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f19" />
 
-  <!-- Open Graph -->
   <meta property="og:site_name" content="Clickoz" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Fix JSON Errors: Formatting & Debugging Guide (2026)" />
-  <meta property="og:description" content="A practical routine to validate, prettify, and fix JSON parse errors with copy-ready examples and tool shortcuts." />
+  <meta property="og:title" content="Fix JSON Parse Errors (Missing Commas, Quotes, Trailing Commas)" />
+  <meta property="og:description" content="A simple routine to validate, prettify, and fix JSON errors in seconds—plus examples and tool shortcuts." />
   <meta property="og:url" content="https://clickoz.com/guides/json-formatting-debug/" />
   <meta property="og:image" content="https://clickoz.com/assets/img/guides/json-formatting-debug/json_intro.png" />
 
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Fix JSON Errors: Formatting & Debugging Guide (2026)" />
-  <meta name="twitter:description" content="Validate, prettify, and debug JSON errors with copy-ready examples and best practices." />
+  <meta name="twitter:title" content="Fix JSON Parse Errors (Missing Commas, Quotes, Trailing Commas)" />
+  <meta name="twitter:description" content="Validate, prettify, and fix JSON errors with a clean routine + copy-ready examples." />
   <meta name="twitter:image" content="https://clickoz.com/assets/img/guides/json-formatting-debug/json_intro.png" />
 
-  <!-- Global + Guide -->
-  <link rel="stylesheet" href="/assets/site.css" />
-  <link rel="stylesheet" href="/assets/guide.css" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
 
-  <!-- FAQ Schema -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet" />
+
+  <!-- Base site + guide layer -->
+  <link rel="stylesheet" href="/assets/site.css?v=5" />
+  <link rel="stylesheet" href="/assets/guide.css?v=1" />
+
+  <!-- ✅ JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"BreadcrumbList",
+    "itemListElement":[
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://clickoz.com/"},
+      {"@type":"ListItem","position":2,"name":"Guides","item":"https://clickoz.com/guides/"},
+      {"@type":"ListItem","position":3,"name":"Fix JSON Errors","item":"https://clickoz.com/guides/json-formatting-debug/"}
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Article",
+    "headline":"Fix JSON Parse Errors (Missing Commas, Quotes, Trailing Commas)",
+    "description":"Fix invalid JSON fast with a beginner-friendly routine: prettify, validate, fix the first error, validate again, and minify only when shipping. Includes copy-ready examples.",
+    "image":"https://clickoz.com/assets/img/guides/json-formatting-debug/json_intro.png",
+    "datePublished":"2026-02-15",
+    "dateModified":"2026-02-15",
+    "author":{"@type":"Organization","name":"Clickoz"},
+    "publisher":{
+      "@type":"Organization",
+      "name":"Clickoz",
+      "logo":{"@type":"ImageObject","url":"https://clickoz.com/assets/img/logo.png"}
+    },
+    "mainEntityOfPage":{"@type":"WebPage","@id":"https://clickoz.com/guides/json-formatting-debug/"}
+  }
+  </script>
+
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -38,128 +73,155 @@
       {
         "@type":"Question",
         "name":"Why does JSON parsing fail?",
-        "acceptedAnswer":{"@type":"Answer","text":"Most JSON parsing errors come from missing commas, invalid quotes (single quotes), trailing commas, or mismatched braces/brackets."}
+        "acceptedAnswer":{"@type":"Answer","text":"Most JSON errors come from missing commas, using single quotes, trailing commas, or mismatched braces/brackets. Fix the first error location (line/column), then validate again."}
       },
       {
         "@type":"Question",
-        "name":"Is a trailing comma allowed in JSON?",
+        "name":"Are trailing commas allowed in JSON?",
         "acceptedAnswer":{"@type":"Answer","text":"No. Standard JSON does not allow trailing commas. Remove the final comma inside objects or arrays."}
       },
       {
         "@type":"Question",
         "name":"Should I prettify or minify JSON?",
-        "acceptedAnswer":{"@type":"Answer","text":"Prettify JSON while debugging and editing. Minify JSON for production to reduce payload size and improve transfer performance."}
+        "acceptedAnswer":{"@type":"Answer","text":"Prettify while debugging and editing to see structure clearly. Minify only when shipping (production payloads, storage, or transfer) to reduce size."}
       },
       {
         "@type":"Question",
-        "name":"Is JSON important for SEO?",
-        "acceptedAnswer":{"@type":"Answer","text":"Yes. JSON-LD structured data must be valid JSON or search engines may ignore it."}
+        "name":"Does JSON matter for SEO?",
+        "acceptedAnswer":{"@type":"Answer","text":"Yes. JSON-LD structured data must be valid JSON. If it’s invalid, search engines may ignore it."}
       }
     ]
   }
   </script>
-
-  <!-- Article Schema -->
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"Article",
-    "headline":"Fix JSON Errors: Formatting & Debugging Guide (2026)",
-    "description":"Fix JSON parse errors fast. Validate, prettify, debug syntax, and minify JSON safely with examples and best practices.",
-    "image":"https://clickoz.com/assets/img/guides/json-formatting-debug/json_intro.png",
-    "author":{"@type":"Organization","name":"Clickoz"},
-    "publisher":{"@type":"Organization","name":"Clickoz","logo":{"@type":"ImageObject","url":"https://clickoz.com/assets/img/logo.png"}},
-    "mainEntityOfPage":{"@type":"WebPage","@id":"https://clickoz.com/guides/json-formatting-debug/"}
-  }
-  </script>
 </head>
 
-<body>
+<body class="bigtext guides-page">
   <a class="skip-link" href="#content">Skip to content</a>
 
-  <!-- =========================
-       SITE HEADER / NAV (CMS)
-  ========================== -->
-  <header class="site-header" role="banner">
-    <div class="site-bar">
-      <a class="brand" href="/" aria-label="Clickoz Home">
-        <span class="brand-mark">Click oz</span>
+  <!-- FX layers -->
+  <div id="clickozParticles" aria-hidden="true"></div>
+  <canvas id="spaceParticles" aria-hidden="true"></canvas>
+  <div class="__grain" aria-hidden="true"></div>
+
+  <!-- NAV (CMS) -->
+  <nav class="nav" aria-label="Primary navigation" id="topNav">
+    <div class="container nav-inner">
+      <a class="logo" href="/" aria-label="Clickoz Home">
+        <span class="logo-badge" id="logoBadge" aria-hidden="true">
+          <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
+            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6"
+                  fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="logo-text">Click<span class="logo-oz">oz</span></span>
       </a>
 
-      <nav class="site-nav" aria-label="Primary">
+      <div class="nav-links" aria-label="Sections">
         <a href="/">Home</a>
         <a href="/tools/">Tools</a>
-        <a href="/guides/" aria-current="page">Guides</a>
+        <a href="/guides/" class="active" aria-current="page">Guides</a>
         <a href="/updates/">Updates</a>
-      </nav>
-
-      <div class="site-actions">
-        <button class="btn" type="button" data-theme-toggle aria-label="Theme color">Theme color</button>
-        <button class="btn" type="button" data-menu-toggle aria-label="Menu">Menu</button>
       </div>
-    </div>
 
-    <!-- Drawer / mobile menu -->
-    <div class="site-drawer" data-menu hidden>
-      <button class="drawer-close" type="button" data-menu-close aria-label="Close">×</button>
+      <div class="spacer"></div>
 
-      <nav class="drawer-nav" aria-label="Menu">
-        <a href="/">Home</a>
-        <a href="/tools/">Tools</a>
-        <a href="/guides/">Guides</a>
-        <a href="/updates/">Updates</a>
-        <a href="/privacy/">Privacy</a>
-      </nav>
+      <div class="nav-actions" aria-label="Preferences">
+        <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
 
-      <div class="drawer-section">
-        <h3>Theme color</h3>
-        <div class="theme-colors" data-theme-colors>
-          <button type="button" class="chip" data-accent="#7c5cff">Violet</button>
-          <button type="button" class="chip" data-accent="#2ee9a6">Mint</button>
-          <button type="button" class="chip" data-accent="#57a6ff">Blue</button>
-          <button type="button" class="chip" data-accent="#ff4fd8">Pink</button>
-          <button type="button" class="chip" data-accent="#ffcc66">Amber</button>
+        <div class="dropdown">
+          <button class="dot-btn" id="colorToggle" type="button" aria-haspopup="true" aria-expanded="false" title="Theme color">
+            <span class="dot" id="colorDot" aria-hidden="true"></span>
+          </button>
+
+          <div class="menu" id="colorMenu" role="menu" aria-label="Pick theme color">
+            <div class="menu-title">Theme color</div>
+            <div class="color-grid">
+              <div class="color-option active" data-accent="#6366f1" data-accent2="#8b5cf6" style="background:#6366f1" title="Purple" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#3b82f6" data-accent2="#60a5fa" style="background:#3b82f6" title="Blue" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#10b981" data-accent2="#34d399" style="background:#10b981" title="Green" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#f59e0b" data-accent2="#fbbf24" style="background:#f59e0b" title="Yellow" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#f97316" data-accent2="#fb923c" style="background:#f97316" title="Orange" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#ef4444" data-accent2="#f87171" style="background:#ef4444" title="Red" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#ec4899" data-accent2="#f472b6" style="background:#ec4899" title="Pink" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#06b6d4" data-accent2="#22d3ee" style="background:#06b6d4" title="Cyan" role="menuitem" tabindex="0"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="gtNavWrap" aria-label="Translate">
+          <div id="google_translate_element"></div>
         </div>
       </div>
+    </div>
+  </nav>
 
-      <div class="drawer-section">
-        <h3>Language</h3>
-        <p>Translation loads only if you accept “All” cookies.</p>
-        <div id="google_translate_element"></div>
+  <!-- Mobile menu (CMS) -->
+  <div class="m-overlay" id="mOverlay" hidden></div>
+  <aside class="m-menu" id="mobileMenu" aria-hidden="true">
+    <div class="m-head">
+      <div class="m-title">Menu</div>
+      <button class="m-close" id="mClose" type="button" aria-label="Close menu">×</button>
+    </div>
+
+    <div class="m-links">
+      <a class="m-link" href="/">Home</a>
+      <a class="m-link" href="/tools/">Tools</a>
+      <a class="m-link active" href="/guides/" aria-current="page">Guides</a>
+      <a class="m-link" href="/updates/">Updates</a>
+      <a class="m-link" href="/privacy/">Privacy</a>
+    </div>
+
+    <div class="m-block">
+      <div class="m-label">Theme color</div>
+      <div class="color-grid m-colors" id="mobileColorGrid">
+        <div class="color-option active" data-accent="#6366f1" data-accent2="#8b5cf6" style="background:#6366f1" title="Purple" tabindex="0"></div>
+        <div class="color-option" data-accent="#3b82f6" data-accent2="#60a5fa" style="background:#3b82f6" title="Blue" tabindex="0"></div>
+        <div class="color-option" data-accent="#10b981" data-accent2="#34d399" style="background:#10b981" title="Green" tabindex="0"></div>
+        <div class="color-option" data-accent="#f59e0b" data-accent2="#fbbf24" style="background:#f59e0b" title="Yellow" tabindex="0"></div>
+        <div class="color-option" data-accent="#f97316" data-accent2="#fb923c" style="background:#f97316" title="Orange" tabindex="0"></div>
+        <div class="color-option" data-accent="#ef4444" data-accent2="#f87171" style="background:#ef4444" title="Red" tabindex="0"></div>
+        <div class="color-option" data-accent="#ec4899" data-accent2="#f472b6" style="background:#ec4899" title="Pink" tabindex="0"></div>
+        <div class="color-option" data-accent="#06b6d4" data-accent2="#22d3ee" style="background:#06b6d4" title="Cyan" tabindex="0"></div>
       </div>
     </div>
-  </header>
 
-  <!-- =========================
-       PAGE CONTENT
-  ========================== -->
-  <main id="content" class="wrap">
+    <div class="m-block">
+      <div class="m-label">Language</div>
+      <div id="google_translate_element_mobile"></div>
+      <div style="margin-top:10px;font-size:13px;opacity:.78;line-height:1.5;">
+        Translation loads only if you accept “All” cookies.
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="content" class="section container" aria-label="Guide content">
     <!-- Breadcrumbs -->
-    <nav class="crumbs" aria-label="Breadcrumb">
+    <nav class="crumbs" aria-label="Breadcrumb" style="margin-bottom:14px">
       <a href="/">Home</a>
       <span class="sep">›</span>
       <a href="/guides/">Guides</a>
       <span class="sep">›</span>
-      <span aria-current="page">JSON Formatting Debug</span>
+      <span aria-current="page">Fix JSON Errors</span>
     </nav>
 
-    <!-- Hero -->
-    <header class="guide-hero">
-      <p class="guide-kicker">Dev • JSON • Updated for 2026 • Search intent: “json formatting debug”</p>
+    <!-- HERO -->
+    <header class="guide-hero" aria-label="Guide hero">
+      <p class="guide-kicker">Dev • JSON • Beginner-friendly • Updated 2026</p>
 
-      <h1>Fix JSON Errors: Formatting and Debugging</h1>
+      <h1>Fix JSON parse errors (fast): commas, quotes, trailing commas</h1>
 
       <p class="guide-sub">
-        When JSON breaks, everything breaks: APIs fail, configs won’t load, and tools refuse your payload.
-        This is a practical routine to fix the most common issues fast — <strong>missing commas</strong>,
-        <strong>invalid quotes</strong>, <strong>trailing commas</strong>, and <strong>mismatched brackets</strong>.
-        You’ll also learn when to <strong>prettify JSON</strong> vs <strong>minify JSON</strong>.
+        If JSON is invalid, APIs fail, config files won’t load, and JSON-LD schema can break.
+        This guide shows a simple routine that works every time: <strong>prettify → validate → fix → validate again</strong>.
       </p>
 
       <div class="guide-meta">
-        <span class="chip">Reading time: ~9–12 minutes</span>
-        <span class="chip">Difficulty: Beginner → Advanced</span>
-        <span class="chip">Best for: APIs, configs, JSON-LD</span>
+        <span class="chip">Reading time: ~6–8 min</span>
+        <span class="chip">Level: Beginner → Intermediate</span>
+        <span class="chip">Use cases: API payloads, configs, JSON-LD</span>
       </div>
 
       <div class="guide-actions">
@@ -170,45 +232,45 @@
       <div class="readingbar"><i></i></div>
     </header>
 
-    <section class="guide-grid">
-      <!-- Article -->
-      <article class="guide-content panel">
+    <section class="guide-grid" aria-label="Guide layout">
+      <!-- ARTICLE -->
+      <article class="guide-content panel" aria-label="Article">
         <figure>
           <img
             src="/assets/img/guides/json-formatting-debug/json_intro.png"
-            alt="Illustration of JSON blocks connected in a workflow representing formatting and validation"
+            alt="JSON formatting workflow: prettify, validate, fix, and minify"
             loading="lazy"
             width="1400"
             height="800"
           />
-          <figcaption>Workflow: validate → prettify → fix syntax → minify for production.</figcaption>
+          <figcaption>Best workflow: prettify → validate → fix one issue → validate again → minify only when shipping.</figcaption>
         </figure>
 
-        <h2 id="routine">The Fast JSON Debug Routine (Do This Every Time)</h2>
+        <h2 id="routine">The JSON Fix Routine (do this every time)</h2>
         <ol>
-          <li><strong>Prettify first</strong> so structure becomes readable and errors stand out.</li>
-          <li><strong>Validate</strong> and read the first error carefully (line/column matters).</li>
-          <li><strong>Fix one error at a time</strong> (don’t “edit everything” and hope).</li>
+          <li><strong>Prettify</strong> your JSON so the structure is readable.</li>
+          <li><strong>Validate</strong> and focus on the first error (line/column).</li>
+          <li><strong>Fix one issue</strong> (don’t edit everything at once).</li>
           <li><strong>Validate again</strong> until it’s clean.</li>
-          <li><strong>Minify only when you ship</strong> (production / API payloads / storage).</li>
+          <li><strong>Minify</strong> only when you’re ready to ship.</li>
         </ol>
 
         <div class="callout tip">
-          <div class="title">Pro tip</div>
-          Most validators report the <strong>first failing location</strong>. Fixing that often reveals the next issue instantly.
+          <div class="title">Tip that saves time</div>
+          Most validators show the <strong>first failing location</strong>. Fixing it usually reveals the next issue immediately.
         </div>
 
-        <h2 id="common-errors">Common JSON Errors (and the Exact Fix)</h2>
+        <h2 id="common-errors">Common JSON errors (and the exact fix)</h2>
 
-        <h3 id="missing-comma">1) Missing comma (classic “Unexpected token” / “JSON parse error”)</h3>
-        <p>This is the most common error when JSON is edited by hand.</p>
+        <h3 id="missing-comma">1) Missing comma</h3>
+        <p>If you see errors like “Unexpected string” or “Expected ',' or '}'”, it’s often a missing comma between fields.</p>
 
         <pre><code>{
   "name": "Clickoz JSON Formatter"
   "type": "tool"
 }</code></pre>
 
-        <p>✅ Fix: add the comma.</p>
+        <p><strong>Fix:</strong> add the comma.</p>
 
         <pre><code>{
   "name": "Clickoz JSON Formatter",
@@ -216,68 +278,59 @@
 }</code></pre>
 
         <h3 id="quotes">2) Single quotes instead of double quotes</h3>
-        <div class="callout warn">
-          <div class="title">Rule</div>
-          JSON requires <strong>double quotes</strong> for keys and strings.
-        </div>
+        <p>JSON is strict: keys and strings must use <strong>double quotes</strong>.</p>
 
         <pre><code>{
   'name': 'Clickoz'
 }</code></pre>
 
-        <p>✅ Fix:</p>
+        <p><strong>Fix:</strong></p>
 
         <pre><code>{
   "name": "Clickoz"
 }</code></pre>
 
-        <figure>
-          <img
-            src="/assets/img/guides/json-formatting-debug/json_validator.png"
-            alt="JSON validator interface highlighting a syntax error"
-            loading="lazy"
-            width="1400"
-            height="800"
-          />
-          <figcaption>Validator view: the fastest way to catch syntax mistakes without guessing.</figcaption>
-        </figure>
+        <h3 id="trailing-comma">3) Trailing comma (not allowed)</h3>
+        <p>A trailing comma is a comma that appears right before <code>}</code> or <code>]</code>.</p>
 
-        <h3 id="trailing-comma">3) Trailing comma (NOT allowed in standard JSON)</h3>
         <pre><code>{
   "a": 1,
 }</code></pre>
 
-        <p>✅ Fix: remove the trailing comma.</p>
+        <p><strong>Fix:</strong> remove the last comma.</p>
 
         <pre><code>{
   "a": 1
 }</code></pre>
 
-        <h3 id="mismatched-brackets">4) Mismatched braces or brackets</h3>
+        <h3 id="brackets">4) Mismatched braces or brackets</h3>
+        <p>If something opens, it must close: <code>{ }</code> and <code>[ ]</code>.</p>
+
         <pre><code>{
   "items": [1, 2, 3
 }</code></pre>
 
-        <p>✅ Fix:</p>
+        <p><strong>Fix:</strong></p>
 
         <pre><code>{
   "items": [1, 2, 3]
 }</code></pre>
 
-        <h2 id="validate">Validate JSON (Stop Guessing)</h2>
+        <h2 id="line-column">How to read “line” and “column” errors</h2>
         <p>
-          If you’re debugging JSON inside API requests, config files, or JSON-LD schema, validation is the fastest way to avoid trial-and-error.
-          A validator catches missing commas, wrong quotes, trailing commas, broken nesting, and escaping issues.
+          Many errors point to where parsing failed (line/column). The real mistake is often right before that point.
+          Prettifying first makes this dramatically easier.
         </p>
 
         <div class="guide-cta">
-          <strong>Validate + Prettify in one step</strong><br />
-          Use <a href="/tools/json-formatter/">Clickoz JSON Formatter</a> to prettify, validate, and minify in one place.
+          <strong>Fastest option:</strong><br />
+          Paste JSON → click <strong>Format</strong> → see errors instantly in
+          <a href="/tools/json-formatter/">Clickoz JSON Formatter</a>.
         </div>
 
-        <h2 id="examples">JSON Formatting Examples (Copy-ready)</h2>
+        <h2 id="examples">Copy-ready examples</h2>
 
-        <h3 id="messy-to-pretty">Messy one-liner → readable JSON</h3>
+        <h3 id="messy">Messy one-liner → readable JSON</h3>
         <pre><code>{"product":{"name":"JSON Formatter","version":"2026","features":["prettify","validate","minify"],"pricing":{"free":true,"pro":false}}}</code></pre>
 
         <pre><code>{
@@ -292,18 +345,7 @@
   }
 }</code></pre>
 
-        <figure>
-          <img
-            src="/assets/img/guides/json-formatting-debug/json_examples.png"
-            alt="Incorrect JSON vs correct JSON comparison showing syntax fixes"
-            loading="lazy"
-            width="1400"
-            height="800"
-          />
-          <figcaption>Before/after: fix errors, validate again, then ship.</figcaption>
-        </figure>
-
-        <h2 id="prettify-minify">Prettify vs Minify vs Validate JSON</h2>
+        <h2 id="prettify-validate-minify">Prettify vs Validate vs Minify</h2>
         <div class="table-wrap">
           <table>
             <thead>
@@ -316,137 +358,144 @@
             <tbody>
               <tr>
                 <td><strong>Prettify</strong></td>
-                <td>Adds indentation and line breaks.</td>
-                <td>Debugging, editing, code review</td>
+                <td>Makes JSON readable (indentation + line breaks).</td>
+                <td>Debugging, editing, reviews</td>
               </tr>
               <tr>
                 <td><strong>Validate</strong></td>
-                <td>Checks strict JSON syntax rules.</td>
-                <td>Always (before shipping/pasting)</td>
+                <td>Checks strict JSON rules (real “is this valid?”).</td>
+                <td>Always, before you paste/ship</td>
               </tr>
               <tr>
                 <td><strong>Minify</strong></td>
-                <td>Removes whitespace for smaller payloads.</td>
+                <td>Removes whitespace to reduce size.</td>
                 <td>Production, transfer, storage</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h2 id="best-practices">Best Practices for JSON Debugging</h2>
-        <ul>
-          <li><strong>Validate after every edit</strong> (don’t rely on guessing).</li>
-          <li><strong>Prettify before reviews</strong> for clean diffs and fewer mistakes.</li>
-          <li><strong>Minify only for shipping</strong> to reduce payload size.</li>
-          <li><strong>Avoid comments</strong> (JSON doesn’t support them).</li>
-          <li><strong>Fix the first error first</strong>, then validate again.</li>
-        </ul>
+        <h2 id="seo-jsonld">JSON for SEO (JSON-LD)</h2>
+        <p>
+          If you’re adding structured data (JSON-LD) to a page, it must be valid JSON. A single trailing comma or wrong quote can
+          make Google ignore the markup.
+        </p>
 
-        <h2 id="related-tools">Tools that Fix the Next Problem</h2>
+        <div class="callout warn">
+          <div class="title">Quick check</div>
+          If your schema markup isn’t being detected, validate the JSON first—then re-test.
+        </div>
+
+        <h2 id="related">Related tools</h2>
         <ul>
-          <li><a href="/tools/json-formatter/">JSON Formatter</a> — prettify / validate / minify instantly</li>
-          <li><a href="/tools/url-encoder/">URL Encoder / Decoder</a> — safe query strings & parameters</li>
-          <li><a href="/tools/base64/">Base64 Encode / Decode</a> — inspect tokens and payloads quickly</li>
+          <li><a href="/tools/json-formatter/">JSON Formatter</a> — prettify, validate, minify</li>
+          <li><a href="/tools/url-encoder/">URL Encoder / Decoder</a> — safe query parameters</li>
+          <li><a href="/tools/base64/">Base64 Encode / Decode</a> — inspect tokens & payloads</li>
         </ul>
 
         <h2 id="faq">FAQ</h2>
         <details>
           <summary>Why does JSON parsing fail?</summary>
-          <p>Usually: missing commas, single quotes, trailing commas, or mismatched braces/brackets.</p>
+          <p>Most issues are missing commas, single quotes, trailing commas, or mismatched braces/brackets. Fix the first reported error, then validate again.</p>
         </details>
         <details>
-          <summary>Is a trailing comma allowed in JSON?</summary>
-          <p>No. Remove the final comma in objects/arrays.</p>
+          <summary>Are trailing commas allowed in JSON?</summary>
+          <p>No. Remove the final comma inside objects or arrays.</p>
         </details>
         <details>
           <summary>Should I prettify or minify JSON?</summary>
-          <p>Prettify for debugging/editing; minify for production payload size.</p>
+          <p>Prettify while debugging/editing; minify only when shipping.</p>
         </details>
         <details>
-          <summary>Is JSON important for SEO?</summary>
-          <p>Yes. JSON-LD schema must be valid JSON or search engines may ignore it.</p>
+          <summary>Does JSON matter for SEO?</summary>
+          <p>Yes. JSON-LD structured data must be valid JSON or search engines may ignore it.</p>
         </details>
 
-        <h2 id="search-intent">SEO search intents</h2>
-        <p>This section matches real developer intent without keyword stuffing.</p>
-
-        <h3>Most common queries</h3>
-        <p>
-          json formatting debug json parse error unexpected token json json validator validate json prettify json pretty print json
-          json beautifier json formatter online minify json trailing comma json error fix json syntax api response formatter
+        <p style="margin-top:18px;opacity:.82;">
+          <strong>Last updated:</strong> 2026-02-15 · <a href="/guides/">Browse all guides</a>
         </p>
-
-        <h3>Long-tail questions</h3>
-        <p>
-          how to fix invalid json why json is not valid how to validate json how to prettify json how to minify json
-          trailing comma json error unexpected token in json json line column error best json formatter
-        </p>
-
-        <p><strong>Last updated:</strong> 2026-02-15 · <a href="/guides/">Browse all guides</a></p>
       </article>
 
-      <!-- TOC -->
-      <aside class="guide-aside panel">
+      <!-- ASIDE / TOC -->
+      <aside class="guide-aside panel" aria-label="Table of contents">
         <div class="guide-toc"></div>
 
         <div style="margin-top:12px">
           <a class="btn-guide primary" href="/tools/json-formatter/">Open JSON Formatter</a>
         </div>
+
+        <div style="margin-top:12px">
+          <a class="btn-guide" href="/tools/json-minifier/">Need smaller JSON? Try JSON Minifier</a>
+        </div>
       </aside>
     </section>
   </main>
 
-  <!-- =========================
-       SITE FOOTER (CMS)
-  ========================== -->
-  <footer class="site-footer" role="contentinfo">
-    <div class="wrap">
-      <div class="footer-cols">
-        <div>
-          <h4>Clickoz</h4>
-          <p><a href="/tools/">Tools</a> • <a href="/guides/">Guides</a> • <a href="/updates/">Updates</a></p>
-        </div>
-        <div>
-          <h4>Popular tools</h4>
-          <p>
-            <a href="/tools/word-counter/">Word Counter</a> •
-            <a href="/tools/readability/">Readability</a> •
-            <a href="/tools/meta-tags/">Meta Tags</a> •
-            <a href="/tools/json-formatter/">JSON Formatter</a>
-          </p>
-        </div>
-        <div>
-          <h4>Legal</h4>
-          <p><a href="/privacy/">Privacy</a> • <a href="/terms/">Terms</a> • <a href="/contact/">Contact</a></p>
+  <!-- FOOTER (CMS) -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <h4>Clickoz</h4>
+        <div class="footer-links">
+          <a href="/tools/">Tools</a>
+          <a href="/guides/">Guides</a>
+          <a href="/updates/">Updates</a>
         </div>
       </div>
 
-      <hr style="border:0;height:1px;background:rgba(255,255,255,.10);margin:16px 0">
+      <div>
+        <h4>Popular tools</h4>
+        <div class="footer-links">
+          <a href="/tools/word-counter/">Word Counter</a>
+          <a href="/tools/readability-analyzer/">Readability</a>
+          <a href="/tools/meta-tags/">Meta Tags</a>
+          <a href="/tools/json-formatter/">JSON Formatter</a>
+        </div>
+      </div>
 
-      <p style="opacity:.78;margin:0">© 2026 Clickoz • Fast tools for SEO, writing and developers</p>
+      <div>
+        <h4>Legal</h4>
+        <div class="footer-links">
+          <a href="/privacy/">Privacy</a>
+          <a href="/terms/">Terms</a>
+          <a href="/contact/">Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top:14px">
+      <hr class="sep" />
+      <div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">
+        © 2026 Clickoz • Fast tools for SEO, writing and developers
+      </div>
     </div>
   </footer>
 
-  <!-- Cookies (CMS) -->
-  <div class="cookie-modal" data-cookies hidden>
-    <div class="cookie-card panel" style="padding:16px; max-width:720px; margin: 20px auto;">
-      <button type="button" class="drawer-close" data-cookies-close aria-label="Close">×</button>
-      <h3>Privacy choices</h3>
-      <p>
-        We use essential storage for core features. If you accept all, we may load third-party services like Google Translate.
-        Read more in <a href="/privacy/">Privacy</a>.
-      </p>
-      <div class="guide-actions" style="margin-top:10px">
-        <button class="btn-guide" type="button" data-cookies-refuse>Refuse</button>
-        <button class="btn-guide" type="button" data-cookies-essential>Essential only</button>
-        <button class="btn-guide primary" type="button" data-cookies-accept>Accept all</button>
+  <!-- Cookie banner (CMS) -->
+  <div class="cookie" role="dialog" aria-live="polite" aria-label="Cookie preferences">
+    <div class="cookie-card">
+      <button class="cookie-x" id="cookieClose" type="button" aria-label="Close">×</button>
+
+      <div class="cookie-content">
+        <div class="cookie-title">Privacy choices</div>
+        <div class="cookie-text">
+          We use essential storage for core features. If you accept all, we may load third-party services like Google Translate.
+          Read more in <a href="/privacy/">Privacy</a>.
+        </div>
+      </div>
+
+      <div class="cookie-actions">
+        <button class="btn cookie-btn" id="cookieReject" type="button">Refuse</button>
+        <button class="btn cookie-btn" id="cookieEssential" type="button">Essential only</button>
+        <button class="btn primary cookie-btn" id="cookieAccept" type="button">Accept all</button>
       </div>
     </div>
   </div>
 
-  <div class="toast"></div>
+  <!-- Base site behavior -->
+  <script src="/assets/site.js" defer></script>
 
-  <script src="/assets/site.js"></script>
-  <script src="/assets/guide.js"></script>
+  <!-- Guide behavior (TOC + reading bar etc.) -->
+  <script src="/assets/guide.js?v=1" defer></script>
 </body>
 </html>
