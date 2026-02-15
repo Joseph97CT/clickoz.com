@@ -31,10 +31,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet" />
 
-  <!-- Base site + guides directory skin (optional but helps consistency) -->
+  <!-- Base site + optional guides directory skin (keeps typography/chips consistent) -->
   <link rel="stylesheet" href="/assets/site.css?v=5" />
   <link rel="stylesheet" href="/guides/guides.css?v=3" />
-  <!-- ✅ Article/guide layer lives in assets -->
+  <!-- ✅ Single-guide layer -->
   <link rel="stylesheet" href="/assets/guide.css?v=2" />
 
   <!-- Breadcrumb Schema -->
@@ -204,7 +204,7 @@
       <span aria-current="page">Fix JSON Errors</span>
     </nav>
 
-    <!-- BOX 1 -->
+    <!-- HERO BOX -->
     <header class="hero-box guide-hero" aria-label="Guide hero">
       <p class="guide-kicker">Dev • JSON • Beginner-friendly • Updated 2026</p>
 
@@ -226,33 +226,11 @@
       <!-- ✅ two buttons centered under the first box -->
       <div class="guide-actions" aria-label="Guide actions">
         <a class="btn-guide primary" href="/tools/json-formatter/">Open JSON Formatter</a>
-        <a class="btn-guide" href="#routine">Jump to routine</a>
+        <a class="btn-guide" href="#common-errors">Jump to routine</a>
       </div>
 
       <div class="readingbar" aria-hidden="true"><i></i></div>
     </header>
-
-    <!-- BOX 2 -->
-    <section class="hero-box workflow-box" aria-label="Workflow and quick routine" style="margin-top:14px;">
-      <h2 class="section-title" style="margin:0 0 8px;">Workflow: prettify → validate → fix → validate again → minify</h2>
-      <p class="wf-lead">
-        This is the fastest way to fix JSON without guessing. Fix the <b>first</b> error, re-validate, and repeat.
-        It works for API payloads, config files, and JSON-LD schema.
-      </p>
-
-      <ol class="wf-list" id="routine">
-        <li><strong>Prettify</strong> first so you can see structure clearly.</li>
-        <li><strong>Validate</strong> and focus on the first error (line/column).</li>
-        <li><strong>Fix one issue</strong> (don’t edit everything at once).</li>
-        <li><strong>Validate again</strong> until it’s clean.</li>
-        <li><strong>Minify only when shipping</strong> (production, storage, transfer).</li>
-      </ol>
-
-      <div class="callout tip" style="margin-top:12px;">
-        <div class="title">Shortcut that saves time</div>
-        Validators usually report the <strong>first failing location</strong>. Fix that first—then the next issue becomes obvious.
-      </div>
-    </section>
 
     <!-- GRID -->
     <section class="guide-grid" aria-label="Guide content layout" style="margin-top:14px;">
@@ -327,8 +305,7 @@
         <h2 id="line-column">How to read line/column errors</h2>
         <p>
           The error pointer often shows where parsing failed, not necessarily where you made the mistake.
-          In practice, the issue is commonly right <em>before</em> the highlighted spot.
-          Prettifying first makes this much easier.
+          In practice, the issue is commonly right <em>before</em> the highlighted spot. Prettifying first makes this much easier.
         </p>
 
         <div class="callout tip">
@@ -420,6 +397,26 @@
           <p>Yes. JSON-LD must be valid JSON or search engines may ignore it.</p>
         </details>
 
+        <!-- ✅ NEW: "On this page" box moved INSIDE article near the end to widen the page -->
+        <section class="hero-box" aria-label="On this page" style="margin-top:16px;">
+          <h2 class="section-title" style="margin:0 0 10px;">On this page</h2>
+
+          <div class="seo-boost-links" aria-label="In-page links">
+            <a href="#common-errors">Common JSON errors (and the exact fix)</a>
+            <a href="#line-column">How to read line/column errors</a>
+            <a href="#examples">Copy-ready examples</a>
+            <a href="#prettify-validate-minify">Prettify vs validate vs minify</a>
+            <a href="#jsonld">JSON and SEO (JSON-LD)</a>
+            <a href="#related-tools">Related tools</a>
+            <a href="#faq">FAQ</a>
+          </div>
+
+          <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+            <a class="btn-guide primary" href="/tools/json-formatter/">Open JSON Formatter</a>
+            <a class="btn-guide" href="/tools/json-minifier/">Need smaller JSON? JSON Minifier</a>
+          </div>
+        </section>
+
         <p class="guide-updated">
           <strong>Last updated:</strong> 2026-02-15 · <a href="/guides/">Browse all guides</a>
         </p>
@@ -498,7 +495,6 @@
   </div>
 
   <script src="/assets/site.js" defer></script>
-  <!-- ✅ Guide JS lives in assets -->
   <script src="/assets/guide.js" defer></script>
 </body>
 </html>
