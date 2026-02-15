@@ -1,0 +1,276 @@
+/* =========================================================
+   Clickoz — guide.css (SAFE)
+   Applies ONLY when body.page-guide exists (added by guide.js)
+   Does NOT override site.css globally.
+========================================================= */
+
+body.page-guide main { padding-bottom: 34px; }
+
+body.page-guide h1 { letter-spacing:-0.02em; line-height:1.08; }
+body.page-guide h2 { margin:26px 0 10px; letter-spacing:-0.01em; line-height:1.2; }
+body.page-guide h3 { margin:18px 0 8px; line-height:1.25; }
+
+body.page-guide p,
+body.page-guide li { line-height: 1.85; }
+
+/* Meta line */
+body.page-guide .guide-kicker { opacity:.86; font-size:13px; margin:0 0 8px; }
+
+/* Hero blocks (tool-like) */
+body.page-guide .guide-hero {
+  padding: 16px 0 6px;
+}
+body.page-guide .guide-sub {
+  opacity: .90;
+  max-width: 80ch;
+}
+body.page-guide .guide-meta {
+  display:flex; flex-wrap:wrap; gap:10px;
+  margin: 12px 0 10px;
+  font-size: 13px;
+  opacity: .88;
+}
+body.page-guide .chip {
+  display:inline-flex; align-items:center; gap:8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
+}
+body.page-guide .guide-actions {
+  display:flex; flex-wrap:wrap; gap:10px;
+  margin: 12px 0 0;
+}
+body.page-guide .btn-guide{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  font-weight: 900;
+  text-decoration: none;
+}
+body.page-guide .btn-guide:hover { background: rgba(255,255,255,.09); }
+body.page-guide .btn-guide.primary{
+  background: linear-gradient(135deg, rgba(124,92,255,.28), rgba(46,233,166,.12));
+}
+@media (max-width:560px){
+  body.page-guide .btn-guide { width:100%; }
+}
+
+/* Grid: content + toc */
+body.page-guide .guide-grid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items:start;
+  padding: 14px 0 34px;
+}
+@media (min-width:980px){
+  body.page-guide .guide-grid{ grid-template-columns: 1fr 340px; }
+  body.page-guide .guide-aside{ position: sticky; top: 88px; }
+}
+
+/* Panel (like tool cards) */
+body.page-guide .panel{
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  border-radius: 18px;
+  box-shadow: 0 16px 50px rgba(0,0,0,.22);
+}
+
+/* Content padding */
+body.page-guide .guide-content{ padding: 18px; }
+body.page-guide .guide-aside{ padding: 16px; }
+
+/* TOC */
+body.page-guide .guide-toc h3{
+  margin:0 0 8px;
+  font-size:14px;
+  font-weight: 950;
+  letter-spacing:.02em;
+  text-transform: uppercase;
+  opacity: .90;
+}
+body.page-guide .guide-toc p{
+  margin:0 0 10px;
+  font-size:13px;
+  opacity:.78;
+}
+body.page-guide .guide-toc ol{
+  margin:0;
+  padding-left:18px;
+  display:grid;
+  gap:6px;
+}
+body.page-guide .guide-toc a{
+  text-decoration:none;
+  opacity:.86;
+}
+body.page-guide .guide-toc a:hover{ opacity:1; text-decoration: underline; }
+body.page-guide .guide-toc a[aria-current="true"]{ opacity:1; text-decoration: underline; }
+
+/* Callouts */
+body.page-guide .callout{
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.14);
+}
+body.page-guide .callout .title{ font-weight: 950; margin: 0 0 6px; }
+body.page-guide .callout.tip{
+  border-color: rgba(46,233,166,.26);
+  background: rgba(46,233,166,.07);
+}
+body.page-guide .callout.warn{
+  border-color: rgba(255,204,102,.26);
+  background: rgba(255,204,102,.07);
+}
+body.page-guide .callout.danger{
+  border-color: rgba(255,107,107,.26);
+  background: rgba(255,107,107,.07);
+}
+
+/* CTA */
+body.page-guide .guide-cta{
+  margin: 14px 0;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: linear-gradient(135deg, rgba(124,92,255,.18), rgba(46,233,166,.07));
+}
+body.page-guide .guide-cta a{
+  text-decoration:none;
+  font-weight: 900;
+  border-bottom: 1px solid rgba(255,255,255,.14);
+}
+
+/* Figures */
+body.page-guide figure{
+  margin: 14px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+}
+body.page-guide figure img{ width:100%; height:auto; display:block; }
+body.page-guide figcaption{
+  padding: 10px 12px;
+  font-size: 13px;
+  opacity: .78;
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+
+/* Tables */
+body.page-guide .table-wrap{
+  overflow-x:auto;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.14);
+  margin: 12px 0;
+}
+body.page-guide table{
+  width:100%;
+  border-collapse: collapse;
+  min-width: 560px;
+}
+body.page-guide th, body.page-guide td{
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  text-align:left;
+  vertical-align: top;
+}
+body.page-guide th{
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  opacity: .82;
+  background: rgba(255,255,255,.03);
+}
+
+/* Code blocks + copy */
+body.page-guide .codeblock{
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.22);
+  overflow: hidden;
+  margin: 12px 0;
+}
+body.page-guide .codeblock__head{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+  font-size: 13px;
+  opacity: .92;
+}
+body.page-guide .codeblock__head button{
+  appearance:none;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.04);
+  border-radius: 12px;
+  height: 34px;
+  padding: 0 10px;
+  font-weight: 900;
+  cursor:pointer;
+}
+body.page-guide .codeblock__head button:hover{ background: rgba(255,255,255,.07); }
+body.page-guide pre{
+  margin:0;
+  padding: 12px;
+  overflow:auto;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+body.page-guide code{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+}
+
+/* FAQ */
+body.page-guide details{
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  background: rgba(0,0,0,.14);
+  padding: 10px 12px;
+  margin: 10px 0;
+}
+body.page-guide summary{ cursor:pointer; font-weight: 950; }
+
+/* Progress bar */
+body.page-guide .readingbar{
+  height: 3px;
+  width: 100%;
+  background: rgba(255,255,255,.08);
+  border-radius: 999px;
+  overflow:hidden;
+  margin: 10px 0 0;
+}
+body.page-guide .readingbar > i{
+  display:block;
+  height:100%;
+  width:0%;
+  background: linear-gradient(90deg, rgba(124,92,255,.95), rgba(46,233,166,.95));
+}
+
+/* Toast */
+body.page-guide .toast{
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.62);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+  z-index: 9999;
+  max-width: min(520px, calc(100% - 28px));
+  text-align: center;
+  font-size: 13px;
+  font-weight: 850;
+}
+body.page-guide .toast[data-show="true"]{ opacity: 1; }
