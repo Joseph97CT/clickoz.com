@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Fix JSON Parse Errors (Missing Commas, Quotes, Trailing Commas) | Clickoz</title>
-  <meta name="description" content="Fix invalid JSON fast. Learn a simple step-by-step routine to find missing commas, wrong quotes, trailing commas, and bracket issues. Includes copy-ready examples and a direct JSON Formatter shortcut." />
+  <meta name="description" content="Fix invalid JSON fast. Follow a simple routine to prettify, validate, and solve common JSON errors like missing commas, single quotes, trailing commas, and bracket issues. Copy-ready examples included." />
 
   <link rel="canonical" href="https://clickoz.com/guides/json-formatting-debug/" />
   <meta name="robots" content="index,follow" />
@@ -14,7 +14,7 @@
   <meta property="og:site_name" content="Clickoz" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Fix JSON Parse Errors (Missing Commas, Quotes, Trailing Commas)" />
-  <meta property="og:description" content="A simple routine to validate, prettify, and fix JSON errors in seconds—plus examples and tool shortcuts." />
+  <meta property="og:description" content="A beginner-friendly routine to validate and fix JSON errors—plus examples and tool shortcuts." />
   <meta property="og:url" content="https://clickoz.com/guides/json-formatting-debug/" />
   <meta property="og:image" content="https://clickoz.com/assets/img/guides/json-formatting-debug/json_intro.png" />
 
@@ -29,11 +29,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet" />
 
-  <!-- Base site + guide layer -->
   <link rel="stylesheet" href="/assets/site.css?v=5" />
-  <link rel="stylesheet" href="/assets/guide.css?v=1" />
+  <link rel="stylesheet" href="/guides/guide.css?v=1" />
 
-  <!-- ✅ JSON-LD -->
+  <!-- JSON-LD: breadcrumbs -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -41,11 +40,12 @@
     "itemListElement":[
       {"@type":"ListItem","position":1,"name":"Home","item":"https://clickoz.com/"},
       {"@type":"ListItem","position":2,"name":"Guides","item":"https://clickoz.com/guides/"},
-      {"@type":"ListItem","position":3,"name":"Fix JSON Errors","item":"https://clickoz.com/guides/json-formatting-debug/"}
+      {"@type":"ListItem","position":3,"name":"Fix JSON Parse Errors","item":"https://clickoz.com/guides/json-formatting-debug/"}
     ]
   }
   </script>
 
+  <!-- JSON-LD: Article -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -56,48 +56,27 @@
     "datePublished":"2026-02-15",
     "dateModified":"2026-02-15",
     "author":{"@type":"Organization","name":"Clickoz"},
-    "publisher":{
-      "@type":"Organization",
-      "name":"Clickoz",
-      "logo":{"@type":"ImageObject","url":"https://clickoz.com/assets/img/logo.png"}
-    },
+    "publisher":{"@type":"Organization","name":"Clickoz"},
     "mainEntityOfPage":{"@type":"WebPage","@id":"https://clickoz.com/guides/json-formatting-debug/"}
   }
   </script>
 
+  <!-- JSON-LD: FAQ -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
     "@type":"FAQPage",
     "mainEntity":[
-      {
-        "@type":"Question",
-        "name":"Why does JSON parsing fail?",
-        "acceptedAnswer":{"@type":"Answer","text":"Most JSON errors come from missing commas, using single quotes, trailing commas, or mismatched braces/brackets. Fix the first error location (line/column), then validate again."}
-      },
-      {
-        "@type":"Question",
-        "name":"Are trailing commas allowed in JSON?",
-        "acceptedAnswer":{"@type":"Answer","text":"No. Standard JSON does not allow trailing commas. Remove the final comma inside objects or arrays."}
-      },
-      {
-        "@type":"Question",
-        "name":"Should I prettify or minify JSON?",
-        "acceptedAnswer":{"@type":"Answer","text":"Prettify while debugging and editing to see structure clearly. Minify only when shipping (production payloads, storage, or transfer) to reduce size."}
-      },
-      {
-        "@type":"Question",
-        "name":"Does JSON matter for SEO?",
-        "acceptedAnswer":{"@type":"Answer","text":"Yes. JSON-LD structured data must be valid JSON. If it’s invalid, search engines may ignore it."}
-      }
+      {"@type":"Question","name":"Why does JSON parsing fail?","acceptedAnswer":{"@type":"Answer","text":"Most JSON errors come from missing commas, using single quotes, trailing commas, or mismatched braces/brackets. Prettify first, then fix the first reported error location (line/column) and validate again."}},
+      {"@type":"Question","name":"Are trailing commas allowed in JSON?","acceptedAnswer":{"@type":"Answer","text":"No. Standard JSON does not allow trailing commas. Remove the final comma inside objects or arrays."}},
+      {"@type":"Question","name":"Should I prettify or minify JSON?","acceptedAnswer":{"@type":"Answer","text":"Prettify while debugging and editing to see structure clearly. Minify only when shipping (production payloads, storage, or transfer) to reduce size."}},
+      {"@type":"Question","name":"Does JSON matter for SEO?","acceptedAnswer":{"@type":"Answer","text":"Yes. JSON-LD structured data must be valid JSON. If it’s invalid, search engines may ignore it."}}
     ]
   }
   </script>
 </head>
 
-<body class="bigtext guides-page">
-  <a class="skip-link" href="#content">Skip to content</a>
-
+<body class="bigtext guides-article">
   <!-- FX layers -->
   <div id="clickozParticles" aria-hidden="true"></div>
   <canvas id="spaceParticles" aria-hidden="true"></canvas>
@@ -157,7 +136,7 @@
     </div>
   </nav>
 
-  <!-- Mobile menu (CMS) -->
+  <!-- Mobile menu -->
   <div class="m-overlay" id="mOverlay" hidden></div>
   <aside class="m-menu" id="mobileMenu" aria-hidden="true">
     <div class="m-head">
@@ -197,9 +176,9 @@
   </aside>
 
   <!-- MAIN -->
-  <main id="content" class="section container" aria-label="Guide content">
-    <!-- Breadcrumbs -->
-    <nav class="crumbs" aria-label="Breadcrumb" style="margin-bottom:14px">
+  <main class="section container" aria-label="Guide">
+    <!-- Breadcrumbs (kept for SEO + UX, styled subtle) -->
+    <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">Home</a>
       <span class="sep">›</span>
       <a href="/guides/">Guides</a>
@@ -207,63 +186,65 @@
       <span aria-current="page">Fix JSON Errors</span>
     </nav>
 
-    <!-- HERO -->
-    <header class="guide-hero" aria-label="Guide hero">
+    <!-- HERO BOX (same “Guides directory” style) -->
+    <header class="hero-box guide-hero" aria-label="Guide hero">
       <p class="guide-kicker">Dev • JSON • Beginner-friendly • Updated 2026</p>
 
-      <h1>Fix JSON parse errors (fast): commas, quotes, trailing commas</h1>
+      <h1 class="section-title" style="margin-top:6px;">
+        Fix JSON parse errors (fast): commas, quotes, trailing commas
+      </h1>
 
-      <p class="guide-sub">
+      <p class="section-sub" style="margin-bottom:14px;">
         If JSON is invalid, APIs fail, config files won’t load, and JSON-LD schema can break.
-        This guide shows a simple routine that works every time: <strong>prettify → validate → fix → validate again</strong>.
+        This guide shows a simple routine that works every time: <b>prettify → validate → fix → validate again</b>.
       </p>
 
-      <div class="guide-meta">
+      <div class="guide-meta" aria-label="Guide highlights">
         <span class="chip">Reading time: ~6–8 min</span>
         <span class="chip">Level: Beginner → Intermediate</span>
         <span class="chip">Use cases: API payloads, configs, JSON-LD</span>
       </div>
 
-      <div class="guide-actions">
+      <div class="guide-actions" aria-label="Guide actions">
         <a class="btn-guide primary" href="/tools/json-formatter/">Open JSON Formatter</a>
-        <a class="btn-guide" href="#routine">Jump to the routine</a>
+        <a class="btn-guide" href="#routine">Jump to routine</a>
       </div>
 
-      <div class="readingbar"><i></i></div>
+      <div class="readingbar" aria-hidden="true"><i></i></div>
     </header>
 
-    <section class="guide-grid" aria-label="Guide layout">
-      <!-- ARTICLE -->
-      <article class="guide-content panel" aria-label="Article">
-        <figure>
+    <!-- CONTENT GRID -->
+    <section class="guide-grid" aria-label="Guide content layout">
+      <article class="panel guide-content" id="article">
+        <figure class="guide-figure">
           <img
             src="/assets/img/guides/json-formatting-debug/json_intro.png"
-            alt="JSON formatting workflow: prettify, validate, fix, and minify"
+            alt="Workflow: prettify JSON, validate it, fix syntax errors, then minify when shipping"
             loading="lazy"
             width="1400"
             height="800"
           />
-          <figcaption>Best workflow: prettify → validate → fix one issue → validate again → minify only when shipping.</figcaption>
+          <figcaption>Workflow: prettify → validate → fix one error → validate again → minify for production.</figcaption>
         </figure>
 
-        <h2 id="routine">The JSON Fix Routine (do this every time)</h2>
+        <h2 id="routine">The JSON fix routine (do this every time)</h2>
         <ol>
-          <li><strong>Prettify</strong> your JSON so the structure is readable.</li>
+          <li><strong>Prettify</strong> first so you can see structure clearly.</li>
           <li><strong>Validate</strong> and focus on the first error (line/column).</li>
           <li><strong>Fix one issue</strong> (don’t edit everything at once).</li>
           <li><strong>Validate again</strong> until it’s clean.</li>
-          <li><strong>Minify</strong> only when you’re ready to ship.</li>
+          <li><strong>Minify only when shipping</strong> (production, storage, transfer).</li>
         </ol>
 
         <div class="callout tip">
-          <div class="title">Tip that saves time</div>
-          Most validators show the <strong>first failing location</strong>. Fixing it usually reveals the next issue immediately.
+          <div class="title">Shortcut that saves time</div>
+          Validators usually report the <strong>first failing location</strong>. Fix that first—then the next issue becomes obvious.
         </div>
 
         <h2 id="common-errors">Common JSON errors (and the exact fix)</h2>
 
         <h3 id="missing-comma">1) Missing comma</h3>
-        <p>If you see errors like “Unexpected string” or “Expected ',' or '}'”, it’s often a missing comma between fields.</p>
+        <p>Typical messages: “Expected ',' or '}'” or “Unexpected string”.</p>
 
         <pre><code>{
   "name": "Clickoz JSON Formatter"
@@ -277,7 +258,7 @@
   "type": "tool"
 }</code></pre>
 
-        <h3 id="quotes">2) Single quotes instead of double quotes</h3>
+        <h3 id="single-quotes">2) Single quotes instead of double quotes</h3>
         <p>JSON is strict: keys and strings must use <strong>double quotes</strong>.</p>
 
         <pre><code>{
@@ -291,7 +272,7 @@
 }</code></pre>
 
         <h3 id="trailing-comma">3) Trailing comma (not allowed)</h3>
-        <p>A trailing comma is a comma that appears right before <code>}</code> or <code>]</code>.</p>
+        <p>A trailing comma appears right before <code>}</code> or <code>]</code>.</p>
 
         <pre><code>{
   "a": 1,
@@ -304,7 +285,7 @@
 }</code></pre>
 
         <h3 id="brackets">4) Mismatched braces or brackets</h3>
-        <p>If something opens, it must close: <code>{ }</code> and <code>[ ]</code>.</p>
+        <p>Everything that opens must close: <code>{ }</code> and <code>[ ]</code>.</p>
 
         <pre><code>{
   "items": [1, 2, 3
@@ -316,10 +297,10 @@
   "items": [1, 2, 3]
 }</code></pre>
 
-        <h2 id="line-column">How to read “line” and “column” errors</h2>
+        <h2 id="line-column">How to read line/column errors</h2>
         <p>
-          Many errors point to where parsing failed (line/column). The real mistake is often right before that point.
-          Prettifying first makes this dramatically easier.
+          The error pointer often shows where parsing failed, not necessarily where you made the mistake.
+          In practice, the issue is commonly right <em>before</em> the highlighted spot. Prettifying first makes this much easier.
         </p>
 
         <div class="guide-cta">
@@ -345,7 +326,7 @@
   }
 }</code></pre>
 
-        <h2 id="prettify-validate-minify">Prettify vs Validate vs Minify</h2>
+        <h2 id="prettify-validate-minify">Prettify vs validate vs minify</h2>
         <div class="table-wrap">
           <table>
             <thead>
@@ -363,30 +344,30 @@
               </tr>
               <tr>
                 <td><strong>Validate</strong></td>
-                <td>Checks strict JSON rules (real “is this valid?”).</td>
+                <td>Checks strict JSON rules.</td>
                 <td>Always, before you paste/ship</td>
               </tr>
               <tr>
                 <td><strong>Minify</strong></td>
                 <td>Removes whitespace to reduce size.</td>
-                <td>Production, transfer, storage</td>
+                <td>Production, storage, transfer</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h2 id="seo-jsonld">JSON for SEO (JSON-LD)</h2>
+        <h2 id="jsonld">JSON and SEO (JSON-LD)</h2>
         <p>
-          If you’re adding structured data (JSON-LD) to a page, it must be valid JSON. A single trailing comma or wrong quote can
-          make Google ignore the markup.
+          Structured data (JSON-LD) must be valid JSON. One trailing comma or wrong quote can make Google ignore the markup.
+          If rich results aren’t showing, validate your JSON-LD first.
         </p>
 
         <div class="callout warn">
           <div class="title">Quick check</div>
-          If your schema markup isn’t being detected, validate the JSON first—then re-test.
+          If schema isn’t detected, validate the JSON (strict), then re-test.
         </div>
 
-        <h2 id="related">Related tools</h2>
+        <h2 id="related-tools">Related tools</h2>
         <ul>
           <li><a href="/tools/json-formatter/">JSON Formatter</a> — prettify, validate, minify</li>
           <li><a href="/tools/url-encoder/">URL Encoder / Decoder</a> — safe query parameters</li>
@@ -408,30 +389,26 @@
         </details>
         <details>
           <summary>Does JSON matter for SEO?</summary>
-          <p>Yes. JSON-LD structured data must be valid JSON or search engines may ignore it.</p>
+          <p>Yes. JSON-LD must be valid JSON or search engines may ignore it.</p>
         </details>
 
-        <p style="margin-top:18px;opacity:.82;">
+        <p class="guide-updated">
           <strong>Last updated:</strong> 2026-02-15 · <a href="/guides/">Browse all guides</a>
         </p>
       </article>
 
-      <!-- ASIDE / TOC -->
-      <aside class="guide-aside panel" aria-label="Table of contents">
-        <div class="guide-toc"></div>
+      <aside class="panel guide-aside" aria-label="Table of contents">
+        <div class="guide-toc" id="guideToc"></div>
 
-        <div style="margin-top:12px">
+        <div class="aside-cta">
           <a class="btn-guide primary" href="/tools/json-formatter/">Open JSON Formatter</a>
-        </div>
-
-        <div style="margin-top:12px">
-          <a class="btn-guide" href="/tools/json-minifier/">Need smaller JSON? Try JSON Minifier</a>
+          <a class="btn-guide" href="/tools/json-minifier/">Need smaller JSON? JSON Minifier</a>
         </div>
       </aside>
     </section>
   </main>
 
-  <!-- FOOTER (CMS) -->
+  <!-- FOOTER -->
   <footer class="footer">
     <div class="container footer-grid">
       <div>
@@ -471,7 +448,7 @@
     </div>
   </footer>
 
-  <!-- Cookie banner (CMS) -->
+  <!-- Cookie banner -->
   <div class="cookie" role="dialog" aria-live="polite" aria-label="Cookie preferences">
     <div class="cookie-card">
       <button class="cookie-x" id="cookieClose" type="button" aria-label="Close">×</button>
@@ -492,10 +469,7 @@
     </div>
   </div>
 
-  <!-- Base site behavior -->
   <script src="/assets/site.js" defer></script>
-
-  <!-- Guide behavior (TOC + reading bar etc.) -->
-  <script src="/assets/guide.js?v=1" defer></script>
+  <script src="/guides/guide.js?v=1" defer></script>
 </body>
 </html>
