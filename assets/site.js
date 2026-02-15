@@ -846,3 +846,254 @@
   })();
 
 })();
+/* =========================================================
+   Clickoz — guide.js
+   SAFE MODE:
+   - Runs ONLY on /guides/
+   - Adds minimal behavior (TOC active, copy, smooth scroll, progress)
+   - Does NOT touch site-wide components
+   ========================================================= */
+
+(() => {
+  "use strict";
+
+  const isGuidePath = () => {
+    const p = window.location.pathname || "";
+    return p.includes("/guides/");
+  };
+
+  if (!isGuidePath()) return;
+
+  document.documentElement.classList.add("is-guide");
+  document.body.classList.add("page-guide");
+
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  const HEADER_OFFSET = 78; // safe approximate for sticky header on Clickoz
+  const ACTIVE_ATTR = "aria-current";
+
+  /* ---------- Toast ---------- */
+  const toastEl = $(".toast");
+  const toast = (msg) => {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.setAttribute("data-show", "true");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => toastEl.removeAttribute("data-show"), 1200);
+  };
+
+  /* ---------- Reading Progress ---------- */
+  const progressBar = $(".readingbar i");
+  const updateProgress = () => {
+    if (!progressBar) return;
+    const doc = document.documentElement;
+    const scrollTop = doc.scrollTop || document.body.scrollTop;
+    const scrollHeight = doc.scrollHeight - doc.clientHeight;
+    const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    progressBar.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+  };
+
+  /* ---------- Smooth scroll for hash links ---------- */
+  const smoothScrollTo = (el) => {
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.pageYOffset - HEADER_OFFSET;
+    window.scrollTo({ top: y, behavior: "smooth" });
+  };
+
+  const bindSmoothAnchors = () => {
+    $$('a[href^="#"]').forEach((a) => {
+      const href = a.getAttribute("href");
+      if (!href || href === "#") return;
+      const id = href.slice(1);
+      const target = document.getElementById(id);
+      if (!target) return;
+
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        smoothScrollTo(target);
+        history.pushState(null, "", `#${id}`);
+      });
+    });
+  };
+
+  /* ---------- Code blocks: wrap + copy buttons (guide-only) ---------- */
+  const wrapCodeBlocks = () => {
+    // Only inside main/article-ish areas to avoid picking up nav/footer snippets
+    const scope = $("main") || document.body;
+
+    const pres = $$("pre", scope).filter((pre) => pre.querySelector("code"));
+    pres.forEach((pre) => {
+      // Skip if already wrapped
+      const parent = pre.parentElement;
+      if (!parent) return;
+      if (parent.classList && parent.classList.contains("codeblock")) return;
+
+      const code = pre.querySelector("code");
+      if (!code) return;
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "codeblock";
+
+      const head = document.createElement("div");
+      head.className = "codeblock__head";
+
+      const label = document.createElement("span");
+      label.textContent = "Code";
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.setAttribute("data-copy", "true");
+      btn.textContent = "Copy";
+
+      head.appendChild(label);
+      head.appendChild(btn);
+
+      parent.insertBefore(wrapper, pre);
+      wrapper.appendChild(head);
+      wrapper.appendChild(pre);
+    });
+  };
+
+  const copyText = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (_) {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        return true;
+      } catch (__) {
+        return false;
+      }
+    }
+  };
+
+  const bindCopyButtons = () => {
+    $$(".codeblock [data-copy]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const wrap = btn.closest(".codeblock");
+        const pre = wrap ? $("pre", wrap) : null;
+        const code = pre ? pre.innerText || pre.textContent || "" : "";
+        const ok = await copyText(code);
+
+        if (ok) {
+          const old = btn.textContent;
+          btn.textContent = "Copied";
+          toast("Copied to clipboard");
+          setTimeout(() => (btn.textContent = old || "Copy"), 900);
+        } else {
+          toast("Copy failed");
+        }
+      });
+    });
+  };
+
+  /* ---------- TOC: build from h2[id] ---------- */
+  const buildTOC = () => {
+    const toc = $(".guide-toc");
+    if (!toc) return;
+
+    // If toc already has links, don’t rebuild (just bind observers)
+    const existing = $$('a[href^="#"]', toc);
+    if (existing.length) return;
+
+    const headings = $$("h2[id]").filter((h) => h.id && h.textContent.trim().length > 0);
+    if (!headings.length) return;
+
+    const title = document.createElement("h3");
+    title.textContent = "On this page";
+
+    const list = document.createElement("ol");
+
+    headings.forEach((h) => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = `#${h.id}`;
+      a.textContent = h.textContent.trim();
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+
+    toc.appendChild(title);
+    toc.appendChild(list);
+  };
+
+  const bindTOCActive = () => {
+    const toc = $(".guide-toc");
+    if (!toc) return;
+
+    const links = $$('a[href^="#"]', toc);
+    if (!links.length) return;
+
+    const ids = links.map((a) => (a.getAttribute("href") || "").slice(1)).filter(Boolean);
+    const targets = ids.map((id) => document.getElementById(id)).filter(Boolean);
+    if (!targets.length) return;
+
+    const clear = () => links.forEach((a) => a.removeAttribute(ACTIVE_ATTR));
+    const setActive = (id) => {
+      const a = links.find((x) => x.getAttribute("href") === `#${id}`);
+      if (!a) return;
+      clear();
+      a.setAttribute(ACTIVE_ATTR, "true");
+    };
+
+    let last = targets[0].id;
+    setActive(last);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+        if (visible.length) {
+          last = visible[0].target.id || last;
+          setActive(last);
+        }
+      },
+      { root: null, rootMargin: `-${HEADER_OFFSET + 10}px 0px -70% 0px`, threshold: [0, 1] }
+    );
+
+    targets.forEach((t) => io.observe(t));
+  };
+
+  /* ---------- Initial hash handling (avoid header overlap) ---------- */
+  const fixInitialHash = () => {
+    const hash = (location.hash || "").replace("#", "");
+    if (!hash) return;
+    const el = document.getElementById(hash);
+    if (!el) return;
+    setTimeout(() => smoothScrollTo(el), 50);
+  };
+
+  /* ---------- Init ---------- */
+  const init = () => {
+    // features are additive and safe
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+
+    wrapCodeBlocks();
+    bindCopyButtons();
+
+    buildTOC();
+    bindTOCActive();
+
+    bindSmoothAnchors();
+    fixInitialHash();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
