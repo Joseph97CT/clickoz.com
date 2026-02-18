@@ -16,7 +16,7 @@
   <meta property="og:url" content="https://clickoz.com/" />
   <meta property="og:type" content="website" />
 
-  <!-- TODO: add a real image in /assets/og/og-home.png and keep this -->
+  <!-- Add a real image in repo: /assets/og/og-home.png -->
   <meta property="og:image" content="https://clickoz.com/assets/og/og-home.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -34,7 +34,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/assets/site.css?v=5" />
-  <link rel="stylesheet" href="/assets/home.css?v=1" />
+  <link rel="stylesheet" href="/assets/home.css?v=2" />
 
   <!-- JSON-LD: Organization + WebSite (SearchAction) -->
   <script type="application/ld+json">
@@ -174,14 +174,15 @@
         Paste text or data, get instant analysis, and copy clean results — browser-only, no signup, no uploads.
       </p>
 
+      <!-- Premium CTAs (both true buttons, one accent) -->
       <div class="hero-cta" aria-label="Primary actions">
-        <a class="btn primary" href="/tools/" aria-label="Browse all tools">Open tools</a>
-        <a class="cta-secondary" href="/guides/" aria-label="Read guides">
+        <a class="btn btn-accent" href="/tools/" aria-label="Open all tools">Open tools</a>
+        <a class="btn btn-outline btn-guides" href="/guides/" aria-label="Read guides">
           See guides <span class="arrow" aria-hidden="true">→</span>
         </a>
       </div>
 
-      <!-- Quick chips (lightweight “what it does”) -->
+      <!-- Centered, wider chips -->
       <div class="quickchips" aria-label="Quick use cases">
         <div class="qchip">
           <div class="qico" aria-hidden="true">🔎</div>
@@ -209,45 +210,28 @@
       </div>
     </div>
 
-    <div class="rec-shell" aria-label="Top picks section">
-      <!-- LEFT rail -->
-      <aside class="rec-rail rec-rail-outside" aria-label="Clickoz strengths">
-        <div class="rec-brand">
-          <div class="rec-brandname">Click<span class="logo-oz">oz</span></div>
-          <div class="rec-brandsub">Fast tools. Clean output. No friction.</div>
-        </div>
-
-        <!-- Reduced pills (5) -->
-        <div class="rec-trust" aria-label="Highlights">
-          <div class="trust-pill">🔒 Browser-only</div>
-          <div class="trust-pill">⚡ Instant results</div>
-          <div class="trust-pill">📋 Copy-ready</div>
-          <div class="trust-pill">🕶️ Privacy-first</div>
-          <div class="trust-pill">📱 Mobile-first</div>
-        </div>
-      </aside>
-
-      <!-- RIGHT picks -->
-      <div class="hero-box rec-wrap" aria-label="Top picks">
+    <!-- TOP TOOLS OF THE MONTH (full width) -->
+    <div class="rec-shell" aria-label="Top tools section">
+      <div class="hero-box rec-wrap" aria-label="Top tools of the month">
         <div class="rec-toprow">
-          <h3 class="box-title">Top picks</h3>
+          <h3 class="box-title">Top tools of the month</h3>
           <button class="rec-refresh" id="recRefresh" type="button" aria-label="Refresh picks (manual)">
             🔄 Refresh picks
           </button>
         </div>
 
         <p class="box-sub">
-          Start with these core tools. Refresh to discover another useful pick — nothing changes automatically.
+          Curated picks that match what people search most. Refresh to discover another “monthly” tool — nothing changes automatically.
         </p>
 
-        <div class="picks-grid" id="picksGrid" aria-label="Recommended tools grid">
-          <!-- Rendered by /assets/home.js (safe fallback if JS disabled below) -->
+        <div class="picks-grid" id="picksGrid" aria-label="Top tools grid">
+          <!-- JS renders stable + 1 monthly slot. These are safe fallbacks if JS is disabled -->
           <a class="pick-card" href="/tools/json-formatter/">
             <div class="pick-head">
               <span class="pick-icon" aria-hidden="true">🧾</span>
               <h3 class="pick-title">JSON Formatter</h3>
             </div>
-            <p class="pick-desc">Prettify, validate, and minify JSON instantly for clean debugging output.</p>
+            <p class="pick-desc">Format, validate, and minify JSON for clean debugging and copy-ready output.</p>
             <div class="pick-meta">
               <span class="pick-cat">Developer Utilities</span>
               <span class="pick-cta">Open</span>
@@ -266,12 +250,12 @@
             </div>
           </a>
 
-          <a class="pick-card" href="/tools/word-counter/">
+          <a class="pick-card" href="/tools/readability-analyzer/">
             <div class="pick-head">
-              <span class="pick-icon" aria-hidden="true">🔢</span>
-              <h3 class="pick-title">Word Counter</h3>
+              <span class="pick-icon" aria-hidden="true">📚</span>
+              <h3 class="pick-title">Readability Analyzer</h3>
             </div>
-            <p class="pick-desc">Words, characters, sentences, and reading time for content briefs and drafts.</p>
+            <p class="pick-desc">Readability score + quick edits to make text easier to scan on mobile.</p>
             <div class="pick-meta">
               <span class="pick-cat">Writing Tools</span>
               <span class="pick-cta">Open</span>
@@ -279,53 +263,16 @@
           </a>
         </div>
 
-        <div class="picks-actions">
-          <a class="btn primary btn-wide list-btn" href="/tools/" aria-label="Open full tools list">
-            View all tools
-          </a>
-        </div>
-
-        <!-- Optional: tiny “hype” microtest (keeps page simple) -->
-        <div class="microtest" aria-label="10-second test">
-          <div class="microtest-top">
-            <div>
-              <h3>10-second test</h3>
-              <p>Paste a few lines and get two instant signals. For full details, open the Readability tool.</p>
-            </div>
-            <a class="btn ghost" href="/tools/readability-analyzer/" aria-label="Open Readability Analyzer">
-              Open Readability
-            </a>
-          </div>
-
-          <div class="microtest-grid">
-            <textarea id="microText" placeholder="Paste a short paragraph here…" aria-label="Micro test input"></textarea>
-
-            <div class="microstats" aria-label="Micro test stats">
-              <div class="statbox">
-                <div class="label">Words</div>
-                <div class="value" id="microWords">0</div>
-              </div>
-              <div class="statbox">
-                <div class="label">Readability (Flesch)</div>
-                <div class="value" id="microRead">—</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="microtest-actions">
-            <a class="btn primary" href="/tools/readability-analyzer/" aria-label="Analyze full text">
-              Analyze full text
-            </a>
-            <a class="btn ghost" href="/tools/word-counter/" aria-label="Open Word Counter">
-              Word Counter
-            </a>
-          </div>
+        <div class="picks-actions" aria-label="Top tools actions">
+          <a class="btn btn-accent" href="/tools/" aria-label="View all tools">View all tools</a>
+          <a class="btn btn-outline" href="/tools/#seo" aria-label="Explore SEO tools">Explore SEO</a>
+          <a class="btn btn-outline" href="/tools/#dev" aria-label="Explore Dev tools">Explore Dev</a>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Guides (trimmed to 6) -->
+  <!-- GUIDES (6) -->
   <section class="section container" aria-label="Guides">
     <div class="hero-box">
       <h2 class="section-title" style="margin-top:0">Guides</h2>
@@ -372,61 +319,67 @@
       </div>
 
       <div class="rec-actions" style="margin-top:14px;">
-        <a class="btn primary btn-wide list-btn" href="/guides/" aria-label="Open full guides list">
+        <a class="btn btn-accent btn-wide" href="/guides/" aria-label="Open full guides list">
           View all guides
         </a>
       </div>
     </div>
   </section>
 
-  <!-- Built for real workflows (unified: value + categories) -->
-  <section class="section container" aria-label="Built for real workflows">
-    <div class="hero-box">
-      <h2 class="section-title" style="margin-top:0">Built for real workflows</h2>
-      <p class="section-sub" style="margin-bottom:14px">
-        Quick answers, clean output, practical guidance. Use a tool in seconds, then improve results with examples and FAQs.
-      </p>
+  <!-- WORKFLOWS (trust pills moved here) + accent buttons + Updates CTA -->
+  <section class="section container" aria-label="Workflows">
+    <div class="hero-box workflow-box">
+      <div class="workflow-head">
+        <div>
+          <h2 class="section-title" style="margin-top:0">Workflows</h2>
+          <p class="section-sub" style="margin-bottom:0;max-width:80ch;">
+            Three fast paths that cover most real moments: publishing, fixing, and writing. Built to feel instant and consistent.
+          </p>
+        </div>
 
-      <div class="built-grid">
-        <div class="value-cards" aria-label="Why Clickoz">
-          <div class="small-card">
-            <h3>One job per tool</h3>
-            <p>Fast inputs, readable outputs, consistent formatting. No clutter, no distractions.</p>
-          </div>
-          <div class="small-card">
-            <h3>SEO aligned by intent</h3>
-            <p>Counters, previews, checkers, generators, formatters: what people actually search for.</p>
-          </div>
-          <div class="small-card">
-            <h3>Made for mobile</h3>
-            <p>Stable layout, no weird jumps, smooth UI even on slower phones and browsers.</p>
+        <div class="workflow-actions" aria-label="Workflow actions">
+          <a class="btn btn-accent" href="/tools/" aria-label="Go to tools">Go to tools</a>
+          <a class="btn btn-outline" href="/guides/" aria-label="Read guides">Read guides</a>
+          <a class="btn btn-outline" href="/updates/" aria-label="See updates">See what changed</a>
+        </div>
+      </div>
+
+      <div class="workflow-pills" aria-label="Highlights">
+        <div class="workflow-pill">🔒 Browser-only</div>
+        <div class="workflow-pill">⚡ Instant results</div>
+        <div class="workflow-pill">📋 Copy-ready output</div>
+        <div class="workflow-pill">🕶️ Privacy-first</div>
+        <div class="workflow-pill">📱 Mobile-first</div>
+        <div class="workflow-pill">🧩 One job per tool</div>
+        <div class="workflow-pill">🎯 Intent-first SEO</div>
+        <div class="workflow-pill">✨ Clean UI</div>
+      </div>
+
+      <div class="workflow-grid" aria-label="Workflow cards">
+        <div class="workflow-card">
+          <h3>Before you publish</h3>
+          <p>Check length, clarity, and SERP preview so your page reads well and earns clicks.</p>
+          <div class="wbtns">
+            <a class="btn btn-accent" href="/tools/#seo" aria-label="Open SEO tools">Open SEO tools</a>
+            <a class="btn btn-outline" href="/guides/meta-tags-length/" aria-label="Read meta tags guide">Meta length guide</a>
           </div>
         </div>
 
-        <div>
-          <h3 class="box-title" style="margin-top:0">Explore by category</h3>
-          <p class="box-sub" style="margin-bottom:12px;">
-            Browse tools the way users search: by outcome and category. Strong UX + strong internal linking.
-          </p>
+        <div class="workflow-card">
+          <h3>When something breaks</h3>
+          <p>Fix JSON errors, encode parameters, decode payloads — the quick utilities you need in real dev moments.</p>
+          <div class="wbtns">
+            <a class="btn btn-accent" href="/tools/#dev" aria-label="Open dev tools">Open Dev tools</a>
+            <a class="btn btn-outline" href="/guides/json-formatter-online/" aria-label="Read JSON guide">JSON guide</a>
+          </div>
+        </div>
 
-          <div class="cat-cards" aria-label="Categories">
-            <a class="small-card" href="/tools/#seo" aria-label="Explore SEO tools">
-              <h3>SEO Tools</h3>
-              <p>Meta tags, SERP preview, outlines, intent checks, and click optimization.</p>
-              <span class="tool-cta">Explore SEO</span>
-            </a>
-
-            <a class="small-card" href="/tools/#writing" aria-label="Explore writing tools">
-              <h3>Writing Tools</h3>
-              <p>Word count, readability, reading time, and content clarity improvements.</p>
-              <span class="tool-cta">Explore Writing</span>
-            </a>
-
-            <a class="small-card" href="/tools/#dev" aria-label="Explore developer utilities">
-              <h3>Developer Utilities</h3>
-              <p>JSON, Base64, URL tools, and fast debugging helpers.</p>
-              <span class="tool-cta">Explore Dev</span>
-            </a>
+        <div class="workflow-card">
+          <h3>When you write</h3>
+          <p>Keep content skimmable: readability, structure, reading time — tuned for mobile and intent.</p>
+          <div class="wbtns">
+            <a class="btn btn-accent" href="/tools/#writing" aria-label="Open writing tools">Open Writing tools</a>
+            <a class="btn btn-outline" href="/guides/readability-score/" aria-label="Read readability guide">Readability guide</a>
           </div>
         </div>
       </div>
@@ -494,6 +447,6 @@
   </div>
 
   <script src="/assets/site.js" defer></script>
-  <script src="/assets/home.js?v=1" defer></script>
+  <script src="/assets/home.js?v=2" defer></script>
 </body>
 </html>
