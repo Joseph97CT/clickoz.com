@@ -1,0 +1,555 @@
+/* ==========================================================================
+   /assets/home.css
+   Home refinements: lighter above-the-fold, compact picks, fewer pills,
+   guides trimmed, unified value+categories block.
+   Depends on /assets/site.css
+========================================================================== */
+
+:root{
+  /* Safe spacing defaults in case site.css uses different tokens */
+  --home-max: 1180px;
+  --home-gap: 14px;
+  --home-gap-lg: 18px;
+}
+
+/* -----------------------------
+   HERO: tighten layout
+------------------------------ */
+.hero.container{
+  padding-top: 22px;
+  padding-bottom: 10px;
+}
+
+.hero-intro h1{
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  max-width: 22ch;
+}
+
+.hero-intro p{
+  max-width: 66ch;
+  margin-top: 10px;
+  margin-bottom: 14px;
+  opacity: .88;
+}
+
+.hero-cta{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  align-items:center;
+  margin-top: 14px;
+}
+
+.hero-cta .btn{
+  min-height: 44px;
+}
+
+.hero-cta .cta-secondary{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  text-decoration:none;
+  font-weight: 700;
+  padding: 10px 2px;
+  opacity: .9;
+  border-bottom: 1px solid transparent;
+}
+
+.hero-cta .cta-secondary:hover{
+  opacity: 1;
+  border-bottom-color: rgba(255,255,255,.22);
+}
+
+.hero-cta .cta-secondary .arrow{
+  transform: translateY(1px);
+  opacity: .85;
+}
+
+/* -----------------------------
+   QUICK CHIPS (replaces 3 how cards)
+------------------------------ */
+.quickchips{
+  margin-top: 14px;
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  align-items:center;
+}
+
+.qchip{
+  display:inline-flex;
+  align-items:center;
+  gap: 9px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 10px 30px rgba(0,0,0,.22);
+  backdrop-filter: blur(8px);
+}
+
+.qchip .qico{
+  width: 26px;
+  height: 26px;
+  border-radius: 10px;
+  display:grid;
+  place-items:center;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.qchip .qtxt{
+  display:flex;
+  flex-direction:column;
+  line-height: 1.15;
+}
+.qchip .qtxt strong{
+  font-size: 13px;
+  letter-spacing: .01em;
+}
+.qchip .qtxt span{
+  font-size: 12px;
+  opacity: .75;
+}
+
+/* -----------------------------
+   REC SHELL: reduce “full directory” feel
+------------------------------ */
+.rec-shell{
+  margin-top: 18px;
+  display:grid;
+  gap: var(--home-gap-lg);
+  align-items:start;
+}
+
+/* Two-column on wide screens (rail + picks) */
+@media (min-width: 980px){
+  .rec-shell{
+    grid-template-columns: 320px 1fr;
+  }
+}
+
+/* -----------------------------
+   RAIL: fewer pills, tighter visual
+------------------------------ */
+.rec-rail{
+  position: relative;
+}
+
+.rec-rail-outside{
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.rec-brandname{
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.rec-brandsub{
+  font-size: 13px;
+  opacity: .78;
+  margin-top: 6px;
+}
+
+.rec-trust{
+  margin-top: 12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap: 8px;
+}
+
+.trust-pill{
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  opacity: .92;
+}
+
+/* -----------------------------
+   TOP PICKS: compact cards (3)
+------------------------------ */
+.rec-wrap.hero-box{
+  padding: 16px;
+}
+
+.rec-toprow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+}
+
+.rec-toprow .box-title{
+  margin: 0;
+}
+
+.box-sub{
+  margin-top: 8px;
+  margin-bottom: 12px;
+  opacity: .78;
+  max-width: 82ch;
+}
+
+.picks-grid{
+  display:grid;
+  gap: 12px;
+}
+
+@media (min-width: 760px){
+  .picks-grid{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.pick-card{
+  text-decoration:none;
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+  transition: transform .15s ease, border-color .15s ease, background .15s ease;
+  min-height: 150px;
+}
+
+.pick-card:hover{
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,.18);
+  background: rgba(255,255,255,.055);
+}
+
+.pick-head{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+
+.pick-icon{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display:grid;
+  place-items:center;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.10);
+  font-size: 18px;
+}
+
+.pick-title{
+  margin: 0;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.pick-desc{
+  margin: 0;
+  font-size: 13px;
+  opacity: .82;
+  line-height: 1.45;
+}
+
+.pick-meta{
+  margin-top:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+}
+
+.pick-cat{
+  font-size: 12px;
+  opacity: .72;
+}
+
+.pick-cta{
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .01em;
+  opacity: .92;
+  border-bottom: 1px solid rgba(255,255,255,.18);
+}
+
+/* Wide CTA under picks */
+.picks-actions{
+  margin-top: 12px;
+}
+
+.btn-wide{
+  width: 100%;
+  display:flex;
+  justify-content:center;
+}
+
+/* -----------------------------
+   “10-second test” micro box (optional hook)
+------------------------------ */
+.microtest{
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.035);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.microtest-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 12px;
+}
+
+.microtest h3{
+  margin: 0;
+  font-size: 15px;
+  font-weight: 1000;
+}
+
+.microtest p{
+  margin: 6px 0 0 0;
+  font-size: 13px;
+  opacity: .78;
+  max-width: 78ch;
+}
+
+.microtest-grid{
+  margin-top: 12px;
+  display:grid;
+  gap: 10px;
+}
+
+@media (min-width: 860px){
+  .microtest-grid{
+    grid-template-columns: 1.6fr .8fr;
+    align-items:stretch;
+  }
+}
+
+.microtest textarea{
+  width:100%;
+  min-height: 110px;
+  resize: vertical;
+  border-radius: 14px;
+  background: rgba(0,0,0,.20);
+  border: 1px solid rgba(255,255,255,.12);
+  color: inherit;
+  padding: 12px 12px;
+  outline: none;
+}
+
+.microtest textarea:focus{
+  border-color: rgba(255,255,255,.22);
+  box-shadow: 0 0 0 4px rgba(255,255,255,.06);
+}
+
+.microstats{
+  display:grid;
+  gap: 10px;
+}
+
+.statbox{
+  border-radius: 14px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+  padding: 12px;
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
+
+.statbox .label{
+  font-size: 12px;
+  opacity: .75;
+}
+
+.statbox .value{
+  font-size: 22px;
+  font-weight: 1000;
+  letter-spacing: -0.02em;
+}
+
+.microtest-actions{
+  margin-top: 12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  align-items:center;
+}
+
+/* -----------------------------
+   GUIDES: show 6, lighter grid
+------------------------------ */
+.section .section-title{
+  letter-spacing: -0.02em;
+}
+
+.guides-grid{
+  max-width: 1120px;
+  margin: 0 auto;
+  display:grid;
+  gap: 12px;
+}
+
+@media (min-width: 760px){
+  .guides-grid{
+    grid-template-columns: repeat(3, minmax(0,1fr));
+  }
+}
+
+/* Make guide cards feel a bit “lighter” */
+.guides-grid .guide-card{
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.10);
+  transition: transform .15s ease, border-color .15s ease, background .15s ease;
+}
+
+.guides-grid .guide-card:hover{
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,.18);
+  background: rgba(255,255,255,.05);
+}
+
+.guides-grid .guide-card h3{
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.guides-grid .guide-card p{
+  margin: 8px 0 0 0;
+  font-size: 13px;
+  opacity: .78;
+}
+
+.guides-grid .guide-cta{
+  display:inline-block;
+  margin-top: 10px;
+  font-weight: 900;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.18);
+}
+
+/* -----------------------------
+   BUILT BLOCK: unify “Why + categories”
+------------------------------ */
+.built-grid{
+  max-width: 1120px;
+  margin: 0 auto;
+  display:grid;
+  gap: 12px;
+}
+
+@media (min-width: 900px){
+  .built-grid{
+    grid-template-columns: 1fr 1fr;
+    align-items:start;
+  }
+}
+
+.value-cards{
+  display:grid;
+  gap: 12px;
+}
+
+@media (min-width: 640px){
+  .value-cards{
+    grid-template-columns: repeat(3, minmax(0,1fr));
+  }
+}
+
+.value-cards .small-card{
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.value-cards .small-card h3{
+  margin: 0;
+  font-size: 14px;
+  font-weight: 1000;
+}
+
+.value-cards .small-card p{
+  margin: 8px 0 0 0;
+  font-size: 13px;
+  opacity: .78;
+  line-height: 1.45;
+}
+
+.cat-cards{
+  display:grid;
+  gap: 12px;
+}
+
+@media (min-width: 640px){
+  .cat-cards{
+    grid-template-columns: repeat(3, minmax(0,1fr));
+  }
+}
+
+.cat-cards .small-card{
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.035);
+  border: 1px solid rgba(255,255,255,.10);
+  text-decoration:none;
+  transition: transform .15s ease, border-color .15s ease, background .15s ease;
+}
+
+.cat-cards .small-card:hover{
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,.18);
+  background: rgba(255,255,255,.055);
+}
+
+.cat-cards .small-card h3{
+  margin: 0;
+  font-size: 14px;
+  font-weight: 1000;
+}
+
+.cat-cards .small-card p{
+  margin: 8px 0 0 0;
+  font-size: 13px;
+  opacity: .78;
+  line-height: 1.45;
+}
+
+.cat-cards .tool-cta{
+  display:inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 1000;
+  border-bottom: 1px solid rgba(255,255,255,.18);
+}
+
+/* -----------------------------
+   Small polish: section spacing tighter
+------------------------------ */
+.section.container{
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+.hero-box{
+  border-radius: 18px;
+}
+
+/* On small screens, ensure everything breathes */
+@media (max-width: 520px){
+  .hero-intro h1{ max-width: 20ch; }
+  .pick-card{ min-height: 140px; }
+  .microtest textarea{ min-height: 120px; }
+}
