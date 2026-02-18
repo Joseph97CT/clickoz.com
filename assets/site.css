@@ -2085,3 +2085,49 @@ html, body {
   height: auto;
   display: block;
 }
+/* =========================================================
+   PATCH — Particles: no burst + idle more visible
+   Paste at END of /assets/site.css
+========================================================= */
+
+/* Make the floating particles more visible */
+#clickozParticles{
+  opacity: .92; /* was effectively lower due to idle opacity */
+}
+
+/* Increase idle visibility + slightly bigger dots (premium look) */
+.pidle{
+  width: 2.6px;      /* was 2px */
+  height: 2.6px;     /* was 2px */
+  opacity: .42;      /* was .22 */
+  filter: saturate(1.05);
+}
+
+/* Keep a gentle drift but with more presence */
+@keyframes idleDrift{
+  0%   { transform: translate3d(0,0,0); opacity: .30; }
+  50%  { transform: translate3d(var(--ix), var(--iy), 0); opacity: .52; }
+  100% { transform: translate3d(0,0,0); opacity: .30; }
+}
+
+/* Optional: soften glow so it looks “spacey” not “cheap neon” */
+.pidle, .pburst{
+  box-shadow:
+    0 0 12px rgba(var(--accent-rgb), .45),
+    0 0 34px rgba(var(--accent-rgb), .18);
+}
+
+/* Hard-disable burst visibility (safety net even if JS still creates them) */
+.pburst{
+  display: none !important;
+}
+/* Optional: tiny twinkle for idle particles (subtle) */
+.pidle{
+  animation:
+    idleDrift var(--idur) ease-in-out infinite,
+    idleTwinkle calc(var(--idur) * .85) ease-in-out infinite;
+}
+@keyframes idleTwinkle{
+  0%,100% { filter: brightness(1); }
+  50%     { filter: brightness(1.25); }
+}
