@@ -1127,3 +1127,50 @@
     }, { capture: true, passive: true });
   } catch(_) {}
 })();
+/* =========================================================
+   PATCH 2026-02 — Kill any burst on scroll (DOM + Canvas safe)
+   Paste at the VERY END of /assets/site.js
+========================================================= */
+(() => {
+  try {
+    // 1) Kill known burst spawners if present
+    const noop = () => {};
+    ["createBurst","spawnBurst","burst","emitBurst","particleBurst","spawnExplosion"].forEach((k)=>{
+      if (typeof window[k] === "function") window[k] = noop;
+    });
+
+    // 2) If the effect is implemented as DOM nodes .pburst: remove them immediately
+    const killBursts = () => {
+      const root = document.getElementById("clickozParticles");
+      if (!root) return;
+      root.querySelectorAll(".pburst").forEach(n => n.remove());
+    };
+    killBursts();
+    new MutationObserver(killBursts).observe(document.body, { childList:true, subtree:true });
+
+    // 3) Canvas “center flash” is usually triggered on scroll direction change.
+    //    We can safely block ONLY handlers that call preventDefault/stopImmediatePropagation? Not reliable.
+    //    Better: intercept rAF loops by freezing common anim toggles.
+    //    If your canvas code uses window.__spaceParticlesRunning or similar, stop it.
+    //    Fallback: clear the canvas once on direction changes so bursts don't accumulate.
+    const canvas = document.getElementById("spaceParticles");
+    const ctx = canvas && canvas.getContext ? canvas.getContext("2d") : null;
+
+    let lastY = window.scrollY || 0;
+    window.addEventListener("scroll", () => {
+      const y = window.scrollY || 0;
+      const goingUp = y < lastY;
+      lastY = y;
+
+      // When user goes up, that's when your "center burst" likely happens.
+      // Clear once to remove the pop, without disabling the whole starfield.
+      if (goingUp && ctx) {
+        // match current size (your script likely sets it; we respect it)
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }, { passive: true });
+
+  } catch (e) {
+    // silent
+  }
+})();
