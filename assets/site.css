@@ -2189,3 +2189,97 @@ html, body {
 #spaceParticles{
   opacity: .70; /* reduce sudden perceived flash while keeping stars visible */
 }
+/* =========================================================
+   PATCH — Bigger NAV typography (logo + links + actions)
+   Paste at the VERY END of /assets/site.css
+========================================================= */
+
+:root{
+  /* nav scale tokens */
+  --navLogoText: 22px;   /* Clickoz text */
+  --navLinks: 15px;      /* Home/Tools/Guides/Updates */
+  --navAction: 14px;     /* Translate select + small UI */
+  --navPadY: 14px;       /* inner vertical padding */
+  --navH: 78px;          /* was 72px */
+}
+
+/* Keep nav height consistent */
+.nav-inner{
+  min-height: var(--navH);
+  padding: var(--navPadY) 0;
+}
+
+/* Logo sizing */
+.logo{ gap: 12px; }
+.logo-badge{
+  width: 44px;
+  height: 44px;
+}
+.logo-mark{
+  width: 38px;
+  height: 38px;
+}
+.logo-text{
+  font-size: var(--navLogoText);
+  font-weight: 1000;
+  letter-spacing: -0.02em;
+}
+.logo-oz{ font-weight: 1000; }
+
+/* Desktop links sizing */
+.nav-links{
+  font-size: var(--navLinks);
+  gap: 14px;
+  letter-spacing: 0.005em;
+}
+.nav-links a{
+  padding: 10px 14px;
+  border-radius: 14px;
+}
+
+/* Buttons in nav (color picker / burger) slightly larger */
+.dot-btn{
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+}
+.dot{ width: 15px; height: 15px; }
+
+.burger{
+  width: 48px;
+  height: 46px;
+  border-radius: 14px;
+}
+.burger span{
+  width: 20px;
+  height: 2px;
+}
+
+/* Translate select bigger + nicer spacing */
+.goog-te-gadget select,
+.goog-te-combo{
+  height: 46px !important;
+  min-width: 180px !important;
+  padding: 0 38px 0 14px !important;
+  border-radius: 14px !important;
+  font-size: var(--navAction) !important;
+}
+
+/* Dropdown arrow alignment for bigger select */
+#google_translate_element::after,
+#google_translate_element_mobile::after{
+  right: 14px;
+  font-size: 12.5px;
+}
+
+/* Mobile drawer links bigger too */
+.m-link{
+  font-size: 15px;
+  padding: 13px 14px;
+  border-radius: 16px;
+}
+
+/* Mobile drawer title a bit bigger */
+.m-title{
+  font-size: 16px;
+}
