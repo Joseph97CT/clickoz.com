@@ -1,210 +1,220 @@
 /* ==========================================================================
-   /assets/home.css
-   Home refinements: lighter above-the-fold, compact picks, fewer pills,
-   guides trimmed, unified value+categories block.
+   /assets/home.css  (REWORK v2)
+   Goal: cleaner alignment, stronger “feel”, premium spacing, accent CTAs,
+   centered chips, bigger hero buttons, no left rail, wider "Top tools of the month",
+   workflows section with moved trust pills + accent buttons + Updates CTA.
    Depends on /assets/site.css
 ========================================================================== */
 
 :root{
-  /* Safe spacing defaults in case site.css uses different tokens */
   --home-max: 1180px;
-  --home-gap: 14px;
-  --home-gap-lg: 18px;
+  --home-soft: rgba(255,255,255,.06);
+  --home-soft2: rgba(255,255,255,.045);
+  --home-border: rgba(255,255,255,.11);
+  --home-border2: rgba(255,255,255,.16);
+  --home-shadow: 0 18px 60px rgba(0,0,0,.35);
+  --home-radius: 18px;
+  --home-radius-sm: 14px;
 }
 
-/* -----------------------------
-   HERO: tighten layout
------------------------------- */
+/* =========================
+   HERO: better alignment + “premium” rhythm
+========================= */
 .hero.container{
   padding-top: 22px;
-  padding-bottom: 10px;
+  padding-bottom: 14px;
+}
+
+.hero-intro{
+  text-align: left;
+  max-width: 860px;
 }
 
 .hero-intro h1{
-  letter-spacing: -0.02em;
-  line-height: 1.05;
-  max-width: 22ch;
+  margin-top: 18px !important;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  max-width: 26ch;
 }
 
 .hero-intro p{
-  max-width: 66ch;
-  margin-top: 10px;
-  margin-bottom: 14px;
+  margin-top: 12px;
+  margin-bottom: 16px;
+  max-width: 70ch;
+  font-size: 16px;
+  line-height: 1.65;
   opacity: .88;
 }
 
+/* Make the arrow “See guides →” bigger & aligned */
 .hero-cta{
   display:flex;
   flex-wrap:wrap;
-  gap: 10px;
+  gap: 12px;
   align-items:center;
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 .hero-cta .btn{
-  min-height: 44px;
+  min-height: 46px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  font-weight: 900;
+  letter-spacing: .01em;
 }
 
-.hero-cta .cta-secondary{
+/* Accent button (for Guides or Tools) */
+.btn-accent{
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #0b0f19;
+  border: 0 !important;
+  box-shadow: 0 14px 40px rgba(0,0,0,.28);
+}
+
+.btn-accent:hover{
+  filter: brightness(1.03);
+  transform: translateY(-1px);
+}
+
+.btn-outline{
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.14);
+  color: rgba(242,242,255,.92);
+}
+
+.btn-outline:hover{
+  border-color: rgba(255,255,255,.22);
+  transform: translateY(-1px);
+}
+
+/* The “See guides →” as a true button */
+.btn-guides{
   display:inline-flex;
   align-items:center;
-  gap: 8px;
-  text-decoration:none;
-  font-weight: 700;
-  padding: 10px 2px;
-  opacity: .9;
-  border-bottom: 1px solid transparent;
+  gap: 10px;
 }
 
-.hero-cta .cta-secondary:hover{
-  opacity: 1;
-  border-bottom-color: rgba(255,255,255,.22);
-}
-
-.hero-cta .cta-secondary .arrow{
+.btn-guides .arrow{
+  font-size: 18px;
   transform: translateY(1px);
-  opacity: .85;
+  opacity: .95;
 }
 
-/* -----------------------------
-   QUICK CHIPS (replaces 3 how cards)
------------------------------- */
+/* =========================
+   QUICK CHIPS: wider, centered block
+========================= */
 .quickchips{
-  margin-top: 14px;
+  margin-top: 18px;
   display:flex;
   flex-wrap:wrap;
-  gap: 10px;
-  align-items:center;
+  justify-content: center;         /* center the whole row */
+  gap: 12px;
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .qchip{
-  display:inline-flex;
+  display:flex;
   align-items:center;
-  gap: 9px;
-  padding: 10px 12px;
+  gap: 12px;
+  padding: 12px 14px;
   border-radius: 999px;
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.10);
-  box-shadow: 0 10px 30px rgba(0,0,0,.22);
-  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 18px 45px rgba(0,0,0,.22);
+  backdrop-filter: blur(10px);
+  min-width: 270px;               /* makes them feel “real” */
+  justify-content: center;
 }
 
 .qchip .qico{
-  width: 26px;
-  height: 26px;
-  border-radius: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
   display:grid;
   place-items:center;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.075);
+  border: 1px solid rgba(255,255,255,.12);
+  font-size: 16px;
 }
 
-.qchip .qtxt{
-  display:flex;
-  flex-direction:column;
-  line-height: 1.15;
-}
 .qchip .qtxt strong{
   font-size: 13px;
+  font-weight: 1000;
   letter-spacing: .01em;
 }
+
 .qchip .qtxt span{
   font-size: 12px;
-  opacity: .75;
+  opacity: .78;
 }
 
-/* -----------------------------
-   REC SHELL: reduce “full directory” feel
------------------------------- */
+/* =========================
+   TOP TOOLS OF THE MONTH: full width (no rail)
+========================= */
 .rec-shell{
   margin-top: 18px;
-  display:grid;
-  gap: var(--home-gap-lg);
-  align-items:start;
+  display:block;   /* remove 2-col layout */
 }
 
-/* Two-column on wide screens (rail + picks) */
-@media (min-width: 980px){
-  .rec-shell{
-    grid-template-columns: 320px 1fr;
-  }
-}
-
-/* -----------------------------
-   RAIL: fewer pills, tighter visual
------------------------------- */
-.rec-rail{
-  position: relative;
-}
-
-.rec-rail-outside{
-  padding: 14px;
-  border-radius: 18px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.10);
-}
-
-.rec-brandname{
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
-
-.rec-brandsub{
-  font-size: 13px;
-  opacity: .78;
-  margin-top: 6px;
-}
-
-.rec-trust{
-  margin-top: 12px;
-  display:flex;
-  flex-wrap:wrap;
-  gap: 8px;
-}
-
-.trust-pill{
-  font-size: 12px;
-  padding: 8px 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.10);
-  opacity: .92;
-}
-
-/* -----------------------------
-   TOP PICKS: compact cards (3)
------------------------------- */
 .rec-wrap.hero-box{
-  padding: 16px;
+  padding: 18px;
+  border-radius: var(--home-radius);
 }
 
+/* Header row */
 .rec-toprow{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap: 10px;
+  gap: 12px;
 }
 
 .rec-toprow .box-title{
   margin: 0;
+  font-size: 16px;
+  font-weight: 1000;
+  letter-spacing: -0.01em;
+}
+
+/* “Refresh picks” button nicer */
+.rec-refresh{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.14);
+  color: rgba(242,242,255,.92);
+  font-weight: 900;
+}
+
+.rec-refresh:hover{
+  border-color: rgba(255,255,255,.22);
+  transform: translateY(-1px);
 }
 
 .box-sub{
-  margin-top: 8px;
-  margin-bottom: 12px;
+  margin-top: 10px;
+  margin-bottom: 14px;
+  max-width: 86ch;
   opacity: .78;
-  max-width: 82ch;
+  line-height: 1.55;
 }
 
+/* Picks grid (bigger cards, more “space”) */
 .picks-grid{
   display:grid;
-  gap: 12px;
+  gap: 14px;
 }
 
-@media (min-width: 760px){
+@media (min-width: 860px){
   .picks-grid{
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0,1fr));
   }
 }
 
@@ -213,49 +223,51 @@
   display:flex;
   flex-direction:column;
   gap: 10px;
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.10);
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 18px 55px rgba(0,0,0,.22);
   transition: transform .15s ease, border-color .15s ease, background .15s ease;
-  min-height: 150px;
+  min-height: 168px;
 }
 
 .pick-card:hover{
   transform: translateY(-2px);
-  border-color: rgba(255,255,255,.18);
-  background: rgba(255,255,255,.055);
+  border-color: rgba(255,255,255,.20);
+  background: rgba(255,255,255,.06);
 }
 
 .pick-head{
   display:flex;
   align-items:center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .pick-icon{
-  width: 34px;
-  height: 34px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
   display:grid;
   place-items:center;
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.10);
-  font-size: 18px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  font-size: 20px;
 }
 
 .pick-title{
   margin: 0;
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 1000;
   letter-spacing: -0.01em;
 }
 
 .pick-desc{
   margin: 0;
   font-size: 13px;
-  opacity: .82;
-  line-height: 1.45;
+  opacity: .84;
+  line-height: 1.5;
+  max-width: 56ch;
 }
 
 .pick-meta{
@@ -268,127 +280,41 @@
 
 .pick-cat{
   font-size: 12px;
-  opacity: .72;
+  opacity: .74;
 }
 
 .pick-cta{
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 1000;
   letter-spacing: .01em;
+  border-bottom: 1px solid rgba(255,255,255,.22);
   opacity: .92;
-  border-bottom: 1px solid rgba(255,255,255,.18);
 }
 
-/* Wide CTA under picks */
+/* Actions row under picks */
 .picks-actions{
-  margin-top: 12px;
-}
-
-.btn-wide{
-  width: 100%;
+  margin-top: 14px;
   display:flex;
-  justify-content:center;
-}
-
-/* -----------------------------
-   “10-second test” micro box (optional hook)
------------------------------- */
-.microtest{
-  margin-top: 12px;
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.035);
-  border: 1px solid rgba(255,255,255,.10);
-}
-
-.microtest-top{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap: 12px;
-}
-
-.microtest h3{
-  margin: 0;
-  font-size: 15px;
-  font-weight: 1000;
-}
-
-.microtest p{
-  margin: 6px 0 0 0;
-  font-size: 13px;
-  opacity: .78;
-  max-width: 78ch;
-}
-
-.microtest-grid{
-  margin-top: 12px;
-  display:grid;
   gap: 10px;
-}
-
-@media (min-width: 860px){
-  .microtest-grid{
-    grid-template-columns: 1.6fr .8fr;
-    align-items:stretch;
-  }
-}
-
-.microtest textarea{
-  width:100%;
-  min-height: 110px;
-  resize: vertical;
-  border-radius: 14px;
-  background: rgba(0,0,0,.20);
-  border: 1px solid rgba(255,255,255,.12);
-  color: inherit;
-  padding: 12px 12px;
-  outline: none;
-}
-
-.microtest textarea:focus{
-  border-color: rgba(255,255,255,.22);
-  box-shadow: 0 0 0 4px rgba(255,255,255,.06);
-}
-
-.microstats{
-  display:grid;
-  gap: 10px;
-}
-
-.statbox{
-  border-radius: 14px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.10);
-  padding: 12px;
-  display:flex;
-  flex-direction:column;
-  gap: 6px;
-}
-
-.statbox .label{
-  font-size: 12px;
-  opacity: .75;
-}
-
-.statbox .value{
-  font-size: 22px;
-  font-weight: 1000;
-  letter-spacing: -0.02em;
-}
-
-.microtest-actions{
-  margin-top: 12px;
-  display:flex;
   flex-wrap:wrap;
-  gap: 10px;
-  align-items:center;
 }
 
-/* -----------------------------
-   GUIDES: show 6, lighter grid
------------------------------- */
-.section .section-title{
+.picks-actions .btn{
+  border-radius: 999px;
+  min-height: 44px;
+  padding: 12px 16px;
+  font-weight: 1000;
+}
+
+/* =========================
+   GUIDES: tighter, cleaner, still strong
+========================= */
+.section.container{
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+.section-title{
   letter-spacing: -0.02em;
 }
 
@@ -399,17 +325,16 @@
   gap: 12px;
 }
 
-@media (min-width: 760px){
+@media (min-width: 780px){
   .guides-grid{
     grid-template-columns: repeat(3, minmax(0,1fr));
   }
 }
 
-/* Make guide cards feel a bit “lighter” */
 .guides-grid .guide-card{
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.03);
+  padding: 15px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.035);
   border: 1px solid rgba(255,255,255,.10);
   transition: transform .15s ease, border-color .15s ease, background .15s ease;
 }
@@ -417,139 +342,132 @@
 .guides-grid .guide-card:hover{
   transform: translateY(-2px);
   border-color: rgba(255,255,255,.18);
-  background: rgba(255,255,255,.05);
+  background: rgba(255,255,255,.055);
 }
 
 .guides-grid .guide-card h3{
   margin: 0;
   font-size: 14px;
   line-height: 1.25;
+  font-weight: 1000;
 }
 
 .guides-grid .guide-card p{
   margin: 8px 0 0 0;
   font-size: 13px;
   opacity: .78;
+  line-height: 1.45;
 }
 
 .guides-grid .guide-cta{
   display:inline-block;
   margin-top: 10px;
-  font-weight: 900;
+  font-weight: 1000;
   font-size: 12px;
-  border-bottom: 1px solid rgba(255,255,255,.18);
+  border-bottom: 1px solid rgba(255,255,255,.20);
 }
 
-/* -----------------------------
-   BUILT BLOCK: unify “Why + categories”
------------------------------- */
-.built-grid{
-  max-width: 1120px;
-  margin: 0 auto;
+/* =========================
+   WORKFLOWS: where your “trust pills” live now
+   (You asked: move the removed rail content here)
+========================= */
+.workflow-box{
+  padding: 18px;
+  border-radius: var(--home-radius);
+}
+
+.workflow-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 12px;
+  flex-wrap:wrap;
+}
+
+.workflow-actions{
+  display:flex;
+  gap: 10px;
+  flex-wrap:wrap;
+}
+
+.workflow-actions .btn{
+  border-radius: 999px;
+  min-height: 44px;
+  padding: 12px 16px;
+  font-weight: 1000;
+}
+
+/* Trust pills moved here (and can be more than 5 now) */
+.workflow-pills{
+  margin-top: 12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.workflow-pill{
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
+  opacity: .92;
+}
+
+/* Workflow cards: 3 columns */
+.workflow-grid{
+  margin-top: 14px;
   display:grid;
   gap: 12px;
 }
 
 @media (min-width: 900px){
-  .built-grid{
-    grid-template-columns: 1fr 1fr;
-    align-items:start;
-  }
-}
-
-.value-cards{
-  display:grid;
-  gap: 12px;
-}
-
-@media (min-width: 640px){
-  .value-cards{
+  .workflow-grid{
     grid-template-columns: repeat(3, minmax(0,1fr));
   }
 }
 
-.value-cards .small-card{
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(255,255,255,.10);
-}
-
-.value-cards .small-card h3{
-  margin: 0;
-  font-size: 14px;
-  font-weight: 1000;
-}
-
-.value-cards .small-card p{
-  margin: 8px 0 0 0;
-  font-size: 13px;
-  opacity: .78;
-  line-height: 1.45;
-}
-
-.cat-cards{
-  display:grid;
-  gap: 12px;
-}
-
-@media (min-width: 640px){
-  .cat-cards{
-    grid-template-columns: repeat(3, minmax(0,1fr));
-  }
-}
-
-.cat-cards .small-card{
-  padding: 14px;
-  border-radius: 16px;
+.workflow-card{
+  padding: 16px;
+  border-radius: 18px;
   background: rgba(255,255,255,.035);
   border: 1px solid rgba(255,255,255,.10);
-  text-decoration:none;
-  transition: transform .15s ease, border-color .15s ease, background .15s ease;
+  box-shadow: 0 18px 55px rgba(0,0,0,.18);
 }
 
-.cat-cards .small-card:hover{
-  transform: translateY(-2px);
-  border-color: rgba(255,255,255,.18);
-  background: rgba(255,255,255,.055);
-}
-
-.cat-cards .small-card h3{
+.workflow-card h3{
   margin: 0;
   font-size: 14px;
   font-weight: 1000;
 }
 
-.cat-cards .small-card p{
+.workflow-card p{
   margin: 8px 0 0 0;
   font-size: 13px;
   opacity: .78;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
-.cat-cards .tool-cta{
-  display:inline-block;
-  margin-top: 10px;
-  font-size: 12px;
+.workflow-card .wbtns{
+  margin-top: 12px;
+  display:flex;
+  gap: 10px;
+  flex-wrap:wrap;
+}
+
+.workflow-card .wbtns .btn{
+  border-radius: 999px;
+  min-height: 40px;
+  padding: 10px 12px;
   font-weight: 1000;
-  border-bottom: 1px solid rgba(255,255,255,.18);
 }
 
-/* -----------------------------
-   Small polish: section spacing tighter
------------------------------- */
-.section.container{
-  padding-top: 18px;
-  padding-bottom: 18px;
-}
-
-.hero-box{
-  border-radius: 18px;
-}
-
-/* On small screens, ensure everything breathes */
+/* =========================
+   Mobile polish
+========================= */
 @media (max-width: 520px){
   .hero-intro h1{ max-width: 20ch; }
-  .pick-card{ min-height: 140px; }
-  .microtest textarea{ min-height: 120px; }
+  .qchip{ min-width: 0; width: 100%; justify-content:flex-start; }
+  .pick-card{ min-height: 150px; }
 }
