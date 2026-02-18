@@ -1097,3 +1097,33 @@
     init();
   }
 })();
+/* =========================================================
+   PATCH — Disable scroll bursts (keep idle floating particles)
+   Paste at END of /assets/site.js
+========================================================= */
+(() => {
+  try{
+    // If your existing code uses a function like createBurst / burst / spawnBurst,
+    // this neutralizes it if it's attached on window.
+    const noop = () => {};
+
+    // Common names (safe to set if they exist, harmless if not)
+    if (typeof window.createBurst === "function") window.createBurst = noop;
+    if (typeof window.spawnBurst  === "function") window.spawnBurst  = noop;
+    if (typeof window.burst       === "function") window.burst       = noop;
+
+    // Also kill any burst-on-scroll listener pattern by capturing + stopping.
+    // This doesn't affect normal scrolling; it just blocks “burst trigger” handlers
+    // that rely on scroll events (common in your effect).
+    let last = 0;
+    window.addEventListener("scroll", (e) => {
+      // If something fires too often (your burst bug), we stop propagation early.
+      // Keep this extremely light: only blocks event propagation; no layout reads.
+      const now = performance.now();
+      if (now - last < 40) { // 25fps throttle for safety
+        e.stopImmediatePropagation?.();
+      }
+      last = now;
+    }, { capture: true, passive: true });
+  } catch(_) {}
+})();
