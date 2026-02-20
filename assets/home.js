@@ -1,31 +1,19 @@
-/* ==========================================================================
-   /assets/home.js  (REWORK v2)
-   Home-only enhancements (safe with /assets/site.js)
+/* =========================================================
+   Clickoz — home.js
+   - Monthly picks (manual refresh)
+   - Stable rendering + nice randomness (no auto changes)
+   ========================================================= */
 
-   - "Top tools of the month" (manual refresh only)
-   - No microtest widget (removed by request)
-   - Progressive enhancement: if DOM differs, does nothing.
-========================================================================== */
 (() => {
   "use strict";
 
-  const $  = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const $ = (sel, root = document) => root.querySelector(sel);
 
-  /* =========================
-     0) UTILITIES
-  ========================= */
-  function escapeHtml(str){
-    return (str ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
+  function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
 
-  function mulberry32(seed){
-    return function(){
+  // Simple seeded RNG (deterministic for "monthly" baseline)
+  function mulberry32(seed) {
+    return function () {
       let t = (seed += 0x6D2B79F5);
       t = Math.imul(t ^ (t >>> 15), t | 1);
       t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
@@ -33,84 +21,28 @@
     };
   }
 
-  function shuffleWithSeed(arr, seed){
-    const a = arr.slice();
-    const rnd = mulberry32(seed >>> 0);
-    for (let i = a.length - 1; i > 0; i--){
-      const j = Math.floor(rnd() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
+  function hashStr(str) {
+    // small deterministic hash
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
     }
-    return a;
+    return h >>> 0;
   }
 
-  /* =========================
-     1) TOP TOOLS OF THE MONTH
-     Expected DOM:
-       #picksGrid (container)
-       #recRefresh (button)
-       optional: [data-month-label] span to show current month
-  ========================= */
-  const picksGrid = $("#picksGrid");
-  const refreshBtn = $("#recRefresh");
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (m) => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m]
+    ));
+  }
 
-  // Curated core (always stable — these should be your best “search magnets”).
-  // Keep hrefs exactly matching your site routes.
-  const CORE = [
-    {
-      href: "/tools/json-formatter/",
-      icon: "🧾",
-      title: "JSON Formatter",
-      desc: "Format, validate, and minify JSON for clean debugging and copy-ready output.",
-      cat: "Developer Utilities"
-    },
-    {
-      href: "/tools/meta-tags/",
-      icon: "🏷️",
-      title: "Meta Tag Optimizer",
-      desc: "Preview SERP titles/descriptions, avoid truncation, and improve click appeal.",
-      cat: "SEO Tools"
-    }
-  ];
-
-  // Monthly rotation pool (the "search-driven" vibe).
-  // Add/remove items anytime; refresh will pick 1 to fill slot 3.
-  const MONTHLY_POOL = [
-    {
-      href: "/tools/word-counter/",
-      icon: "🔢",
-      title: "Word Counter",
-      desc: "Words, characters, sentences, and reading time for briefs and drafts.",
-      cat: "Writing Tools"
-    },
-    {
-      href: "/tools/readability-analyzer/",
-      icon: "📚",
-      title: "Readability Analyzer",
-      desc: "Readability score + quick edits to make text easier to scan on mobile.",
-      cat: "Writing Tools"
-    },
-    {
-      href: "/tools/url-encoder/",
-      icon: "🔗",
-      title: "URL Encoder / Decoder",
-      desc: "Fix broken parameters, encode tracking links, and inspect redirects safely.",
-      cat: "Developer Utilities"
-    },
-    {
-      href: "/tools/base64/",
-      icon: "🔐",
-      title: "Base64 Encode / Decode",
-      desc: "Inspect tokens and payload segments with clean, readable output.",
-      cat: "Developer Utilities"
-    }
-  ].filter(Boolean);
-
-  function renderPickCard(item){
-    const href  = escapeHtml(item.href);
-    const title = escapeHtml(item.title);
-    const desc  = escapeHtml(item.desc);
-    const cat   = escapeHtml(item.cat);
-    const icon  = escapeHtml(item.icon || "✨");
+  function renderPickCard(tool) {
+    const title = escapeHtml(tool.title);
+    const desc = escapeHtml(tool.desc);
+    const cat  = escapeHtml(tool.cat);
+    const href = escapeHtml(tool.href);
+    const icon = escapeHtml(tool.icon);
 
     return `
       <a class="pick-card" href="${href}">
@@ -124,56 +56,153 @@
           <span class="pick-cta">Open</span>
         </div>
       </a>
-    `.trim();
+    `;
   }
 
-  function renderPicks(list){
-    if (!picksGrid) return;
-    picksGrid.innerHTML = list.map(renderPickCard).join("\n");
+  // Tool pool (curate as you like)
+  const TOOL_POOL = [
+    { icon:"🧾", title:"JSON Formatter", desc:"Format, validate, and minify JSON for clean debugging and copy-ready output.", cat:"Developer Utilities", href:"/tools/json-formatter/" },
+    { icon:"🏷️", title:"Meta Tag Optimizer", desc:"Preview SERP titles/descriptions, avoid truncation, and improve click appeal.", cat:"SEO Tools", href:"/tools/meta-tags/" },
+    { icon:"📚", title:"Readability Analyzer", desc:"Readability score + quick edits to make text easier to scan on mobile.", cat:"Writing Tools", href:"/tools/readability-analyzer/" },
+
+    { icon:"🔗", title:"URL Encoder / Decoder", desc:"Encode or decode query strings to fix broken URLs and parameters safely.", cat:"Developer Utilities", href:"/tools/url-encoder/" },
+    { icon:"🔐", title:"Base64 Encode / Decode", desc:"Inspect tokens and payloads quickly with clean, readable output.", cat:"Developer Utilities", href:"/tools/base64/" },
+    { icon:"🧮", title:"Word Counter", desc:"Count words, characters, sentences, and estimate reading time instantly.", cat:"Writing Tools", href:"/tools/word-counter/" },
+    { icon:"🧠", title:"Keyword Density Checker", desc:"Spot overuse and missing terms to balance intent and readability.", cat:"SEO Tools", href:"/tools/keyword-density/" },
+    { icon:"🧩", title:"HTML Entity Encoder/Decoder", desc:"Convert special characters safely for HTML or decode them back.", cat:"Developer Utilities", href:"/tools/html-entity/" },
+    { icon:"🧹", title:"Whitespace Remover", desc:"Clean extra spaces/lines without breaking your text structure.", cat:"Writing Tools", href:"/tools/whitespace-remover/" },
+    { icon:"🧭", title:"UTM Builder", desc:"Create trackable UTM links quickly with clean parameters.", cat:"SEO Tools", href:"/tools/utm-builder/" }
+  ];
+
+  function dedupeByHref(list) {
+    const seen = new Set();
+    return list.filter(t => {
+      if (seen.has(t.href)) return false;
+      seen.add(t.href);
+      return true;
+    });
   }
 
-  function initPicks(){
-    if (!picksGrid) return;
-
-    // If the HTML already contains non-pick markup, do nothing (safe).
-    const hasPick = !!picksGrid.querySelector(".pick-card");
-    const hasChildren = picksGrid.children && picksGrid.children.length > 0;
-    if (hasChildren && !hasPick) return;
-
-    // Default render: stable picks + one deterministic “month pick”
+  function pickMonthlyBaseline() {
+    // Deterministic baseline: changes with month, not every load
     const now = new Date();
-    const seed = (now.getFullYear() * 100) + (now.getMonth() + 1); // YYYYMM
-    const shuffled = shuffleWithSeed(MONTHLY_POOL, seed);
-    const monthPick = shuffled[0] || MONTHLY_POOL[0];
+    const key = `${now.getUTCFullYear()}-${now.getUTCMonth()+1}-clickoz-home`;
+    const seed = hashStr(key);
+    const rnd = mulberry32(seed);
 
-    renderPicks([CORE[0], CORE[1], monthPick]);
+    const pool = dedupeByHref([...TOOL_POOL]);
+    // shuffle deterministic
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool;
   }
 
-  function refreshMonthlyPick(){
-    if (!picksGrid) return;
+  function getManualRotationIndex(max) {
+    const raw = sessionStorage.getItem("clickoz_home_rotation_idx");
+    const idx = raw ? parseInt(raw, 10) : 0;
+    return clamp(Number.isFinite(idx) ? idx : 0, 0, Math.max(0, max - 1));
+  }
 
-    const seed = (Date.now() >>> 0);
-    const shuffled = shuffleWithSeed(MONTHLY_POOL, seed);
-    const pick = shuffled[0] || MONTHLY_POOL[0];
+  function setManualRotationIndex(idx) {
+    sessionStorage.setItem("clickoz_home_rotation_idx", String(idx));
+  }
 
-    renderPicks([CORE[0], CORE[1], pick]);
+  function renderPicks({ rotate = false } = {}) {
+    const grid = $("#picksGrid");
+    if (!grid) return;
 
-    if (refreshBtn){
-      refreshBtn.disabled = true;
-      refreshBtn.textContent = "✅ Updated";
-      window.setTimeout(() => {
-        refreshBtn.disabled = false;
-        refreshBtn.textContent = "🔄 Refresh picks";
-      }, 900);
+    // Baseline list (monthly deterministic)
+    const base = pickMonthlyBaseline();
+
+    // The first two picks are "stable anchors" (best for trust)
+    const anchors = base.slice(0, 2);
+
+    // Rotating slot uses the remaining tools
+    const rest = base.slice(2);
+    const restLen = rest.length;
+
+    let rotIdx = getManualRotationIndex(restLen);
+    if (rotate && restLen > 0) {
+      rotIdx = (rotIdx + 1) % restLen;
+      setManualRotationIndex(rotIdx);
+    }
+
+    const rotating = restLen > 0 ? rest[rotIdx] : null;
+
+    const finalList = rotating ? [...anchors, rotating] : [...anchors];
+    grid.innerHTML = finalList.map(renderPickCard).join("");
+
+    // Optional: micro-focus for accessibility after refresh
+    if (rotate) {
+      const firstCard = grid.querySelector(".pick-card");
+      if (firstCard) firstCard.focus?.();
     }
   }
 
-  initPicks();
+  function bindRefresh() {
+    const btn = $("#recRefresh");
+    if (!btn) return;
 
-  if (refreshBtn){
-    refreshBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      refreshMonthlyPick();
+    btn.addEventListener("click", () => {
+      // button tactile feedback
+      btn.disabled = true;
+      btn.style.opacity = "0.85";
+
+      renderPicks({ rotate: true });
+
+      window.setTimeout(() => {
+        btn.disabled = false;
+        btn.style.opacity = "";
+      }, 220);
     });
   }
+
+  function init() {
+    renderPicks({ rotate: false });
+    bindRefresh();
+  }
+
+  // Run
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+})();
+/* =========================================================
+   PATCH — No burst + Nav glow always ON (global)
+   Paste at END of /assets/site.js
+========================================================= */
+(() => {
+  "use strict";
+
+  // 1) Force nav glow from the moment you enter the site
+  const nav = document.getElementById("topNav");
+  if (nav) {
+    nav.classList.add("is-scrolled", "is-down");
+  }
+
+  // 2) Kill any "burst" particles that might be created by scroll logic
+  const layer = document.getElementById("clickozParticles");
+  if (layer) {
+    // Remove existing bursts immediately (and keep removing them)
+    const killBursts = () => {
+      layer.querySelectorAll(".pburst").forEach(n => n.remove());
+    };
+    killBursts();
+
+    // MutationObserver: deletes bursts instantly if any script tries to add them
+    const obs = new MutationObserver(() => killBursts());
+    obs.observe(layer, { childList: true, subtree: true });
+  }
+
+  // 3) If your original code toggles nav.is-down off/on while scrolling,
+  // keep it ON to prevent the bottom glow changing when you scroll back up.
+  // (This is a safe override: it doesn't break layout.)
+  window.addEventListener("scroll", () => {
+    const nav2 = document.getElementById("topNav");
+    if (nav2) nav2.classList.add("is-scrolled", "is-down");
+  }, { passive: true });
 })();
