@@ -1,473 +1,431 @@
-/* ==========================================================================
-   /assets/home.css  (REWORK v2)
-   Goal: cleaner alignment, stronger “feel”, premium spacing, accent CTAs,
-   centered chips, bigger hero buttons, no left rail, wider "Top tools of the month",
-   workflows section with moved trust pills + accent buttons + Updates CTA.
-   Depends on /assets/site.css
-========================================================================== */
+/* =========================================================
+   HOME PATCH — Hero bigger + centered + better hierarchy
+   Paste at the VERY END of /assets/home.css
+========================================================= */
 
-:root{
-  --home-max: 1180px;
-  --home-soft: rgba(255,255,255,.06);
-  --home-soft2: rgba(255,255,255,.045);
-  --home-border: rgba(255,255,255,.11);
-  --home-border2: rgba(255,255,255,.16);
-  --home-shadow: 0 18px 60px rgba(0,0,0,.35);
-  --home-radius: 18px;
-  --home-radius-sm: 14px;
-}
-
-/* =========================
-   HERO: better alignment + “premium” rhythm
-========================= */
+/* ---------- 1) HERO: bigger, centered, premium spacing ---------- */
 .hero.container{
-  padding-top: 22px;
-  padding-bottom: 14px;
+  padding-top: 42px;  /* more breathing room */
+  padding-bottom: 18px;
 }
 
 .hero-intro{
-  text-align: left;
-  max-width: 860px;
+  max-width: 1060px;
+  margin: 0 auto;
+  text-align: center;
 }
 
+/* Title bigger + stronger contrast */
 .hero-intro h1{
-  margin-top: 18px !important;
-  letter-spacing: -0.03em;
-  line-height: 1.04;
-  max-width: 26ch;
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: clamp(40px, 4.2vw, 66px);
+  line-height: 1.03;
+  letter-spacing: -0.04em;
+  font-weight: 1000;
 }
 
+/* Accent highlights (if you use .hl) */
+.hero-intro .hl{
+  color: var(--accent);
+  text-shadow:
+    0 0 18px rgba(var(--accent-rgb), .28),
+    0 0 44px rgba(var(--accent-rgb), .16);
+}
+
+/* Subtitle bigger and centered */
 .hero-intro p{
-  margin-top: 12px;
-  margin-bottom: 16px;
-  max-width: 70ch;
-  font-size: 16px;
-  line-height: 1.65;
-  opacity: .88;
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 18px;
+  line-height: 1.75;
+  color: rgba(255,255,255,.78);
+  margin-top: 14px;
 }
 
-/* Make the arrow “See guides →” bigger & aligned */
+/* ---------- 2) HERO BUTTONS: bigger + no "black" hover ---------- */
 .hero-cta{
-  display:flex;
-  flex-wrap:wrap;
+  margin-top: 18px;
   gap: 12px;
-  align-items:center;
-  margin-top: 16px;
 }
 
+/* Ensure your home buttons have consistent size */
 .hero-cta .btn{
-  min-height: 46px;
-  padding: 12px 16px;
-  border-radius: 999px;
-  font-weight: 900;
-  letter-spacing: .01em;
+  height: 52px;              /* bigger */
+  padding: 0 20px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 1000;
+  letter-spacing: -0.01em;
+  transform: translateZ(0);
 }
 
-/* Accent button (for Guides or Tools) */
+/* If you use classes: .btn-accent / .btn-outline in home */
 .btn-accent{
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #0b0f19;
-  border: 0 !important;
-  box-shadow: 0 14px 40px rgba(0,0,0,.28);
+  background: var(--accent) !important;
+  color: rgba(255,255,255,.96) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  box-shadow:
+    0 14px 30px rgba(var(--accent-rgb), .22),
+    0 0 0 1px rgba(var(--accent-rgb), .18) inset;
 }
 
+/* Neon hover (no darkening) */
 .btn-accent:hover{
-  filter: brightness(1.03);
-  transform: translateY(-1px);
+  filter: brightness(1.06) saturate(1.05);
+  box-shadow:
+    0 18px 40px rgba(var(--accent-rgb), .28),
+    0 0 0 1px rgba(var(--accent-rgb), .26) inset,
+    0 0 28px rgba(var(--accent-rgb), .18);
 }
 
 .btn-outline{
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.14);
-  color: rgba(242,242,255,.92);
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  color: rgba(255,255,255,.92) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,.20);
 }
 
+/* Outline hover: glow accent, NOT black */
 .btn-outline:hover{
-  border-color: rgba(255,255,255,.22);
-  transform: translateY(-1px);
+  background: rgba(var(--accent-rgb), .10) !important;
+  border-color: rgba(var(--accent-rgb), .38) !important;
+  box-shadow:
+    0 16px 34px rgba(0,0,0,.28),
+    0 0 0 1px rgba(var(--accent-rgb), .16) inset,
+    0 0 24px rgba(var(--accent-rgb), .14);
 }
 
-/* The “See guides →” as a true button */
-.btn-guides{
-  display:inline-flex;
-  align-items:center;
-  gap: 10px;
-}
-
-.btn-guides .arrow{
-  font-size: 18px;
+/* Prevent weird "drag hover = black" from active/selection states */
+.btn:active{
   transform: translateY(1px);
-  opacity: .95;
+  filter: none;
+}
+.btn::selection{ background: transparent; }
+.btn *::selection{ background: transparent; }
+
+/* Arrow spacing */
+.hero-cta .arrow{
+  margin-left: 8px;
+  display: inline-block;
+  transform: translateY(0.5px);
 }
 
-/* =========================
-   QUICK CHIPS: wider, centered block
-========================= */
+/* ---------- 3) QUICKCHIPS: wider + centered + clearer reading ---------- */
 .quickchips{
   margin-top: 18px;
-  display:flex;
-  flex-wrap:wrap;
-  justify-content: center;         /* center the whole row */
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 12px;
-  max-width: 980px;
+  justify-items: center;
+}
+
+@media (min-width: 860px){
+  .quickchips{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    max-width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.qchip{
+  width: 100%;
+  max-width: 520px;
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(15,21,38,.55);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 16px 44px rgba(0,0,0,.22);
+}
+
+.qico{
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(var(--accent-rgb), .10);
+  border: 1px solid rgba(var(--accent-rgb), .22);
+  box-shadow: 0 10px 22px rgba(var(--accent-rgb), .10);
+  font-size: 20px;
+}
+
+.qtxt strong{
+  display:block;
+  font-size: 15.5px;
+  letter-spacing: -0.01em;
+  font-weight: 1000;
+  line-height: 1.15;
+}
+
+.qtxt span{
+  display:block;
+  margin-top: 4px;
+  font-size: 13.8px;
+  opacity: .78;
+}
+
+/* ---------- 4) SECTION HIERARCHY: titles vs paragraphs ---------- */
+.hero-box .box-title,
+.section-title{
+  text-align: center;
   margin-left: auto;
   margin-right: auto;
 }
 
-.qchip{
-  display:flex;
-  align-items:center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.055);
-  border: 1px solid rgba(255,255,255,.12);
-  box-shadow: 0 18px 45px rgba(0,0,0,.22);
-  backdrop-filter: blur(10px);
-  min-width: 270px;               /* makes them feel “real” */
-  justify-content: center;
-}
-
-.qchip .qico{
-  width: 32px;
-  height: 32px;
-  border-radius: 12px;
-  display:grid;
-  place-items:center;
-  background: rgba(255,255,255,.075);
-  border: 1px solid rgba(255,255,255,.12);
-  font-size: 16px;
-}
-
-.qchip .qtxt strong{
-  font-size: 13px;
+.hero-box .box-title{
+  font-size: 20px;
   font-weight: 1000;
-  letter-spacing: .01em;
+  letter-spacing: -0.02em;
 }
 
-.qchip .qtxt span{
-  font-size: 12px;
-  opacity: .78;
+.hero-box .box-sub,
+.section-sub{
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: rgba(255,255,255,.74);
 }
 
-/* =========================
-   TOP TOOLS OF THE MONTH: full width (no rail)
-========================= */
-.rec-shell{
-  margin-top: 18px;
-  display:block;   /* remove 2-col layout */
+/* Add subtle separator rhythm between blocks */
+.hero-box{
+  padding: 18px 18px;
 }
 
-.rec-wrap.hero-box{
-  padding: 18px;
-  border-radius: var(--home-radius);
-}
-
-/* Header row */
-.rec-toprow{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 12px;
-}
-
-.rec-toprow .box-title{
-  margin: 0;
-  font-size: 16px;
-  font-weight: 1000;
-  letter-spacing: -0.01em;
-}
-
-/* “Refresh picks” button nicer */
-.rec-refresh{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 10px 12px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.05);
-  border: 1px solid rgba(255,255,255,.14);
-  color: rgba(242,242,255,.92);
-  font-weight: 900;
-}
-
-.rec-refresh:hover{
-  border-color: rgba(255,255,255,.22);
-  transform: translateY(-1px);
-}
-
-.box-sub{
-  margin-top: 10px;
-  margin-bottom: 14px;
-  max-width: 86ch;
-  opacity: .78;
-  line-height: 1.55;
-}
-
-/* Picks grid (bigger cards, more “space”) */
+/* ---------- 5) TOP TOOLS (picks): center icon + title + clearer card ---------- */
 .picks-grid{
-  display:grid;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 14px;
+  margin-top: 14px;
 }
 
-@media (min-width: 860px){
+@media (min-width: 980px){
   .picks-grid{
-    grid-template-columns: repeat(3, minmax(0,1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 .pick-card{
-  text-decoration:none;
-  display:flex;
-  flex-direction:column;
-  gap: 10px;
+  text-decoration: none;
   padding: 16px;
   border-radius: 18px;
-  background: rgba(255,255,255,.045);
-  border: 1px solid rgba(255,255,255,.12);
-  box-shadow: 0 18px 55px rgba(0,0,0,.22);
-  transition: transform .15s ease, border-color .15s ease, background .15s ease;
-  min-height: 168px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(15,21,38,.55);
+  box-shadow: 0 18px 52px rgba(0,0,0,.26);
+  transition: transform .14s ease, border-color .14s ease, background .14s ease, box-shadow .14s ease;
+  text-align: center; /* <-- center all text */
 }
 
 .pick-card:hover{
   transform: translateY(-2px);
-  border-color: rgba(255,255,255,.20);
-  background: rgba(255,255,255,.06);
+  border-color: rgba(var(--accent-rgb), .38);
+  background: rgba(17,26,48,.78);
+  box-shadow:
+    0 22px 70px rgba(0,0,0,.40),
+    0 0 0 1px rgba(var(--accent-rgb), .14) inset,
+    0 0 28px rgba(var(--accent-rgb), .10);
 }
 
 .pick-head{
   display:flex;
+  flex-direction: column;
   align-items:center;
-  gap: 12px;
+  justify-content:center;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
 .pick-icon{
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
-  display:grid;
-  place-items:center;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.12);
-  font-size: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(var(--accent-rgb), .10);
+  border: 1px solid rgba(var(--accent-rgb), .22);
+  box-shadow: 0 12px 26px rgba(var(--accent-rgb), .12);
+  font-size: 22px;
 }
 
 .pick-title{
   margin: 0;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 1000;
   letter-spacing: -0.01em;
+  line-height: 1.15;
 }
 
 .pick-desc{
   margin: 0;
-  font-size: 13px;
-  opacity: .84;
-  line-height: 1.5;
-  max-width: 56ch;
+  margin-top: 6px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: rgba(255,255,255,.74);
 }
 
 .pick-meta{
-  margin-top:auto;
+  margin-top: 14px;
   display:flex;
   align-items:center;
-  justify-content:space-between;
+  justify-content: center;  /* centered row */
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .pick-cat{
-  font-size: 12px;
-  opacity: .74;
-}
-
-.pick-cta{
-  font-size: 12px;
-  font-weight: 1000;
-  letter-spacing: .01em;
-  border-bottom: 1px solid rgba(255,255,255,.22);
+  font-size: 12.5px;
+  font-weight: 900;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
   opacity: .92;
 }
 
-/* Actions row under picks */
+.pick-cta{
+  font-size: 12.5px;
+  font-weight: 1000;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(var(--accent-rgb), .14);
+  border: 1px solid rgba(var(--accent-rgb), .28);
+  color: rgba(255,255,255,.92);
+}
+
+/* Buttons row under picks: centered + balanced */
 .picks-actions{
-  margin-top: 14px;
+  margin-top: 16px;
   display:flex;
   gap: 10px;
-  flex-wrap:wrap;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .picks-actions .btn{
-  border-radius: 999px;
-  min-height: 44px;
-  padding: 12px 16px;
-  font-weight: 1000;
+  height: 48px;
+  border-radius: 16px;
+  padding: 0 18px;
+  font-size: 15px;
 }
 
-/* =========================
-   GUIDES: tighter, cleaner, still strong
-========================= */
-.section.container{
-  padding-top: 18px;
-  padding-bottom: 18px;
-}
-
-.section-title{
-  letter-spacing: -0.02em;
-}
-
-.guides-grid{
-  max-width: 1120px;
-  margin: 0 auto;
-  display:grid;
-  gap: 12px;
-}
-
-@media (min-width: 780px){
-  .guides-grid{
-    grid-template-columns: repeat(3, minmax(0,1fr));
-  }
-}
-
-.guides-grid .guide-card{
-  padding: 15px;
-  border-radius: 18px;
-  background: rgba(255,255,255,.035);
-  border: 1px solid rgba(255,255,255,.10);
-  transition: transform .15s ease, border-color .15s ease, background .15s ease;
-}
-
-.guides-grid .guide-card:hover{
-  transform: translateY(-2px);
-  border-color: rgba(255,255,255,.18);
-  background: rgba(255,255,255,.055);
-}
-
-.guides-grid .guide-card h3{
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.25;
-  font-weight: 1000;
-}
-
-.guides-grid .guide-card p{
-  margin: 8px 0 0 0;
-  font-size: 13px;
-  opacity: .78;
-  line-height: 1.45;
-}
-
-.guides-grid .guide-cta{
-  display:inline-block;
-  margin-top: 10px;
-  font-weight: 1000;
-  font-size: 12px;
-  border-bottom: 1px solid rgba(255,255,255,.20);
-}
-
-/* =========================
-   WORKFLOWS: where your “trust pills” live now
-   (You asked: move the removed rail content here)
-========================= */
+/* ---------- 6) WORKFLOWS: center text + stronger headings ---------- */
 .workflow-box{
-  padding: 18px;
-  border-radius: var(--home-radius);
+  text-align: center;
 }
 
 .workflow-head{
   display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap: 12px;
-  flex-wrap:wrap;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.workflow-head .section-sub{
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .workflow-actions{
   display:flex;
+  justify-content: center;
   gap: 10px;
-  flex-wrap:wrap;
+  flex-wrap: wrap;
 }
 
 .workflow-actions .btn{
-  border-radius: 999px;
-  min-height: 44px;
-  padding: 12px 16px;
-  font-weight: 1000;
+  height: 48px;
+  padding: 0 18px;
+  border-radius: 16px;
+  font-size: 15px;
 }
 
-/* Trust pills moved here (and can be more than 5 now) */
 .workflow-pills{
-  margin-top: 12px;
+  margin-top: 14px;
   display:flex;
-  flex-wrap:wrap;
-  gap: 8px;
+  flex-wrap: wrap;
   justify-content: center;
+  gap: 10px;
 }
 
 .workflow-pill{
-  font-size: 12px;
-  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 10px 12px;
   border-radius: 999px;
-  background: rgba(255,255,255,.05);
   border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
   opacity: .92;
 }
 
-/* Workflow cards: 3 columns */
 .workflow-grid{
-  margin-top: 14px;
+  margin-top: 16px;
   display:grid;
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 14px;
 }
 
-@media (min-width: 900px){
+@media (min-width: 980px){
   .workflow-grid{
-    grid-template-columns: repeat(3, minmax(0,1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 .workflow-card{
+  text-align: left; /* content readable */
   padding: 16px;
   border-radius: 18px;
-  background: rgba(255,255,255,.035);
   border: 1px solid rgba(255,255,255,.10);
-  box-shadow: 0 18px 55px rgba(0,0,0,.18);
+  background: rgba(15,21,38,.50);
+  box-shadow: 0 18px 52px rgba(0,0,0,.24);
 }
 
 .workflow-card h3{
   margin: 0;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 1000;
+  letter-spacing: -0.01em;
 }
 
 .workflow-card p{
-  margin: 8px 0 0 0;
-  font-size: 13px;
-  opacity: .78;
-  line-height: 1.5;
+  margin: 10px 0 0;
+  color: rgba(255,255,255,.74);
+  line-height: 1.75;
+  font-size: 14.5px;
 }
 
 .workflow-card .wbtns{
-  margin-top: 12px;
+  margin-top: 14px;
   display:flex;
   gap: 10px;
-  flex-wrap:wrap;
+  flex-wrap: wrap;
 }
 
-.workflow-card .wbtns .btn{
-  border-radius: 999px;
-  min-height: 40px;
-  padding: 10px 12px;
-  font-weight: 1000;
+/* Make workflow buttons consistent */
+.workflow-card .btn{
+  height: 46px;
+  border-radius: 16px;
+  padding: 0 16px;
+  font-size: 14.5px;
 }
 
-/* =========================
-   Mobile polish
-========================= */
-@media (max-width: 520px){
-  .hero-intro h1{ max-width: 20ch; }
-  .qchip{ min-width: 0; width: 100%; justify-content:flex-start; }
-  .pick-card{ min-height: 150px; }
+/* ---------- 7) Small polishing: make section blocks breathe ---------- */
+.section.container{
+  padding-top: 32px;
+  padding-bottom: 24px;
+}
+
+@media (min-width: 980px){
+  .section.container{
+    padding-top: 38px;
+    padding-bottom: 28px;
+  }
 }
