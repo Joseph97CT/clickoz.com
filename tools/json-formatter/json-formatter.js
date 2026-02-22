@@ -1,152 +1,139 @@
 /* ==========================================================================
-   Clickoz — JSON Formatter (Tool)
+   Clickoz — JSON Formatter (UTM Builder style page shell)
    File: /tools/json-formatter/json-formatter.js
-   Requires: /assets/tools.js (ClickozToolShell)
+   No dependency on tools.js — matches UTM Builder approach
    ========================================================================== */
 
 (() => {
   'use strict';
 
-  // ---------- utils ----------
-  function stripBomAndTrim(s) {
+  const $ = (sel) => document.querySelector(sel);
+
+  const els = {
+    in:  $('#jfInput'),
+    out: $('#jfOutput'),
+    pill: $('#jfStatus'),
+    err: $('#jfError'),
+
+    indent: $('#jfIndent'),
+    sort: $('#jfSort'),
+    auto: $('#jfAuto'),
+    wrap: $('#jfWrap'),
+
+    btnCopy: $('#jfCopy'),
+    btnClear: $('#jfClear'),
+    btnFormat: $('#jfFormat'),
+
+    btnLoadExample: $('#jfLoadExample'),
+    btnNewExample: $('#jfNewExample'),
+    exampleBox: $('#jfExampleBox'),
+
+    file: $('#jfFile'),
+    btnUpload: $('#jfUpload'),
+    btnDownload: $('#jfDownload'),
+
+    // stats
+    sIn: $('#jfInChars'),
+    sOut: $('#jfOutChars'),
+    sKeys: $('#jfKeys'),
+    sArrays: $('#jfArrays')
+  };
+
+  // ---------- helpers ----------
+  const monoTrim = (s) => {
     if (!s) return '';
     if (s.charCodeAt(0) === 0xFEFF) s = s.slice(1);
     return s.trim();
-  }
+  };
 
-  function escapeHtml(s) {
-    return String(s)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
+  const setPill = (type, text) => {
+    if (!els.pill) return;
+    els.pill.classList.remove('ok', 'bad');
+    if (type) els.pill.classList.add(type);
+    els.pill.textContent = text;
+  };
 
-  function detectMinified(s) {
-    const oneLine = s.split('\n').length === 1;
-    return oneLine && s.length > 160;
-  }
+  const setError = (html) => {
+    if (!els.err) return;
+    if (!html) {
+      els.err.hidden = true;
+      els.err.innerHTML = '';
+      return;
+    }
+    els.err.hidden = false;
+    els.err.innerHTML = html;
+  };
 
-  function setText(el, txt) {
-    if (!el) return;
-    el.textContent = txt;
-  }
+  const applyWrapClass = () => {
+    document.body.classList.toggle('is-wrap', !!els.wrap?.checked);
+  };
 
-  function setHtml(el, html) {
-    if (!el) return;
-    el.innerHTML = html;
-  }
+  const safeCopy = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // fallback
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        const ok = document.execCommand('copy');
+        ta.remove();
+        return ok;
+      } catch {
+        return false;
+      }
+    }
+  };
 
-  function setPill(pill, type, text) {
-    if (!pill) return;
-    pill.classList.remove('pill--ok', 'pill--warn', 'pill--bad');
-    if (type === 'ok') pill.classList.add('pill--ok');
-    else if (type === 'warn') pill.classList.add('pill--warn');
-    else if (type === 'bad') pill.classList.add('pill--bad');
-    pill.textContent = text;
-  }
-
-  function setOutputState(outputBox, state) {
-    if (!outputBox) return;
-    outputBox.classList.remove('jsonf--ok', 'jsonf--bad');
-    if (state === 'ok') outputBox.classList.add('jsonf--ok');
-    if (state === 'bad') outputBox.classList.add('jsonf--bad');
-  }
-
-  function applyWrap(outputBox, wrap) {
-    if (!outputBox) return;
-    outputBox.classList.toggle('jsonf-wrap', !!wrap);
-  }
-
-  // ---------- JSON parsing with rich error details ----------
-  function extractPositionFromMessage(msg) {
-    // Common V8 format: "Unexpected token ... in JSON at position 123"
+  // Parse error position helpers (V8 style)
+  const extractPos = (msg) => {
     const m = /at position (\d+)/i.exec(msg || '');
     if (!m) return null;
     const n = Number(m[1]);
     return Number.isFinite(n) ? n : null;
-  }
+  };
 
-  function positionToLineCol(raw, pos) {
-    // pos is 0-based index into raw string (after trimming? we want raw index)
-    // We'll compute on the exact string we parse (trimmed) so user line/col matches it.
-    let line = 1;
-    let col = 1;
-    for (let i = 0; i < pos && i < raw.length; i++) {
-      const ch = raw[i];
-      if (ch === '\n') {
-        line += 1;
-        col = 1;
-      } else {
-        col += 1;
-      }
+  const posToLineCol = (s, pos) => {
+    let line = 1, col = 1;
+    for (let i = 0; i < pos && i < s.length; i++) {
+      if (s[i] === '\n') { line++; col = 1; }
+      else col++;
     }
     return { line, col };
-  }
+  };
 
-  function buildSnippet(raw, pos, radius = 50) {
+  const snippetAt = (s, pos, radius = 60) => {
     const start = Math.max(0, pos - radius);
-    const end = Math.min(raw.length, pos + radius);
-    const before = raw.slice(start, pos);
-    const at = raw.slice(pos, pos + 1);
-    const after = raw.slice(pos + 1, end);
+    const end = Math.min(s.length, pos + radius);
+    const before = s.slice(start, pos);
+    const at = s.slice(pos, pos + 1);
+    const after = s.slice(pos + 1, end);
+    const clippedLeft = start > 0;
+    const clippedRight = end < s.length;
 
-    // Normalize newlines in snippet for display (keep as-is, but ensure it's visible)
-    const snippet = before + (at || '') + after;
+    const caretPad = before.replaceAll('\t', '  ').length;
+    const caret = `${' '.repeat(caretPad)}^`;
 
-    // caret line (spaces for before length, caret at position)
-    // Replace tabs with 2 spaces to keep caret closer
-    const beforeVis = before.replaceAll('\t', '  ');
-    const caretPad = beforeVis.length;
-    const caretLine = `${' '.repeat(caretPad)}^`;
+    return {
+      snippet: `${clippedLeft ? '…' : ''}${before}${at}${after}${clippedRight ? '…' : ''}`,
+      caret
+    };
+  };
 
-    return { snippet, caretLine, clippedLeft: start > 0, clippedRight: end < raw.length };
-  }
-
-  function safeParseJsonDetailed(input) {
-    const s = stripBomAndTrim(input);
-    if (!s) return { ok: false, error: { message: 'Paste JSON to format.' } };
-
-    try {
-      const value = JSON.parse(s);
-      return { ok: true, value, normalized: s };
-    } catch (e) {
-      const message = (e && e.message) ? String(e.message) : 'Invalid JSON.';
-      const pos = extractPositionFromMessage(message);
-
-      if (pos == null) {
-        return { ok: false, error: { message } };
-      }
-
-      const { line, col } = positionToLineCol(s, pos);
-      const { snippet, caretLine, clippedLeft, clippedRight } = buildSnippet(s, pos);
-
-      return {
-        ok: false,
-        error: {
-          message,
-          pos,
-          line,
-          col,
-          snippet,
-          caretLine,
-          clippedLeft,
-          clippedRight
-        }
-      };
-    }
-  }
-
-  // ---------- formatting ----------
-  function prettyJson(obj, { indent = 2, sortKeys = false } = {}) {
+  const pretty = (obj, indent, sortKeys) => {
     if (!sortKeys) return JSON.stringify(obj, null, indent);
 
     const sortDeep = (v) => {
       if (Array.isArray(v)) return v.map(sortDeep);
       if (v && typeof v === 'object') {
         const out = {};
-        for (const k of Object.keys(v).sort((a, b) => a.localeCompare(b))) {
+        for (const k of Object.keys(v).sort((a,b)=>a.localeCompare(b))) {
           out[k] = sortDeep(v[k]);
         }
         return out;
@@ -155,18 +142,15 @@
     };
 
     return JSON.stringify(sortDeep(obj), null, indent);
-  }
+  };
 
-  function computeMetrics(raw, formatted, parsedValue) {
-    const inputChars = raw.length;
-    const outputChars = formatted.length;
-
+  const metrics = (raw, formatted, value) => {
     let keys = 0;
     let arrays = 0;
 
     const walk = (v) => {
       if (Array.isArray(v)) {
-        arrays += 1;
+        arrays++;
         for (const x of v) walk(x);
       } else if (v && typeof v === 'object') {
         keys += Object.keys(v).length;
@@ -174,293 +158,197 @@
       }
     };
 
-    walk(parsedValue);
-    return { inputChars, outputChars, keys, arrays };
-  }
+    walk(value);
 
-  // ---------- debounce ----------
-  function debounce(fn, wait) {
-    let t = null;
-    return (...args) => {
-      clearTimeout(t);
-      t = setTimeout(() => fn(...args), wait);
+    return {
+      inChars: raw.length,
+      outChars: formatted.length,
+      keys,
+      arrays
     };
-  }
+  };
 
-  function dynamicWaitForSize(n) {
-    // Smooth for small payloads, safer for large payloads
-    if (n <= 5_000) return 120;
-    if (n <= 50_000) return 180;
-    if (n <= 200_000) return 260;
-    return 360;
-  }
+  const render = () => {
+    const raw = els.in?.value ?? '';
+    const s = monoTrim(raw);
 
-  // ---------- render error HTML ----------
-  function renderErrorHtml(err) {
-    const title = `<span class="jsonf-error-title">Invalid JSON</span>`;
-    const meta =
-      (err && Number.isFinite(err.line) && Number.isFinite(err.col))
-        ? `<span class="jsonf-error-meta">Line ${err.line}, Col ${err.col}</span>`
-        : '';
+    applyWrapClass();
 
-    const msg = `<div style="margin-top:10px;">${escapeHtml(err?.message || 'Invalid JSON.')}</div>`;
+    if (els.sIn) els.sIn.textContent = String(raw.length);
 
-    if (!err?.snippet) {
-      return `${title}${meta ? ` <span style="opacity:.9;">•</span> ${meta}` : ''}${msg}`;
+    if (!s) {
+      if (els.out) els.out.value = '';
+      setPill(null, 'Waiting for JSON…');
+      setError('');
+      if (els.sOut) els.sOut.textContent = '0';
+      if (els.sKeys) els.sKeys.textContent = '0';
+      if (els.sArrays) els.sArrays.textContent = '0';
+      return;
     }
 
-    const leftDots = err.clippedLeft ? '…' : '';
-    const rightDots = err.clippedRight ? '…' : '';
-    const snippet = `${leftDots}${escapeHtml(err.snippet)}${rightDots}`;
-    const caret = escapeHtml(err.caretLine || '^');
+    let value;
+    try {
+      value = JSON.parse(s);
+    } catch (e) {
+      const msg = (e && e.message) ? String(e.message) : 'Invalid JSON.';
+      const pos = extractPos(msg);
 
-    return `
-      ${title}${meta ? ` <span style="opacity:.9;">•</span> ${meta}` : ''}
-      ${msg}
-      <span class="jsonf-error-snippet">
-        ${snippet}
-        <span class="jsonf-caret">${caret}</span>
-      </span>
-    `.trim();
-  }
+      let extra = '';
+      if (pos != null) {
+        const lc = posToLineCol(s, pos);
+        const sn = snippetAt(s, pos);
+        extra = `
+          <div class="muted" style="margin-top:6px;">Line <b>${lc.line}</b>, Col <b>${lc.col}</b></div>
+          <code>${sn.snippet}\n${sn.caret}</code>
+        `;
+      }
 
-  // ---------- tool ----------
-  ClickozToolShell.register({
-    persist: true,
-
-    init(root) {
-      const input = root.querySelector('#jsonInput');
-      const outputPre = root.querySelector('#jsonOutput');     // <pre>
-      const pill = root.querySelector('#jsonStatusPill');
-
-      const indentSel = root.querySelector('#jsonIndent');
-      const sortChk = root.querySelector('#jsonSortKeys');
-      const autoChk = root.querySelector('#jsonAuto');
-
-      const mIn = root.querySelector('#mInputChars');
-      const mOut = root.querySelector('#mOutputChars');
-      const mKeys = root.querySelector('#mKeys');
-      const mArrays = root.querySelector('#mArrays');
-
-      const btnFormat = root.querySelector('#btnFormat');
-
-      // Optional future controls (safe if missing in HTML)
-      const wrapChk = root.querySelector('#jsonWrap');         // checkbox (optional)
-      const btnUpload = root.querySelector('#btnUploadJson');  // optional
-      const fileInput = root.querySelector('#jsonFile');       // optional hidden input[type=file]
-      const btnDownload = root.querySelector('#btnDownload');  // optional
-
-      const outputBox =
-        (outputPre && outputPre.closest('.jsonf-output')) ||
-        (outputPre && outputPre.parentElement) ||
-        null;
-
-      const setEmpty = () => {
-        setPill(pill, 'warn', 'Waiting for JSON…');
-        setOutputState(outputBox, null);
-        if (outputPre) setText(outputPre, '');
-        setText(mIn, '0');
-        setText(mOut, '0');
-        setText(mKeys, '0');
-        setText(mArrays, '0');
-      };
-
-      const apply = () => {
-        const raw = input?.value || '';
-        const trimmed = stripBomAndTrim(raw);
-
-        // Keep wrap state applied even when empty
-        applyWrap(outputBox, !!wrapChk?.checked);
-
-        if (!trimmed) {
-          setEmpty();
-          return;
-        }
-
-        const parsed = safeParseJsonDetailed(raw);
-
-        // metrics input always available
-        setText(mIn, String(raw.length));
-
-        if (!parsed.ok) {
-          setPill(pill, 'bad', 'Invalid JSON');
-          setOutputState(outputBox, 'bad');
-
-          // show rich error
-          if (outputPre) {
-            setHtml(outputPre, renderErrorHtml(parsed.error));
-          }
-
-          // output chars = current output length (textContent)
-          setText(mOut, String((outputPre?.textContent || '').length));
-          setText(mKeys, '0');
-          setText(mArrays, '0');
-          return;
-        }
-
-        const indent = Number(indentSel?.value ?? 2);
-        const sortKeys = !!sortChk?.checked;
-
-        const formatted = prettyJson(parsed.value, {
-          indent: Number.isFinite(indent) ? indent : 2,
-          sortKeys
-        });
-
-        if (outputPre) setText(outputPre, formatted);
-
-        const minified = detectMinified(stripBomAndTrim(raw));
-        setPill(pill, 'ok', minified ? 'Valid JSON (minified)' : 'Valid JSON');
-        setOutputState(outputBox, 'ok');
-
-        const metrics = computeMetrics(raw, formatted, parsed.value);
-        setText(mOut, String(metrics.outputChars));
-        setText(mKeys, String(metrics.keys));
-        setText(mArrays, String(metrics.arrays));
-      };
-
-      // Debounced apply for auto-format
-      const applyAutoDebounced = debounce(() => {
-        if (!autoChk?.checked) return;
-        apply();
-      }, dynamicWaitForSize((input?.value || '').length));
-
-      const refreshDebounce = () => {
-        // Recreate debounce delay based on size (simple trick: call applyAutoDebounced soon)
-        // We can't change delay inside existing debounce easily; so we just call a size-based timer here.
-        if (!autoChk?.checked) return;
-        const wait = dynamicWaitForSize((input?.value || '').length);
-        clearTimeout(this._autoTimer);
-        this._autoTimer = setTimeout(() => apply(), wait);
-      };
-
-      const maybeAuto = () => {
-        // Better: dynamic timer
-        refreshDebounce();
-      };
-
-      input?.addEventListener('input', maybeAuto);
-      indentSel?.addEventListener('change', maybeAuto);
-      sortChk?.addEventListener('change', maybeAuto);
-      autoChk?.addEventListener('change', () => {
-        if (autoChk.checked) apply();
-      });
-
-      wrapChk?.addEventListener('change', () => {
-        applyWrap(outputBox, !!wrapChk.checked);
-      });
-
-      btnFormat?.addEventListener('click', apply);
-
-      // Ctrl/Cmd + Enter to format
-      input?.addEventListener('keydown', (e) => {
-        const isEnter = e.key === 'Enter';
-        const mod = e.ctrlKey || e.metaKey;
-        if (isEnter && mod) {
-          e.preventDefault();
-          apply();
-        }
-      });
-
-      // Optional: upload JSON file
-      const triggerFile = () => fileInput?.click();
-      btnUpload?.addEventListener('click', triggerFile);
-
-      fileInput?.addEventListener('change', async () => {
-        const f = fileInput.files && fileInput.files[0];
-        if (!f) return;
-        try {
-          const txt = await f.text();
-          if (input) input.value = txt;
-          apply();
-        } catch {
-          // fallback
-          if (input) input.value = '';
-          setPill(pill, 'bad', 'File read error');
-          setOutputState(outputBox, 'bad');
-          if (outputPre) setHtml(outputPre, renderErrorHtml({ message: 'Could not read the file.' }));
-        } finally {
-          // allow re-upload same file
-          fileInput.value = '';
-        }
-      });
-
-      // Optional: download output
-      btnDownload?.addEventListener('click', () => {
-        const content = outputPre?.textContent || '';
-        const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'formatted.json';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      });
-
-      // store refs for shell calls (example/clear/persist)
-      this._els = {
-        input,
-        outputPre,
-        outputBox,
-        pill,
-        indentSel,
-        sortChk,
-        autoChk,
-        wrapChk
-      };
-      this._apply = apply;
-
-      // initial
-      setEmpty();
-      apply();
-    },
-
-    getExample() {
-      return {
-        json: `{"name":"Clickoz","tools":["json-formatter","utm-builder"],"meta":{"privacy":"browser-only","fast":true},"numbers":[1,2,3],"nested":{"a":1,"b":{"c":[{"id":1},{"id":2}]}}}`,
-        indent: 2,
-        sortKeys: false,
-        auto: true,
-        wrap: false
-      };
-    },
-
-    serialize() {
-      const { input, indentSel, sortChk, autoChk, wrapChk } = this._els || {};
-      return {
-        json: input?.value ?? '',
-        indent: Number(indentSel?.value ?? 2),
-        sortKeys: !!sortChk?.checked,
-        auto: !!autoChk?.checked,
-        wrap: !!wrapChk?.checked
-      };
-    },
-
-    hydrate(state) {
-      const { input, indentSel, sortChk, autoChk, wrapChk, outputBox } = this._els || {};
-      if (!state) return;
-
-      if (input && typeof state.json === 'string') input.value = state.json;
-      if (indentSel && state.indent != null) indentSel.value = String(state.indent);
-      if (sortChk) sortChk.checked = !!state.sortKeys;
-      if (autoChk) autoChk.checked = state.auto !== false;
-
-      if (wrapChk) wrapChk.checked = !!state.wrap;
-      applyWrap(outputBox, !!state.wrap);
-
-      this._apply?.();
-    },
-
-    clear() {
-      const { input, sortChk, autoChk, indentSel, wrapChk, outputBox } = this._els || {};
-      if (input) input.value = '';
-      if (sortChk) sortChk.checked = false;
-      if (autoChk) autoChk.checked = true;
-      if (indentSel) indentSel.value = '2';
-      if (wrapChk) wrapChk.checked = false;
-      applyWrap(outputBox, false);
-      this._apply?.();
+      setPill('bad', 'Invalid JSON');
+      setError(`<div><b>Invalid JSON.</b> ${msg}${extra}</div>`);
+      if (els.out) els.out.value = '';
+      if (els.sOut) els.sOut.textContent = '0';
+      if (els.sKeys) els.sKeys.textContent = '0';
+      if (els.sArrays) els.sArrays.textContent = '0';
+      return;
     }
-  });
+
+    const indent = Number(els.indent?.value ?? 2);
+    const sortKeys = !!els.sort?.checked;
+
+    const formatted = pretty(value, Number.isFinite(indent) ? indent : 2, sortKeys);
+
+    if (els.out) els.out.value = formatted;
+    setPill('ok', indent === 0 ? 'Valid JSON (minified)' : 'Valid JSON');
+    setError('');
+
+    const m = metrics(raw, formatted, value);
+    if (els.sOut) els.sOut.textContent = String(m.outChars);
+    if (els.sKeys) els.sKeys.textContent = String(m.keys);
+    if (els.sArrays) els.sArrays.textContent = String(m.arrays);
+  };
+
+  // debounce based on input size
+  let t = null;
+  const schedule = () => {
+    if (!els.auto?.checked) return;
+    const n = (els.in?.value || '').length;
+    const wait = n <= 5000 ? 120 : n <= 50000 ? 180 : n <= 200000 ? 260 : 360;
+    clearTimeout(t);
+    t = setTimeout(render, wait);
+  };
+
+  // examples
+  const examples = [
+    {
+      title: 'API response (nested)',
+      json: `{"status":"ok","user":{"id":72,"name":"Mark","roles":["admin","editor"]},"meta":{"privacy":"browser-only","ts":"2026-02-22T18:00:00+01:00"},"items":[{"id":1,"qty":2},{"id":2,"qty":1}]}`
+    },
+    {
+      title: 'Event payload (minified)',
+      json: `{"event":"purchase","value":39.9,"currency":"EUR","items":[{"sku":"A1","price":19.95},{"sku":"B4","price":19.95}],"utm":{"source":"instagram","medium":"social","campaign":"winter-launch"}}`
+    },
+    {
+      title: 'Config (common mistakes to debug)',
+      json: `{
+  "name": "clickoz",
+  "features": ["json-formatter","utm-builder"],
+  "flags": {"privacy": true, "fast": true}
+}`
+    }
+  ];
+
+  let exIndex = 0;
+  const setExampleBox = (i) => {
+    const ex = examples[i % examples.length];
+    if (!els.exampleBox) return;
+    els.exampleBox.textContent = `Click “Load example” to fill:\n• ${ex.title}`;
+  };
+
+  const loadExample = () => {
+    const ex = examples[exIndex % examples.length];
+    if (els.in) els.in.value = ex.json;
+    render();
+  };
+
+  const newExample = () => {
+    exIndex = (exIndex + 1) % examples.length;
+    setExampleBox(exIndex);
+  };
+
+  // upload/download
+  const doUpload = () => els.file?.click();
+
+  const doDownload = () => {
+    const content = els.out?.value || '';
+    const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'formatted.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  // ---------- wire ----------
+  const bind = () => {
+    setExampleBox(0);
+    applyWrapClass();
+    render();
+
+    els.in?.addEventListener('input', schedule);
+    els.indent?.addEventListener('change', schedule);
+    els.sort?.addEventListener('change', schedule);
+    els.auto?.addEventListener('change', () => { if (els.auto.checked) render(); });
+    els.wrap?.addEventListener('change', () => { applyWrapClass(); });
+
+    els.btnFormat?.addEventListener('click', render);
+    els.btnClear?.addEventListener('click', () => {
+      if (els.in) els.in.value = '';
+      if (els.out) els.out.value = '';
+      render();
+    });
+
+    els.btnCopy?.addEventListener('click', async () => {
+      const ok = await safeCopy(els.out?.value || '');
+      setPill(ok ? 'ok' : 'bad', ok ? 'Copied' : 'Copy failed');
+      setTimeout(() => render(), 650);
+    });
+
+    els.btnLoadExample?.addEventListener('click', loadExample);
+    els.btnNewExample?.addEventListener('click', newExample);
+
+    els.btnUpload?.addEventListener('click', doUpload);
+    els.file?.addEventListener('change', async () => {
+      const f = els.file.files && els.file.files[0];
+      if (!f) return;
+      try {
+        const txt = await f.text();
+        if (els.in) els.in.value = txt;
+        render();
+      } catch {
+        setPill('bad', 'File read error');
+      } finally {
+        els.file.value = '';
+      }
+    });
+
+    els.btnDownload?.addEventListener('click', doDownload);
+
+    // Ctrl/Cmd + Enter formats
+    els.in?.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        render();
+      }
+    });
+  };
+
+  // Wait for DOM (defer should already)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bind);
+  } else {
+    bind();
+  }
 })();
