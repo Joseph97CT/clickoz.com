@@ -2283,3 +2283,72 @@ html, body {
 .m-title{
   font-size: 16px;
 }
+/* =========================================================
+   PATCH 2026-02 — Modern font + brighter idle particles + remove center canvas
+   Paste at the VERY END of /assets/site.css
+   ========================================================= */
+
+/* ---------- 1) Modern font (site-wide) ----------
+   We’ll load the font in HTML next step.
+   This CSS switches the whole UI to the new stack.
+*/
+:root{
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+               Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* Apply everywhere for a consistent modern look */
+html, body{
+  font-family: var(--font-sans) !important;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Make form controls match (important for “modern” feel) */
+button, input, select, textarea{
+  font-family: var(--font-sans) !important;
+}
+
+/* Optional: a tiny bit more modern letter spacing on headings
+   (subtle, avoids “too tight” look with newer fonts) */
+h1, h2, h3{
+  letter-spacing: -0.02em;
+}
+
+/* ---------- 2) Particles brightness (idle) ----------
+   You already have a patch, here we push it a bit more “visible premium”
+*/
+#clickozParticles{
+  opacity: 1 !important;
+}
+
+/* Idle dots brighter + a bit larger */
+.pidle{
+  width: 2.8px !important;
+  height: 2.8px !important;
+  opacity: .62 !important; /* more visible */
+  filter: saturate(1.12) brightness(1.08);
+}
+
+/* Stronger glow but still elegant (no cheap neon) */
+.pidle{
+  box-shadow:
+    0 0 14px rgba(var(--accent-rgb), .62),
+    0 0 44px rgba(var(--accent-rgb), .22) !important;
+}
+
+/* Slightly stronger twinkle (still subtle) */
+@keyframes idleTwinkle{
+  0%,100% { filter: brightness(1.02); }
+  50%     { filter: brightness(1.30); }
+}
+
+/* ---------- 3) Remove the center canvas entirely (visual kill) ----------
+   We will also remove it in JS + HTML next step, but this is a safety net.
+*/
+#spaceParticles{
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
