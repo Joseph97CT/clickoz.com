@@ -30,7 +30,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/assets/site.css?v=5" />
-  <link rel="stylesheet" href="/tools/json-formatter/json-formatter.css?v=2" />
+  <link rel="stylesheet" href="/tools/json-formatter/json-formatter.css?v=3" />
 
   <!-- ✅ JSON-LD -->
   <script type="application/ld+json">
@@ -307,6 +307,21 @@
             <input id="jfFile" type="file" accept=".json,application/json" style="display:none;" />
           </div>
 
+          <!-- ✅ Preview box under output (missing before) -->
+          <div class="jf-preview" aria-label="Preview">
+            <div class="row">
+              <span style="opacity:.72;">Preview</span>
+              <code id="jfType">—</code>
+            </div>
+            <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:10px;">
+              <code id="jfRoot">—</code>
+              <code>Depth: <span id="jfDepth">—</span></code>
+              <code>Lines: <span id="jfLines">—</span></code>
+              <code>Size: <span id="jfKb">—</span></code>
+            </div>
+          </div>
+
+          <!-- ✅ Stats box under preview (UB-like) -->
           <div class="jf-stats" aria-label="Quick stats">
             <div class="jf-stat">
               <div class="label">Input chars</div>
@@ -326,7 +341,7 @@
             </div>
           </div>
 
-          <!-- Related quick boxes -->
+          <!-- ✅ Related boxes (2 columns like UB) -->
           <div class="related" aria-label="Related">
             <div class="rel-box">
               <h4>Related tools</h4>
@@ -334,6 +349,7 @@
                 <a href="/tools/base64-encode-decode/">🔐 Base64 Encode / Decode</a>
                 <a href="/tools/url-encoder-decoder/">🧩 URL Encoder / Decoder</a>
                 <a href="/tools/html-entity-encoder-decoder/">🔤 HTML Entity Encoder/Decoder</a>
+                <a href="/tools/meta-tag-optimizer/">🏷️ Meta Tag Optimizer</a>
               </div>
             </div>
 
@@ -349,7 +365,7 @@
       </div>
     </div>
 
-    <!-- SEO / Guidance -->
+    <!-- SEO / Guidance (UTM-style) -->
     <div class="hero-box seo-block" aria-label="About JSON formatting">
       <h2>What is a JSON Formatter?</h2>
       <p>
@@ -357,10 +373,10 @@
         This tool also validates JSON and shows helpful error context (line/column + snippet) when something is wrong.
       </p>
 
-      <h3>When to pretty print vs minify</h3>
+      <h3>Pretty print vs minify (when to use each)</h3>
       <p>
-        Use <b>pretty print</b> when debugging API responses and logs. Use <b>minify</b> (indent 0) when you need compact payloads.
-        Turn on <b>Sort keys</b> if you’re comparing objects or diffs across environments.
+        Use <b>pretty print</b> for debugging API responses, logs, and config files. Use <b>minify</b> (indent 0) when you need
+        compact payloads. Enable <b>Sort keys</b> for stable diffs and comparisons across environments.
       </p>
 
       <h3>Practical use cases</h3>
@@ -370,9 +386,7 @@
             <div class="lane-ico" aria-hidden="true">🧪</div>
             <h3>Debug API responses</h3>
           </div>
-          <p>
-            Make nested payloads readable fast, validate syntax, and pinpoint issues with line/column errors.
-          </p>
+          <p>Make nested payloads readable fast, validate syntax, and pinpoint issues with line/column errors.</p>
         </div>
 
         <div class="lane">
@@ -380,9 +394,7 @@
             <div class="lane-ico" aria-hidden="true">🧾</div>
             <h3>Clean output for docs</h3>
           </div>
-          <p>
-            Pretty JSON is easier to copy into documentation, tickets, or code reviews.
-          </p>
+          <p>Pretty JSON is easier to copy into documentation, tickets, or code reviews.</p>
         </div>
 
         <div class="lane">
@@ -390,9 +402,7 @@
             <div class="lane-ico" aria-hidden="true">⚙️</div>
             <h3>Compare objects</h3>
           </div>
-          <p>
-            Sort keys to reduce noise and make diffs stable across runs.
-          </p>
+          <p>Sort keys to reduce noise and make diffs stable across runs.</p>
         </div>
 
         <div class="lane">
@@ -400,9 +410,7 @@
             <div class="lane-ico" aria-hidden="true">📦</div>
             <h3>Minify payloads</h3>
           </div>
-          <p>
-            Generate compact JSON for shipping configs or embedding into query parameters.
-          </p>
+          <p>Generate compact JSON for shipping configs or embedding into query parameters.</p>
         </div>
       </div>
 
@@ -428,7 +436,7 @@
 
       <h3>SEO search intents (how people find this tool)</h3>
       <p>
-        This section matches real high-intent searches (format JSON now, validate JSON, pretty print JSON) without stuffing.
+        This section matches real high-intent searches (format JSON now, validate JSON, pretty print JSON) without keyword stuffing.
       </p>
 
       <div class="seo-intent" aria-label="SEO intents and queries">
@@ -438,17 +446,29 @@
 
           <div class="qgrid" aria-label="Common json queries">
             <span class="qchip">json formatter</span>
-            <span class="qchip">pretty print json</span>
             <span class="qchip">format json online</span>
-            <span class="qchip">validate json</span>
+            <span class="qchip">pretty print json</span>
+            <span class="qchip">json prettify</span>
+            <span class="qchip">json beautifier</span>
             <span class="qchip">json validator</span>
+            <span class="qchip">validate json</span>
+            <span class="qchip">json parser</span>
+            <span class="qchip">json parse</span>
             <span class="qchip">minify json</span>
+            <span class="qchip">json minifier</span>
             <span class="qchip">sort json keys</span>
-            <span class="qchip">json parse error line column</span>
-            <span class="qchip">format api json response</span>
+            <span class="qchip">json sort keys online</span>
+            <span class="qchip">format api response json</span>
             <span class="qchip">json formatter no signup</span>
             <span class="qchip">privacy json formatter</span>
             <span class="qchip">json formatter browser</span>
+            <span class="qchip">format json instantly</span>
+            <span class="qchip">json viewer</span>
+            <span class="qchip">pretty json output</span>
+            <span class="qchip">json lint</span>
+            <span class="qchip">lint json online</span>
+            <span class="qchip">fix json</span>
+            <span class="qchip">json debug</span>
           </div>
         </div>
 
@@ -460,11 +480,22 @@
             <span class="qchip">how to format json</span>
             <span class="qchip">how to validate json</span>
             <span class="qchip">why is my json invalid</span>
-            <span class="qchip">unexpected token in json at position</span>
-            <span class="qchip">how to pretty print api response</span>
+            <span class="qchip">how to pretty print json</span>
             <span class="qchip">how to minify json</span>
             <span class="qchip">how to sort json keys</span>
-            <span class="qchip">json formatting best practices</span>
+            <span class="qchip">unexpected token in json at position</span>
+            <span class="qchip">json parse error line column</span>
+            <span class="qchip">trailing comma json error</span>
+            <span class="qchip">missing quotes json</span>
+            <span class="qchip">how to fix invalid json</span>
+            <span class="qchip">format json from api response</span>
+            <span class="qchip">format json for documentation</span>
+            <span class="qchip">convert minified json to readable</span>
+            <span class="qchip">beautify json in browser</span>
+            <span class="qchip">is json formatter safe</span>
+            <span class="qchip">does json formatter upload data</span>
+            <span class="qchip">json formatter for large json</span>
+            <span class="qchip">json formatter with key sorting</span>
           </div>
         </div>
       </div>
@@ -492,7 +523,7 @@
         <div class="footer-links">
           <a href="/tools/word-counter/">Word Counter</a>
           <a href="/tools/readability-analyzer/">Readability</a>
-          <a href="/tools/meta-tags/">Meta Tags</a>
+          <a href="/tools/meta-tag-optimizer/">Meta Tag Optimizer</a>
           <a href="/tools/json-formatter/">JSON Formatter</a>
         </div>
       </div>
@@ -538,6 +569,6 @@
   <script src="/assets/site.js" defer></script>
 
   <!-- Tool behavior -->
-  <script src="/tools/json-formatter/json-formatter.js?v=2" defer></script>
+  <script src="/tools/json-formatter/json-formatter.js?v=3" defer></script>
 </body>
 </html>
