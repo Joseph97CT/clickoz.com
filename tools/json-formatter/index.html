@@ -4,488 +4,330 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>JSON Formatter – Format & Validate JSON Online | Clickoz</title>
-  <meta name="description" content="Free JSON Formatter by Clickoz. Format, validate, and minify JSON instantly for debugging and clean output. Runs in your browser, no signup, copy-ready." />
+  <title>JSON Formatter — Format & Validate JSON Online (Fast, Privacy-First) | Clickoz</title>
+  <meta name="description" content="Format and validate JSON instantly. Pretty print, sort keys, auto-format, and copy clean output — runs 100% in your browser (privacy-first)." />
   <link rel="canonical" href="https://clickoz.com/tools/json-formatter/" />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f19" />
 
-  <!-- Social -->
   <meta property="og:site_name" content="Clickoz" />
-  <meta property="og:title" content="JSON Formatter – Format & Validate JSON | Clickoz" />
-  <meta property="og:description" content="Format and validate JSON instantly for debugging and clean output. Browser-only and privacy-first." />
-  <meta property="og:url" content="https://clickoz.com/tools/json-formatter/" />
+  <meta property="og:title" content="JSON Formatter — Format & Validate JSON Online" />
+  <meta property="og:description" content="Pretty print JSON instantly with clean output, optional key sorting, and one-click copy. Browser-only, no signup." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://clickoz.com/assets/og/json-formatter.png" />
+  <meta property="og:url" content="https://clickoz.com/tools/json-formatter/" />
+  <!-- If you have a real OG image in assets, set it here -->
+  <!-- <meta property="og:image" content="https://clickoz.com/assets/og/tools/json-formatter.png" /> -->
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="JSON Formatter – Format & Validate JSON | Clickoz" />
-  <meta name="twitter:description" content="Format and validate JSON instantly for debugging and clean output. Browser-only and privacy-first." />
-  <meta name="twitter:image" content="https://clickoz.com/assets/og/json-formatter.png" />
-
-  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet" />
-
-  <link rel="stylesheet" href="/assets/site.css?v=5" />
-  <link rel="stylesheet" href="/tools/json-formatter/json-formatter.css?v=2" />
+  <link rel="stylesheet" href="/assets/site.css" />
+  <link rel="stylesheet" href="/assets/tools.css" />
+  <link rel="stylesheet" href="/tools/json-formatter/json-formatter.css" />
 
   <!-- JSON-LD -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
-    "@type":"WebApplication",
+    "@type":"SoftwareApplication",
     "name":"JSON Formatter",
+    "applicationCategory":"DeveloperApplication",
+    "operatingSystem":"Any",
     "url":"https://clickoz.com/tools/json-formatter/",
-    "applicationCategory":"UtilitiesApplication",
-    "operatingSystem":"All",
-    "browserRequirements":"Requires JavaScript",
-    "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
+    "description":"Format and validate JSON instantly. Pretty print, optional key sorting, and one-click copy. Runs in your browser (privacy-first).",
     "publisher":{"@type":"Organization","name":"Clickoz","url":"https://clickoz.com/"}
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"BreadcrumbList",
-    "itemListElement":[
-      {"@type":"ListItem","position":1,"name":"Clickoz","item":"https://clickoz.com/"},
-      {"@type":"ListItem","position":2,"name":"Tools","item":"https://clickoz.com/tools/"},
-      {"@type":"ListItem","position":3,"name":"JSON Formatter","item":"https://clickoz.com/tools/json-formatter/"}
-    ]
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"FAQPage",
-    "mainEntity":[
-      {
-        "@type":"Question",
-        "name":"Does this JSON Formatter upload my data?",
-        "acceptedAnswer":{"@type":"Answer","text":"No. Everything runs locally in your browser. Your JSON stays on your device."}
-      },
-      {
-        "@type":"Question",
-        "name":"What’s the difference between format and minify?",
-        "acceptedAnswer":{"@type":"Answer","text":"Format adds indentation and line breaks for readability. Minify removes whitespace to make JSON smaller."}
-      },
-      {
-        "@type":"Question",
-        "name":"Can I format JSON that already has query parameters or embedded strings?",
-        "acceptedAnswer":{"@type":"Answer","text":"Yes. As long as the input is valid JSON, the formatter will parse and output clean JSON."}
-      },
-      {
-        "@type":"Question",
-        "name":"How do I find the error location in invalid JSON?",
-        "acceptedAnswer":{"@type":"Answer","text":"If parsing fails, the tool shows an approximate line/column (when available) and focuses near the error."}
-      }
-    ]
   }
   </script>
 </head>
 
-<body class="bigtext jf">
-  <!-- FX layers -->
-  <div id="clickozParticles" aria-hidden="true"></div>
-  <canvas id="spaceParticles" aria-hidden="true"></canvas>
-  <div class="__grain" aria-hidden="true"></div>
+<body>
+  <!-- Keep your existing global nav from site.js/site.css -->
+  <header class="site-header">
+    <!-- If your repo already injects nav via JS, you can keep this empty. -->
+  </header>
 
-  <!-- NAV -->
-  <nav class="nav" aria-label="Primary navigation" id="topNav">
-    <div class="container nav-inner">
-      <a class="logo" href="/" aria-label="Clickoz Home">
-        <span class="logo-badge" id="logoBadge" aria-hidden="true">
-          <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
-            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6"
-              fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <span class="logo-text">Click<span class="logo-oz">oz</span></span>
-      </a>
+  <main class="tools-wrap is-loading" data-tool="json-formatter" data-persist>
+    <!-- HERO -->
+    <section class="tool-hero">
+      <div class="tools-container">
+        <div class="tool-hero-inner">
+          <nav class="tool-breadcrumb" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span>›</span>
+            <a href="/tools/">Tools</a>
+            <span>›</span>
+            <span>JSON Formatter</span>
+          </nav>
 
-      <div class="nav-links" aria-label="Sections">
-        <a href="/">Home</a>
-        <a href="/tools/">Tools</a>
-        <a href="/guides/">Guides</a>
-        <a href="/updates/">Updates</a>
-      </div>
+          <h1 class="tool-title">JSON Formatter</h1>
+          <p class="tool-subtitle">
+            Format & validate JSON instantly with clean, readable output. Runs 100% in your browser — privacy-first.
+          </p>
 
-      <div class="spacer"></div>
+          <div class="tool-meta-row">
+            <span class="tool-chip tool-chip--accent">
+              <span class="tool-chip-dot" aria-hidden="true"></span>
+              Browser-only
+            </span>
+            <a class="tool-chip" href="/guides/json-formatting-debug/">
+              Guide: Fix invalid JSON
+            </a>
+            <a class="tool-chip" href="/tools/">
+              Browse all tools
+            </a>
+          </div>
 
-      <div class="nav-actions" aria-label="Preferences">
-        <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
-          <span></span><span></span><span></span>
-        </button>
+          <!-- STEPS -->
+          <div class="tool-steps" aria-label="Steps">
+            <div class="tool-step">
+              <div class="tool-step-top">
+                <span class="tool-step-badge"><i></i> Step 1</span>
+              </div>
+              <p class="tool-step-title">Paste JSON</p>
+              <p class="tool-step-desc">Paste your payload or response body.</p>
+            </div>
 
-        <div class="dropdown">
-          <button class="dot-btn" id="colorToggle" type="button" aria-haspopup="true" aria-expanded="false" title="Theme color">
-            <span class="dot" id="colorDot" aria-hidden="true"></span>
-          </button>
+            <div class="tool-step">
+              <div class="tool-step-top">
+                <span class="tool-step-badge"><i></i> Step 2</span>
+              </div>
+              <p class="tool-step-title">Format & validate</p>
+              <p class="tool-step-desc">Choose indent, sort keys, auto-format.</p>
+            </div>
 
-          <div class="menu" id="colorMenu" role="menu" aria-label="Pick theme color">
-            <div class="menu-title">Theme color</div>
-            <div class="color-grid">
-              <div class="color-option active" data-accent="#06b6d4" data-accent2="#22d3ee" style="background:#06b6d4" title="Cyan" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#6366f1" data-accent2="#8b5cf6" style="background:#6366f1" title="Purple" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#3b82f6" data-accent2="#60a5fa" style="background:#3b82f6" title="Blue" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#10b981" data-accent2="#34d399" style="background:#10b981" title="Green" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#f97316" data-accent2="#fb923c" style="background:#f97316" title="Orange" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#ef4444" data-accent2="#f87171" style="background:#ef4444" title="Red" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#ec4899" data-accent2="#f472b6" style="background:#ec4899" title="Pink" role="menuitem" tabindex="0"></div>
-              <div class="color-option" data-accent="#f59e0b" data-accent2="#fbbf24" style="background:#f59e0b" title="Amber" role="menuitem" tabindex="0"></div>
+            <div class="tool-step">
+              <div class="tool-step-top">
+                <span class="tool-step-badge"><i></i> Step 3</span>
+              </div>
+              <p class="tool-step-title">Copy output</p>
+              <p class="tool-step-desc">Copy clean JSON for debugging or docs.</p>
+            </div>
+
+            <div class="tool-step">
+              <div class="tool-step-top">
+                <span class="tool-step-badge"><i></i> Step 4</span>
+              </div>
+              <p class="tool-step-title">Explore related</p>
+              <p class="tool-step-desc">Use Base64, URL tools, snippet preview.</p>
             </div>
           </div>
         </div>
-
-        <div id="gtNavWrap" aria-label="Translate">
-          <div id="google_translate_element"></div>
-        </div>
       </div>
-    </div>
-  </nav>
+    </section>
 
-  <!-- Mobile menu -->
-  <div class="m-overlay" id="mOverlay" hidden></div>
-  <aside class="m-menu" id="mobileMenu" aria-hidden="true">
-    <div class="m-head">
-      <div class="m-title">Menu</div>
-      <button class="m-close" id="mClose" type="button" aria-label="Close menu">×</button>
-    </div>
+    <!-- TOOL -->
+    <section class="tools-section">
+      <div class="tools-container">
+        <div class="tools-grid">
+          <!-- LEFT: MAIN -->
+          <div class="tool-main">
+            <article class="tools-card tool-panel">
+              <header class="tools-card-header">
+                <div class="tool-panel-title">
+                  <h2>Format JSON</h2>
+                  <span class="pill pill--warn" id="jsonStatusPill">Waiting for JSON…</span>
+                </div>
 
-    <div class="m-links">
-      <a class="m-link" href="/">Home</a>
-      <a class="m-link" href="/tools/">Tools</a>
-      <a class="m-link" href="/guides/">Guides</a>
-      <a class="m-link" href="/updates/">Updates</a>
-      <a class="m-link" href="/privacy/">Privacy</a>
-    </div>
+                <div class="tool-cta-row">
+                  <button class="btn btn--primary" id="btnFormat" type="button">Format</button>
+                  <button class="btn" type="button" data-action="example">Load example</button>
+                  <button class="btn btn--ghost" type="button" data-action="clear">Clear</button>
+                  <button class="btn btn--ghost" type="button" data-action="reset-storage" title="Remove saved state">
+                    Reset saved
+                  </button>
+                </div>
+              </header>
 
-    <div class="m-block">
-      <div class="m-label">Theme color</div>
-      <div class="color-grid m-colors" id="mobileColorGrid">
-        <div class="color-option active" data-accent="#06b6d4" data-accent2="#22d3ee" style="background:#06b6d4" title="Cyan" tabindex="0"></div>
-        <div class="color-option" data-accent="#6366f1" data-accent2="#8b5cf6" style="background:#6366f1" title="Purple" tabindex="0"></div>
-        <div class="color-option" data-accent="#3b82f6" data-accent2="#60a5fa" style="background:#3b82f6" title="Blue" tabindex="0"></div>
-        <div class="color-option" data-accent="#10b981" data-accent2="#34d399" style="background:#10b981" title="Green" tabindex="0"></div>
-        <div class="color-option" data-accent="#f97316" data-accent2="#fb923c" style="background:#f97316" title="Orange" tabindex="0"></div>
-        <div class="color-option" data-accent="#ef4444" data-accent2="#f87171" style="background:#ef4444" title="Red" tabindex="0"></div>
-        <div class="color-option" data-accent="#ec4899" data-accent2="#f472b6" style="background:#ec4899" title="Pink" tabindex="0"></div>
-        <div class="color-option" data-accent="#f59e0b" data-accent2="#fbbf24" style="background:#f59e0b" title="Amber" tabindex="0"></div>
-      </div>
-    </div>
+              <div class="tools-card-body">
+                <!-- SKELETON (visible while is-loading) -->
+                <div class="loading-wrap">
+                  <div class="skeleton skeleton-line lg"></div>
+                  <div class="skeleton skeleton-line md"></div>
+                  <div class="skeleton skeleton-box"></div>
+                </div>
 
-    <div class="m-block">
-      <div class="m-label">Language</div>
-      <div id="google_translate_element_mobile"></div>
-      <div style="margin-top:10px;font-size:13px;opacity:.78;line-height:1.5;">
-        Translation loads only if you accept “All” cookies.
-      </div>
-    </div>
-  </aside>
+                <!-- REAL TOOL (hidden while is-loading) -->
+                <div class="tool-panel-real">
+                  <div class="jsonf-grid two">
+                    <div class="field">
+                      <label for="jsonInput">Input JSON</label>
+                      <p class="hint">Paste JSON here. The tool validates as you format (no uploads).</p>
+                      <textarea id="jsonInput" class="textarea jsonf-textarea" placeholder='{"hello":"world"}'></textarea>
 
-  <!-- MAIN -->
-  <section class="section container tool-shell" aria-label="JSON Formatter tool">
-    <div class="tool-hero">
-      <nav class="crumbs" aria-label="Breadcrumb">
-        <a href="/">Home</a>
-        <span class="sep">›</span>
-        <a href="/tools/">Tools</a>
-        <span class="sep">›</span>
-        <span aria-current="page">JSON Formatter</span>
-      </nav>
+                      <div class="tools-subcard" style="margin-top:12px;">
+                        <div class="field-row">
+                          <div class="field">
+                            <label for="jsonIndent">Indent</label>
+                            <select id="jsonIndent" class="select">
+                              <option value="2">2 spaces</option>
+                              <option value="4">4 spaces</option>
+                              <option value="1">1 space</option>
+                              <option value="0">Minify (0)</option>
+                            </select>
+                          </div>
 
-      <h1 class="section-title">🧾 JSON Formatter</h1>
+                          <div class="field">
+                            <label>Options</label>
+                            <div class="toggle">
+                              <input id="jsonSortKeys" type="checkbox" />
+                              <span>Sort keys (A→Z)</span>
+                            </div>
+                            <div class="toggle" style="margin-top:8px;">
+                              <input id="jsonAuto" type="checkbox" checked />
+                              <span>Auto-format on input</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
-      <div class="kicker">
-        Format and validate <b>JSON</b> instantly for debugging and clean output.
-        Browser-only, copy-ready, privacy-first.
-      </div>
+                    <div class="field">
+                      <label>Formatted output</label>
+                      <p class="hint">Copy the cleaned JSON below.</p>
 
-      <div class="mini-trust" aria-label="Key benefits">
-        <span class="mini-pill">🔒 Browser-only</span>
-        <span class="mini-pill">⚡ Instant format</span>
-        <span class="mini-pill">✅ Validate JSON</span>
-        <span class="mini-pill">📋 Copy-ready</span>
-      </div>
-    </div>
+                      <div id="jsonOutput" class="output jsonf-output" aria-live="polite">
+                        <pre></pre>
+                      </div>
 
-    <div class="tool-panel" aria-label="JSON Formatter panel">
-      <div class="stepbar" aria-label="Steps">
-        <div class="stepbadge"><span class="tag">Step 0</span> Load a sample (optional)</div>
-        <div class="stepbadge"><span class="tag">Step 1</span> Paste JSON</div>
-        <div class="stepbadge"><span class="tag">Step 2</span> Format or minify</div>
-        <div class="stepbadge"><span class="tag">Step 3</span> Copy output</div>
-      </div>
+                      <div class="output-actions">
+                        <button class="btn" type="button" data-action="copy" data-copy-target="#jsonOutput">Copy output</button>
+                      </div>
 
-      <div class="tool-grid">
+                      <div class="metrics">
+                        <span class="metric">Input chars: <b id="mInputChars">0</b></span>
+                        <span class="metric">Output chars: <b id="mOutputChars">0</b></span>
+                        <span class="metric">Keys: <b id="mKeys">0</b></span>
+                        <span class="metric">Arrays: <b id="mArrays">0</b></span>
+                      </div>
+                    </div>
+                  </div>
 
-        <!-- LEFT -->
-        <div class="tool-area">
+                  <div class="hr"></div>
 
-
-          <div class="field">
-            <label class="field-label" for="jfInput">Input JSON</label>
-            <textarea
-              id="jfInput"
-              class="jf-editor"
-              placeholder='Paste your JSON here…'
-              spellcheck="false"></textarea>
-            <div class="hint">Tip: trailing commas, wrong quotes, or unescaped characters will fail validation.</div>
+                  <div class="tools-subcard">
+                    <p class="small" style="margin:0;">
+                      Tip: If you need to decode tokens or query strings, try
+                      <a class="inline" href="/tools/base64-encode-decode/">Base64</a> and
+                      <a class="inline" href="/tools/url-encoder-decoder/">URL Encoder</a>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </article>
           </div>
 
-          <div class="tool-actions">
-            <button class="btn primary" id="jfFormat" type="button">✨ Format JSON</button>
-            <button class="btn ghost" id="jfMinify" type="button">↘ Minify</button>
-            <button class="btn ghost" id="jfCopyInput" type="button">📋 Copy input</button>
-            <button class="btn ghost" id="jfClear" type="button">🧼 Clear</button>
-          </div>
+          <!-- RIGHT: SIDEBAR -->
+          <aside class="tool-side">
+            <div class="side-stack">
+              <section class="tools-card">
+                <header class="tools-card-header">
+                  <h3 class="side-title">Related tools</h3>
+                </header>
+                <div class="tools-card-body">
+                  <ul class="side-list">
+                    <li><a href="/tools/base64-encode-decode/">Base64 Encode / Decode</a></li>
+                    <li><a href="/tools/url-encoder-decoder/">URL Encoder / Decoder</a></li>
+                    <li><a href="/tools/meta-tag-optimizer/">Meta Tag Optimizer</a></li>
+                    <li><a href="/tools/utm-builder/">UTM Builder</a></li>
+                  </ul>
+                </div>
+              </section>
 
-          <div class="callout" aria-label="Privacy note">
-            <b>Privacy:</b> Your JSON stays on your device. This tool runs entirely in your browser with no uploads, no account,
-            and no server processing. Read details in <a href="/privacy/">Privacy</a>.
-          </div>
-        </div>
+              <section class="tools-card">
+                <header class="tools-card-header">
+                  <h3 class="side-title">Related guides</h3>
+                </header>
+                <div class="tools-card-body">
+                  <ul class="side-list">
+                    <li><a href="/guides/json-formatting-debug/">Fix invalid JSON (debug guide)</a></li>
+                  </ul>
+                </div>
+              </section>
 
-        <!-- RIGHT -->
-        <div class="jf-out-wrap" aria-label="Output">
-          <div class="field">
-            <label class="field-label" for="jfOutput">Formatted output</label>
-            <textarea
-              id="jfOutput"
-              class="jf-editor"
-              readonly
-              placeholder="Formatted JSON will appear here…"
-              spellcheck="false"></textarea>
-          </div>
-
-          <div class="tool-actions">
-            <button class="btn ghost" id="jfCopyOutput" type="button">✅ Copy output</button>
-          </div>
-
-          <div class="jf-status" aria-label="Validation status">
-            <div class="left">
-              <span id="jfValidity" class="jf-badge bad">⚠️ Invalid JSON</span>
-              <span id="jfMeta">Paste JSON to validate and format.</span>
+              <section class="tools-card">
+                <header class="tools-card-header">
+                  <h3 class="side-title">Keyboard</h3>
+                </header>
+                <div class="tools-card-body">
+                  <p class="small" style="margin:0;">
+                    Use <span class="kbd">Ctrl</span> + <span class="kbd">A</span> then paste.
+                    Copy output with the button for a clean clipboard.
+                  </p>
+                </div>
+              </section>
             </div>
-          </div>
+          </aside>
+        </div>
+      </div>
+    </section>
 
-          <!-- Related quick boxes -->
-          <div class="related" aria-label="Related">
-            <div class="rel-box">
-              <h4>Related tools</h4>
-              <div class="rel-links">
-                <a href="/tools/url-encoder/">🧩 URL Encoder</a>
-                <a href="/tools/base64/">🔐 Base64 Encode/Decode</a>
-                <a href="/tools/slug-generator/">🔗 Slug Generator</a>
+    <!-- SEO / INFO -->
+    <section class="tools-section tool-seo">
+      <div class="tools-container">
+        <article class="tools-card">
+          <header class="tools-card-header">
+            <h2 class="seo-title">What is a JSON formatter?</h2>
+          </header>
+          <div class="tools-card-body seo-grid">
+            <p class="seo-p">
+              A JSON formatter (pretty printer) takes raw JSON and outputs a clean, indented version that’s easier
+              to read and debug. This tool also validates your JSON and surfaces parse errors quickly.
+            </p>
+
+            <div class="tools-subcard">
+              <p class="seo-p" style="margin:0;">
+                <b>Privacy:</b> formatting happens locally in your browser. No data is uploaded.
+              </p>
+            </div>
+
+            <div>
+              <h3 class="seo-title" style="font-size:16px;">Common use cases</h3>
+              <ul class="seo-list">
+                <li>Debug API responses and logs</li>
+                <li>Pretty print JSON for documentation</li>
+                <li>Minify JSON (indent 0) for compact payloads</li>
+                <li>Sort keys to compare objects more easily</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="seo-title" style="font-size:16px;">FAQ</h3>
+              <div class="seo-faq">
+                <div class="faq-item">
+                  <button class="faq-q" type="button">Does this upload my JSON anywhere?</button>
+                  <div class="faq-a">No. Everything runs in your browser (client-side). Your data stays on your device.</div>
+                </div>
+                <div class="faq-item">
+                  <button class="faq-q" type="button">Why is my JSON invalid?</button>
+                  <div class="faq-a">Common issues are missing quotes, trailing commas, or unescaped characters. Use the error message to locate the issue.</div>
+                </div>
+                <div class="faq-item">
+                  <button class="faq-q" type="button">Can I minify JSON?</button>
+                  <div class="faq-a">Yes. Set indent to 0 to output a compact (minified) JSON string.</div>
+                </div>
               </div>
             </div>
 
-            <div class="rel-box">
-              <h4>Related guides</h4>
-              <div class="rel-links">
-                <a href="/guides/json-formatting/">🧠 JSON Formatting Guide</a>
-                <a href="/guides/api-debugging/">🛠 API Debugging Tips</a>
-                <a href="/guides/clean-data-structures/">📌 Clean Data Structures</a>
+            <div>
+              <h3 class="seo-title" style="font-size:16px;">Search intents</h3>
+              <div class="tag-cloud">
+                <a class="tag" href="/tools/?q=json%20formatter">json formatter</a>
+                <a class="tag" href="/tools/?q=pretty%20print%20json">pretty print json</a>
+                <a class="tag" href="/tools/?q=validate%20json">validate json</a>
+                <a class="tag" href="/tools/?q=minify%20json">minify json</a>
+                <a class="tag" href="/tools/?q=sort%20json%20keys">sort json keys</a>
               </div>
+              <p class="tool-updated">Last updated: 2026-02-22</p>
             </div>
           </div>
-
-        </div>
+        </article>
       </div>
-    </div>
+    </section>
+  </main>
 
-    <!-- SEO / Guidance (SOTTO related: come hai chiesto) -->
-   <center> <div class="hero-box seo-block" aria-label="About JSON formatting">
-      <h2>What is a JSON Formatter?</h2>
-      <p>
-        A JSON Formatter turns messy JSON into clean, readable output by applying proper indentation and validating structure.
-        It’s essential for debugging APIs, inspecting responses, and fixing syntax errors quickly.
-      </p>
-
-      <h3>Format vs Minify</h3>
-      <p>
-        <b>Format</b> adds indentation and line breaks for readability. <b>Minify</b> removes whitespace to make JSON smaller for storage and transfer.
-        Use format while debugging, and minify when you need compact output.
-      </p>
-
-      <h3>Practical use cases</h3>
-      <div class="lanes">
-        <div class="lane">
-          <div class="lane-head">
-            <div class="lane-ico" aria-hidden="true">🛠</div>
-            <h3>API debugging</h3>
-          </div>
-          <p>Paste responses from REST/GraphQL endpoints to spot missing fields, wrong types, or broken nesting.</p>
-        </div>
-    <br>
-        <div class="lane">
-          <div class="lane-head">
-            <div class="lane-ico" aria-hidden="true">⚙️</div>
-            <h3>Config cleanup</h3>
-          </div>
-          <p>Format JSON configs before committing to a repo. Clean diffs = faster reviews.</p>
-        </div>
-    <br>
-        <div class="lane">
-          <div class="lane-head">
-            <div class="lane-ico" aria-hidden="true">📦<h3>Data prep</h3></div>
-          
-          </div>
-          <p>Normalize payloads before storing them, sharing them, or piping into other tools.</p>
-        </div>
-        <br>
-        <div class="lane">
-          <div class="lane-head">
-            <div class="lane-ico" aria-hidden="true">🚀</div>
-            <h3>Minify for shipping</h3>
-          </div>
-          <p>Minify JSON to reduce payload size, especially for embedded data or client-side bundles.</p>
-        </div>
-      </div>
-    <br>
-      <h3>FAQ</h3>
-      <div class="faq" aria-label="Frequently asked questions">
-        <div class="faq-item">
-          <div class="faq-q">Does this tool upload my JSON?</div>
-          <div class="faq-a">No. It runs locally in your browser. Your JSON never leaves your device.</div>
-        </div>    <br>
-        <div class="faq-item">
-          <div class="faq-q">How do I find the error in invalid JSON?</div>
-          <div class="faq-a">The tool shows an approximate line/column when available and focuses near the error.</div>
-        </div>    <br>
-        <div class="faq-item">
-          <div class="faq-q">Can I format large JSON?</div>
-          <div class="faq-a">Yes. Performance depends on your device since everything runs locally.</div>
-        </div>    <br>
-        <div class="faq-item">
-          <div class="faq-q">Will formatting change the data?</div>
-          <div class="faq-a">No. Formatting changes whitespace only. The parsed structure stays the same.</div>
-        </div>
-      </div>
-
-      <h3>SEO search intents (how people find a JSON formatter)</h3>
-      <p>
-        This section matches real user intent: formatting messy API responses, validating JSON, and minifying for clean output.
-        It’s designed for discoverability without keyword stuffing.
-      </p> </center>    <br>
-
-      <div class="seo-intent" aria-label="SEO intents and queries">
-        <div class="seo-card" aria-label="Top queries">
-          <h4>🔥 Most common queries</h4>
-          <p>High-intent searches from developers when something breaks.</p>
-
-          <div class="qgrid" aria-label="Common json formatter queries">
-            <span class="qchip">json formatter</span>
-            <span class="qchip">format json online</span>
-            <span class="qchip">json beautifier</span>
-            <span class="qchip">validate json</span>
-            <span class="qchip">json validator</span>
-            <span class="qchip">minify json</span>
-            <span class="qchip">json minifier</span>
-            <span class="qchip">pretty print json</span>
-            <span class="qchip">json parse error</span>
-            <span class="qchip">fix json syntax</span>
-            <span class="qchip">api response formatter</span>
-            <span class="qchip">json formatter no signup</span>
-            <span class="qchip">privacy json formatter</span>
-            <span class="qchip">browser json formatter</span>
-          </div>
-        </div>
-
-        <div class="seo-card" aria-label="Long-tail questions">
-          <h4>🎯 Long-tail questions (easier rankings)</h4>
-          <p>Question-style searches that convert well.</p>
-
-          <div class="qgrid" aria-label="Long-tail query chips">
-            <span class="qchip">how to format json</span>
-            <span class="qchip">how to validate json</span>
-            <span class="qchip">what is json parsing error</span>
-            <span class="qchip">how to fix invalid json</span>
-            <span class="qchip">how to minify json</span>
-            <span class="qchip">why json is not valid</span>
-            <span class="qchip">trailing comma json error</span>
-            <span class="qchip">unexpected token in json</span>
-            <span class="qchip">json line column error</span>
-            <span class="qchip">best json formatter</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="meta-note">
-        Last updated: <span id="lastUpdated">2026-01-29</span> · <a href="/tools/">Browse all tools</a>
-      </div>
-    </div>
-  </section>
-    <br>    <br>
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="container footer-grid">
-      <div>
-        <h4>Clickoz</h4>
-        <div class="footer-links">
-          <a href="/tools/">Tools</a>
-          <a href="/guides/">Guides</a>
-          <a href="/updates/">Updates</a>
-        </div>
-      </div>
-
-      <div>
-        <h4>Popular tools</h4>
-        <div class="footer-links">
-          <a href="/tools/word-counter/">Word Counter</a>
-          <a href="/tools/readability-analyzer/">Readability</a>
-          <a href="/tools/meta-tags/">Meta Tags</a>
-          <a href="/tools/json-formatter/">JSON Formatter</a>
-        </div>
-      </div>
-
-      <div>
-        <h4>Legal</h4>
-        <div class="footer-links">
-          <a href="/privacy/">Privacy</a>
-          <a href="/terms/">Terms</a>
-          <a href="/contact/">Contact</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="container" style="margin-top:14px">
-      <hr class="sep" />
-      <div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">
-        © 2026 Clickoz • Fast tools for SEO, writing and developers
-      </div>
-    </div>
+  <footer class="site-footer">
+    <!-- Keep your existing global footer (or injected by site.js). -->
   </footer>
 
-  <!-- Cookie banner -->
-  <div class="cookie" role="dialog" aria-live="polite" aria-label="Cookie preferences">
-    <div class="cookie-card">
-      <button class="cookie-x" id="cookieClose" type="button" aria-label="Close">×</button>
-      <div class="cookie-content">
-        <div class="cookie-title">Privacy choices</div>
-        <div class="cookie-text">
-          We use essential storage for core features. If you accept all, we may load third-party services like Google Translate.
-          Read more in <a href="/privacy/">Privacy</a>.
-        </div>
-      </div>
-      <div class="cookie-actions">
-        <button class="btn cookie-btn" id="cookieReject" type="button">Refuse</button>
-        <button class="btn cookie-btn" id="cookieEssential" type="button">Essential only</button>
-        <button class="btn primary cookie-btn" id="cookieAccept" type="button">Accept all</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Base site behavior -->
-  <script src="/assets/site.js" defer></script>
-
-  <!-- Tool behavior -->
-  <script src="/tools/json-formatter/json-formatter.js?v=1" defer></script>
+  <script defer src="/assets/site.js"></script>
+  <script defer src="/assets/tools.js"></script>
+  <script defer src="/tools/json-formatter/json-formatter.js"></script>
 </body>
 </html>
