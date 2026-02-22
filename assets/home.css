@@ -1,9 +1,11 @@
-/* /assets/home.css?v=3
-   Home-specific styles (hero + chips + rec box).
-   Works with site.css (base) and existing markup.
+/* /assets/home.css?v=4
+   Home-specific styles:
+   - Hero typography boost
+   - CTA buttons size
+   - Quickchips + lead line
+   - Scroll reveal (sections + stagger items)
 */
 
-/* ---------- Hero typography boost ---------- */
 .hero {
   position: relative;
   padding-top: clamp(26px, 4vw, 44px);
@@ -15,7 +17,6 @@
 }
 
 .hero-intro h1 {
-  /* Bigger, cleaner, still responsive */
   font-size: clamp(38px, 5.2vw, 66px);
   line-height: 1.04;
   letter-spacing: -0.03em;
@@ -30,7 +31,6 @@
   margin: 0 0 18px 0;
 }
 
-/* Make highlighted words feel more premium */
 .hero-intro .hl {
   display: inline-block;
   padding: 0 .18em;
@@ -48,7 +48,6 @@
 }
 
 .hero-cta .btn {
-  /* Increase height + tap area */
   padding: 14px 18px;
   min-height: 50px;
   border-radius: 14px;
@@ -72,7 +71,6 @@
   margin-left: 6px;
 }
 
-/* On very small screens, make CTAs full width */
 @media (max-width: 520px) {
   .hero-cta .btn {
     width: 100%;
@@ -81,21 +79,16 @@
   }
 }
 
-/* ---------- Quickchips: spacing + reveal animation ---------- */
+/* ---------- Quickchips ---------- */
 .quickchips {
   margin-top: 20px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   align-items: stretch;
-}
-
-/* If you want them a bit lower visually */
-.quickchips {
   padding-top: 8px;
 }
 
-/* Responsive */
 @media (max-width: 920px) {
   .quickchips {
     grid-template-columns: 1fr;
@@ -103,7 +96,6 @@
   }
 }
 
-/* Optional lead line above quickchips (we’ll add HTML later) */
 .quickchips-lead {
   margin-top: 18px;
   margin-bottom: 10px;
@@ -125,7 +117,6 @@
   box-shadow: 0 0 22px rgba(99, 102, 241, 0.35);
 }
 
-/* Chip styling (keeps your current look, just improves density/feel) */
 .qchip {
   display: flex;
   gap: 12px;
@@ -165,33 +156,6 @@
   line-height: 1.25;
 }
 
-/* ---------- Scroll reveal (chips appear 1,2,3) ---------- */
-.reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  filter: blur(2px);
-  transition:
-    opacity 520ms ease,
-    transform 520ms ease,
-    filter 520ms ease;
-  will-change: opacity, transform, filter;
-}
-
-.reveal.is-in {
-  opacity: 1;
-  transform: translateY(0);
-  filter: blur(0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reveal {
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-    transition: none !important;
-  }
-}
-
 /* ---------- Top tools section: small polish ---------- */
 .rec-shell {
   margin-top: clamp(18px, 2.8vw, 28px);
@@ -210,7 +174,6 @@
   background: rgba(255,255,255,.04);
 }
 
-/* Keep picks readable and premium */
 .pick-card .pick-title {
   letter-spacing: -0.01em;
 }
@@ -220,9 +183,79 @@
   line-height: 1.5;
 }
 
-/* Buttons inside picks actions: slightly taller */
 .picks-actions .btn {
   min-height: 46px;
   padding: 12px 14px;
   border-radius: 14px;
+}
+
+/* =========================================================
+   SCROLL REVEAL SYSTEM (sections + stagger items)
+   ========================================================= */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(2px);
+  transition:
+    opacity 560ms ease,
+    transform 560ms ease,
+    filter 560ms ease;
+  will-change: opacity, transform, filter;
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* Slightly different reveal for big boxes (more "premium") */
+.reveal.reveal-box {
+  transform: translateY(22px) scale(.992);
+  transition:
+    opacity 620ms ease,
+    transform 620ms ease,
+    filter 620ms ease;
+}
+
+.reveal.reveal-box.is-in {
+  transform: translateY(0) scale(1);
+}
+
+/* Stagger children items inside a container */
+.stagger > * {
+  opacity: 0;
+  transform: translateY(14px);
+  filter: blur(1.5px);
+  transition:
+    opacity 520ms ease,
+    transform 520ms ease,
+    filter 520ms ease;
+  will-change: opacity, transform, filter;
+}
+
+.stagger.is-in > * {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* Optional: calm hover micro-lift (only on devices with hover) */
+@media (hover:hover) and (pointer:fine) {
+  .qchip:hover {
+    transform: translateY(-2px);
+    transition: transform 180ms ease;
+  }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
 }
