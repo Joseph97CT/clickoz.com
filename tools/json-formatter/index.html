@@ -5,21 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>JSON Formatter — Format & Validate JSON Online (Fast, Privacy-First) | Clickoz</title>
-  <meta name="description" content="Format and validate JSON instantly. Pretty print, sort keys, auto-format, and copy clean output — runs 100% in your browser (privacy-first)." />
+  <meta name="description" content="Format and validate JSON instantly. Pretty print, sort keys, minify, and copy clean output — 100% browser-based (privacy-first), no signup." />
   <link rel="canonical" href="https://clickoz.com/tools/json-formatter/" />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f19" />
 
   <meta property="og:site_name" content="Clickoz" />
   <meta property="og:title" content="JSON Formatter — Format & Validate JSON Online" />
-  <meta property="og:description" content="Pretty print JSON instantly with clean output, optional key sorting, and one-click copy. Browser-only, no signup." />
+  <meta property="og:description" content="Pretty print JSON instantly with clean output, optional key sorting, minify, and one-click copy. Browser-only, no signup." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://clickoz.com/tools/json-formatter/" />
-  <!-- If you have a real OG image in assets, set it here -->
+  <!-- If you have an OG image, uncomment and set it -->
   <!-- <meta property="og:image" content="https://clickoz.com/assets/og/tools/json-formatter.png" /> -->
 
+  <!-- Global styles -->
   <link rel="stylesheet" href="/assets/site.css" />
   <link rel="stylesheet" href="/assets/tools.css" />
+  <!-- Tool-specific (minimal) -->
   <link rel="stylesheet" href="/tools/json-formatter/json-formatter.css" />
 
   <!-- JSON-LD -->
@@ -31,17 +33,15 @@
     "applicationCategory":"DeveloperApplication",
     "operatingSystem":"Any",
     "url":"https://clickoz.com/tools/json-formatter/",
-    "description":"Format and validate JSON instantly. Pretty print, optional key sorting, and one-click copy. Runs in your browser (privacy-first).",
+    "description":"Format and validate JSON instantly. Pretty print, optional key sorting, minify, and one-click copy. Runs in your browser (privacy-first).",
     "publisher":{"@type":"Organization","name":"Clickoz","url":"https://clickoz.com/"}
   }
   </script>
 </head>
 
 <body>
-  <!-- Keep your existing global nav from site.js/site.css -->
-  <header class="site-header">
-    <!-- If your repo already injects nav via JS, you can keep this empty. -->
-  </header>
+  <!-- Keep your existing global nav system (if injected by site.js). -->
+  <header class="site-header"></header>
 
   <main class="tools-wrap is-loading" data-tool="json-formatter" data-persist>
     <!-- HERO -->
@@ -58,7 +58,7 @@
 
           <h1 class="tool-title">JSON Formatter</h1>
           <p class="tool-subtitle">
-            Format & validate JSON instantly with clean, readable output. Runs 100% in your browser — privacy-first.
+            Format & validate JSON instantly with clean, readable output. Everything runs in your browser — privacy-first.
           </p>
 
           <div class="tool-meta-row">
@@ -66,22 +66,18 @@
               <span class="tool-chip-dot" aria-hidden="true"></span>
               Browser-only
             </span>
-            <a class="tool-chip" href="/guides/json-formatting-debug/">
-              Guide: Fix invalid JSON
-            </a>
-            <a class="tool-chip" href="/tools/">
-              Browse all tools
-            </a>
+            <a class="tool-chip" href="/guides/json-formatting-debug/">Guide: Fix invalid JSON</a>
+            <a class="tool-chip" href="/tools/">Browse all tools</a>
           </div>
 
-          <!-- STEPS -->
+          <!-- STEPS (same external structure as UTM pages) -->
           <div class="tool-steps" aria-label="Steps">
             <div class="tool-step">
               <div class="tool-step-top">
                 <span class="tool-step-badge"><i></i> Step 1</span>
               </div>
               <p class="tool-step-title">Paste JSON</p>
-              <p class="tool-step-desc">Paste your payload or response body.</p>
+              <p class="tool-step-desc">Paste an API response or payload.</p>
             </div>
 
             <div class="tool-step">
@@ -89,7 +85,7 @@
                 <span class="tool-step-badge"><i></i> Step 2</span>
               </div>
               <p class="tool-step-title">Format & validate</p>
-              <p class="tool-step-desc">Choose indent, sort keys, auto-format.</p>
+              <p class="tool-step-desc">Choose indent, sort keys, or minify.</p>
             </div>
 
             <div class="tool-step">
@@ -104,8 +100,8 @@
               <div class="tool-step-top">
                 <span class="tool-step-badge"><i></i> Step 4</span>
               </div>
-              <p class="tool-step-title">Explore related</p>
-              <p class="tool-step-desc">Use Base64, URL tools, snippet preview.</p>
+              <p class="tool-step-title">Use related tools</p>
+              <p class="tool-step-desc">Base64, URL tools, snippet preview.</p>
             </div>
           </div>
         </div>
@@ -136,19 +132,20 @@
               </header>
 
               <div class="tools-card-body">
-                <!-- SKELETON (visible while is-loading) -->
+                <!-- SKELETON (shows while .is-loading) -->
                 <div class="loading-wrap">
                   <div class="skeleton skeleton-line lg"></div>
                   <div class="skeleton skeleton-line md"></div>
                   <div class="skeleton skeleton-box"></div>
                 </div>
 
-                <!-- REAL TOOL (hidden while is-loading) -->
+                <!-- REAL TOOL (hidden while .is-loading) -->
                 <div class="tool-panel-real">
                   <div class="jsonf-grid two">
+                    <!-- INPUT -->
                     <div class="field">
                       <label for="jsonInput">Input JSON</label>
-                      <p class="hint">Paste JSON here. The tool validates as you format (no uploads).</p>
+                      <p class="hint">Paste JSON here. Validation happens locally (no uploads).</p>
                       <textarea id="jsonInput" class="textarea jsonf-textarea" placeholder='{"hello":"world"}'></textarea>
 
                       <div class="tools-subcard" style="margin-top:12px;">
@@ -178,12 +175,13 @@
                       </div>
                     </div>
 
+                    <!-- OUTPUT -->
                     <div class="field">
                       <label>Formatted output</label>
                       <p class="hint">Copy the cleaned JSON below.</p>
 
-                      <div id="jsonOutput" class="output jsonf-output" aria-live="polite">
-                        <pre></pre>
+                      <div class="output jsonf-output" aria-live="polite">
+                        <pre id="jsonOutput"></pre>
                       </div>
 
                       <div class="output-actions">
@@ -203,7 +201,7 @@
 
                   <div class="tools-subcard">
                     <p class="small" style="margin:0;">
-                      Tip: If you need to decode tokens or query strings, try
+                      Tip: Need to decode tokens or query strings? Try
                       <a class="inline" href="/tools/base64-encode-decode/">Base64</a> and
                       <a class="inline" href="/tools/url-encoder-decoder/">URL Encoder</a>.
                     </p>
@@ -247,7 +245,7 @@
                 </header>
                 <div class="tools-card-body">
                   <p class="small" style="margin:0;">
-                    Use <span class="kbd">Ctrl</span> + <span class="kbd">A</span> then paste.
+                    Paste with <span class="kbd">Ctrl</span> + <span class="kbd">V</span>.  
                     Copy output with the button for a clean clipboard.
                   </p>
                 </div>
@@ -258,13 +256,14 @@
       </div>
     </section>
 
-    <!-- SEO / INFO -->
+    <!-- SEO / INFO (the “site under” part you said was missing) -->
     <section class="tools-section tool-seo">
       <div class="tools-container">
         <article class="tools-card">
           <header class="tools-card-header">
             <h2 class="seo-title">What is a JSON formatter?</h2>
           </header>
+
           <div class="tools-card-body seo-grid">
             <p class="seo-p">
               A JSON formatter (pretty printer) takes raw JSON and outputs a clean, indented version that’s easier
@@ -273,7 +272,7 @@
 
             <div class="tools-subcard">
               <p class="seo-p" style="margin:0;">
-                <b>Privacy:</b> formatting happens locally in your browser. No data is uploaded.
+                <b>Privacy:</b> Formatting happens locally in your browser. No data is uploaded.
               </p>
             </div>
 
@@ -300,7 +299,7 @@
                 </div>
                 <div class="faq-item">
                   <button class="faq-q" type="button">Can I minify JSON?</button>
-                  <div class="faq-a">Yes. Set indent to 0 to output a compact (minified) JSON string.</div>
+                  <div class="faq-a">Yes. Set indent to 0 to output a compact JSON string.</div>
                 </div>
               </div>
             </div>
@@ -314,6 +313,7 @@
                 <a class="tag" href="/tools/?q=minify%20json">minify json</a>
                 <a class="tag" href="/tools/?q=sort%20json%20keys">sort json keys</a>
               </div>
+
               <p class="tool-updated">Last updated: 2026-02-22</p>
             </div>
           </div>
@@ -322,12 +322,12 @@
     </section>
   </main>
 
-  <footer class="site-footer">
-    <!-- Keep your existing global footer (or injected by site.js). -->
-  </footer>
+  <footer class="site-footer"></footer>
 
+  <!-- Global scripts -->
   <script defer src="/assets/site.js"></script>
   <script defer src="/assets/tools.js"></script>
+  <!-- Tool script -->
   <script defer src="/tools/json-formatter/json-formatter.js"></script>
 </body>
 </html>
