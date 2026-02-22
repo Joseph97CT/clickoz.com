@@ -1,25 +1,18 @@
 /* ==========================================================================
-   Clickoz — JSON Formatter
+   Clickoz — JSON Formatter (UTM Builder layout clone)
    File: /tools/json-formatter/json-formatter.css
-   Designed to match the UTM Builder page shell (nav, FX layers, tool-shell)
+   Version: v3
+   Goal: Match UTM Builder structure 1:1 (boxes, tags, SEO blocks)
    ========================================================================== */
 
 :root{
   --jf-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-/* Page hook */
+/* Body hook */
 body.jf {}
 
-/* Tool shell spacing consistent with UTM Builder */
-body.jf .tool-shell {}
-
-/* ---------- Tool panel layout (like ub) ---------- */
-.jf .tool-panel{
-  margin-top: 18px;
-}
-
-/* Steps row */
+/* ---------- Stepbar (same vibe as UTM) ---------- */
 .jf .stepbar{
   display:flex;
   flex-wrap:wrap;
@@ -53,7 +46,7 @@ body.jf .tool-shell {}
   border: 1px solid rgba(255,255,255,.12);
 }
 
-/* Main grid */
+/* ---------- Tool Grid ---------- */
 .jf .tool-grid{
   display:grid;
   grid-template-columns: 1fr;
@@ -67,10 +60,11 @@ body.jf .tool-shell {}
   }
 }
 
-/* ---------- Examples box (like ub) ---------- */
-.jf .jf-examples{
-  margin-bottom: 14px;
-}
+/* LEFT */
+.jf .jf-area .field{ margin-bottom: 14px; }
+
+/* Examples (UB-like) */
+.jf .jf-examples{ margin-bottom: 14px; }
 
 .jf .jf-ex{
   padding: 14px;
@@ -108,9 +102,7 @@ body.jf .tool-shell {}
   flex-wrap:wrap;
 }
 
-/* ---------- Fields / editor ---------- */
-.jf .jf-area .field{ margin-bottom: 14px; }
-
+/* Input textarea */
 .jf textarea.jf-in{
   width: 100%;
   min-height: 260px;
@@ -121,12 +113,10 @@ body.jf .tool-shell {}
 }
 
 @media (min-width: 980px){
-  .jf textarea.jf-in{
-    min-height: 360px;
-  }
+  .jf textarea.jf-in{ min-height: 360px; }
 }
 
-/* Options row */
+/* Options (two columns like UB right under input) */
 .jf .jf-options{
   display:grid;
   grid-template-columns: 1fr;
@@ -141,10 +131,10 @@ body.jf .tool-shell {}
   }
 }
 
-/* ---------- Output ---------- */
+/* ---------- Right column (sticky like UB) ---------- */
 .jf .jf-out-wrap{
   position: sticky;
-  top: 92px; /* keeps it visible under nav on desktop */
+  top: 92px;
 }
 
 @media (max-width: 979px){
@@ -154,6 +144,7 @@ body.jf .tool-shell {}
   }
 }
 
+/* Output textarea */
 .jf textarea.jf-out{
   width: 100%;
   min-height: 260px;
@@ -164,18 +155,16 @@ body.jf .tool-shell {}
 }
 
 @media (min-width: 980px){
-  .jf textarea.jf-out{
-    min-height: 360px;
-  }
+  .jf textarea.jf-out{ min-height: 360px; }
 }
 
-/* Wrap mode for output textarea (toggle adds .is-wrap on body) */
+/* Wrap mode (body class toggled by JS) */
 body.jf.is-wrap textarea.jf-out{
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-/* Status pill (match vibe) */
+/* Status pill */
 .jf .pill{
   display:inline-flex;
   align-items:center;
@@ -201,7 +190,7 @@ body.jf.is-wrap textarea.jf-out{
   color: rgba(255,230,230,.92);
 }
 
-/* Error callout inside output */
+/* Error box (shown under output) */
 .jf .jf-error{
   margin-top: 10px;
   padding: 12px;
@@ -226,7 +215,38 @@ body.jf.is-wrap textarea.jf-out{
   overflow-wrap:anywhere;
 }
 
-/* ---------- Stats (like ub) ---------- */
+/* ---------- "Preview" box under output (like UB preview) ---------- */
+.jf .jf-preview{
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,.20);
+}
+
+.jf .jf-preview .row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.jf .jf-preview code{
+  font-family: var(--jf-mono);
+  font-size: 12.5px;
+  opacity: .9;
+  background: rgba(0,0,0,.20);
+  border: 1px solid rgba(255,255,255,.08);
+  padding: 6px 10px;
+  border-radius: 999px;
+  max-width: 66%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Stats (same style as UB stats) ---------- */
 .jf .jf-stats{
   display:grid;
   grid-template-columns: 1fr 1fr;
@@ -263,7 +283,7 @@ body.jf.is-wrap textarea.jf-out{
   margin-top: 12px;
 }
 
-/* Related boxes (like ub) */
+/* ---------- Related boxes (2 columns like UB) ---------- */
 .jf .related{
   display:grid;
   grid-template-columns: 1fr;
@@ -300,11 +320,51 @@ body.jf.is-wrap textarea.jf-out{
   color: rgba(242,242,255,.84);
   text-decoration:none;
 }
-.jf .rel-links a:hover{
-  text-decoration: underline;
+.jf .rel-links a:hover{ text-decoration: underline; }
+
+/* ---------- SEO intents chips (ensure they render like UB) ---------- */
+.jf .seo-intent{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 14px;
 }
 
-/* Tiny helper */
-.jf .muted{
-  opacity:.72;
+@media (min-width: 980px){
+  .jf .seo-intent{
+    grid-template-columns: 1fr 1fr;
+  }
 }
+
+/* Make sure chip grids look dense and clean even if site.css changes */
+.jf .qgrid{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.jf .qchip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: .15px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+  color: rgba(242,242,255,.78);
+  line-height: 1;
+  user-select: none;
+}
+
+.jf .qchip:hover{
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.14);
+  color: rgba(242,242,255,.90);
+}
+
+/* Small helper */
+.jf .muted{ opacity:.72; }
