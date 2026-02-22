@@ -7,7 +7,28 @@
 (() => {
   'use strict';
 
-  const U = () => window.ClickozToolShell;
+  function stripBomAndTrim(s) {
+    if (!s) return '';
+    if (s.charCodeAt(0) === 0xFEFF) s = s.slice(1);
+    return s.trim();
+  }
+
+  function detectMinified(s) {
+    const oneLine = s.split('\n').length === 1;
+    return oneLine && s.length > 160;
+  }
+
+  function safeParseJson(input) {
+    const s = stripBomAndTrim(input);
+    if (!s) return { ok: false, error: 'Paste JSON to format.' };
+
+    try {
+      const value = JSON.parse(s);
+      return { ok: true, value };
+    } catch (e) {
+      return { ok: false, error: e?.message || 'Invalid JSON.' };
+    }
+  }
 
   function prettyJson(obj, { indent = 2, sortKeys = false } = {}) {
     if (!sortKeys) return JSON.stringify(obj, null, indent);
@@ -25,31 +46,6 @@
     };
 
     return JSON.stringify(sortDeep(obj), null, indent);
-  }
-
-  function stripBomAndTrim(s) {
-    if (!s) return '';
-    // remove UTF-8 BOM if present
-    if (s.charCodeAt(0) === 0xFEFF) s = s.slice(1);
-    return s.trim();
-  }
-
-  function detectMinified(s) {
-    // naive check: long line and lots of braces
-    const oneLine = s.split('\n').length === 1;
-    return oneLine && s.length > 160;
-  }
-
-  function safeParseJson(input) {
-    const s = stripBomAndTrim(input);
-    if (!s) return { ok: false, error: 'Paste JSON to format.' };
-
-    try {
-      const value = JSON.parse(s);
-      return { ok: true, value };
-    } catch (e) {
-      return { ok: false, error: e?.message || 'Invalid JSON.' };
-    }
   }
 
   function setText(el, txt) {
@@ -107,12 +103,12 @@
       const btnFormat = root.querySelector('#btnFormat');
 
       const apply = () => {
-        const raw = input.value || '';
+        const raw = input?.value || '';
         const parsed = safeParseJson(raw);
 
         if (!raw.trim()) {
           setPill(pill, 'warn', 'Waiting for JSON…');
-          output.textContent = '';
+          setText(output, '');
           setText(mIn, '0');
           setText(mOut, '0');
           setText(mKeys, '0');
@@ -122,15 +118,15 @@
 
         if (!parsed.ok) {
           setPill(pill, 'bad', 'Invalid JSON');
-          output.textContent = parsed.error;
+          setText(output, parsed.error);
           setText(mIn, String(raw.length));
-          setText(mOut, String((output.textContent || '').length));
+          setText(mOut, String((output?.textContent || '').length));
           setText(mKeys, '0');
           setText(mArrays, '0');
           return;
         }
 
-        const indent = Number(indentSel?.value || 2);
+        const indent = Number(indentSel?.value ?? 2);
         const sortKeys = !!sortChk?.checked;
 
         const formatted = prettyJson(parsed.value, {
@@ -138,9 +134,8 @@
           sortKeys
         });
 
-        output.textContent = formatted;
+        setText(output, formatted);
 
-        // status logic
         const minified = detectMinified(stripBomAndTrim(raw));
         setPill(pill, 'ok', minified ? 'Valid JSON (minified)' : 'Valid JSON');
 
@@ -155,23 +150,18 @@
         if (autoChk?.checked) apply();
       };
 
-      // Bind
-      input.addEventListener('input', maybeAuto);
+      input?.addEventListener('input', maybeAuto);
       indentSel?.addEventListener('change', maybeAuto);
       sortChk?.addEventListener('change', maybeAuto);
-      autoChk?.addEventListener('change', () => {
-        if (autoChk.checked) apply();
-      });
-
+      autoChk?.addEventListener('change', () => { if (autoChk.checked) apply(); });
       btnFormat?.addEventListener('click', apply);
 
-      // initial render
-      setPill(pill, 'warn', 'Waiting for JSON…');
-      apply();
-
-      // expose internal functions for shell actions
+      // store refs for shell calls (example/clear/persist)
       this._els = { input, output, pill, indentSel, sortChk, autoChk };
       this._apply = apply;
+
+      setPill(pill, 'warn', 'Waiting for JSON…');
+      apply();
     },
 
     getExample() {
