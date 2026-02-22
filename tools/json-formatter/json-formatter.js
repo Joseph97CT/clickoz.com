@@ -1,7 +1,7 @@
 /* ==========================================================================
-   Clickoz — JSON Formatter (UTM Builder style page shell)
+   Clickoz — JSON Formatter (UTM Builder style)
    File: /tools/json-formatter/json-formatter.js
-   No dependency on tools.js — matches UTM Builder approach
+   Version: v3
    ========================================================================== */
 
 (() => {
@@ -36,11 +36,18 @@
     sIn: $('#jfInChars'),
     sOut: $('#jfOutChars'),
     sKeys: $('#jfKeys'),
-    sArrays: $('#jfArrays')
+    sArrays: $('#jfArrays'),
+
+    // preview box
+    pvType: $('#jfType'),
+    pvDepth: $('#jfDepth'),
+    pvLines: $('#jfLines'),
+    pvKb: $('#jfKb'),
+    pvRoot: $('#jfRoot')
   };
 
   // ---------- helpers ----------
-  const monoTrim = (s) => {
+  const trimBom = (s) => {
     if (!s) return '';
     if (s.charCodeAt(0) === 0xFEFF) s = s.slice(1);
     return s.trim();
@@ -64,6 +71,11 @@
     els.err.innerHTML = html;
   };
 
+  const setText = (el, val) => {
+    if (!el) return;
+    el.textContent = String(val);
+  };
+
   const applyWrapClass = () => {
     document.body.classList.toggle('is-wrap', !!els.wrap?.checked);
   };
@@ -73,7 +85,6 @@
       await navigator.clipboard.writeText(text);
       return true;
     } catch {
-      // fallback
       try {
         const ta = document.createElement('textarea');
         ta.value = text;
@@ -91,7 +102,7 @@
     }
   };
 
-  // Parse error position helpers (V8 style)
+  // ---------- JSON parse error helpers (V8) ----------
   const extractPos = (msg) => {
     const m = /at position (\d+)/i.exec(msg || '');
     if (!m) return null;
@@ -114,18 +125,18 @@
     const before = s.slice(start, pos);
     const at = s.slice(pos, pos + 1);
     const after = s.slice(pos + 1, end);
+
     const clippedLeft = start > 0;
     const clippedRight = end < s.length;
 
     const caretPad = before.replaceAll('\t', '  ').length;
     const caret = `${' '.repeat(caretPad)}^`;
 
-    return {
-      snippet: `${clippedLeft ? '…' : ''}${before}${at}${after}${clippedRight ? '…' : ''}`,
-      caret
-    };
+    const snip = `${clippedLeft ? '…' : ''}${before}${at}${after}${clippedRight ? '…' : ''}`;
+    return { snip, caret };
   };
 
+  // ---------- formatting ----------
   const pretty = (obj, indent, sortKeys) => {
     if (!sortKeys) return JSON.stringify(obj, null, indent);
 
@@ -144,45 +155,73 @@
     return JSON.stringify(sortDeep(obj), null, indent);
   };
 
-  const metrics = (raw, formatted, value) => {
+  // Walk JSON for metrics + depth
+  const analyze = (value) => {
     let keys = 0;
     let arrays = 0;
+    let maxDepth = 0;
 
-    const walk = (v) => {
+    const walk = (v, depth) => {
+      if (depth > maxDepth) maxDepth = depth;
+
       if (Array.isArray(v)) {
         arrays++;
-        for (const x of v) walk(x);
+        for (const x of v) walk(x, depth + 1);
       } else if (v && typeof v === 'object') {
-        keys += Object.keys(v).length;
-        for (const k of Object.keys(v)) walk(v[k]);
+        const k = Object.keys(v);
+        keys += k.length;
+        for (const kk of k) walk(v[kk], depth + 1);
       }
     };
 
-    walk(value);
+    walk(value, 1);
 
-    return {
-      inChars: raw.length,
-      outChars: formatted.length,
-      keys,
-      arrays
-    };
+    // root summary
+    let root = '—';
+    if (Array.isArray(value)) root = `Array (${value.length})`;
+    else if (value && typeof value === 'object') {
+      const k = Object.keys(value);
+      root = k.length ? `Object keys: ${k.slice(0, 8).join(', ')}${k.length > 8 ? ', …' : ''}` : 'Object (empty)';
+    } else root = typeof value;
+
+    // type
+    const type =
+      Array.isArray(value) ? 'Array' :
+      (value && typeof value === 'object') ? 'Object' :
+      (value === null) ? 'null' : typeof value;
+
+    return { keys, arrays, depth: maxDepth, root, type };
   };
 
+  const bytesToKb = (n) => (n / 1024).toFixed(n < 10240 ? 2 : 1); // <10KB -> 2 decimals
+
+  const countLines = (s) => (s ? (s.split('\n').length) : 0);
+
+  // ---------- render core ----------
   const render = () => {
     const raw = els.in?.value ?? '';
-    const s = monoTrim(raw);
+    const s = trimBom(raw);
 
     applyWrapClass();
 
-    if (els.sIn) els.sIn.textContent = String(raw.length);
+    // base stats
+    setText(els.sIn, raw.length);
+
+    // reset preview default
+    setText(els.pvType, '—');
+    setText(els.pvDepth, '—');
+    setText(els.pvLines, '—');
+    setText(els.pvKb, '—');
+    setText(els.pvRoot, '—');
 
     if (!s) {
       if (els.out) els.out.value = '';
       setPill(null, 'Waiting for JSON…');
       setError('');
-      if (els.sOut) els.sOut.textContent = '0';
-      if (els.sKeys) els.sKeys.textContent = '0';
-      if (els.sArrays) els.sArrays.textContent = '0';
+
+      setText(els.sOut, '0');
+      setText(els.sKeys, '0');
+      setText(els.sArrays, '0');
       return;
     }
 
@@ -199,16 +238,22 @@
         const sn = snippetAt(s, pos);
         extra = `
           <div class="muted" style="margin-top:6px;">Line <b>${lc.line}</b>, Col <b>${lc.col}</b></div>
-          <code>${sn.snippet}\n${sn.caret}</code>
+          <code>${sn.snip}\n${sn.caret}</code>
         `;
       }
 
       setPill('bad', 'Invalid JSON');
       setError(`<div><b>Invalid JSON.</b> ${msg}${extra}</div>`);
       if (els.out) els.out.value = '';
-      if (els.sOut) els.sOut.textContent = '0';
-      if (els.sKeys) els.sKeys.textContent = '0';
-      if (els.sArrays) els.sArrays.textContent = '0';
+
+      setText(els.sOut, '0');
+      setText(els.sKeys, '0');
+      setText(els.sArrays, '0');
+
+      // preview on invalid: show size + lines anyway (use raw)
+      setText(els.pvLines, countLines(s));
+      setText(els.pvKb, `${bytesToKb(new Blob([s]).size)} KB`);
+      setText(els.pvType, 'Invalid');
       return;
     }
 
@@ -218,16 +263,27 @@
     const formatted = pretty(value, Number.isFinite(indent) ? indent : 2, sortKeys);
 
     if (els.out) els.out.value = formatted;
-    setPill('ok', indent === 0 ? 'Valid JSON (minified)' : 'Valid JSON');
+
+    const isMin = indent === 0;
+    setPill('ok', isMin ? 'Valid JSON (minified)' : 'Valid JSON');
     setError('');
 
-    const m = metrics(raw, formatted, value);
-    if (els.sOut) els.sOut.textContent = String(m.outChars);
-    if (els.sKeys) els.sKeys.textContent = String(m.keys);
-    if (els.sArrays) els.sArrays.textContent = String(m.arrays);
+    const a = analyze(value);
+
+    // stats
+    setText(els.sOut, formatted.length);
+    setText(els.sKeys, a.keys);
+    setText(els.sArrays, a.arrays);
+
+    // preview
+    setText(els.pvType, a.type);
+    setText(els.pvDepth, a.depth);
+    setText(els.pvLines, countLines(formatted));
+    setText(els.pvKb, `${bytesToKb(new Blob([formatted]).size)} KB`);
+    setText(els.pvRoot, a.root);
   };
 
-  // debounce based on input size
+  // ---------- debounce (size-based) ----------
   let t = null;
   const schedule = () => {
     if (!els.auto?.checked) return;
@@ -237,27 +293,29 @@
     t = setTimeout(render, wait);
   };
 
-  // examples
+  // ---------- examples ----------
   const examples = [
     {
       title: 'API response (nested)',
       json: `{"status":"ok","user":{"id":72,"name":"Mark","roles":["admin","editor"]},"meta":{"privacy":"browser-only","ts":"2026-02-22T18:00:00+01:00"},"items":[{"id":1,"qty":2},{"id":2,"qty":1}]}`
     },
     {
-      title: 'Event payload (minified)',
-      json: `{"event":"purchase","value":39.9,"currency":"EUR","items":[{"sku":"A1","price":19.95},{"sku":"B4","price":19.95}],"utm":{"source":"instagram","medium":"social","campaign":"winter-launch"}}`
+      title: 'Event payload (tracking)',
+      json: `{"event":"purchase","value":39.9,"currency":"EUR","items":[{"sku":"A1","price":19.95},{"sku":"B4","price":19.95}],"utm":{"source":"instagram","medium":"social","campaign":"winter-launch","content":"bio"}}`
     },
     {
-      title: 'Config (common mistakes to debug)',
+      title: 'Config (readable)',
       json: `{
   "name": "clickoz",
-  "features": ["json-formatter","utm-builder"],
-  "flags": {"privacy": true, "fast": true}
+  "features": ["json-formatter","utm-builder","base64-encode-decode"],
+  "flags": {"privacy": true, "fast": true},
+  "limits": {"maxSizeKb": 512, "indentDefault": 2}
 }`
     }
   ];
 
   let exIndex = 0;
+
   const setExampleBox = (i) => {
     const ex = examples[i % examples.length];
     if (!els.exampleBox) return;
@@ -275,7 +333,7 @@
     setExampleBox(exIndex);
   };
 
-  // upload/download
+  // ---------- upload / download ----------
   const doUpload = () => els.file?.click();
 
   const doDownload = () => {
@@ -345,7 +403,6 @@
     });
   };
 
-  // Wait for DOM (defer should already)
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', bind);
   } else {
