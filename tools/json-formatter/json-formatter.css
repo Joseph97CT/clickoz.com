@@ -1,25 +1,139 @@
 /* ==========================================================================
    Clickoz — JSON Formatter (Tool-specific)
    File: /tools/json-formatter/json-formatter.css
-   Note: tools.css already provides the global shell.
+
+   Goals:
+   - Better editor/output readability (monospace, spacing, wrapping)
+   - Clear invalid/valid states (without touching global tools.css)
+   - Stronger grid behavior on desktop (balanced columns)
+   - Error rendering (line/column + caret excerpt) styled nicely
+   - Optional wrap toggle support via .jsonf-wrap on the output container
    ========================================================================== */
 
-.jsonf-textarea {
-  min-height: 210px;
-}
-
-.jsonf-output {
-  min-height: 220px;
-}
-
+/* ---------- Sizing & layout ---------- */
 .jsonf-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 14px;
 }
 
+/* Two-column only on wide screens */
 @media (min-width: 980px) {
   .jsonf-grid.two {
     grid-template-columns: 1fr 1fr;
+    align-items: start;
   }
+}
+
+/* Keep input/output visually aligned */
+.jsonf-textarea,
+.jsonf-output {
+  min-height: 260px;
+}
+
+@media (min-width: 980px) {
+  .jsonf-textarea,
+  .jsonf-output {
+    min-height: 340px;
+  }
+}
+
+/* ---------- Input textarea ---------- */
+.textarea.jsonf-textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  line-height: 1.55;
+  tab-size: 2;
+  letter-spacing: 0.1px;
+  resize: vertical;
+}
+
+/* ---------- Output box ---------- */
+.output.jsonf-output {
+  position: relative;
+  overflow: auto;
+}
+
+/* Pre inside output */
+#jsonOutput {
+  margin: 0;
+  padding: 14px 14px 16px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  tab-size: 2;
+
+  /* default: do NOT wrap (better for JSON) */
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+/* Wrap mode (toggle by adding .jsonf-wrap to .jsonf-output) */
+.output.jsonf-output.jsonf-wrap #jsonOutput {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ---------- States (valid / invalid) ---------- */
+/* We’ll set these classes from JS on the output container */
+.output.jsonf-output.jsonf--ok {
+  box-shadow: 0 0 0 1px rgba(0, 255, 160, 0.18) inset;
+}
+
+.output.jsonf-output.jsonf--bad {
+  box-shadow: 0 0 0 1px rgba(255, 90, 90, 0.22) inset;
+}
+
+/* ---------- Error block (rendered as text in <pre>, but we style via markers) ---------- */
+.jsonf-error-title {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.6;
+  font-weight: 650;
+  background: rgba(255, 90, 90, 0.12);
+  border: 1px solid rgba(255, 90, 90, 0.25);
+}
+
+.jsonf-error-meta {
+  opacity: 0.9;
+}
+
+.jsonf-error-snippet {
+  display: block;
+  margin-top: 10px;
+  padding: 12px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.jsonf-caret {
+  display: block;
+  margin-top: 6px;
+  opacity: 0.95;
+}
+
+/* ---------- Mini toolbar helpers (if you add buttons) ---------- */
+.jsonf-mini-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.jsonf-mini-actions .toggle {
+  margin: 0;
+}
+
+/* ---------- Metrics spacing (subtle) ---------- */
+.metrics {
+  gap: 10px;
+}
+
+.metrics .metric b {
+  font-variant-numeric: tabular-nums;
 }
