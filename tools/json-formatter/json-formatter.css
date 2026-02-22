@@ -1,139 +1,310 @@
 /* ==========================================================================
-   Clickoz — JSON Formatter (Tool-specific)
+   Clickoz — JSON Formatter
    File: /tools/json-formatter/json-formatter.css
-
-   Goals:
-   - Better editor/output readability (monospace, spacing, wrapping)
-   - Clear invalid/valid states (without touching global tools.css)
-   - Stronger grid behavior on desktop (balanced columns)
-   - Error rendering (line/column + caret excerpt) styled nicely
-   - Optional wrap toggle support via .jsonf-wrap on the output container
+   Designed to match the UTM Builder page shell (nav, FX layers, tool-shell)
    ========================================================================== */
 
-/* ---------- Sizing & layout ---------- */
-.jsonf-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
+:root{
+  --jf-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-/* Two-column only on wide screens */
-@media (min-width: 980px) {
-  .jsonf-grid.two {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-  }
+/* Page hook */
+body.jf {}
+
+/* Tool shell spacing consistent with UTM Builder */
+body.jf .tool-shell {}
+
+/* ---------- Tool panel layout (like ub) ---------- */
+.jf .tool-panel{
+  margin-top: 18px;
 }
 
-/* Keep input/output visually aligned */
-.jsonf-textarea,
-.jsonf-output {
-  min-height: 260px;
+/* Steps row */
+.jf .stepbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:14px;
 }
 
-@media (min-width: 980px) {
-  .jsonf-textarea,
-  .jsonf-output {
-    min-height: 340px;
-  }
-}
-
-/* ---------- Input textarea ---------- */
-.textarea.jsonf-textarea {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  line-height: 1.55;
-  tab-size: 2;
-  letter-spacing: 0.1px;
-  resize: vertical;
-}
-
-/* ---------- Output box ---------- */
-.output.jsonf-output {
-  position: relative;
-  overflow: auto;
-}
-
-/* Pre inside output */
-#jsonOutput {
-  margin: 0;
-  padding: 14px 14px 16px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+.jf .stepbadge{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,.25);
   font-size: 13px;
-  line-height: 1.6;
-  tab-size: 2;
-
-  /* default: do NOT wrap (better for JSON) */
-  white-space: pre;
-  word-break: normal;
-  overflow-wrap: normal;
+  color: rgba(242,242,255,.82);
 }
 
-/* Wrap mode (toggle by adding .jsonf-wrap to .jsonf-output) */
-.output.jsonf-output.jsonf-wrap #jsonOutput {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-/* ---------- States (valid / invalid) ---------- */
-/* We’ll set these classes from JS on the output container */
-.output.jsonf-output.jsonf--ok {
-  box-shadow: 0 0 0 1px rgba(0, 255, 160, 0.18) inset;
-}
-
-.output.jsonf-output.jsonf--bad {
-  box-shadow: 0 0 0 1px rgba(255, 90, 90, 0.22) inset;
-}
-
-/* ---------- Error block (rendered as text in <pre>, but we style via markers) ---------- */
-.jsonf-error-title {
-  display: inline-block;
-  padding: 2px 8px;
+.jf .stepbadge .tag{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 2px 10px;
   border-radius: 999px;
   font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .2px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+/* Main grid */
+.jf .tool-grid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items:start;
+}
+
+@media (min-width: 980px){
+  .jf .tool-grid{
+    grid-template-columns: 1.25fr .9fr;
+  }
+}
+
+/* ---------- Examples box (like ub) ---------- */
+.jf .jf-examples{
+  margin-bottom: 14px;
+}
+
+.jf .jf-ex{
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,.25);
+}
+
+.jf .jf-ex h3{
+  margin: 0 0 10px;
+  font-size: 14px;
+  letter-spacing: .2px;
+}
+
+.jf .jf-ex pre{
+  margin:0;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.22);
+  border: 1px solid rgba(255,255,255,.08);
+  color: rgba(242,242,255,.78);
+  font-family: var(--jf-mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  min-height: 74px;
+}
+
+.jf .jf-ex-actions{
+  display:flex;
+  gap:10px;
+  margin-top: 10px;
+  flex-wrap:wrap;
+}
+
+/* ---------- Fields / editor ---------- */
+.jf .jf-area .field{ margin-bottom: 14px; }
+
+.jf textarea.jf-in{
+  width: 100%;
+  min-height: 260px;
+  resize: vertical;
+  font-family: var(--jf-mono);
   line-height: 1.6;
-  font-weight: 650;
-  background: rgba(255, 90, 90, 0.12);
-  border: 1px solid rgba(255, 90, 90, 0.25);
+  tab-size: 2;
 }
 
-.jsonf-error-meta {
-  opacity: 0.9;
+@media (min-width: 980px){
+  .jf textarea.jf-in{
+    min-height: 360px;
+  }
 }
 
-.jsonf-error-snippet {
-  display: block;
+/* Options row */
+.jf .jf-options{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+@media (min-width: 720px){
+  .jf .jf-options{
+    grid-template-columns: 1fr 1.2fr;
+    align-items:start;
+  }
+}
+
+/* ---------- Output ---------- */
+.jf .jf-out-wrap{
+  position: sticky;
+  top: 92px; /* keeps it visible under nav on desktop */
+}
+
+@media (max-width: 979px){
+  .jf .jf-out-wrap{
+    position: static;
+    top: auto;
+  }
+}
+
+.jf textarea.jf-out{
+  width: 100%;
+  min-height: 260px;
+  resize: vertical;
+  font-family: var(--jf-mono);
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+@media (min-width: 980px){
+  .jf textarea.jf-out{
+    min-height: 360px;
+  }
+}
+
+/* Wrap mode for output textarea (toggle adds .is-wrap on body) */
+body.jf.is-wrap textarea.jf-out{
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Status pill (match vibe) */
+.jf .pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .2px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  color: rgba(242,242,255,.82);
+}
+
+.jf .pill.ok{
+  border-color: rgba(0,255,160,.22);
+  background: rgba(0,255,160,.10);
+  color: rgba(220,255,245,.92);
+}
+.jf .pill.bad{
+  border-color: rgba(255,90,90,.26);
+  background: rgba(255,90,90,.10);
+  color: rgba(255,230,230,.92);
+}
+
+/* Error callout inside output */
+.jf .jf-error{
   margin-top: 10px;
-  padding: 12px 12px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255,90,90,.08);
+  border: 1px solid rgba(255,90,90,.18);
+  color: rgba(255,235,235,.92);
+  font-size: 13px;
+  line-height: 1.55;
 }
 
-.jsonf-caret {
-  display: block;
-  margin-top: 6px;
-  opacity: 0.95;
-}
-
-/* ---------- Mini toolbar helpers (if you add buttons) ---------- */
-.jsonf-mini-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
+.jf .jf-error code{
+  display:block;
   margin-top: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.22);
+  border: 1px solid rgba(255,255,255,.08);
+  color: rgba(242,242,255,.82);
+  font-family: var(--jf-mono);
+  white-space: pre-wrap;
+  overflow-wrap:anywhere;
 }
 
-.jsonf-mini-actions .toggle {
-  margin: 0;
-}
-
-/* ---------- Metrics spacing (subtle) ---------- */
-.metrics {
+/* ---------- Stats (like ub) ---------- */
+.jf .jf-stats{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
+  margin-top: 12px;
 }
 
-.metrics .metric b {
+.jf .jf-stat{
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,.20);
+}
+
+.jf .jf-stat .label{
+  font-size: 12px;
+  opacity: .72;
+  margin-bottom: 6px;
+}
+
+.jf .jf-stat .value{
+  font-size: 18px;
+  font-weight: 1000;
+  letter-spacing: .2px;
   font-variant-numeric: tabular-nums;
+}
+
+/* Actions row */
+.jf .tool-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top: 12px;
+}
+
+/* Related boxes (like ub) */
+.jf .related{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+@media (min-width: 720px){
+  .jf .related{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.jf .rel-box{
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,.20);
+}
+
+.jf .rel-box h4{
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.jf .rel-links{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+}
+
+.jf .rel-links a{
+  color: rgba(242,242,255,.84);
+  text-decoration:none;
+}
+.jf .rel-links a:hover{
+  text-decoration: underline;
+}
+
+/* Tiny helper */
+.jf .muted{
+  opacity:.72;
 }
