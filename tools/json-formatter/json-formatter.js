@@ -1,238 +1,217 @@
+/* ==========================================================================
+   Clickoz — JSON Formatter (Tool)
+   File: /tools/json-formatter/json-formatter.js
+   Requires: /assets/tools.js (ClickozToolShell)
+   ========================================================================== */
+
 (() => {
-  "use strict";
+  'use strict';
 
-  const $ = (s, r=document) => r.querySelector(s);
+  const U = () => window.ClickozToolShell;
 
-  // Elements
-  const inTa   = $("#jfInput");
-  const outTa  = $("#jfOutput");
+  function prettyJson(obj, { indent = 2, sortKeys = false } = {}) {
+    if (!sortKeys) return JSON.stringify(obj, null, indent);
 
-  const btnFormat = $("#jfFormat");
-  const btnMinify = $("#jfMinify");
-  const btnCopyIn = $("#jfCopyInput");
-  const btnCopyOut= $("#jfCopyOutput");
-  const btnClear  = $("#jfClear");
-
-  const stBadge = $("#jfValidity");
-  const stMeta  = $("#jfMeta");
-
-  if (!inTa || !outTa) return;
-
-  // -----------------------------
-  // Helpers
-  // -----------------------------
-  function normalize(t){
-    return String(t ?? "").replace(/\u00A0/g, " ").replace(/\r\n/g, "\n");
-  }
-
-  function flash(btn, ok, baseText){
-    if(!btn) return;
-    const base = baseText || btn.getAttribute("data-base") || btn.textContent;
-    btn.setAttribute("data-base", base);
-    btn.textContent = ok ? "Copied!" : "Copy failed";
-    setTimeout(() => (btn.textContent = base), 900);
-  }
-
-  async function copyToClipboard(str){
-    const text = String(str ?? "");
-    try{
-      if(navigator.clipboard && window.isSecureContext){
-        await navigator.clipboard.writeText(text);
-        return true;
+    const sortDeep = (v) => {
+      if (Array.isArray(v)) return v.map(sortDeep);
+      if (v && typeof v === 'object') {
+        const out = {};
+        for (const k of Object.keys(v).sort((a, b) => a.localeCompare(b))) {
+          out[k] = sortDeep(v[k]);
+        }
+        return out;
       }
-    }catch(e){}
-    try{
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.setAttribute("readonly", "");
-      ta.style.position = "fixed";
-      ta.style.top = "-9999px";
-      ta.style.left = "-9999px";
-      document.body.appendChild(ta);
-      ta.focus(); ta.select();
-      const ok = document.execCommand("copy");
-      document.body.removeChild(ta);
-      return !!ok;
-    }catch(e){ return false; }
+      return v;
+    };
+
+    return JSON.stringify(sortDeep(obj), null, indent);
   }
 
-  function bytesOf(str){
-    try{ return new Blob([str]).size; }catch(e){ return str.length; }
+  function stripBomAndTrim(s) {
+    if (!s) return '';
+    // remove UTF-8 BOM if present
+    if (s.charCodeAt(0) === 0xFEFF) s = s.slice(1);
+    return s.trim();
   }
 
-  function lineColFromIndex(text, idx){
-    // idx is 0-based offset in text
-    const upto = text.slice(0, Math.max(0, idx));
-    const lines = upto.split("\n");
-    const line = lines.length;               // 1-based
-    const col  = (lines[lines.length-1] || "").length + 1; // 1-based
-    return { line, col };
+  function detectMinified(s) {
+    // naive check: long line and lots of braces
+    const oneLine = s.split('\n').length === 1;
+    return oneLine && s.length > 160;
   }
 
-  function parseErrorOffset(err){
-    // V8/Chromium: "Unexpected token ... in JSON at position 123"
-    // Safari: "JSON Parse error: Unexpected identifier "x" at line 1 column 2"
-    const msg = String(err?.message || err || "");
-    const mPos = msg.match(/position\s+(\d+)/i);
-    if(mPos) return { type:"pos", value: Number(mPos[1]) };
+  function safeParseJson(input) {
+    const s = stripBomAndTrim(input);
+    if (!s) return { ok: false, error: 'Paste JSON to format.' };
 
-    const mLC = msg.match(/line\s+(\d+)\s+column\s+(\d+)/i);
-    if(mLC) return { type:"lc", line: Number(mLC[1]), col: Number(mLC[2]) };
-
-    return null;
+    try {
+      const value = JSON.parse(s);
+      return { ok: true, value };
+    } catch (e) {
+      return { ok: false, error: e?.message || 'Invalid JSON.' };
+    }
   }
 
-  function selectErrorPosition(offset){
-    try{
-      inTa.focus();
-      if(!offset) return;
+  function setText(el, txt) {
+    if (!el) return;
+    el.textContent = txt;
+  }
 
-      const text = normalize(inTa.value);
-      if(offset.type === "pos" && Number.isFinite(offset.value)){
-        const pos = Math.max(0, Math.min(text.length, offset.value));
-        inTa.setSelectionRange(pos, Math.min(text.length, pos + 1));
-        return;
+  function setPill(pill, type, text) {
+    if (!pill) return;
+    pill.classList.remove('pill--ok', 'pill--warn', 'pill--bad');
+    if (type === 'ok') pill.classList.add('pill--ok');
+    else if (type === 'warn') pill.classList.add('pill--warn');
+    else if (type === 'bad') pill.classList.add('pill--bad');
+    pill.textContent = text;
+  }
+
+  function computeMetrics(raw, formatted, parsedValue) {
+    const inputChars = raw.length;
+    const outputChars = formatted.length;
+
+    let keys = 0;
+    let arrays = 0;
+
+    const walk = (v) => {
+      if (Array.isArray(v)) {
+        arrays += 1;
+        for (const x of v) walk(x);
+      } else if (v && typeof v === 'object') {
+        keys += Object.keys(v).length;
+        for (const k of Object.keys(v)) walk(v[k]);
       }
+    };
+    walk(parsedValue);
 
-      if(offset.type === "lc" && Number.isFinite(offset.line) && Number.isFinite(offset.col)){
-        const lines = text.split("\n");
-        const lineIdx = Math.max(1, Math.min(lines.length, offset.line)) - 1;
-        let start = 0;
-        for(let i=0;i<lineIdx;i++) start += (lines[i].length + 1);
-        const colIdx = Math.max(1, offset.col) - 1;
-        const pos = Math.min(text.length, start + colIdx);
-        inTa.setSelectionRange(pos, Math.min(text.length, pos + 1));
-      }
-    }catch(e){}
+    return { inputChars, outputChars, keys, arrays };
   }
 
-  function setStatus(ok, info){
-    if(stBadge){
-      stBadge.classList.remove("ok","bad");
-      stBadge.classList.add(ok ? "ok" : "bad");
-      stBadge.textContent = ok ? "✅ Valid JSON" : "⚠️ Invalid JSON";
+  ClickozToolShell.register({
+    persist: true,
+
+    init(root) {
+      const input = root.querySelector('#jsonInput');
+      const output = root.querySelector('#jsonOutput');
+      const pill = root.querySelector('#jsonStatusPill');
+
+      const indentSel = root.querySelector('#jsonIndent');
+      const sortChk = root.querySelector('#jsonSortKeys');
+      const autoChk = root.querySelector('#jsonAuto');
+
+      const mIn = root.querySelector('#mInputChars');
+      const mOut = root.querySelector('#mOutputChars');
+      const mKeys = root.querySelector('#mKeys');
+      const mArrays = root.querySelector('#mArrays');
+
+      const btnFormat = root.querySelector('#btnFormat');
+
+      const apply = () => {
+        const raw = input.value || '';
+        const parsed = safeParseJson(raw);
+
+        if (!raw.trim()) {
+          setPill(pill, 'warn', 'Waiting for JSON…');
+          output.textContent = '';
+          setText(mIn, '0');
+          setText(mOut, '0');
+          setText(mKeys, '0');
+          setText(mArrays, '0');
+          return;
+        }
+
+        if (!parsed.ok) {
+          setPill(pill, 'bad', 'Invalid JSON');
+          output.textContent = parsed.error;
+          setText(mIn, String(raw.length));
+          setText(mOut, String((output.textContent || '').length));
+          setText(mKeys, '0');
+          setText(mArrays, '0');
+          return;
+        }
+
+        const indent = Number(indentSel?.value || 2);
+        const sortKeys = !!sortChk?.checked;
+
+        const formatted = prettyJson(parsed.value, {
+          indent: Number.isFinite(indent) ? indent : 2,
+          sortKeys
+        });
+
+        output.textContent = formatted;
+
+        // status logic
+        const minified = detectMinified(stripBomAndTrim(raw));
+        setPill(pill, 'ok', minified ? 'Valid JSON (minified)' : 'Valid JSON');
+
+        const metrics = computeMetrics(raw, formatted, parsed.value);
+        setText(mIn, String(metrics.inputChars));
+        setText(mOut, String(metrics.outputChars));
+        setText(mKeys, String(metrics.keys));
+        setText(mArrays, String(metrics.arrays));
+      };
+
+      const maybeAuto = () => {
+        if (autoChk?.checked) apply();
+      };
+
+      // Bind
+      input.addEventListener('input', maybeAuto);
+      indentSel?.addEventListener('change', maybeAuto);
+      sortChk?.addEventListener('change', maybeAuto);
+      autoChk?.addEventListener('change', () => {
+        if (autoChk.checked) apply();
+      });
+
+      btnFormat?.addEventListener('click', apply);
+
+      // initial render
+      setPill(pill, 'warn', 'Waiting for JSON…');
+      apply();
+
+      // expose internal functions for shell actions
+      this._els = { input, output, pill, indentSel, sortChk, autoChk };
+      this._apply = apply;
+    },
+
+    getExample() {
+      return {
+        json: `{"name":"Clickoz","tools":["json-formatter","utm-builder"],"meta":{"privacy":"browser-only","fast":true},"numbers":[1,2,3],"nested":{"a":1,"b":{"c":[{"id":1},{"id":2}]}}}`,
+        indent: 2,
+        sortKeys: false,
+        auto: true
+      };
+    },
+
+    serialize() {
+      const { input, indentSel, sortChk, autoChk } = this._els || {};
+      return {
+        json: input?.value ?? '',
+        indent: Number(indentSel?.value ?? 2),
+        sortKeys: !!sortChk?.checked,
+        auto: !!autoChk?.checked
+      };
+    },
+
+    hydrate(state) {
+      const { input, indentSel, sortChk, autoChk } = this._els || {};
+      if (!state) return;
+
+      if (input && typeof state.json === 'string') input.value = state.json;
+      if (indentSel && state.indent != null) indentSel.value = String(state.indent);
+      if (sortChk) sortChk.checked = !!state.sortKeys;
+      if (autoChk) autoChk.checked = state.auto !== false;
+
+      this._apply?.();
+    },
+
+    clear() {
+      const { input, sortChk, autoChk, indentSel } = this._els || {};
+      if (input) input.value = '';
+      if (sortChk) sortChk.checked = false;
+      if (autoChk) autoChk.checked = true;
+      if (indentSel) indentSel.value = '2';
+      this._apply?.();
     }
-    if(stMeta){
-      stMeta.textContent = info || (ok ? "Looks good. You can copy the formatted output." : "Fix the error and try again.");
-    }
-  }
-
-  function basicStats(text){
-    const t = normalize(text);
-    const lines = t ? t.split("\n").length : 0;
-    const chars = t.length;
-    const bytes = bytesOf(t);
-    return { lines, chars, bytes };
-  }
-
-  function renderStats(ok, formattedText){
-    const srcStats = basicStats(inTa.value);
-    const outStats = basicStats(formattedText ?? outTa.value);
-
-    const left = `Input: ${srcStats.lines} lines • ${srcStats.chars} chars • ${srcStats.bytes} bytes`;
-    const right= `Output: ${outStats.lines} lines • ${outStats.chars} chars • ${outStats.bytes} bytes`;
-
-    if(stMeta){
-      stMeta.textContent = ok ? `${left}  |  ${right}` : left;
-    }
-  }
-
-  function safeStringify(obj, pretty){
-    // pretty: true => 2 spaces
-    return JSON.stringify(obj, null, pretty ? 2 : 0);
-  }
-
-  function validateOnly(){
-    const raw = normalize(inTa.value).trim();
-    if(!raw){
-      outTa.value = "";
-      setStatus(false, "Paste JSON to validate and format.");
-      renderStats(false, "");
-      return;
-    }
-    try{
-      JSON.parse(raw);
-      setStatus(true, "Valid JSON. Choose Format or Minify.");
-      renderStats(true, outTa.value);
-    }catch(e){
-      const off = parseErrorOffset(e);
-      let extra = "Invalid JSON.";
-      if(off?.type === "pos"){
-        const lc = lineColFromIndex(raw, off.value);
-        extra = `Invalid JSON near line ${lc.line}, col ${lc.col}.`;
-      }else if(off?.type === "lc"){
-        extra = `Invalid JSON near line ${off.line}, col ${off.col}.`;
-      }
-      setStatus(false, extra);
-      renderStats(false, "");
-    }
-  }
-
-  function formatJSON(pretty){
-    const raw = normalize(inTa.value).trim();
-    if(!raw){
-      outTa.value = "";
-      setStatus(false, "Paste JSON to format.");
-      renderStats(false, "");
-      return;
-    }
-    try{
-      const obj = JSON.parse(raw);
-      const out = safeStringify(obj, !!pretty);
-      outTa.value = out;
-      setStatus(true, pretty ? "Formatted output ready." : "Minified output ready.");
-      renderStats(true, out);
-    }catch(e){
-      const off = parseErrorOffset(e);
-      let extra = "Invalid JSON. Fix the input and try again.";
-      if(off?.type === "pos"){
-        const lc = lineColFromIndex(raw, off.value);
-        extra = `Invalid JSON near line ${lc.line}, col ${lc.col}.`;
-      }else if(off?.type === "lc"){
-        extra = `Invalid JSON near line ${off.line}, col ${off.col}.`;
-      }
-      setStatus(false, extra);
-      selectErrorPosition(off);
-    }
-  }
-
-  // -----------------------------
-  // Events
-  // -----------------------------
-  let tmr = null;
-  inTa.addEventListener("input", () => {
-    clearTimeout(tmr);
-    tmr = setTimeout(validateOnly, 80);
   });
-
-  if(btnFormat) btnFormat.addEventListener("click", () => formatJSON(true));
-  if(btnMinify) btnMinify.addEventListener("click", () => formatJSON(false));
-
-  if(btnCopyIn) btnCopyIn.addEventListener("click", async () => {
-    const ok = await copyToClipboard(inTa.value || "");
-    flash(btnCopyIn, ok, "📋 Copy input");
-  });
-
-  if(btnCopyOut) btnCopyOut.addEventListener("click", async () => {
-    const ok = await copyToClipboard(outTa.value || "");
-    flash(btnCopyOut, ok, "✅ Copy output");
-  });
-
-  if(btnClear) btnClear.addEventListener("click", () => {
-    inTa.value = "";
-    outTa.value = "";
-    inTa.focus();
-    setStatus(false, "Paste JSON to validate and format.");
-    renderStats(false, "");
-  });
-
-  // Output is read-only UX, but keep focusable
-  outTa.addEventListener("focus", () => {
-    // select all on focus for quick copy if user wants
-    try{ outTa.select(); }catch(e){}
-  });
-
-  // Init
-  setStatus(false, "Paste JSON to validate and format.");
-  validateOnly();
 })();
