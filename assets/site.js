@@ -1209,3 +1209,28 @@
     mo.observe(document.documentElement, { childList: true, subtree: true });
   } catch(_) {}
 })();
+/* =========================================================
+   PATCH 2026-02 (FORTE) — Remove #spaceParticles from DOM
+   INCOLLA ALLA FINE di /assets/site.js
+   ========================================================= */
+(() => {
+  function killCanvas(){
+    const c = document.getElementById("spaceParticles");
+    if (!c) return;
+    try { c.remove(); } catch (e) { c.parentNode && c.parentNode.removeChild(c); }
+  }
+
+  // run now + after DOM ready
+  killCanvas();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", killCanvas, { once: true });
+  } else {
+    queueMicrotask(killCanvas);
+  }
+
+  // If something re-adds it, remove again
+  try {
+    const mo = new MutationObserver(() => killCanvas());
+    mo.observe(document.documentElement, { childList: true, subtree: true });
+  } catch(e) {}
+})();
