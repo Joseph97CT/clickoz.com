@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>JSON Formatter — Format & Validate JSON Online (Fast, Privacy-First) | Clickoz</title>
-  <meta name="description" content="Format and validate JSON instantly. Pretty print, sort keys, minify, and copy clean output — 100% browser-based (privacy-first), no signup." />
+  <meta name="description" content="Format and validate JSON instantly. Pretty print, sort keys, minify, upload a .json, and copy clean output — 100% browser-based (privacy-first), no signup." />
   <link rel="canonical" href="https://clickoz.com/tools/json-formatter/" />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f19" />
 
   <meta property="og:site_name" content="Clickoz" />
   <meta property="og:title" content="JSON Formatter — Format & Validate JSON Online" />
-  <meta property="og:description" content="Pretty print JSON instantly with clean output, optional key sorting, minify, and one-click copy. Browser-only, no signup." />
+  <meta property="og:description" content="Pretty print JSON instantly with clean output, optional key sorting, minify, upload .json, and one-click copy. Browser-only, no signup." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://clickoz.com/tools/json-formatter/" />
   <!-- If you have an OG image, uncomment and set it -->
@@ -21,7 +21,7 @@
   <!-- Global styles -->
   <link rel="stylesheet" href="/assets/site.css" />
   <link rel="stylesheet" href="/assets/tools.css" />
-  <!-- Tool-specific (minimal) -->
+  <!-- Tool-specific -->
   <link rel="stylesheet" href="/tools/json-formatter/json-formatter.css" />
 
   <!-- JSON-LD -->
@@ -33,7 +33,7 @@
     "applicationCategory":"DeveloperApplication",
     "operatingSystem":"Any",
     "url":"https://clickoz.com/tools/json-formatter/",
-    "description":"Format and validate JSON instantly. Pretty print, optional key sorting, minify, and one-click copy. Runs in your browser (privacy-first).",
+    "description":"Format and validate JSON instantly. Pretty print, optional key sorting, minify, upload .json, and one-click copy. Runs in your browser (privacy-first).",
     "publisher":{"@type":"Organization","name":"Clickoz","url":"https://clickoz.com/"}
   }
   </script>
@@ -70,7 +70,6 @@
             <a class="tool-chip" href="/tools/">Browse all tools</a>
           </div>
 
-          <!-- STEPS (same external structure as UTM pages) -->
           <div class="tool-steps" aria-label="Steps">
             <div class="tool-step">
               <div class="tool-step-top">
@@ -85,15 +84,15 @@
                 <span class="tool-step-badge"><i></i> Step 2</span>
               </div>
               <p class="tool-step-title">Format & validate</p>
-              <p class="tool-step-desc">Choose indent, sort keys, or minify.</p>
+              <p class="tool-step-desc">Choose indent, sort keys, wrap, or minify.</p>
             </div>
 
             <div class="tool-step">
               <div class="tool-step-top">
                 <span class="tool-step-badge"><i></i> Step 3</span>
               </div>
-              <p class="tool-step-title">Copy output</p>
-              <p class="tool-step-desc">Copy clean JSON for debugging or docs.</p>
+              <p class="tool-step-title">Copy / download</p>
+              <p class="tool-step-desc">Copy output or download a formatted .json.</p>
             </div>
 
             <div class="tool-step">
@@ -122,7 +121,9 @@
                 </div>
 
                 <div class="tool-cta-row">
-                  <button class="btn btn--primary" id="btnFormat" type="button">Format</button>
+                  <button class="btn btn--primary" id="btnFormat" type="button" title="Format (Ctrl/⌘ + Enter)">
+                    Format
+                  </button>
                   <button class="btn" type="button" data-action="example">Load example</button>
                   <button class="btn btn--ghost" type="button" data-action="clear">Clear</button>
                   <button class="btn btn--ghost" type="button" data-action="reset-storage" title="Remove saved state">
@@ -146,7 +147,16 @@
                     <div class="field">
                       <label for="jsonInput">Input JSON</label>
                       <p class="hint">Paste JSON here. Validation happens locally (no uploads).</p>
-                      <textarea id="jsonInput" class="textarea jsonf-textarea" placeholder='{"hello":"world"}'></textarea>
+
+                      <textarea
+                        id="jsonInput"
+                        class="textarea jsonf-textarea"
+                        placeholder='{"hello":"world"}'
+                        spellcheck="false"
+                        autocapitalize="off"
+                        autocomplete="off"
+                        autocorrect="off"
+                      ></textarea>
 
                       <div class="tools-subcard" style="margin-top:12px;">
                         <div class="field-row">
@@ -162,14 +172,26 @@
 
                           <div class="field">
                             <label>Options</label>
+
                             <div class="toggle">
                               <input id="jsonSortKeys" type="checkbox" />
                               <span>Sort keys (A→Z)</span>
                             </div>
+
                             <div class="toggle" style="margin-top:8px;">
                               <input id="jsonAuto" type="checkbox" checked />
                               <span>Auto-format on input</span>
                             </div>
+
+                            <!-- NEW: wrap toggle (works with updated JS/CSS) -->
+                            <div class="toggle" style="margin-top:8px;">
+                              <input id="jsonWrap" type="checkbox" />
+                              <span>Wrap long lines (output)</span>
+                            </div>
+
+                            <p class="hint" style="margin-top:10px;">
+                              Shortcut: <span class="kbd">Ctrl</span> / <span class="kbd">⌘</span> + <span class="kbd">Enter</span>
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -177,18 +199,36 @@
 
                     <!-- OUTPUT -->
                     <div class="field">
-                      <label>Formatted output</label>
-                      <p class="hint">Copy the cleaned JSON below.</p>
+                      <label for="jsonOutput">Formatted output</label>
+                      <p class="hint">Copy, download, or inspect errors with line + column.</p>
 
-                      <div class="output jsonf-output" aria-live="polite">
+                      <div class="output jsonf-output" aria-live="polite" aria-label="Formatted JSON output">
                         <pre id="jsonOutput"></pre>
                       </div>
 
                       <div class="output-actions">
-                        <button class="btn" type="button" data-action="copy" data-copy-target="#jsonOutput">Copy output</button>
+                        <button class="btn" type="button" data-action="copy" data-copy-target="#jsonOutput">
+                          Copy output
+                        </button>
+
+                        <!-- NEW: upload/download actions -->
+                        <button class="btn" type="button" id="btnUploadJson" title="Load a .json file from your device">
+                          Upload .json
+                        </button>
+
+                        <button class="btn" type="button" id="btnDownload" title="Download formatted output as formatted.json">
+                          Download
+                        </button>
+
+                        <input
+                          id="jsonFile"
+                          type="file"
+                          accept=".json,application/json"
+                          style="display:none;"
+                        />
                       </div>
 
-                      <div class="metrics">
+                      <div class="metrics" aria-label="JSON metrics">
                         <span class="metric">Input chars: <b id="mInputChars">0</b></span>
                         <span class="metric">Output chars: <b id="mOutputChars">0</b></span>
                         <span class="metric">Keys: <b id="mKeys">0</b></span>
@@ -245,8 +285,19 @@
                 </header>
                 <div class="tools-card-body">
                   <p class="small" style="margin:0;">
-                    Paste with <span class="kbd">Ctrl</span> + <span class="kbd">V</span>.  
-                    Copy output with the button for a clean clipboard.
+                    Paste with <span class="kbd">Ctrl</span> + <span class="kbd">V</span> (or <span class="kbd">⌘</span> + <span class="kbd">V</span>).<br />
+                    Format with <span class="kbd">Ctrl</span>/<span class="kbd">⌘</span> + <span class="kbd">Enter</span>.
+                  </p>
+                </div>
+              </section>
+
+              <section class="tools-card">
+                <header class="tools-card-header">
+                  <h3 class="side-title">Privacy</h3>
+                </header>
+                <div class="tools-card-body">
+                  <p class="small" style="margin:0;">
+                    Your JSON never leaves your device. Formatting and validation run locally in your browser.
                   </p>
                 </div>
               </section>
@@ -256,7 +307,7 @@
       </div>
     </section>
 
-    <!-- SEO / INFO (the “site under” part you said was missing) -->
+    <!-- SEO / INFO -->
     <section class="tools-section tool-seo">
       <div class="tools-container">
         <article class="tools-card">
@@ -295,11 +346,15 @@
                 </div>
                 <div class="faq-item">
                   <button class="faq-q" type="button">Why is my JSON invalid?</button>
-                  <div class="faq-a">Common issues are missing quotes, trailing commas, or unescaped characters. Use the error message to locate the issue.</div>
+                  <div class="faq-a">Common issues are missing quotes, trailing commas, or unescaped characters. Use the error details to locate the problem.</div>
                 </div>
                 <div class="faq-item">
                   <button class="faq-q" type="button">Can I minify JSON?</button>
                   <div class="faq-a">Yes. Set indent to 0 to output a compact JSON string.</div>
+                </div>
+                <div class="faq-item">
+                  <button class="faq-q" type="button">Can I format a .json file?</button>
+                  <div class="faq-a">Yes. Use “Upload .json” to load a file locally, then copy or download the formatted output.</div>
                 </div>
               </div>
             </div>
