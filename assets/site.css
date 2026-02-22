@@ -2352,3 +2352,55 @@ h1, h2, h3{
   visibility: hidden !important;
   pointer-events: none !important;
 }
+/* =========================================================
+   PATCH 2026-02 (FORTE) — Font moderno + Particles brighter + Kill canvas
+   INCOLLA ALLA FINE di /assets/site.css
+   ========================================================= */
+
+/* ---------- FONT: forza il nuovo font ovunque ---------- */
+:root{
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+               Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* Forza su TUTTO, anche se altrove c'è un font settato */
+html, body, body.bigtext, .nav, .m-menu, .footer, button, input, select, textarea{
+  font-family: var(--font-sans) !important;
+}
+
+h1, h2, h3, .logo-text{
+  font-family: var(--font-sans) !important;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- PARTICLES: più luminose e presenti ---------- */
+/* Alza la visibilità del layer */
+#clickozParticles{
+  opacity: 1 !important;
+  filter: saturate(1.18) brightness(1.12) !important;
+}
+
+/* Dots idle: più grandi e molto più visibili */
+.pidle{
+  width: 3px !important;
+  height: 3px !important;
+  opacity: .72 !important;
+  filter: saturate(1.15) brightness(1.20) !important;
+  box-shadow:
+    0 0 18px rgba(var(--accent-rgb), .72),
+    0 0 56px rgba(var(--accent-rgb), .26) !important;
+}
+
+/* twinkle un filo più evidente */
+@keyframes idleTwinkle{
+  0%,100% { filter: brightness(1.05); }
+  50%     { filter: brightness(1.45); }
+}
+
+/* ---------- KILL CANVAS: sparisce proprio ---------- */
+#spaceParticles{
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
