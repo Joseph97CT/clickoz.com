@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Writing workflow visual">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07101d"/>
+      <stop offset=".52" stop-color="#101a33"/>
+      <stop offset="1" stop-color="#061018"/>
+    </linearGradient>
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5df2ff"/>
+      <stop offset=".5" stop-color="#8b7cff"/>
+      <stop offset="1" stop-color="#ff4fd8"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="1200" height="630" rx="36" fill="url(#bg)"/>
+  <g opacity=".18"><path d="M0 60H1200" stroke="#5df2ff"/><path d="M0 94H1200" stroke="#5df2ff"/><path d="M0 128H1200" stroke="#5df2ff"/><path d="M0 162H1200" stroke="#5df2ff"/><path d="M0 196H1200" stroke="#5df2ff"/><path d="M0 230H1200" stroke="#5df2ff"/><path d="M0 264H1200" stroke="#5df2ff"/><path d="M0 298H1200" stroke="#5df2ff"/><path d="M0 332H1200" stroke="#5df2ff"/><path d="M0 366H1200" stroke="#5df2ff"/><path d="M0 400H1200" stroke="#5df2ff"/><path d="M0 434H1200" stroke="#5df2ff"/><path d="M0 468H1200" stroke="#5df2ff"/><path d="M0 502H1200" stroke="#5df2ff"/><path d="M0 536H1200" stroke="#5df2ff"/><path d="M0 570H1200" stroke="#5df2ff"/><path d="M0 0V630" stroke="#5df2ff"/><path d="M54 0V630" stroke="#5df2ff"/><path d="M108 0V630" stroke="#5df2ff"/><path d="M162 0V630" stroke="#5df2ff"/><path d="M216 0V630" stroke="#5df2ff"/><path d="M270 0V630" stroke="#5df2ff"/><path d="M324 0V630" stroke="#5df2ff"/><path d="M378 0V630" stroke="#5df2ff"/><path d="M432 0V630" stroke="#5df2ff"/><path d="M486 0V630" stroke="#5df2ff"/><path d="M540 0V630" stroke="#5df2ff"/><path d="M594 0V630" stroke="#5df2ff"/><path d="M648 0V630" stroke="#5df2ff"/><path d="M702 0V630" stroke="#5df2ff"/><path d="M756 0V630" stroke="#5df2ff"/><path d="M810 0V630" stroke="#5df2ff"/><path d="M864 0V630" stroke="#5df2ff"/><path d="M918 0V630" stroke="#5df2ff"/><path d="M972 0V630" stroke="#5df2ff"/><path d="M1026 0V630" stroke="#5df2ff"/><path d="M1080 0V630" stroke="#5df2ff"/><path d="M1134 0V630" stroke="#5df2ff"/><path d="M1188 0V630" stroke="#5df2ff"/><path d="M1242 0V630" stroke="#5df2ff"/></g>
+  <circle cx="970" cy="120" r="170" fill="#ff4fd8" opacity=".16"/>
+  <circle cx="190" cy="520" r="190" fill="#5df2ff" opacity=".16"/>
+  <path d="M190 355C330 190 470 460 610 295S880 120 1018 270" fill="none" stroke="url(#line)" stroke-width="8" filter="url(#glow)" stroke-linecap="round"/>
+  <g font-family="Inter, Arial, sans-serif" fill="#f8fcff">
+    <text x="72" y="120" font-size="58" font-weight="900">Writing workflow</text>
+    <text x="76" y="168" font-size="22" fill="rgba(248,252,255,.68)">A practical Clickoz guide with tools, examples and next steps.</text>
+    <g transform="translate(104 405)"><rect width="210" height="86" rx="22" fill="rgba(255,255,255,.07)" stroke="rgba(93,242,255,.28)"/><text x="24" y="52" font-size="24" font-weight="800">Scanability</text></g><g transform="translate(364 405)"><rect width="210" height="86" rx="22" fill="rgba(255,255,255,.07)" stroke="rgba(93,242,255,.28)"/><text x="24" y="52" font-size="24" font-weight="800">Structure</text></g><g transform="translate(624 405)"><rect width="210" height="86" rx="22" fill="rgba(255,255,255,.07)" stroke="rgba(93,242,255,.28)"/><text x="24" y="52" font-size="24" font-weight="800">Copy-ready</text></g>
+  </g>
+</svg>
