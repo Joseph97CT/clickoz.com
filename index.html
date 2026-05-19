@@ -1,0 +1,544 @@
+﻿
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com; frame-src https://translate.google.com https://*.google.com; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=()" />
+  <title>Clickoz - Free Online Tools for SEO, Writing & Dev</title>
+  <meta name="description" content="Clickoz is a fast, privacy-first hub of free online tools for SEO, writing, and developers: word counter, readability score, keyword checks, meta tag preview, JSON formatting, URL/Base64 utilities, and more. No signup." />
+  <link rel="canonical" href="https://clickoz.com/" />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#0b0f19" />
+
+  <meta property="og:site_name" content="Clickoz" />
+  <meta property="og:title" content="Clickoz - Free Online Tools for SEO, Writing & Dev" />
+  <meta property="og:description" content="Free, privacy-friendly tools that run in your browser: text analysis, SEO helpers, and developer utilities." />
+  <meta property="og:url" content="https://clickoz.com/" />
+  <meta property="og:type" content="website" />
+
+  <meta property="og:image" content="https://clickoz.com/assets/og/default.svg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Clickoz - Free Online Tools for SEO, Writing & Dev" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Clickoz - Free Online Tools for SEO, Writing & Dev" />
+  <meta name="twitter:description" content="Fast, privacy-first tools that run in your browser. No signup." />
+  <meta name="twitter:image" content="https://clickoz.com/assets/og/default.svg" />
+
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="/assets/site.css?v=12" />
+  <link rel="stylesheet" href="/assets/home.css?v=13" />
+
+  <!-- JSON-LD: Organization + WebSite (SearchAction) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "name": "Clickoz",
+        "url": "https://clickoz.com/",
+        "logo": "https://clickoz.com/assets/favicon.svg"
+      },
+      {
+        "@type": "WebSite",
+        "name": "Clickoz",
+        "url": "https://clickoz.com/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://clickoz.com/tools/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=3" />
+  <link rel="stylesheet" href="/assets/cms-final.css?v=24" />
+</head>
+
+<body class="bigtext">
+  <!-- FX layers -->
+  <div id="clickozParticles" aria-hidden="true"></div>
+  <div class="__grain" aria-hidden="true"></div>
+
+  <nav class="nav" aria-label="Primary navigation" id="topNav">
+    <div class="container nav-inner">
+      <a class="logo" href="/" aria-label="Clickoz Home">
+        <span class="logo-badge" id="logoBadge" aria-hidden="true">
+          <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
+            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6"
+                  fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="logo-text">Click<span class="logo-oz">oz</span></span>
+      </a>
+
+      <div class="nav-links" aria-label="Sections">
+        <a class="active" href="/" aria-current="page">Home</a>
+        <a href="/tools/">Tools</a>
+        <a href="/guides/">Guides</a>
+        <a href="/updates/">Updates</a>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="nav-actions" aria-label="Preferences">
+        <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
+
+        <div class="dropdown">
+          <button class="dot-btn" id="colorToggle" type="button" aria-haspopup="true" aria-expanded="false" title="Theme color">
+            <span class="dot" id="colorDot" aria-hidden="true"></span>
+          </button>
+
+          <div class="menu" id="colorMenu" role="menu" aria-label="Pick theme color">
+            <div class="menu-title">Theme color</div>
+            <div class="color-grid">
+              <div class="color-option active" data-accent="#6366f1" data-accent2="#8b5cf6" style="background:#6366f1" title="Purple" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#3b82f6" data-accent2="#60a5fa" style="background:#3b82f6" title="Blue" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#10b981" data-accent2="#34d399" style="background:#10b981" title="Green" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#f59e0b" data-accent2="#fbbf24" style="background:#f59e0b" title="Yellow" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#f97316" data-accent2="#fb923c" style="background:#f97316" title="Orange" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#ef4444" data-accent2="#f87171" style="background:#ef4444" title="Red" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#ec4899" data-accent2="#f472b6" style="background:#ec4899" title="Pink" role="menuitem" tabindex="0"></div>
+              <div class="color-option" data-accent="#06b6d4" data-accent2="#22d3ee" style="background:#06b6d4" title="Cyan" role="menuitem" tabindex="0"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="gtNavWrap" aria-label="Translate">
+          <div id="google_translate_element"></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div class="m-overlay" id="mOverlay" hidden></div>
+  <aside class="m-menu" id="mobileMenu" aria-hidden="true">
+    <div class="m-head">
+      <div class="m-title">Menu</div>
+      <button class="m-close" id="mClose" type="button" aria-label="Close menu">x</button>
+    </div>
+
+    <div class="m-links">
+      <a class="m-link active" href="/" aria-current="page">Home</a>
+      <a class="m-link" href="/tools/">Tools</a>
+      <a class="m-link" href="/guides/">Guides</a>
+      <a class="m-link" href="/updates/">Updates</a>
+      <a class="m-link" href="/privacy/">Privacy</a>
+    </div>
+
+    <div class="m-block">
+      <div class="m-label">Theme color</div>
+      <div class="color-grid m-colors" id="mobileColorGrid">
+        <div class="color-option active" data-accent="#6366f1" data-accent2="#8b5cf6" style="background:#6366f1" title="Purple" tabindex="0"></div>
+        <div class="color-option" data-accent="#3b82f6" data-accent2="#60a5fa" style="background:#3b82f6" title="Blue" tabindex="0"></div>
+        <div class="color-option" data-accent="#10b981" data-accent2="#34d399" style="background:#10b981" title="Green" tabindex="0"></div>
+        <div class="color-option" data-accent="#f59e0b" data-accent2="#fbbf24" style="background:#f59e0b" title="Yellow" tabindex="0"></div>
+        <div class="color-option" data-accent="#f97316" data-accent2="#fb923c" style="background:#f97316" title="Orange" tabindex="0"></div>
+        <div class="color-option" data-accent="#ef4444" data-accent2="#f87171" style="background:#ef4444" title="Red" tabindex="0"></div>
+        <div class="color-option" data-accent="#ec4899" data-accent2="#f472b6" style="background:#ec4899" title="Pink" tabindex="0"></div>
+        <div class="color-option" data-accent="#06b6d4" data-accent2="#22d3ee" style="background:#06b6d4" title="Cyan" tabindex="0"></div>
+      </div>
+    </div>
+
+    <div class="m-block">
+      <div class="m-label">Language</div>
+      <div id="google_translate_element_mobile"></div>
+      <div style="margin-top:10px;font-size:13px;opacity:.78;line-height:1.5;">
+        Translation loads only if you accept "All" cookies.
+      </div>
+    </div>
+  </aside>
+
+  <!-- HERO -->
+  <header class="home-dashboard home-friendly container" aria-label="Clickoz home dashboard">
+    <section class="dashboard-copy hero-core friendly-hero-copy" aria-label="Intro">
+      <div class="hero-statusbar" aria-label="System status">
+        <span>Free tools</span>
+        <span>Private inputs</span>
+        <span>Tool + guide flow</span>
+      </div>
+
+      <p class="dash-kicker">START WITH ONE JOB</p>
+      <h1>
+        What do you need to fix or improve?
+      </h1>
+      <p class="dash-lead">
+        Choose a goal. Clickoz opens the right tool, shows the short guide, then points you to the next step.
+      </p>
+
+      <div class="friendly-goal-grid" aria-label="Popular goals">
+        <a class="goal-card goal-seo" href="/tools/meta-tags/">
+          <b>Publish a page</b>
+          <span>Check snippet, length, readability and basic SEO before publishing.</span>
+        </a>
+        <a class="goal-card goal-write" href="/tools/readability-analyzer/">
+          <b>Improve a draft</b>
+          <span>Count words, shorten heavy sentences and make text easier to scan.</span>
+        </a>
+        <a class="goal-card goal-creator" href="/tools/youtube-title-generator/">
+          <b>Prepare an upload</b>
+          <span>Create title ideas, thumbnail brief, description, hashtags and tracking links.</span>
+        </a>
+        <a class="goal-card goal-dev" href="/tools/json-formatter/">
+          <b>Fix broken data</b>
+          <span>Format JSON, encode URLs, decode Base64 and clean HTML entities.</span>
+        </a>
+      </div>
+
+      <div class="dash-actions" aria-label="Primary actions">
+        <a class="btn btn-accent" href="/tools/">Browse all tools</a>
+        <a class="btn btn-outline" href="/guides/">Read guides</a>
+        <button class="btn btn-outline" id="surpriseWorkflow" type="button">Pick for me</button>
+      </div>
+
+      <div class="surprise-card" id="surpriseCard" aria-live="polite">
+        <strong>Need the fastest route?</strong>
+        <span>Click “Pick for me” and get one tool plus one guide to start immediately.</span>
+      </div>
+    </section>
+
+    <aside class="live-console friendly-start-panel" aria-label="Start panel">
+      <div class="friendly-panel-top">
+        <span class="console-dot"></span>
+        <strong>Choose a starting point</strong>
+      </div>
+
+      <div class="home-live-map" aria-hidden="true">
+        <span class="home-map-core">Clickoz</span>
+        <span class="home-map-node node-a">SEO</span>
+        <span class="home-map-node node-b">Write</span>
+        <span class="home-map-node node-c">Creator</span>
+        <span class="home-map-node node-d">Dev</span>
+      </div>
+
+      <div class="friendly-preview-card">
+        <small>Most useful path today</small>
+        <b>Creator upload workflow</b>
+        <p>Title, thumbnail brief, description and tracking link in one clean path.</p>
+        <a href="/tools/youtube-title-generator/">Start this path</a>
+      </div>
+
+      <div class="friendly-task-list" aria-label="Quick tasks">
+        <a href="/tools/word-counter/"><span>Writing</span><b>Check length and reading time</b></a>
+        <a href="/tools/keyword-density/"><span>SEO</span><b>Check keyword focus</b></a>
+        <a href="/tools/utm-builder/"><span>Marketing</span><b>Build a campaign link</b></a>
+        <a href="/tools/base64/"><span>Developer</span><b>Encode or decode Base64</b></a>
+      </div>
+
+      <div class="console-metrics friendly-metrics" aria-label="Highlights">
+        <div><strong data-cms-count="tools">66</strong><span>tools</span></div>
+        <div><strong data-cms-count="guides">41</strong><span>guides</span></div>
+        <div><strong>0</strong><span>uploads</span></div>
+      </div>
+    </aside>
+  </header>
+
+  <section class="section container home-pathways" aria-label="Workflow shortcuts">
+    <div class="section-intro friendly-section-intro">
+      <p class="dash-kicker">POPULAR PATHWAYS</p>
+      <h2>Three simple ways to use Clickoz.</h2>
+    </div>
+    <div class="workflow-rail hero-lanes friendly-lanes">
+      <a href="/guides/seo-content-checklist/"><strong>Publish better</strong><span>Meta, readability, links</span></a>
+      <a href="/tools/youtube-title-generator/"><strong>Create faster</strong><span>Titles, thumbnails, posts</span></a>
+      <a href="/tools/json-formatter/"><strong>Debug cleaner</strong><span>JSON, URL, Base64</span></a>
+    </div>
+  </section>
+
+  <section class="section container home-featured-tools hero-featured friendly-tools-section" aria-label="Top tools of the month">
+    <div class="featured-head">
+      <div>
+        <p class="dash-kicker">TOOLS PEOPLE OPEN FIRST</p>
+        <h2>Start with a high-impact tool.</h2>
+      </div>
+      <button class="rec-refresh" id="recRefresh" type="button" aria-label="Refresh picks (manual)">Refresh picks</button>
+    </div>
+    <div class="picks-grid" id="picksGrid" aria-label="Top tools grid">
+      <a class="pick-card" href="/tools/json-formatter/">
+        <div class="pick-head"><span class="pick-icon" aria-hidden="true">{ }</span><h3 class="pick-title">JSON Formatter</h3></div>
+        <p class="pick-desc">Format, validate, and minify JSON for clean debugging and copy-ready output.</p>
+        <div class="pick-meta"><span class="pick-cat">Developer Utilities</span><span class="pick-cta">Open</span></div>
+      </a>
+      <a class="pick-card" href="/tools/meta-tags/">
+        <div class="pick-head"><span class="pick-icon" aria-hidden="true">SEO</span><h3 class="pick-title">Meta Tag Optimizer</h3></div>
+        <p class="pick-desc">Preview titles and descriptions, avoid truncation, and improve click appeal.</p>
+        <div class="pick-meta"><span class="pick-cat">SEO Tools</span><span class="pick-cta">Open</span></div>
+      </a>
+      <a class="pick-card" href="/tools/youtube-title-generator/">
+        <div class="pick-head"><span class="pick-icon" aria-hidden="true">YT</span><h3 class="pick-title">YouTube Title Generator</h3></div>
+        <p class="pick-desc">Generate title angles with hook, clarity and creator-friendly structure.</p>
+        <div class="pick-meta"><span class="pick-cat">Creator Tools</span><span class="pick-cta">Open</span></div>
+      </a>
+    </div>
+    <div class="picks-actions" aria-label="Top tools actions">
+      <a class="btn btn-accent" href="/tools/">View all tools</a>
+      <a class="btn btn-outline" href="/tools/#seo">Explore SEO</a>
+      <a class="btn btn-outline" href="/tools/#youtube">Explore Creator</a>
+    </div>
+  </section>
+
+
+  <section class="section container home-wow" aria-label="Clickoz command center">
+    <div class="wow-grid">
+      <div class="wow-panel wow-main">
+        <p class="guide-kicker">COMMAND CENTER</p>
+        <h2>Choose the job. Clickoz builds the route.</h2>
+        <p>Start with a real task: publish a page, fix messy data, improve a YouTube upload or clean a draft. Each route gives you the tool, the guide and the next action.</p>
+        <div class="wow-actions">
+          <a class="btn btn-accent" href="/tools/youtube-title-generator/">Try YouTube tools</a>
+          <a class="btn btn-outline" href="/guides/youtube-title-thumbnail-checklist/">Read creator guide</a>
+          <a class="btn btn-outline" href="/tools/#youtube">Open creator lane</a>
+        </div>
+        <div class="surprise-card">
+          <strong>Creator sprint</strong>
+          <span>Title first, thumbnail brief second, description third, tracking link last. One upload path, no guessing.</span>
+        </div>
+      </div>
+      <div class="wow-panel system-map">
+        <div class="map-node core">Clickoz</div>
+        <a class="map-node n1" href="/tools/#seo">SEO</a>
+        <a class="map-node n2" href="/tools/#youtube">Creator</a>
+        <a class="map-node n3" href="/tools/#dev">Dev</a>
+        <a class="map-node n4" href="/guides/">Guides</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section container creator-lab" aria-label="Creator lab">
+    <div class="hero-box creator-lab-box">
+      <div>
+        <p class="guide-kicker">CREATOR LAB</p>
+        <h2 class="section-title" style="margin-top:0">Build a YouTube upload without jumping between tabs.</h2>
+        <p class="section-sub">Use these tools in order: create the title, brief the thumbnail, write the description, add hashtags, plan a community post and track the links.</p>
+      </div>
+      <div class="creator-tool-strip">
+        <a href="/tools/youtube-title-generator/">Title Generator</a>
+        <a href="/tools/thumbnail-brief-generator/">Thumbnail Brief</a>
+        <a href="/tools/youtube-description-generator/">Description Generator</a>
+        <a href="/tools/youtube-hashtag-generator/">Hashtags</a>
+        <a href="/tools/community-post-generator/">Community Posts</a>
+        <a href="/tools/utm-builder/">UTM Tracking</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- GUIDES (6) -->
+  <section class="section container" aria-label="Guides">
+    <div class="hero-box">
+      <h2 class="section-title" style="margin-top:0">Guides that explain the next move</h2>
+      <p class="section-sub" style="margin-bottom:14px">
+        Each guide starts from a problem, shows the fix, then sends you to the exact Clickoz tool that finishes the job.
+      </p>
+
+      <div class="guides-grid" aria-label="Featured guides">
+        <a class="small-card guide-card" href="/guides/json-formatter-online/">
+          <span class="guide-chip">🧪 Developer</span>
+          <h3>Fix messy JSON without guessing</h3>
+          <p>Validate the payload, read the error and format the output before you copy it back.</p>
+          <span class="guide-cta">Read guide</span>
+        </a>
+
+        <a class="small-card guide-card" href="/guides/meta-tags-length/">
+          <span class="guide-chip">🔎 SEO</span>
+          <h3>Write meta tags people can click</h3>
+          <p>Check title length, description clarity and snippet intent before publishing.</p>
+          <span class="guide-cta">Read guide</span>
+        </a>
+
+        <a class="small-card guide-card" href="/guides/readability-score/">
+          <span class="guide-chip">📚 Writing</span>
+          <h3>Make a page easier to read</h3>
+          <p>Find long sentences, weak structure and text that will feel heavy on mobile.</p>
+          <span class="guide-cta">Read guide</span>
+        </a>
+
+        <a class="small-card guide-card" href="/guides/word-count-for-seo/">
+          <span class="guide-chip">🧠 SEO writing</span>
+          <h3>Know when a page is too thin</h3>
+          <p>Use word count, intent and structure together instead of chasing a random number.</p>
+          <span class="guide-cta">Read guide</span>
+        </a>
+
+        <a class="small-card guide-card" href="/guides/url-encoding-explained/">
+          <span class="guide-chip">🔗 URLs</span>
+          <h3>Stop links breaking after copy/paste</h3>
+          <p>Learn when to encode parameters, spaces and special characters in real URLs.</p>
+          <span class="guide-cta">Read guide</span>
+        </a>
+
+        <a class="small-card guide-card" href="/guides/base64-encode-decode/">
+          <span class="guide-chip">🔐 Debug</span>
+          <h3>Understand Base64 before using it</h3>
+          <p>Decode payloads for inspection and avoid treating Base64 like encryption.</p>
+          <span class="guide-cta">Read guide</span>
+        </a>
+      </div>
+
+      <div class="rec-actions" style="margin-top:14px;">
+        <a class="btn btn-accent btn-wide" href="/guides/" aria-label="Open full guides list">
+          View all guides
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKFLOWS (trust pills moved here) + accent buttons + Updates CTA -->
+  <section class="section container" aria-label="Workflows">
+    <div class="hero-box workflow-box">
+      <div class="workflow-head">
+        <div>
+          <h2 class="section-title" style="margin-top:0">Pick the path that matches your problem</h2>
+          <p class="section-sub" style="margin-bottom:0;max-width:80ch;">
+            If you are new here, start with one of these. Each path tells you what to check first and where to go next.
+          </p>
+        </div>
+
+        <div class="workflow-actions" aria-label="Workflow actions">
+          <a class="btn btn-accent" href="/tools/" aria-label="Go to tools">Go to tools</a>
+          <a class="btn btn-outline" href="/guides/" aria-label="Read guides">Read guides</a>
+          <a class="btn btn-outline" href="/updates/" aria-label="See updates">See what changed</a>
+        </div>
+      </div>
+
+      <div class="workflow-pills workflow-proof-grid" aria-label="Why these workflows are easy to use">
+        <div class="workflow-pill"><b>1</b><span>Start with the problem</span></div>
+        <div class="workflow-pill"><b>2</b><span>Run the matching tool</span></div>
+        <div class="workflow-pill"><b>3</b><span>Read the short guide</span></div>
+        <div class="workflow-pill"><b>4</b><span>Copy the improved result</span></div>
+      </div>
+
+      <div class="workflow-grid" aria-label="Workflow cards">
+        <div class="workflow-card">
+          <span class="workflow-icon">🔎</span>
+          <h3>Publish a page</h3>
+          <p>Check the snippet, page length and readability before Google sees the page.</p>
+          <div class="wbtns">
+            <a class="btn btn-accent" href="/tools/#seo" aria-label="Open SEO tools">Open SEO tools</a>
+            <a class="btn btn-outline" href="/guides/meta-tags-length/" aria-label="Read meta tags guide">Meta length guide</a>
+          </div>
+        </div>
+
+        <div class="workflow-card">
+          <span class="workflow-icon">🧪</span>
+          <h3>Fix broken data</h3>
+          <p>Format JSON, encode URL values or decode payloads without opening heavy dev tools.</p>
+          <div class="wbtns">
+            <a class="btn btn-accent" href="/tools/#dev" aria-label="Open dev tools">Open Dev tools</a>
+            <a class="btn btn-outline" href="/guides/json-formatter-online/" aria-label="Read JSON guide">JSON guide</a>
+          </div>
+        </div>
+
+        <div class="workflow-card">
+          <span class="workflow-icon">✍️</span>
+          <h3>Improve a draft</h3>
+          <p>Count words, spot heavy sentences and make the copy easier to scan on mobile.</p>
+          <div class="wbtns">
+            <a class="btn btn-accent" href="/tools/#text" aria-label="Open writing tools">Open Writing tools</a>
+            <a class="btn btn-outline" href="/guides/readability-score/" aria-label="Read readability guide">Readability guide</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <h4>Clickoz</h4>
+        <div class="footer-links">
+          <a href="/tools/">Tools</a>
+          <a href="/guides/">Guides</a>
+          <a href="/updates/">Updates</a>
+        </div>
+      </div>
+
+      <div>
+        <h4>Popular tools</h4>
+        <div class="footer-links">
+          <a href="/tools/word-counter/">Word Counter</a>
+          <a href="/tools/readability-analyzer/">Readability</a>
+          <a href="/tools/meta-tags/">Meta Tags</a>
+          <a href="/tools/json-formatter/">JSON Formatter</a>
+        </div>
+      </div>
+
+      <div>
+        <h4>Legal</h4>
+        <div class="footer-links">
+          <a href="/privacy/">Privacy</a>
+          <a href="/terms/">Terms</a>
+          <a href="/contact/">Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top:14px">
+      <hr class="sep" />
+      <div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">
+        &copy; 2026 Clickoz &bull; Fast tools for SEO, writing and developers
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cookie banner -->
+  <div class="cookie" role="dialog" aria-live="polite" aria-label="Cookie preferences">
+    <div class="cookie-card">
+      <button class="cookie-x" id="cookieClose" type="button" aria-label="Close">x</button>
+
+      <div class="cookie-content">
+        <div class="cookie-title">Privacy choices</div>
+        <div class="cookie-text">
+          We use essential storage for core features. If you accept all, we may load third-party services like Google Translate.
+          Read more in <a href="/privacy/">Privacy</a>.
+        </div>
+      </div>
+
+      <div class="cookie-actions">
+        <button class="btn cookie-btn" id="cookieReject" type="button">Refuse</button>
+        <button class="btn cookie-btn" id="cookieEssential" type="button">Essential only</button>
+        <button class="btn primary cookie-btn" id="cookieAccept" type="button">Accept all</button>
+      </div>
+    </div>
+  </div>
+  <script src="/assets/cms-registry.js?v=4" defer></script>
+  <script src="/assets/cms-schema.js?v=1" defer></script>
+  <script src="/assets/cms-enhance.js?v=6" defer></script>
+
+  <script src="/assets/site.js?v=21" defer></script>
+  <script src="/assets/home.js?v=11" defer></script>
+  <script src="/assets/clickoz-premium.js?v=4" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
