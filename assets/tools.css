@@ -1,0 +1,864 @@
+﻿/* ==========================================================================
+   Clickoz — Tools Shell (GLOBAL)
+   File: /assets/tools.css
+
+   Goal:
+   - Give EVERY /tools/* page the same “UTM Builder” structure:
+     hero + steps + tool panel + example loader + actions + output + seo + tags.
+
+   Usage (recommended):
+   - Include AFTER site.css on every tool page:
+     <link rel="stylesheet" href="/assets/site.css">
+     <link rel="stylesheet" href="/assets/tools.css">
+
+   Notes:
+   - This CSS assumes you already have a dark theme in site.css.
+   - It uses safe fallbacks if some CSS variables don’t exist.
+   ========================================================================== */
+
+/* -----------------------------
+   1) Base variables + fallbacks
+------------------------------ */
+:root{
+  /* If site.css already defines these, it will override. */
+  --bg: #0b0f19;
+  --panel: rgba(255,255,255,.06);
+  --panel-2: rgba(255,255,255,.04);
+  --stroke: rgba(255,255,255,.10);
+  --stroke-2: rgba(255,255,255,.14);
+  --text: rgba(255,255,255,.90);
+  --muted: rgba(255,255,255,.68);
+  --muted-2: rgba(255,255,255,.56);
+
+  /* Accent system (matches your neon vibe) */
+  --accent: #7c5cff;     /* default */
+  --accent2: #22d3ee;    /* secondary */
+  --ok: #22c55e;
+  --warn: #f59e0b;
+  --bad: #ef4444;
+
+  /* Radii + spacing */
+  --r-lg: 18px;
+  --r-md: 14px;
+  --r-sm: 12px;
+
+  --shadow: 0 18px 70px rgba(0,0,0,.55);
+  --shadow-soft: 0 10px 40px rgba(0,0,0,.38);
+
+  /* Layout */
+  --container: 1100px;
+  --pad-x: clamp(16px, 3.2vw, 28px);
+  --pad-y: clamp(18px, 3.2vw, 28px);
+
+  /* Typography */
+  --h1: clamp(26px, 3.2vw, 42px);
+  --h2: clamp(18px, 2.2vw, 26px);
+  --p: 15.5px;
+  --lh: 1.55;
+
+  /* Focus ring */
+  --ring: 0 0 0 4px rgba(124,92,255,.22);
+}
+
+html[data-accent]{
+  /* Optional: if you set accent via JS like data-accent="..." */
+}
+
+/* Prefer reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+}
+
+/* -----------------------------
+   2) Generic shell utilities
+------------------------------ */
+.tools-wrap{
+  width: 100%;
+  background: transparent;
+}
+
+.tools-container{
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--pad-x);
+}
+
+.tools-section{
+  padding: clamp(22px, 3.4vw, 40px) 0;
+}
+
+.tools-grid{
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: clamp(16px, 2.6vw, 26px);
+  align-items: start;
+}
+
+@media (max-width: 980px){
+  .tools-grid{ grid-template-columns: 1fr; }
+}
+
+.tools-card{
+  background: var(--panel);
+  border: 1px solid var(--stroke);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  position: relative;
+}
+
+.tools-card::before{
+  content:"";
+  position:absolute;
+  inset: -1px;
+  pointer-events:none;
+  border-radius: inherit;
+  background:
+    radial-gradient(900px 260px at 18% -10%, rgba(124,92,255,.18), transparent 60%),
+    radial-gradient(700px 220px at 90% 0%, rgba(34,211,238,.14), transparent 60%);
+  opacity: .9;
+  mix-blend-mode: screen;
+}
+
+.tools-card > *{ position: relative; }
+
+.tools-card-header{
+  padding: var(--pad-y) var(--pad-x);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  background: linear-gradient(180deg, rgba(255,255,255,.04), transparent);
+}
+
+.tools-card-body{
+  padding: var(--pad-y) var(--pad-x);
+}
+
+.tools-card-footer{
+  padding: 14px var(--pad-x);
+  border-top: 1px solid rgba(255,255,255,.08);
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,.03));
+}
+
+/* Small “glass” panels inside */
+.tools-subcard{
+  background: var(--panel-2);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: var(--r-md);
+  padding: 14px 14px;
+}
+
+/* -----------------------------
+   3) Tool Hero (top)
+------------------------------ */
+.tool-hero{
+  padding: clamp(18px, 3vw, 34px) 0 clamp(10px, 1.6vw, 18px);
+}
+
+.tool-hero-inner{
+  background:
+    radial-gradient(900px 260px at 20% 0%, rgba(124,92,255,.22), transparent 60%),
+    radial-gradient(700px 220px at 90% 10%, rgba(34,211,238,.14), transparent 60%);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: calc(var(--r-lg) + 8px);
+  padding: clamp(18px, 3.2vw, 28px);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.tool-hero-inner::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 38%, rgba(0,0,0,.10));
+}
+
+.tool-breadcrumb{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 8px;
+  align-items:center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.tool-breadcrumb a{
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  padding-bottom: 2px;
+}
+
+.tool-breadcrumb a:hover{
+  color: rgba(255,255,255,.90);
+  border-bottom-color: rgba(255,255,255,.28);
+}
+
+.tool-title{
+  font-size: var(--h1);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: rgba(255,255,255,.96);
+}
+
+.tool-subtitle{
+  margin-top: 10px;
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 15.5px;
+  line-height: var(--lh);
+  max-width: 78ch;
+}
+
+.tool-meta-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  align-items:center;
+  margin-top: 14px;
+}
+
+.tool-chip{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  color: rgba(255,255,255,.86);
+  font-size: 13px;
+  text-decoration: none;
+  user-select: none;
+}
+
+.tool-chip:hover{
+  border-color: rgba(255,255,255,.18);
+  background: rgba(255,255,255,.08);
+}
+
+.tool-chip--accent{
+  border-color: rgba(124,92,255,.35);
+  background: linear-gradient(180deg, rgba(124,92,255,.18), rgba(124,92,255,.08));
+}
+
+.tool-chip-dot{
+  width: 9px;
+  height: 9px;
+  border-radius: 99px;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(124,92,255,.18);
+}
+
+/* -----------------------------
+   4) Steps bar (above tool)
+------------------------------ */
+.tool-steps{
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 980px){
+  .tool-steps{ grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 520px){
+  .tool-steps{ grid-template-columns: 1fr; }
+}
+
+.tool-step{
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: var(--r-md);
+  padding: 12px 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.tool-step::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: radial-gradient(500px 160px at 18% 0%, rgba(124,92,255,.16), transparent 65%);
+  opacity: .7;
+  pointer-events:none;
+}
+
+.tool-step > *{ position: relative; }
+
+.tool-step-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.tool-step-badge{
+  display:inline-flex;
+  align-items:center;
+  gap: 7px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.22);
+  color: rgba(255,255,255,.86);
+  font-size: 12px;
+}
+
+.tool-step-badge i{
+  width: 7px;
+  height: 7px;
+  border-radius: 99px;
+  background: var(--accent2);
+  box-shadow: 0 0 0 4px rgba(34,211,238,.12);
+  display:inline-block;
+}
+
+.tool-step-title{
+  font-weight: 650;
+  font-size: 13.5px;
+  color: rgba(255,255,255,.92);
+  margin: 0;
+}
+
+.tool-step-desc{
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* -----------------------------
+   5) Tool panel structure
+------------------------------ */
+.tool-panel{
+  display:flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tool-panel-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+}
+
+.tool-panel-title h2{
+  margin: 0;
+  font-size: var(--h2);
+  letter-spacing: -0.01em;
+}
+
+.tool-panel-title .tool-mini{
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Example loader row */
+.tool-examples{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  align-items:center;
+}
+
+.tool-examples .tool-mini{
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Buttons */
+.btn{
+  appearance:none;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.92);
+  border-radius: 12px;
+  height: 40px;
+  padding: 0 14px;
+  font-size: 13.5px;
+  font-weight: 650;
+  letter-spacing: .01em;
+  cursor: pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap: 10px;
+  user-select:none;
+  text-decoration:none;
+  transition: transform .08s ease, background .2s ease, border-color .2s ease, filter .2s ease;
+}
+
+.btn:hover{
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.22);
+}
+
+.btn:active{ transform: translateY(1px); }
+
+.btn:focus-visible{
+  outline:none;
+  box-shadow: var(--ring);
+  border-color: rgba(124,92,255,.45);
+}
+
+.btn--primary{
+  border-color: rgba(124,92,255,.40);
+  background: linear-gradient(180deg, rgba(124,92,255,.28), rgba(124,92,255,.12));
+}
+
+.btn--primary:hover{
+  border-color: rgba(124,92,255,.58);
+  filter: brightness(1.05);
+}
+
+.btn--ghost{
+  background: transparent;
+  border-color: rgba(255,255,255,.12);
+}
+
+.btn--danger{
+  border-color: rgba(239,68,68,.38);
+  background: linear-gradient(180deg, rgba(239,68,68,.20), rgba(239,68,68,.08));
+}
+
+/* Actions bar */
+.tool-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  align-items:center;
+  justify-content:flex-start;
+  padding: 12px 0 0;
+}
+
+.tool-actions .tool-mini{
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+@media (max-width: 520px){
+  .tool-actions .tool-mini{ margin-left: 0; width: 100%; }
+}
+
+/* -----------------------------
+   6) Inputs / Fields (global)
+------------------------------ */
+.field{
+  display:flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label{
+  font-size: 13px;
+  color: rgba(255,255,255,.88);
+  font-weight: 650;
+  letter-spacing: .01em;
+}
+
+.hint{
+  margin: -4px 0 0;
+  font-size: 12.8px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.input,
+.select,
+.textarea{
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.28);
+  color: rgba(255,255,255,.92);
+  padding: 12px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.select{ padding: 11px 12px; }
+.textarea{ min-height: 140px; resize: vertical; }
+
+.input::placeholder,
+.textarea::placeholder{
+  color: rgba(255,255,255,.42);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus{
+  border-color: rgba(124,92,255,.52);
+  box-shadow: var(--ring);
+  background: rgba(0,0,0,.34);
+}
+
+.field-row{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 700px){
+  .field-row{ grid-template-columns: 1fr; }
+}
+
+/* Toggle / checkbox */
+.toggle{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  user-select:none;
+}
+.toggle input{ accent-color: var(--accent); }
+
+/* -----------------------------
+   7) Output blocks + metrics
+------------------------------ */
+.output{
+  border-radius: var(--r-md);
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.26);
+  padding: 12px 12px;
+  overflow: auto;
+  position: relative;
+}
+
+.output pre{
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: rgba(255,255,255,.88);
+}
+
+.metrics{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.metric{
+  display:flex;
+  align-items:center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.86);
+  font-size: 12.8px;
+}
+
+.metric b{
+  font-size: 13px;
+  color: rgba(255,255,255,.94);
+  font-weight: 750;
+}
+
+/* Status pills */
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.86);
+  font-size: 12.5px;
+}
+.pill--ok{ border-color: rgba(34,197,94,.36); background: rgba(34,197,94,.10); }
+.pill--warn{ border-color: rgba(245,158,11,.36); background: rgba(245,158,11,.10); }
+.pill--bad{ border-color: rgba(239,68,68,.36); background: rgba(239,68,68,.10); }
+
+/* -----------------------------
+   8) Sidebar / helper blocks
+------------------------------ */
+.side-stack{
+  display:flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.side-title{
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .01em;
+  color: rgba(255,255,255,.92);
+}
+
+.side-list{
+  margin: 0;
+  padding: 0;
+  list-style:none;
+  display:flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.side-list a{
+  text-decoration:none;
+  color: rgba(255,255,255,.86);
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+  border-radius: 12px;
+  padding: 10px 12px;
+  transition: background .2s ease, border-color .2s ease, transform .08s ease;
+}
+
+.side-list a:hover{
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.18);
+}
+
+.side-list a:active{ transform: translateY(1px); }
+
+.kbd{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.22);
+  color: rgba(255,255,255,.88);
+}
+
+/* -----------------------------
+   9) SEO block (below tool)
+------------------------------ */
+.tool-seo{
+  padding-top: 8px;
+}
+
+.seo-grid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.seo-title{
+  margin: 0;
+  font-size: 18px;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  color: rgba(255,255,255,.94);
+}
+
+.seo-p{
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--p);
+  line-height: var(--lh);
+  max-width: 95ch;
+}
+
+.seo-list{
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: rgba(255,255,255,.78);
+  line-height: 1.55;
+}
+
+.seo-faq{
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.faq-item{
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: var(--r-md);
+  overflow:hidden;
+}
+
+.faq-q{
+  width:100%;
+  text-align:left;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,.92);
+  padding: 12px 12px;
+  cursor:pointer;
+  font-size: 14px;
+  font-weight: 750;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+}
+
+.faq-q:focus-visible{
+  outline:none;
+  box-shadow: var(--ring);
+}
+
+.faq-a{
+  padding: 0 12px 12px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Tag cloud (query tags / related intents) */
+.tag-cloud{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tag{
+  display:inline-flex;
+  align-items:center;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.10);
+  color: rgba(255,255,255,.86);
+  font-size: 12.8px;
+  text-decoration:none;
+}
+
+.tag:hover{
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.18);
+}
+
+/* "Last updated" footer line */
+.tool-updated{
+  margin-top: 10px;
+  color: rgba(255,255,255,.52);
+  font-size: 12.8px;
+}
+
+/* -----------------------------
+   10) Loading skeleton (pre-tool)
+------------------------------ */
+.skeleton{
+  position: relative;
+  overflow: hidden;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+}
+
+.skeleton::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255,255,255,.10),
+    transparent
+  );
+  transform: translateX(-120%);
+  animation: sk 1.1s infinite;
+}
+
+@keyframes sk{
+  100%{ transform: translateX(120%); }
+}
+
+.skeleton-line{ height: 14px; margin: 10px 0; }
+.skeleton-line.sm{ height: 10px; width: 70%; }
+.skeleton-line.md{ height: 12px; width: 85%; }
+.skeleton-line.lg{ height: 14px; width: 95%; }
+.skeleton-box{ height: 140px; }
+
+.loading-wrap{
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Optional: hidden when ready */
+.is-ready .loading-wrap{ display:none; }
+.is-loading .tool-panel-real{ display:none; }
+
+/* -----------------------------
+   11) Micro helpers + typography
+------------------------------ */
+.hr{
+  height: 1px;
+  background: rgba(255,255,255,.10);
+  margin: 14px 0;
+}
+
+.small{
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.mono{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+a.inline{
+  color: rgba(255,255,255,.92);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(124,92,255,.40);
+}
+a.inline:hover{
+  border-bottom-color: rgba(124,92,255,.72);
+}
+
+/* -----------------------------
+   12) “UTM-like” layout hooks
+   (These class names are what we’ll use in HTML)
+------------------------------ */
+
+/* Main tool card (left) */
+.tool-main{}
+
+/* Sidebar (right) */
+.tool-side{}
+
+/* Example CTA row inside card header */
+.tool-cta-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  margin-top: 12px;
+  align-items:center;
+}
+
+/* Within output card: */
+.output-actions{
+  display:flex;
+  gap: 10px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-top: 10px;
+}
+
+/* -----------------------------
+   13) Tiny responsive polish
+------------------------------ */
+@media (max-width: 520px){
+  .btn{ width: 100%; }
+  .tool-examples{ width:100%; }
+  .tool-examples .btn{ width:auto; }
+  .tool-hero-inner{ padding: 16px; }
+  .tools-card-header, .tools-card-body{ padding: 16px; }
+}
+
+/* End of tools.css */
+
