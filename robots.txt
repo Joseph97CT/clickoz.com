@@ -1,9 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /_maintenance/
-Disallow: /tools/tool.html
-Disallow: /index1.html
-Disallow: /404.html
-Disallow: /404/
-
-Sitemap: https://clickoz.com/sitemap.xml
