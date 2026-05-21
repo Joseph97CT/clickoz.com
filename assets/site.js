@@ -357,29 +357,50 @@
     if(!burger || !menu || !overlay || !closeBtn) return;
 
     const root = document.documentElement;
+    let closeTimer = 0;
 
     function openMenu(){
-      menu.classList.add('open');
+      window.clearTimeout(closeTimer);
+      closeAllMenus();
+      menu.scrollTop = 0;
+      menu.classList.remove('closing');
       overlay.hidden = false;
+      overlay.classList.add('open');
+      menu.classList.add('open');
       menu.setAttribute('aria-hidden','false');
       burger.setAttribute('aria-expanded','true');
       root.classList.add('no-scroll');
+      closeBtn.focus?.({ preventScroll: true });
     }
 
-    function closeMenu(){
+    function closeMenu(skipDelay = false){
+      window.clearTimeout(closeTimer);
       menu.classList.remove('open');
-      overlay.hidden = true;
+      menu.classList.add('closing');
+      overlay.classList.remove('open');
       menu.setAttribute('aria-hidden','true');
       burger.setAttribute('aria-expanded','false');
       root.classList.remove('no-scroll');
+      const finish = () => {
+        if (menu.classList.contains('open')) return;
+        overlay.hidden = true;
+        overlay.classList.remove('open');
+        menu.classList.remove('closing');
+      };
+      if (skipDelay) finish();
+      else closeTimer = window.setTimeout(finish, 230);
     }
 
-    burger.addEventListener('click', () => {
+    burger.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       menu.classList.contains('open') ? closeMenu() : openMenu();
     });
 
-    closeBtn.addEventListener('click', closeMenu);
-    overlay.addEventListener('click', closeMenu);
+    closeBtn.addEventListener('click', () => closeMenu());
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeMenu();
+    });
 
     window.addEventListener('keydown', (e) => {
       if(e.key === 'Escape' && menu.classList.contains('open')) closeMenu();
@@ -390,10 +411,16 @@
       if(a) closeMenu();
     });
 
+    window.addEventListener('resize', () => {
+      if (!menu.classList.contains('open')) return;
+      const desktopNav = window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine)").matches;
+      if (desktopNav) closeMenu(true);
+    }, { passive: true });
+
     if(!$('#__noScrollStyle')){
       const style = document.createElement('style');
       style.id = "__noScrollStyle";
-      style.textContent = `.no-scroll{ overflow:hidden !important; }`;
+      style.textContent = `html.no-scroll{ overflow:hidden !important; }`;
       document.head.appendChild(style);
     }
   })();
