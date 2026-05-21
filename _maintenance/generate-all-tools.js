@@ -407,7 +407,7 @@ function head({ title, description, canonical, og = "/assets/og/default.svg", ex
   <link rel="stylesheet" href="/assets/site.css?v=13" />
   ${extraCss}
   <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=54" />
+  <link rel="stylesheet" href="/assets/cms-final.css?v=55" />
   ${jsonLd}
 </head>`;
 }
@@ -499,7 +499,7 @@ ${head({
   title,
   description,
   canonical: canonicalFor(tool),
-  extraCss: `<link rel="stylesheet" href="/tools/cms-tools.css?v=13" />`,
+  extraCss: `<link rel="stylesheet" href="/tools/cms-tools.css?v=14" />`,
   jsonLd: toolJsonLd(tool)
 })}
 <body class="bigtext cms-tool-body" data-tool-slug="${esc(tool.slug)}">
@@ -590,7 +590,7 @@ ${head({
   </main>
 
   ${footer()}
-  ${scripts(`<script src="/tools/cms-tools.js?v=11" defer></script>`)}
+  ${scripts(`<script src="/tools/cms-tools.js?v=12" defer></script>`)}
 </body>
 </html>
 `;
@@ -710,7 +710,7 @@ ${head({
   description: `${cluster.description} Browse ${items.length} Clickoz tools with examples, usable output and related guides.`,
   canonical: abs(cluster.url),
   og: "/assets/og/tools.svg",
-  extraCss: `<link rel="stylesheet" href="/tools/tools.css?v=8" /><link rel="stylesheet" href="/tools/cms-tools.css?v=13" />`,
+  extraCss: `<link rel="stylesheet" href="/tools/tools.css?v=8" /><link rel="stylesheet" href="/tools/cms-tools.css?v=14" />`,
   jsonLd: toolsJsonLd(items, cluster.title, cluster.url, cluster.description)
 })}
 <body class="bigtext tools-page">

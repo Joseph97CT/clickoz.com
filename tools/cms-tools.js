@@ -665,6 +665,56 @@
     </div>`;
   }
 
+  function outputPackHtml({ badge = "Output", hero = "", cards = [], sections = [] }) {
+    const cardHtml = cards.filter(Boolean).slice(0, 4).map(([label, value]) =>
+      `<article><b>${esc(label)}</b><span>${esc(value)}</span></article>`
+    ).join("");
+    const sectionHtml = sections.filter(Boolean).map(([label, value]) =>
+      `<div class="cms-output-list"><b>${esc(label)}</b><span>${esc(value).replace(/\n/g, "<br>")}</span></div>`
+    ).join("");
+    return `<div class="cms-output-pack">
+      <div class="cms-result-hero"><span>${esc(badge)}</span><strong>${esc(hero).replace(/\n/g, "<br>")}</strong></div>
+      ${cardHtml ? `<div class="cms-output-cards">${cardHtml}</div>` : ""}
+      ${sectionHtml}
+    </div>`;
+  }
+
+  function wordCounterHtml(stats, text) {
+    const avg = stats.sentences ? (stats.w.length / stats.sentences).toFixed(1) : "0.0";
+    const advice = stats.w.length < 40
+      ? "Short draft. Good for captions, snippets or intros; expand it if the page needs depth."
+      : stats.w.length > 450
+        ? "Long draft. Add headings, tighten paragraphs and move secondary points lower."
+        : "Balanced draft. Review sentence length and keep the first paragraph direct.";
+    return outputPackHtml({
+      badge: "Text structure",
+      hero: `${stats.w.length} words · ${duration(stats.w.length / 235 * 60)} reading time`,
+      cards: [
+        ["Characters", stats.chars],
+        ["Sentences", stats.sentences],
+        ["Paragraphs", stats.paragraphs],
+        ["Avg sentence", `${avg} words`]
+      ],
+      sections: [
+        ["What this means", advice],
+        ["Copy-ready summary", `Words: ${stats.w.length}\nCharacters: ${stats.chars}\nSentences: ${stats.sentences}\nParagraphs: ${stats.paragraphs}\nReading time: ${duration(stats.w.length / 235 * 60)}`],
+        ["Next edit", "If the text feels heavy, split the longest paragraph and remove one filler sentence before publishing."]
+      ]
+    });
+  }
+
+  function transformPackHtml(label, primary, cards, note) {
+    return outputPackHtml({
+      badge: label,
+      hero: primary || "Result ready",
+      cards,
+      sections: [
+        ["Copy-ready output", primary || "No output yet."],
+        ["How to use it", note]
+      ]
+    });
+  }
+
   function ipv4ToNumber(ip) {
     const p = String(ip || "").split(".").map((x) => parseInt(x, 10));
     if (p.length !== 4 || p.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) throw new Error("Enter a valid IPv4 address.");
@@ -850,17 +900,43 @@
     "word-counter": {
       sample: "Fast word counter online. Count words, characters, sentences, paragraphs and reading time instantly. Browser-only and privacy-first.",
       fields: [field("text", "Paste your text", "textarea", "Most people skim on mobile. Use short sentences and clear structure. Cut filler words and make the point fast.", true)],
-      run(v) { const s = textStats(v.text); return result("Live text structure calculated.", [metric("Words", s.w.length), metric("Characters", s.chars), metric("Sentences", s.sentences), metric("Reading time", duration(s.w.length / 235 * 60))], `Words: ${s.w.length}\nCharacters: ${s.chars}\nSentences: ${s.sentences}\nParagraphs: ${s.paragraphs}\nReading time: ${duration(s.w.length / 235 * 60)}`); }
+      run(v) {
+        const s = textStats(v.text);
+        const output = `Words: ${s.w.length}\nCharacters: ${s.chars}\nSentences: ${s.sentences}\nParagraphs: ${s.paragraphs}\nReading time: ${duration(s.w.length / 235 * 60)}`;
+        return result("Output ready: text length, structure and reading time are separated below.", [metric("Words", s.w.length), metric("Characters", s.chars), metric("Sentences", s.sentences), metric("Reading time", duration(s.w.length / 235 * 60))], output, wordCounterHtml(s, v.text));
+      }
     },
     "character-counter": {
       sample: "Instagram bio: Tools for creators, SEO writers and developers.",
       fields: [field("text", "Text", "textarea", "Instagram bio: Tools for creators, SEO writers and developers.", true)],
-      run(v) { const t = String(v.text || ""); return result("Character limits checked.", [metric("Characters", t.length), metric("No spaces", t.replace(/\s/g, "").length), metric("Words", words(t).length), metric("Lines", t.split(/\n/).length)], `Characters: ${t.length}\nCharacters without spaces: ${t.replace(/\s/g, "").length}\nWords: ${words(t).length}\nLines: ${t.split(/\n/).length}`); }
+      run(v) {
+        const t = String(v.text || "");
+        const noSpaces = t.replace(/\s/g, "").length;
+        const output = `Characters: ${t.length}\nCharacters without spaces: ${noSpaces}\nWords: ${words(t).length}\nLines: ${t.split(/\n/).length}`;
+        return result("Output ready: character limits and copy length are clear.", [metric("Characters", t.length), metric("No spaces", noSpaces), metric("Words", words(t).length), metric("Lines", t.split(/\n/).length)], output, outputPackHtml({
+          badge: "Limit check",
+          hero: `${t.length} characters · ${words(t).length} words`,
+          cards: [["No spaces", noSpaces], ["Lines", t.split(/\n/).length], ["Best for", "Bios/snippets"], ["Status", t.length > 160 ? "Review length" : "Clean"]],
+          sections: [["Copy-ready summary", output], ["How to use it", "Use this before pasting into bios, captions, titles, forms, ads or metadata fields with strict limits."]]
+        }));
+      }
     },
     "readability-analyzer": {
       sample: "This paragraph is useful, but it might be too long for mobile readers. Shorter sentences make scanning easier.",
       fields: [field("text", "Text to analyze", "textarea", "This paragraph is useful, but it might be too long for mobile readers. Shorter sentences make scanning easier.", true)],
-      run(v) { const s = textStats(v.text); const avg = s.sentences ? (s.w.length / s.sentences) : 0; const score = Math.max(0, Math.min(100, Math.round(100 - Math.max(0, avg - 14) * 4))); return result("Readability estimate ready.", [metric("Score", `${score}/100`), metric("Avg words/sentence", avg.toFixed(1)), metric("Words", s.w.length), metric("Action", avg > 20 ? "Shorten sentences" : "Good scan")], `Score: ${score}/100\nAverage words per sentence: ${avg.toFixed(1)}\nRecommendation: ${avg > 20 ? "Split long sentences and use clearer section breaks." : "Structure is readable. Review headings and CTA."}`); }
+      run(v) {
+        const s = textStats(v.text);
+        const avg = s.sentences ? (s.w.length / s.sentences) : 0;
+        const score = Math.max(0, Math.min(100, Math.round(100 - Math.max(0, avg - 14) * 4)));
+        const recommendation = avg > 20 ? "Split long sentences, add one heading and remove filler transitions." : "Structure is readable. Review headings, CTA and paragraph breaks.";
+        const output = `Score: ${score}/100\nAverage words per sentence: ${avg.toFixed(1)}\nRecommendation: ${recommendation}`;
+        return result("Output ready: readability score includes the next edit.", [metric("Score", `${score}/100`), metric("Avg sentence", avg.toFixed(1)), metric("Words", s.w.length), metric("Action", avg > 20 ? "Shorten" : "Good scan")], output, outputPackHtml({
+          badge: "Readability",
+          hero: `${score}/100 clarity estimate`,
+          cards: [["Avg sentence", `${avg.toFixed(1)} words`], ["Words", s.w.length], ["Sentences", s.sentences], ["Action", avg > 20 ? "Shorten" : "Polish"]],
+          sections: [["Recommendation", recommendation], ["Copy-ready note", output]]
+        }));
+      }
     },
     "text-case-converter": {
       sample: "make this headline cleaner for the page",
@@ -870,7 +946,7 @@
     "whitespace-cleaner": {
       sample: "Messy    text\n\n\nwith too many      spaces.",
       fields: [field("text", "Messy text", "textarea", "Messy    text\n\n\nwith too many      spaces.", true)],
-      run(v) { const out = String(v.text || "").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim(); return result("Whitespace cleaned.", [metric("Before", String(v.text || "").length), metric("After", out.length), metric("Removed", Math.max(0, String(v.text || "").length - out.length)), metric("Status", "Clean")], out); }
+      run(v) { const before = String(v.text || ""); const out = before.replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim(); return result("Output ready: spacing and paragraph breaks cleaned.", [metric("Before", before.length), metric("After", out.length), metric("Removed", Math.max(0, before.length - out.length)), metric("Status", "Clean")], out, transformPackHtml("Clean text", out, [["Before", before.length], ["After", out.length], ["Removed", Math.max(0, before.length - out.length)], ["Status", "Copy-ready"]], "Paste the cleaned output back into the editor, then check readability if the draft still feels dense.")); }
     },
     "meta-tags": {
       sample: "Title: Free SEO Tools for Faster Publishing\nDescription: Use Clickoz to write snippets, check readability and clean URLs before publishing.",
@@ -948,12 +1024,12 @@
     "json-formatter": {
       sample: "{\"name\":\"Clickoz\",\"tools\":66,\"premium\":true}",
       fields: [field("json", "JSON", "textarea", "{\"name\":\"Clickoz\",\"tools\":66,\"premium\":true}", true)],
-      run(v) { const obj = JSON.parse(v.json); const out = JSON.stringify(obj, null, 2); return result("Valid JSON formatted.", [metric("Status", "Valid"), metric("Chars", out.length), metric("Type", Array.isArray(obj) ? "Array" : typeof obj), metric("Copy", "Ready")], out); }
+      run(v) { const obj = JSON.parse(v.json); const out = JSON.stringify(obj, null, 2); const type = Array.isArray(obj) ? "Array" : typeof obj; return result("Output ready: JSON is valid and formatted.", [metric("Status", "Valid"), metric("Chars", out.length), metric("Type", type), metric("Copy", "Ready")], out, outputPackHtml({ badge: "Valid JSON", hero: `${type} formatted with ${out.length} characters`, cards: [["Status", "Valid"], ["Type", type], ["Indent", "2 spaces"], ["Copy", "Ready"]], sections: [["Formatted JSON", out], ["How to use it", "Copy this only after checking that the payload still matches the API, config or log context you started from."]] })); }
     },
     "json-minifier": {
       sample: "{\n  \"name\": \"Clickoz\",\n  \"tools\": 66\n}",
       fields: [field("json", "JSON", "textarea", "{\n  \"name\": \"Clickoz\",\n  \"tools\": 66\n}", true)],
-      run(v) { const out = JSON.stringify(JSON.parse(v.json)); return result("Valid JSON minified.", [metric("Status", "Valid"), metric("Chars", out.length), metric("Saved", Math.max(0, String(v.json).length - out.length)), metric("Copy", "Ready")], out); }
+      run(v) { const original = String(v.json || ""); const out = JSON.stringify(JSON.parse(original)); return result("Output ready: JSON is valid and minified.", [metric("Status", "Valid"), metric("Chars", out.length), metric("Saved", Math.max(0, original.length - out.length)), metric("Copy", "Ready")], out, outputPackHtml({ badge: "Minified JSON", hero: `${out.length} characters after minify`, cards: [["Status", "Valid"], ["Saved", Math.max(0, original.length - out.length)], ["Format", "One line"], ["Copy", "Ready"]], sections: [["Minified output", out], ["How to use it", "Use this for compact payloads, but keep a formatted copy nearby when debugging."]] })); }
     },
     "url-encoder": {
       sample: "campaign name=spring launch & source=instagram",
@@ -965,7 +1041,8 @@
         let decodeStatus = "Valid";
         try { decoded = decodeURIComponent(t.replace(/\+/g, "%20")); }
         catch (_) { decoded = "Input is not valid percent-encoded text."; decodeStatus = "Review"; }
-        return result("URL value encoded and decoded safely.", [metric("Original", t.length), metric("Encoded", encoded.length), metric("Decode", decodeStatus), metric("Copy", "Ready")], `Encoded\n${encoded}\n\nDecoded attempt\n${decoded}\n\nUsage note\nEncode values before placing them inside query parameters. Do not encode the full URL unless you intentionally need it as one parameter value.`);
+        const output = `Encoded\n${encoded}\n\nDecoded attempt\n${decoded}\n\nUsage note\nEncode values before placing them inside query parameters. Do not encode the full URL unless you intentionally need it as one parameter value.`;
+        return result("Output ready: encoded and decoded values are separated.", [metric("Original", t.length), metric("Encoded", encoded.length), metric("Decode", decodeStatus), metric("Copy", "Ready")], output, outputPackHtml({ badge: "URL value", hero: encoded || "No value yet", cards: [["Original", t.length], ["Encoded", encoded.length], ["Decode", decodeStatus], ["Use case", "Query values"]], sections: [["Encoded", encoded], ["Decoded attempt", decoded], ["Rule", "Encode parameter values before placing them inside URLs. Do not encode an entire URL unless it is intentionally one parameter value."]] }));
       }
     },
     "base64": {
@@ -978,13 +1055,14 @@
         let decodedOk = true;
         try { decoded = base64ToUtf8(t); }
         catch (_) { decoded = "Input is not valid UTF-8 Base64."; decodedOk = false; }
-        return result("Base64 encode/decode ready with UTF-8 support.", [metric("Input chars", t.length), metric("Encoded chars", encoded.length), metric("Decoded", decodedOk ? "Yes" : "No"), metric("Security", "Not encryption")], `Encoded\n${encoded}\n\nDecoded attempt\n${decoded}\n\nSecurity note\nBase64 only changes representation. It does not hide secrets, tokens or private data.`);
+        const output = `Encoded\n${encoded}\n\nDecoded attempt\n${decoded}\n\nSecurity note\nBase64 only changes representation. It does not hide secrets, tokens or private data.`;
+        return result("Output ready: Base64 encode/decode is split into clear sections.", [metric("Input chars", t.length), metric("Encoded chars", encoded.length), metric("Decoded", decodedOk ? "Yes" : "No"), metric("Security", "Not encryption")], output, outputPackHtml({ badge: "Base64", hero: encoded || "No value yet", cards: [["Encoded chars", encoded.length], ["Decoded", decodedOk ? "Yes" : "No"], ["UTF-8", "Supported"], ["Security", "Not encryption"]], sections: [["Encoded", encoded], ["Decoded attempt", decoded], ["Security note", "Base64 is a representation format, not encryption. Never treat decoded tokens as safe to share."]] }));
       }
     },
     "entity-encoder": {
       sample: "<button aria-label=\"Save & publish\">Save</button>",
       fields: [field("text", "HTML/text", "textarea", "<button aria-label=\"Save & publish\">Save</button>", true)],
-      run(v) { const t = String(v.text || ""); const encoded = esc(t); const ta = document.createElement("textarea"); ta.innerHTML = t; return result("HTML entities encoded and decoded.", [metric("Original", t.length), metric("Encoded", encoded.length), metric("Mode", "Encode/decode"), metric("Safe", "Review")], `Encoded:\n${encoded}\n\nDecoded attempt:\n${ta.value}`); }
+      run(v) { const t = String(v.text || ""); const encoded = esc(t); const ta = document.createElement("textarea"); ta.innerHTML = t; const output = `Encoded:\n${encoded}\n\nDecoded attempt:\n${ta.value}`; return result("Output ready: encoded HTML and decoded text are separated.", [metric("Original", t.length), metric("Encoded", encoded.length), metric("Mode", "Encode/decode"), metric("Safe", "Review")], output, outputPackHtml({ badge: "HTML entities", hero: encoded || "No value yet", cards: [["Original", t.length], ["Encoded", encoded.length], ["Mode", "Encode/decode"], ["Context", "HTML text"]], sections: [["Encoded for markup", encoded], ["Decoded attempt", ta.value], ["Rule", "Use encoded output inside HTML text or attributes. Decode only when reading, cleaning or debugging the content."]] })); }
     },
     "utm-builder": {
       sample: "https://clickoz.com/?utm_source=youtube&utm_medium=description&utm_campaign=launch",
@@ -1143,9 +1221,18 @@
   function renderResult(root, res) {
     const slug = root.getAttribute("data-tool-app") || "";
     const tool = cms.toolBySlug?.[slug] || { title: slug.replace(/-/g, " "), category: "" };
+    const card = $(".cms-result-card", root);
+    if (card) card.classList.add("has-output");
     $(".cms-result-status", root).textContent = res.status || "Result ready.";
     $(".cms-metrics", root).innerHTML = (res.metrics || []).map(([a, b]) => `<div class="cms-metric"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`).join("");
     const out = $(".cms-output", root);
+    let label = $(".cms-output-label", root);
+    if (!label) {
+      label = document.createElement("div");
+      label.className = "cms-output-label";
+      out.insertAdjacentElement("beforebegin", label);
+    }
+    label.innerHTML = `<span>Primary output</span><small>Copy-ready result below</small>`;
     if (res.html) renderSafeHtml(out, res.html);
     else renderTextOutput(out, res.output || "");
     out.dataset.copy = res.output || out.textContent || "";
@@ -1194,13 +1281,14 @@
 
   async function run(root, config) {
     const btn = $("[data-action='run']", root);
+    const original = btn ? btn.textContent : "";
     try {
       if (btn) btn.textContent = "Working...";
       renderResult(root, await config.run(vals(root)));
     } catch (err) {
       renderResult(root, result("Check the input and try again.", [metric("Status", "Input error"), metric("Privacy", "Browser"), metric("Output", "Blocked"), metric("Fix", "Review")], err?.message || "Unable to run this tool."));
     } finally {
-      if (btn) btn.textContent = "Run tool";
+      if (btn) btn.textContent = original || "⚡ Run tool";
     }
   }
 

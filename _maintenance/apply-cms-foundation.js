@@ -42,7 +42,7 @@ function ensureScripts() {
     } else if (!html.includes("/assets/cms-enhance.js")) {
       html = html.replace(siteScriptPattern, `\n  <script src="/assets/cms-enhance.js?v=6" defer></script>$1`);
     }
-    html = html.replace(/\/assets\/cms-final\.css\?v=\d+/g, "/assets/cms-final.css?v=54");
+    html = html.replace(/\/assets\/cms-final\.css\?v=\d+/g, "/assets/cms-final.css?v=55");
     fs.writeFileSync(file, html, "utf8");
   }
 }
@@ -87,7 +87,7 @@ function clusterTemplate(key) {
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/assets/site.css?v=13" />
   <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=54" />
+  <link rel="stylesheet" href="/assets/cms-final.css?v=55" />
 </head>
 <body class="bigtext cluster-page">
   <div id="clickozParticles" aria-hidden="true"></div>

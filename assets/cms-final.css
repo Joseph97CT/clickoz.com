@@ -6872,7 +6872,7 @@ body > :not(#clickozParticles):not(#spaceParticles):not(.__grain):not(.cz-neon-g
   }
 }
 
-/* v43: fixed navigation and premium mobile control center. */
+/* v43: sticky navigation and premium mobile control center. */
 :root{
   --navH:76px;
 }
@@ -6882,11 +6882,11 @@ html{
 }
 
 body{
-  padding-top:var(--navH) !important;
+  padding-top:0 !important;
 }
 
 .nav{
-  position:fixed !important;
+  position:sticky !important;
   top:0 !important;
   left:0 !important;
   right:0 !important;
@@ -8860,5 +8860,302 @@ html.no-scroll body{
 
   .nav-inner{
     min-height:78px !important;
+  }
+}
+
+/* v55: mobile clarity and CMS workflow authority.
+   This layer removes old fixed-nav spacing, makes the menu truly device-safe,
+   and makes tool outputs easier to understand on first visit. */
+html,
+body{
+  margin:0 !important;
+  padding-top:0 !important;
+  background-color:#070d18 !important;
+}
+
+body{
+  padding-top:0 !important;
+}
+
+.nav{
+  margin-top:0 !important;
+}
+
+body > .nav:first-of-type{
+  margin-top:0 !important;
+}
+
+.cms-tool-workflow{
+  align-items:stretch !important;
+}
+
+.cms-step-card{
+  position:relative !important;
+  padding-top:36px !important;
+}
+
+.cms-step-card::after{
+  position:absolute !important;
+  top:12px !important;
+  right:14px !important;
+  min-height:22px !important;
+  padding:5px 8px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(var(--accent-rgb), .20) !important;
+  background:rgba(var(--accent-rgb), .08) !important;
+  color:rgba(248,252,255,.72) !important;
+  font-size:10.5px !important;
+  line-height:1 !important;
+  letter-spacing:.08em !important;
+  font-weight:1000 !important;
+}
+
+.cms-step-card:nth-child(1)::after{ content:"STEP 1" !important; }
+.cms-step-card:nth-child(2)::after{ content:"STEP 2" !important; }
+.cms-step-card:nth-child(3)::after{ content:"STEP 3" !important; }
+
+.cms-step-card .emoji{
+  align-self:start !important;
+}
+
+.cms-result-card{
+  text-align:center !important;
+}
+
+.cms-result-status{
+  max-width:48ch !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+
+.cms-output,
+.cms-text-output,
+.cms-output-pack{
+  text-align:left !important;
+}
+
+.cms-output-label{
+  position:relative !important;
+  overflow:hidden !important;
+}
+
+.cms-output-label::after{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  pointer-events:none !important;
+  background:linear-gradient(110deg, transparent, rgba(255,255,255,.055), transparent) !important;
+  transform:translateX(-120%) !important;
+  animation:cz-soft-scan 5.4s ease-in-out infinite !important;
+}
+
+@keyframes cz-soft-scan{
+  0%, 60%{ transform:translateX(-120%); opacity:.0; }
+  72%{ opacity:.55; }
+  100%{ transform:translateX(120%); opacity:0; }
+}
+
+.guide-hub-card,
+.authority-card,
+.goal-card,
+.pick-card{
+  min-width:0 !important;
+}
+
+.guide-hub-card p,
+.authority-card p,
+.goal-card span,
+.pick-card p{
+  text-align:left !important;
+}
+
+@media (max-width:1100px), (pointer:coarse){
+  html,
+  body{
+    padding-top:0 !important;
+    min-height:100dvh !important;
+  }
+
+  .nav{
+    position:sticky !important;
+    top:0 !important;
+    margin-top:0 !important;
+    transform:none !important;
+  }
+
+  .nav::before{
+    content:"" !important;
+    position:absolute !important;
+    inset:-1px 0 auto 0 !important;
+    height:1px !important;
+    background:rgba(var(--accent-rgb), .24) !important;
+    pointer-events:none !important;
+  }
+
+  main:first-of-type,
+  body > main:first-of-type{
+    padding-top:clamp(12px, 3vw, 22px) !important;
+  }
+
+  .home-dashboard,
+  .guide-hub-hero,
+  .updates-hero-v2,
+  .cms-tool-hero{
+    margin-top:0 !important;
+  }
+
+  .cms-tool-title,
+  .friendly-hero-copy h1,
+  .guide-hub-hero h1,
+  .updates-title{
+    text-wrap:balance !important;
+    word-break:normal !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  .cms-tool-sub,
+  .dash-lead,
+  .guide-lead,
+  .updates-sub{
+    max-width:64ch !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    text-align:center !important;
+  }
+
+  .cms-tool-workflow{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+  }
+
+  .cms-step-card{
+    grid-template-columns:42px 1fr !important;
+    max-width:100% !important;
+    width:100% !important;
+    min-width:0 !important;
+    padding:34px 12px 13px !important;
+  }
+
+  .cms-step-card strong,
+  .cms-step-card span:not(.emoji){
+    text-align:left !important;
+  }
+
+  .cms-result-card{
+    position:relative !important;
+    top:auto !important;
+    margin-top:0 !important;
+  }
+
+  .cms-output{
+    max-height:none !important;
+    min-height:0 !important;
+  }
+
+  .cms-output-list span{
+    max-height:none !important;
+  }
+
+  .friendly-goal-grid,
+  .friendly-task-list,
+  .authority-grid,
+  .guide-hub-grid,
+  .picks-grid{
+    align-items:stretch !important;
+  }
+}
+
+@media (max-width:620px){
+  body{
+    font-size:16px !important;
+  }
+
+  .nav-inner{
+    width:calc(100% - 18px) !important;
+  }
+
+  .logo-badge{
+    width:38px !important;
+    height:38px !important;
+    flex-basis:38px !important;
+  }
+
+  .burger{
+    width:42px !important;
+    height:42px !important;
+    min-width:42px !important;
+  }
+
+  .m-menu{
+    top:calc(var(--navH) + 4px) !important;
+    right:6px !important;
+    width:calc(100vw - 12px) !important;
+    max-height:calc(100dvh - var(--navH) - 10px) !important;
+  }
+
+  .cms-tool-page,
+  .guide-hub-shell,
+  .updates-shell{
+    padding-top:12px !important;
+  }
+
+  .cms-tool-hero{
+    margin-bottom:10px !important;
+  }
+
+  .cms-tool-title{
+    font-size:clamp(30px, 9.6vw, 44px) !important;
+  }
+
+  .cms-tool-trust{
+    gap:7px !important;
+  }
+
+  .cms-pill{
+    min-height:36px !important;
+    padding:8px 10px !important;
+    font-size:12px !important;
+  }
+
+  .cms-result-card h3,
+  .cms-example-box h3{
+    font-size:18px !important;
+  }
+
+  .cms-metrics{
+    grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .cms-metric{
+    padding:10px 8px !important;
+  }
+
+  .cms-metric strong{
+    font-size:16px !important;
+  }
+
+  .cms-output-label{
+    flex-direction:column !important;
+    align-items:flex-start !important;
+  }
+
+  .cms-output-label small{
+    text-align:left !important;
+  }
+}
+
+@media (max-width:390px){
+  .cms-metrics{
+    grid-template-columns:1fr !important;
+  }
+
+  .cms-step-card{
+    grid-template-columns:1fr !important;
+  }
+
+  .cms-step-card .emoji{
+    width:38px !important;
+    height:38px !important;
   }
 }

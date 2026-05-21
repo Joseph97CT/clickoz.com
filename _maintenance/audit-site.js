@@ -68,8 +68,8 @@ function registryStats() {
   const toolPagesNotUnified = cms.tools.filter((item) => {
     const source = read(path.join(".", item.url, "index.html"));
     return !source.includes(`data-tool-app="${item.slug}"`) ||
-      !source.includes("/tools/cms-tools.css?v=13") ||
-      !source.includes("/tools/cms-tools.js?v=11");
+      !source.includes("/tools/cms-tools.css?v=14") ||
+      !source.includes("/tools/cms-tools.js?v=12");
   }).map((item) => item.url);
   const guidePagesWeak = cms.guides.filter((item) => {
     const source = read(path.join(".", item.url, "index.html"));

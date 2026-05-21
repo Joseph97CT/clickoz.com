@@ -6,7 +6,7 @@ const root = path.resolve(__dirname, "..");
 const ORIGIN = "https://clickoz.com";
 const V = {
   site: 47,
-  cmsFinal: 54,
+  cmsFinal: 55,
   cmsSchema: 2,
   cmsEnhance: 7,
   clickozPremium: 6
@@ -843,8 +843,8 @@ function replaceVersionsInHtml() {
       .replace(/\/assets\/guide-premium\.css\?v=\d+/g, "/assets/guide-premium.css?v=5")
       .replace(/\/assets\/guide-premium\.js\?v=\d+/g, "/assets/guide-premium.js?v=6")
       .replace(/\/tools\/tools\.css\?v=\d+/g, "/tools/tools.css?v=8")
-      .replace(/\/tools\/cms-tools\.css\?v=\d+/g, "/tools/cms-tools.css?v=13")
-      .replace(/\/tools\/cms-tools\.js\?v=\d+/g, "/tools/cms-tools.js?v=11")
+      .replace(/\/tools\/cms-tools\.css\?v=\d+/g, "/tools/cms-tools.css?v=14")
+      .replace(/\/tools\/cms-tools\.js\?v=\d+/g, "/tools/cms-tools.js?v=12")
       .replace(/\/assets\/cms-final\.css\?v=\d+/g, `/assets/cms-final.css?v=${V.cmsFinal}`)
       .replace(/\/assets\/cms-schema\.js\?v=\d+/g, `/assets/cms-schema.js?v=${V.cmsSchema}`)
       .replace(/\/assets\/cms-enhance\.js\?v=\d+/g, `/assets/cms-enhance.js?v=${V.cmsEnhance}`)
