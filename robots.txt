@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /_maintenance/
+Disallow: /404/
+Disallow: /500/
+Disallow: /tools/tool.html
+Sitemap: https://clickoz.com/sitemap.xml

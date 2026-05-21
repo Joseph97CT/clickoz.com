@@ -1,0 +1,628 @@
+﻿/* =========================================================
+   Clickoz Tool — Base64 Encode / Decode
+   File: /tools/base64/base64.css
+   Scope: body.b64
+========================================================= */
+
+body.b64 .tool-shell{ padding-top:18px; }
+
+/* -----------------------------
+   Breadcrumbs
+----------------------------- */
+body.b64 .crumbs{
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  font-size:13px; color: rgba(255,255,255,.70);
+  margin: 6px 0 10px;
+}
+body.b64 .crumbs a{
+  color: rgba(255,255,255,.82);
+  text-decoration:none;
+  border-bottom: 1px solid rgba(255,255,255,.14);
+}
+body.b64 .crumbs .sep{ opacity:.55; }
+
+/* -----------------------------
+   Hero
+----------------------------- */
+body.b64 .tool-hero{ max-width: 980px; margin: 0 auto; text-align:center; }
+body.b64 .kicker{
+  margin: 10px auto 0;
+  color: rgba(255,255,255,.74);
+  line-height: 1.8;
+  font-size: 15.5px;
+}
+body.b64 .kicker b{ color: rgba(255,255,255,.92); font-weight: 1000; }
+
+body.b64 .mini-trust{
+  margin: 14px auto 0;
+  display:flex; flex-wrap:wrap; gap:10px;
+  justify-content:center; align-items:center;
+}
+body.b64 .mini-pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
+  color: rgba(255,255,255,.86);
+  font-weight: 900;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* -----------------------------
+   Tool panel base
+----------------------------- */
+body.b64 .tool-panel{
+  margin-top:16px;
+  padding:16px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.10);
+  background: linear-gradient(180deg, rgba(15,21,38,.62), rgba(0,0,0,.18));
+  box-shadow: 0 16px 50px rgba(0,0,0,.28);
+  position:relative;
+  overflow:hidden;
+  text-align:left !important;
+}
+body.b64 .tool-panel::after{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  background: radial-gradient(760px 340px at 18% 30%, rgba(var(--accent-rgb), .12), transparent 60%);
+  filter: blur(30px);
+  opacity:.9;
+  pointer-events:none;
+}
+body.b64 .tool-panel > *{ position:relative; z-index:1; }
+body.b64 .tool-panel, body.b64 .tool-panel *{ box-sizing:border-box !important; }
+
+body.b64 .tool-grid{
+  display:grid !important;
+  grid-template-columns: 1fr !important;
+  gap:12px !important;
+  align-items:start !important;
+}
+@media (min-width:981px){
+  body.b64 .tool-grid{ grid-template-columns: 1.2fr .8fr !important; }
+}
+body.b64 .tool-area, body.b64 .b64-out-wrap{ min-width:0 !important; }
+
+/* -----------------------------
+   Step badges
+----------------------------- */
+body.b64 .stepbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin: 0 0 10px;
+}
+body.b64 .stepbadge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  font-weight: 1000;
+  color: rgba(255,255,255,.90);
+  line-height: 1;
+  font-size: 13px;
+  white-space: nowrap;
+}
+body.b64 .stepbadge .tag{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height: 20px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(var(--accent-rgb), .10);
+  color: rgba(255,255,255,.92);
+  font-size: 12px;
+  letter-spacing: .02em;
+}
+
+/* -----------------------------
+   Examples box
+----------------------------- */
+body.b64 .b64-examples{ margin-bottom:12px; }
+body.b64 .b64-ex{
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+}
+body.b64 .b64-ex h3{
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 1000;
+}
+body.b64 .b64-ex pre{
+  margin: 0;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.22);
+  overflow:auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: rgba(255,255,255,.90);
+  font-size: 13px;
+  line-height: 1.65;
+  min-height: 92px;
+}
+body.b64 .b64-ex-actions{
+  margin-top: 10px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+body.b64 .b64-ex-actions .btn{
+  height: 40px;
+  border-radius: 14px;
+  font-weight: 1000;
+  font-size: 13px;
+}
+
+/* -----------------------------
+   Fields / Editors
+----------------------------- */
+body.b64 .field{ margin-top: 10px; }
+body.b64 .field-label{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin: 6px 0 8px;
+  font-weight:1000;
+  font-size:13px;
+  letter-spacing:.02em;
+  color: rgba(255,255,255,.88);
+}
+body.b64 .hint{
+  margin-top:8px;
+  color: rgba(255,255,255,.64);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* editor */
+body.b64 .b64-editor{
+  width:100% !important;
+  min-height: 240px;
+  resize: vertical;
+  border-radius: 16px;
+  padding: 14px;
+  background: rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.12);
+  color: rgba(255,255,255,.92);
+  outline:none;
+  line-height:1.65;
+  font-size:15px;
+  display:block;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.06) inset;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+body.b64 .b64-editor:focus{
+  border-color: rgba(var(--accent-rgb), .38);
+  box-shadow:
+    0 0 0 4px rgba(var(--accent-rgb), .14),
+    0 0 0 1px rgba(var(--accent-rgb), .24) inset !important;
+}
+body.b64 .b64-editor[readonly]{
+  background: rgba(0,0,0,.18);
+  border-color: rgba(255,255,255,.10);
+  color: rgba(255,255,255,.88);
+}
+
+/* -----------------------------
+   Mode row (chips)
+----------------------------- */
+body.b64 .b64-mode{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-top: 10px;
+}
+body.b64 .b64-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
+  color: rgba(255,255,255,.88);
+  font-weight: 1000;
+  font-size: 13px;
+  line-height: 1;
+  user-select:none;
+  cursor:pointer;
+}
+body.b64 .b64-chip input{
+  appearance:none;
+  width: 14px; height: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.22);
+  display:inline-block;
+  position:relative;
+  background: rgba(0,0,0,.18);
+}
+body.b64 .b64-chip input:checked{
+  border-color: rgba(var(--accent-rgb), .55);
+  background: rgba(var(--accent-rgb), .22);
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), .10);
+}
+
+/* small options row */
+body.b64 .b64-options{
+  margin-top: 10px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+body.b64 .b64-option{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
+  color: rgba(255,255,255,.86);
+  font-weight: 900;
+  font-size: 13px;
+  cursor:pointer;
+}
+body.b64 .b64-option input{
+  appearance:none;
+  width: 14px; height: 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(0,0,0,.18);
+}
+body.b64 .b64-option input:checked{
+  border-color: rgba(var(--accent-rgb), .55);
+  background: rgba(var(--accent-rgb), .22);
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), .10);
+}
+
+/* -----------------------------
+   Tool actions
+----------------------------- */
+body.b64 .tool-actions{
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+body.b64 .tool-actions .btn{
+  height: 46px;
+  border-radius: 14px;
+  font-weight: 1000;
+  padding: 0 16px;
+}
+body.b64 .tool-actions .btn.primary{
+  box-shadow: 0 12px 30px rgba(var(--accent-rgb), .12);
+}
+body.b64 .btn.ghost{
+  background: rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.14);
+}
+@media (max-width:520px){
+  body.b64 .tool-actions .btn{
+    width: 100%;
+    justify-content:center;
+  }
+}
+
+/* -----------------------------
+   Status + stats
+----------------------------- */
+body.b64 .b64-status{
+  margin-top: 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+}
+body.b64 .b64-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  font-weight: 1000;
+  font-size: 13px;
+  line-height: 1;
+}
+body.b64 .b64-badge.ok{
+  background: rgba(var(--accent-rgb), .12);
+  border-color: rgba(var(--accent-rgb), .26);
+  color: rgba(255,255,255,.92);
+}
+body.b64 .b64-badge.bad{
+  background: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.86);
+}
+body.b64 .b64-meta{
+  color: rgba(255,255,255,.72);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+body.b64 .b64-stats{
+  margin-top: 10px;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+}
+body.b64 .b64-stat{
+  padding:12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+  text-align:left !important;
+}
+body.b64 .b64-stat .label{
+  font-size:12px;
+  opacity:.78;
+  letter-spacing:.02em;
+}
+body.b64 .b64-stat .value{
+  margin-top:6px;
+  font-weight:1000;
+  font-size:18px;
+  word-break: break-word;
+}
+body.b64 .b64-stat-wide{ grid-column: 1 / -1 !important; }
+@media (max-width:520px){
+  body.b64 .b64-stats{ grid-template-columns: 1fr; }
+}
+
+/* -----------------------------
+   Token inspector box
+----------------------------- */
+body.b64 .b64-inspect{
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+}
+body.b64 .b64-inspect h4{
+  margin: 0;
+  font-size: 16px;
+  font-weight: 1000;
+  letter-spacing: -0.01em;
+}
+body.b64 .b64-inspect .mini{
+  margin-top: 8px;
+  color: rgba(255,255,255,.74);
+  line-height: 1.8;
+  font-size: 14.5px;
+}
+body.b64 .kv{
+  margin-top: 10px;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+body.b64 .kv-row{
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+}
+body.b64 .kv-k{
+  font-weight: 1000;
+  font-size: 12.5px;
+  letter-spacing: .02em;
+  color: rgba(255,255,255,.80);
+}
+body.b64 .kv-v{
+  margin-top: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  color: rgba(255,255,255,.90);
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* -----------------------------
+   Privacy callout
+----------------------------- */
+body.b64 .callout{
+  margin-top:12px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+  color: rgba(255,255,255,.84);
+  line-height:1.75;
+  font-size: 14.5px;
+}
+body.b64 .callout b{ color: rgba(255,255,255,.92); font-weight: 1000; }
+body.b64 .callout a{
+  color: rgba(255,255,255,.90);
+  text-decoration:none;
+  border-bottom:1px solid rgba(255,255,255,.16);
+}
+
+/* -----------------------------
+   Related boxes
+----------------------------- */
+body.b64 .related{
+  margin-top: 12px;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width:981px){
+  body.b64 .related{ grid-template-columns: 1fr 1fr; }
+}
+body.b64 .rel-box{
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+}
+body.b64 .rel-box h4{
+  margin:0;
+  font-size:16px;
+  font-weight:1000;
+  letter-spacing:-0.01em;
+}
+body.b64 .rel-links{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+body.b64 .rel-links a{
+  display:inline-flex; align-items:center; gap:8px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
+  text-decoration:none;
+  font-weight: 900;
+  font-size: 13px;
+  color: rgba(255,255,255,.88);
+}
+body.b64 .rel-links a:hover{
+  border-color: rgba(var(--accent-rgb), .28);
+  background: rgba(var(--accent-rgb), .08);
+}
+
+/* -----------------------------
+   /* =========================================================
+   ✅ FIX DEFINITIVO: SEO search intents (chips) — Base64
+   Incolla QUESTO IN FONDO a base64.css
+========================================================= */
+
+/* wrapper grid */
+body.b64 .seo-intent{
+  margin-top: 12px !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 12px !important;
+}
+@media (min-width:981px){
+  body.b64 .seo-intent{
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* card */
+body.b64 .seo-intent .seo-card{
+  border-radius: 18px !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  background: rgba(255,255,255,.03) !important;
+  padding: 14px !important;
+}
+
+/* titolo card */
+body.b64 .seo-intent .seo-card h4{
+  margin: 0 !important;
+  font-size: 16px !important;
+  font-weight: 1000 !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.25 !important;
+}
+
+/* descrizione card
+   (IMPORTANT: override delle regole generali .seo-block p) */
+body.b64 .seo-intent .seo-card > p{
+  margin: 8px 0 0 !important;
+  color: rgba(255,255,255,.74) !important;
+  font-size: 14.5px !important;
+  line-height: 1.75 !important;
+}
+
+/* qgrid */
+body.b64 .seo-intent .qgrid{
+  margin-top: 12px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+
+/* qchip */
+body.b64 .seo-intent .qchip{
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 12px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  background: rgba(0,0,0,.16) !important;
+  color: rgba(255,255,255,.88) !important;
+  font-weight: 900 !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+body.b64 .seo-intent .qchip small{
+  opacity: .72 !important;
+  font-weight: 1000 !important;
+  font-size: 12px !important;
+}
+
+/* mini note box */
+body.b64 .seo-intent .seo-mini{
+  margin-top: 12px !important;
+  padding: 12px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  background: rgba(0,0,0,.18) !important;
+  color: rgba(255,255,255,.78) !important;
+  line-height: 1.75 !important;
+  font-size: 14px !important;
+}
+body.b64 .seo-intent .seo-mini b{
+  color: rgba(255,255,255,.92) !important;
+  font-weight: 1000 !important;
+}
+
+/* internal links row */
+body.b64 .seo-intent .seo-sublinks{
+  margin-top: 12px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+body.b64 .seo-intent .seo-sublinks a{
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 12px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  background: rgba(255,255,255,.03) !important;
+  text-decoration: none !important;
+  font-weight: 900 !important;
+  font-size: 13px !important;
+  color: rgba(255,255,255,.88) !important;
+}
+body.b64 .seo-intent .seo-sublinks a:hover{
+  border-color: rgba(var(--accent-rgb), .28) !important;
+  background: rgba(var(--accent-rgb), .08) !important;
+}
+
