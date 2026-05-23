@@ -62,7 +62,7 @@ function layout({ title, description, canonical, active, body, schema = [] }) {
   <meta name="twitter:description" content="${esc(description)}" />
   <meta name="twitter:image" content="https://clickoz.com/assets/og/default.svg" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/assets/site.css?v=13" />
+  <link rel="stylesheet" href="/assets/site.css?v=14" />
   <link rel="stylesheet" href="/tools/tool-improvements.css?v=1" />
   ${schema.map((item) => `<script type="application/ld+json">${JSON.stringify(item)}</script>`).join("\n  ")}
 </head>

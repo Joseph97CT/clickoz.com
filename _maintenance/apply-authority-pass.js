@@ -1,15 +1,15 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { ORIGIN, ASSET_VERSIONS, CSP, PERMISSIONS_POLICY, asset } = require("./cms-config");
 
 const root = path.resolve(__dirname, "..");
-const ORIGIN = "https://clickoz.com";
 const V = {
-  site: 47,
-  cmsFinal: 55,
-  cmsSchema: 2,
-  cmsEnhance: 7,
-  clickozPremium: 6
+  site: ASSET_VERSIONS.siteJs,
+  cmsFinal: ASSET_VERSIONS.cmsFinal,
+  cmsSchema: ASSET_VERSIONS.cmsSchema,
+  cmsEnhance: ASSET_VERSIONS.cmsEnhance,
+  clickozPremium: ASSET_VERSIONS.clickozPremiumJs
 };
 
 function loadCMS() {
@@ -44,9 +44,10 @@ function writeUrl(url, html) {
 
 function securityMeta(extraConnect = "") {
   const connect = extraConnect ? ` ${extraConnect}` : "";
-  return `<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com${connect}; frame-src https://translate.google.com https://*.google.com; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
+  const csp = connect ? CSP.replace("https://cloudflare-dns.com", `https://cloudflare-dns.com${connect}`) : CSP;
+  return `<meta http-equiv="Content-Security-Policy" content="${csp}" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), interest-cohort=()" />`;
+  <meta http-equiv="Permissions-Policy" content="${PERMISSIONS_POLICY}" />`;
 }
 
 function earlyThemeScript() {
@@ -107,10 +108,10 @@ function head({ title, description, canonical, og = "/assets/og/default.svg", js
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/site.css?v=13" />
+  <link rel="stylesheet" href="${asset("/assets/site.css", "siteCss")}" />
   ${extraCss}
-  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=${V.cmsFinal}" />
+  <link rel="stylesheet" href="${asset("/assets/clickoz-premium.css", "clickozPremiumCss")}" />
+  <link rel="stylesheet" href="${asset("/assets/cms-final.css", "cmsFinal")}" />
   ${jsonLd}
 </head>`;
 }
@@ -167,11 +168,11 @@ function footer() {
 }
 
 function scripts(extra = "") {
-  return `<script src="/assets/cms-registry.js?v=4" defer></script>
-  <script src="/assets/cms-schema.js?v=${V.cmsSchema}" defer></script>
-  <script src="/assets/cms-enhance.js?v=${V.cmsEnhance}" defer></script>
-  <script src="/assets/site.js?v=${V.site}" defer></script>
-  <script src="/assets/clickoz-premium.js?v=${V.clickozPremium}" defer></script>
+  return `<script src="${asset("/assets/cms-registry.js", "cmsRegistry")}" defer></script>
+  <script src="${asset("/assets/cms-schema.js", "cmsSchema")}" defer></script>
+  <script src="${asset("/assets/cms-enhance.js", "cmsEnhance")}" defer></script>
+  <script src="${asset("/assets/site.js", "siteJs")}" defer></script>
+  <script src="${asset("/assets/clickoz-premium.js", "clickozPremiumJs")}" defer></script>
   ${extra}`;
 }
 
@@ -340,7 +341,7 @@ function homePage() {
       <div class="authority-grid authority-grid-3">${featured.map(toolCard).join("")}</div>
     </section>
   </main>`;
-  return page({ active: "home", title, description, canonical: "/", jsonLd: schema, extraCss: '<link rel="stylesheet" href="/assets/home.css?v=15" />', main, extraScripts: '<script src="/assets/home.js?v=16" defer></script>' });
+  return page({ active: "home", title, description, canonical: "/", jsonLd: schema, extraCss: `<link rel="stylesheet" href="${asset("/assets/home.css", "homeCss")}" />`, main, extraScripts: `<script src="${asset("/assets/home.js", "homeJs")}" defer></script>` });
 }
 
 const guideHubs = {
@@ -836,20 +837,20 @@ function replaceVersionsInHtml() {
   for (const file of files) {
     let html = fs.readFileSync(file, "utf8");
     html = html
-      .replace(/\/assets\/site\.css\?v=\d+/g, "/assets/site.css?v=13")
-      .replace(/\/assets\/home\.css\?v=\d+/g, "/assets/home.css?v=15")
-      .replace(/\/assets\/home\.js\?v=\d+/g, "/assets/home.js?v=16")
-      .replace(/\/assets\/clickoz-premium\.css\?v=\d+/g, "/assets/clickoz-premium.css?v=4")
-      .replace(/\/assets\/guide-premium\.css\?v=\d+/g, "/assets/guide-premium.css?v=5")
-      .replace(/\/assets\/guide-premium\.js\?v=\d+/g, "/assets/guide-premium.js?v=6")
-      .replace(/\/tools\/tools\.css\?v=\d+/g, "/tools/tools.css?v=8")
-      .replace(/\/tools\/cms-tools\.css\?v=\d+/g, "/tools/cms-tools.css?v=14")
-      .replace(/\/tools\/cms-tools\.js\?v=\d+/g, "/tools/cms-tools.js?v=12")
-      .replace(/\/assets\/cms-final\.css\?v=\d+/g, `/assets/cms-final.css?v=${V.cmsFinal}`)
-      .replace(/\/assets\/cms-schema\.js\?v=\d+/g, `/assets/cms-schema.js?v=${V.cmsSchema}`)
-      .replace(/\/assets\/cms-enhance\.js\?v=\d+/g, `/assets/cms-enhance.js?v=${V.cmsEnhance}`)
-      .replace(/\/assets\/site\.js\?v=\d+/g, `/assets/site.js?v=${V.site}`)
-      .replace(/\/assets\/clickoz-premium\.js\?v=\d+/g, `/assets/clickoz-premium.js?v=${V.clickozPremium}`);
+      .replace(/\/assets\/site\.css\?v=\d+/g, asset("/assets/site.css", "siteCss"))
+      .replace(/\/assets\/home\.css\?v=\d+/g, asset("/assets/home.css", "homeCss"))
+      .replace(/\/assets\/home\.js\?v=\d+/g, asset("/assets/home.js", "homeJs"))
+      .replace(/\/assets\/clickoz-premium\.css\?v=\d+/g, asset("/assets/clickoz-premium.css", "clickozPremiumCss"))
+      .replace(/\/assets\/guide-premium\.css\?v=\d+/g, asset("/assets/guide-premium.css", "guidePremiumCss"))
+      .replace(/\/assets\/guide-premium\.js\?v=\d+/g, asset("/assets/guide-premium.js", "guidePremiumJs"))
+      .replace(/\/tools\/tools\.css\?v=\d+/g, asset("/tools/tools.css", "toolsCss"))
+      .replace(/\/tools\/cms-tools\.css\?v=\d+/g, asset("/tools/cms-tools.css", "cmsToolsCss"))
+      .replace(/\/tools\/cms-tools\.js\?v=\d+/g, asset("/tools/cms-tools.js", "cmsToolsJs"))
+      .replace(/\/assets\/cms-final\.css\?v=\d+/g, asset("/assets/cms-final.css", "cmsFinal"))
+      .replace(/\/assets\/cms-schema\.js\?v=\d+/g, asset("/assets/cms-schema.js", "cmsSchema"))
+      .replace(/\/assets\/cms-enhance\.js\?v=\d+/g, asset("/assets/cms-enhance.js", "cmsEnhance"))
+      .replace(/\/assets\/site\.js\?v=\d+/g, asset("/assets/site.js", "siteJs"))
+      .replace(/\/assets\/clickoz-premium\.js\?v=\d+/g, asset("/assets/clickoz-premium.js", "clickozPremiumJs"));
     html = ensureEarlyTheme(html);
     fs.writeFileSync(file, html, "utf8");
   }

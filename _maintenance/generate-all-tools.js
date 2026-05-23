@@ -1,10 +1,14 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { ORIGIN, CSP: csp, PERMISSIONS_POLICY, CORE_URLS, asset } = require("./cms-config");
 
 const root = path.resolve(__dirname, "..");
-const ORIGIN = "https://clickoz.com";
-const csp = "default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src https://translate.google.com https://*.google.com; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests";
+
+/**
+ * @typedef {{ slug: string, title: string, category: string, url: string, description: string, features?: string[], relatedTools?: string[], relatedGuides?: string[], canonicalSlug: string }} CmsTool
+ * @typedef {{ slug: string, title: string, category: string, url: string, description: string, tool: string }} CmsGuide
+ */
 
 function loadCMS() {
   const code = fs.readFileSync(path.join(root, "assets", "cms-registry.js"), "utf8");
@@ -17,14 +21,6 @@ function loadCMS() {
 const cms = loadCMS();
 const bySlug = Object.fromEntries(cms.tools.map((tool) => [tool.slug, tool]));
 const guidesBySlug = Object.fromEntries(cms.guides.map((guide) => [guide.slug, guide]));
-const canonicalSlug = {
-  "meta-tag-optimizer": "meta-tags",
-  "url-encoder-decoder": "url-encoder",
-  "base64-encode-decode": "base64",
-  "html-entity-encoder": "entity-encoder",
-  "html-entity-encoder-decoder": "entity-encoder"
-};
-
 const entity = {
   lock: "&#128274;",
   bolt: "&#9889;",
@@ -56,13 +52,13 @@ const entity = {
 };
 
 const categoryUI = {
-  seo: { key: "seo", label: "SEO", title: "SEO Tools", icon: entity.search, intro: "Snippet, keyword, slug and publishing utilities built around search intent." },
-  writing: { key: "text", label: "Text", title: "Writing Tools", icon: entity.write, intro: "Counting, readability, cleanup and structure tools for cleaner writing." },
-  dev: { key: "dev", label: "Dev", title: "Developer Utilities", icon: entity.dev, intro: "Format, encode, decode and inspect payloads without heavy tooling." },
-  web: { key: "web", label: "Web", title: "Web & Security Tools", icon: entity.shield, intro: "DNS, HTTP, IP, password, UUID, timestamp and crawl utilities." },
-  tracking: { key: "tracking", label: "Tracking", title: "Marketing & Tracking Tools", icon: entity.chart, intro: "Campaign links, UTM structure and measurable creator workflows." },
-  youtube: { key: "youtube", label: "YouTube", title: "YouTube Creator Tools", icon: entity.play, intro: "Title, thumbnail, description, hashtag, comment and upload workflow tools." },
-  socialai: { key: "socialai", label: "Social", title: "Social & AI Creator Tools", icon: entity.spark, intro: "Hooks, captions, scripts, monetization and repurposing utilities for social creators." }
+  seo: { key: "seo", label: "SEO", title: "SEO Tools", icon: entity.search, intro: "Start with the page problem: snippet, slug, keyword balance, readability or publishing check." },
+  writing: { key: "text", label: "Text", title: "Writing Tools", icon: entity.write, intro: "Clean pasted text, measure limits and make drafts easier to scan before they leave your browser." },
+  dev: { key: "dev", label: "Dev", title: "Developer Utilities", icon: entity.dev, intro: "Format, encode, decode and inspect payloads without opening a heavier app for a small job." },
+  web: { key: "web", label: "Web", title: "Web & Security Tools", icon: entity.shield, intro: "Check domains, HTTP, IP ranges, passwords, IDs, timestamps and crawl files quickly." },
+  tracking: { key: "tracking", label: "Tracking", title: "Marketing & Tracking Tools", icon: entity.chart, intro: "Build clean campaign links before posts, descriptions, bios or newsletters start sending traffic." },
+  youtube: { key: "youtube", label: "YouTube", title: "YouTube Creator Tools", icon: entity.play, intro: "Package uploads as one flow: title, thumbnail, description, hashtags, tags and tracking." },
+  socialai: { key: "socialai", label: "Social", title: "Social & AI Creator Tools", icon: entity.spark, intro: "Shape creator ideas into platform-native hooks, posts, scripts, disclosures and reusable assets." }
 };
 
 const sectionOrder = ["seo", "writing", "dev", "web", "tracking", "youtube", "socialai"];
@@ -113,12 +109,20 @@ function sentence(value) {
   return text.endsWith(".") ? text : `${text}.`;
 }
 
+function clipMeta(value, limit = 158) {
+  const text = plain(value);
+  if (text.length <= limit) return text;
+  const cut = text.slice(0, limit - 1);
+  const clean = cut.slice(0, Math.max(0, cut.lastIndexOf(" "))).replace(/[,.:-]+$/, "");
+  return clean || cut.trim();
+}
+
 function abs(url) {
   return `${ORIGIN}${url}`;
 }
 
 function canonicalFor(tool) {
-  const primary = bySlug[canonicalSlug[tool.slug]];
+  const primary = bySlug[tool.canonicalSlug];
   return abs(primary ? primary.url : tool.url);
 }
 
@@ -339,6 +343,162 @@ function relatedGuides(tool) {
   return (tool.relatedGuides || []).slice(0, 3).map((slug) => guidesBySlug[slug] || { slug, title: guideTitle(slug), url: `/guides/${slug}/` });
 }
 
+const categoryBriefs = {
+  seo: {
+    bestFor: "Finishing a page asset before publishing",
+    useWhen: "The page exists, but the snippet, URL, wording or search intent still needs a final check.",
+    exampleInput: "A draft title, description, URL, paragraph or keyword target from the page you are about to publish.",
+    whatYouGet: "A clearer SEO output, visible warnings and the next tool to validate the decision.",
+    timeSaved: "Avoid rewriting the same page asset in multiple tabs.",
+    trust: "No account needed. Keep the workflow lightweight and review the output before publishing."
+  },
+  writing: {
+    bestFor: "Cleaning or measuring copy before it leaves the browser",
+    useWhen: "A draft feels too long, hard to scan, badly pasted or not ready for a client, page or caption.",
+    exampleInput: "A paragraph, caption, intro, bio, client note or pasted AI draft.",
+    whatYouGet: "A readable text result with length, structure or cleanup guidance.",
+    timeSaved: "Fix the small copy problem before opening a heavier editor.",
+    trust: "Text utilities run in the page and restore your last input locally."
+  },
+  dev: {
+    bestFor: "Inspecting a payload, value or snippet without losing context",
+    useWhen: "JSON, URLs, Base64, HTML text or regex input looks correct but breaks after copy-paste.",
+    exampleInput: "A real payload, query value, encoded string, escaped snippet or test text.",
+    whatYouGet: "Formatted, encoded, decoded or matched output with copy-ready sections.",
+    timeSaved: "Debug the exact small value without switching to a full IDE.",
+    trust: "Browser-first where possible. Always test technical output in the original context."
+  },
+  web: {
+    bestFor: "Quick operational checks before a technical change",
+    useWhen: "You need a domain, HTTP, IP, timestamp, password, UUID, color or crawl-file result now.",
+    exampleInput: "A public URL, domain, IPv4 range, timestamp, color value or crawl rule.",
+    whatYouGet: "A focused diagnostic result with the values that are safe to copy.",
+    timeSaved: "Complete the lookup or generated value without opening a separate dashboard.",
+    trust: "Network checks only contact the target or resolver needed for that check."
+  },
+  tracking: {
+    bestFor: "Building campaign links before traffic starts",
+    useWhen: "A link needs clean source, medium and campaign naming for YouTube, social, ads or email.",
+    exampleInput: "Destination URL plus source, medium and campaign names.",
+    whatYouGet: "A trackable URL and a naming rule you can keep consistent.",
+    timeSaved: "Avoid analytics cleanup caused by messy parameters.",
+    trust: "No fake attribution. You control the final URL before posting."
+  },
+  youtube: {
+    bestFor: "Packaging a YouTube upload from idea to publishable assets",
+    useWhen: "The video exists, but title, thumbnail, description, hashtags, tags or next action still feel weak.",
+    exampleInput: "Video topic, rough title, outline, thumbnail phrase or upload notes.",
+    whatYouGet: "Creator-ready angles and the next upload tool to keep the package aligned.",
+    timeSaved: "Finish the upload assets in one connected flow.",
+    trust: "Outputs are draft assets. Keep the version that matches the real video promise."
+  },
+  socialai: {
+    bestFor: "Turning a creator idea into a platform-specific asset",
+    useWhen: "A post, caption, hook, script, disclosure, content plan or creator offer needs a cleaner first version.",
+    exampleInput: "Content idea, platform, audience, CTA, draft caption or offer details.",
+    whatYouGet: "A structured draft with platform fit, copy-ready sections and a next step.",
+    timeSaved: "Move from rough idea to usable draft without starting from a blank page.",
+    trust: "Edit the output for your voice and keep claims grounded in your real offer."
+  }
+};
+
+const specificBriefs = {
+  "meta-tags": {
+    bestFor: "Finishing an SEO title and meta description before publishing",
+    useWhen: "Your snippet exists but may be too long, vague or weak in the search result.",
+    exampleInput: "Free Word Counter Online | Count words, characters and reading time instantly.",
+    whatYouGet: "Length status, intent guidance and a snippet you can test in SERP Preview.",
+    timeSaved: "Fix title and description in one pass instead of rewriting them after launch."
+  },
+  "serp-preview": {
+    bestFor: "Seeing how a search result reads before the page goes live",
+    useWhen: "The title and description look fine in the CMS, but you need the combined snippet view.",
+    exampleInput: "URL, SEO title and meta description for the page you are about to publish.",
+    whatYouGet: "A visual snippet, truncation risk and next copy decision."
+  },
+  "slug-generator": {
+    bestFor: "Turning a page title into a durable URL slug",
+    useWhen: "The URL needs to be short, readable and stable before the page is indexed.",
+    exampleInput: "How to Write Better Meta Titles in 2026",
+    whatYouGet: "Primary and short slug options with a simple durability recommendation."
+  },
+  "keyword-density": {
+    bestFor: "Spotting repeated terms before SEO copy sounds stuffed",
+    useWhen: "A draft may repeat one phrase too often or miss natural topic support.",
+    exampleInput: "A paragraph, product description or guide section.",
+    whatYouGet: "Top terms, density signals and a practical repetition warning."
+  },
+  "word-counter": {
+    bestFor: "Checking length, structure and reading time before sending a draft",
+    useWhen: "You need to know whether text is too short, too long or too dense.",
+    exampleInput: "A page intro, script, caption, client draft or article section.",
+    whatYouGet: "Words, characters, sentences, paragraphs, reading time and next edit advice."
+  },
+  "readability-analyzer": {
+    bestFor: "Finding heavy sentences and mobile scan problems",
+    useWhen: "The draft contains the right idea but feels slow to read.",
+    exampleInput: "A real section from a page, post, guide or email.",
+    whatYouGet: "Readability score, sentence pressure and practical rewrite guidance."
+  },
+  "whitespace-cleaner": {
+    bestFor: "Cleaning pasted AI, PDF, doc or CMS text",
+    useWhen: "The copy has extra spaces, broken lines or messy paragraphs.",
+    exampleInput: "Pasted text with irregular spacing, line breaks and duplicate blanks.",
+    whatYouGet: "Normalized text you can copy into the final editor."
+  },
+  "json-formatter": {
+    bestFor: "Reading broken or compressed JSON before debugging",
+    useWhen: "A payload, config or log entry is hard to inspect or may be invalid.",
+    exampleInput: "{\"status\":\"ok\",\"items\":[{\"name\":\"Clickoz\",\"tools\":66}]}",
+    whatYouGet: "Valid formatted JSON, type, character count and a copy-ready block."
+  },
+  "url-encoder": {
+    bestFor: "Fixing query values and special characters in links",
+    useWhen: "Spaces, symbols or pasted parameters break a URL.",
+    exampleInput: "campaign name=spring launch & source=instagram",
+    whatYouGet: "Encoded value, decoded attempt and a rule for where to use it."
+  },
+  "base64": {
+    bestFor: "Inspecting Base64 text or token-like payloads safely",
+    useWhen: "You need to encode/decode text without treating it as encryption.",
+    exampleInput: "Clickoz premium tools",
+    whatYouGet: "Encoded text, decoded attempt and a security note."
+  },
+  "utm-builder": {
+    bestFor: "Creating clean campaign links before publishing",
+    useWhen: "A post, video description, bio or newsletter link needs measurable tracking.",
+    exampleInput: "https://clickoz.com/ with source youtube, medium description, campaign launch",
+    whatYouGet: "Final URL, naming rule and clean source/medium/campaign values."
+  },
+  "youtube-title-generator": {
+    bestFor: "Choosing title angles that match the video promise",
+    useWhen: "The topic is clear but the click promise, curiosity or keyword angle needs work.",
+    exampleInput: "A rough video topic, target viewer and core outcome.",
+    whatYouGet: "Title options you can connect to thumbnail, description and tracking."
+  },
+  "youtube-description-generator": {
+    bestFor: "Building the first lines, links and CTA block for an upload",
+    useWhen: "The title is chosen but the description still lacks structure.",
+    exampleInput: "Video topic, key points, CTA link and chapter notes.",
+    whatYouGet: "A scan-friendly description draft with next upload steps."
+  }
+};
+
+function toolBrief(tool) {
+  const base = {
+    ...(categoryBriefs[tool.category] || categoryBriefs.writing),
+    ...(specificBriefs[tool.canonicalSlug] || specificBriefs[tool.slug] || {})
+  };
+  const rel = relatedTools(tool);
+  const guide = relatedGuides(tool)[0];
+  return {
+    ...base,
+    nextTools: rel,
+    nextToolsText: rel.map((item) => item.title).join(" -> ") || "Browse the matching Clickoz cluster",
+    guideText: guide ? guide.title : "Open the related Clickoz guide"
+  };
+}
+
 function nav(active) {
   const current = (name) => active === name ? ` class="active" aria-current="page"` : "";
   return `<nav class="nav" aria-label="Primary navigation" id="topNav">
@@ -382,7 +542,7 @@ function head({ title, description, canonical, og = "/assets/og/default.svg", ex
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="${csp}" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), interest-cohort=()" />
+  <meta http-equiv="Permissions-Policy" content="${PERMISSIONS_POLICY}" />
   <title>${safeTitle}</title>
   <meta name="description" content="${safeDesc}" />
   <link rel="canonical" href="${esc(canonical)}" />
@@ -404,20 +564,20 @@ function head({ title, description, canonical, og = "/assets/og/default.svg", ex
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/site.css?v=13" />
+  <link rel="stylesheet" href="${asset("/assets/site.css", "siteCss")}" />
   ${extraCss}
-  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=55" />
+  <link rel="stylesheet" href="${asset("/assets/clickoz-premium.css", "clickozPremiumCss")}" />
+  <link rel="stylesheet" href="${asset("/assets/cms-final.css", "cmsFinal")}" />
   ${jsonLd}
 </head>`;
 }
 
 function scripts(extra = "") {
-  return `<script src="/assets/cms-registry.js?v=4" defer></script>
-  <script src="/assets/cms-schema.js?v=2" defer></script>
-  <script src="/assets/cms-enhance.js?v=7" defer></script>
-  <script src="/assets/site.js?v=47" defer></script>
-  <script src="/assets/clickoz-premium.js?v=6" defer></script>
+  return `<script src="${asset("/assets/cms-registry.js", "cmsRegistry")}" defer></script>
+  <script src="${asset("/assets/cms-schema.js", "cmsSchema")}" defer></script>
+  <script src="${asset("/assets/cms-enhance.js", "cmsEnhance")}" defer></script>
+  <script src="${asset("/assets/site.js", "siteJs")}" defer></script>
+  <script src="${asset("/assets/clickoz-premium.js", "clickozPremiumJs")}" defer></script>
   ${extra}`;
 }
 
@@ -470,7 +630,7 @@ function toolJsonLd(tool) {
   })}</script>`;
 }
 
-function queryChips(tool) {
+function queryItems(tool) {
   const base = [
     `${tool.title} online`,
     `free ${tool.title}`,
@@ -480,26 +640,49 @@ function queryChips(tool) {
     `${tool.title} for ${categoryUI[tool.category]?.label || "workflows"}`
   ];
   const category = categoryUI[tool.category]?.label || "tool";
-  return [...new Set(base.concat((tool.features || []).map((f) => `${f} ${category} tool`)))].slice(0, 12)
+  return [...new Set(base.concat((tool.features || []).map((f) => `${f} ${category} tool`)))].slice(0, 12);
+}
+
+function queryChips(tool) {
+  return queryItems(tool)
     .map((q) => `<span>${esc(q.toLowerCase())}</span>`).join("\n");
+}
+
+function faqHtml(tool, brief) {
+  return [
+    [
+      `Does ${tool.title} upload my data?`,
+      "Text tools run on the page and do not require an account. Diagnostic tools only contact the public resolver or target needed for that specific check."
+    ],
+    [
+      "Can I use the output directly?",
+      `Use the result as a ready draft, then review it in the place where it will be published. ${sentence(brief.whatYouGet)}`
+    ],
+    [
+      "Why are examples included?",
+      "Examples remove the blank-page problem. They show the expected input shape and help you test the tool before pasting real work."
+    ]
+  ].map(([question, answer]) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("\n");
 }
 
 function toolPage(tool) {
   const flow = workflowCopy(tool);
   const info = explainTool(tool);
+  const brief = toolBrief(tool);
   const title = `${tool.title} - Free Online Tool | Clickoz`;
-  const description = `Free ${tool.title} by Clickoz. ${sentence(tool.description)} Built with examples, related guides, mobile-ready layout and no signup.`;
+  const description = clipMeta(`${tool.title}: ${sentence(brief.bestFor)} ${sentence(brief.whatYouGet)} No signup.`);
   const relTools = relatedTools(tool);
   const relGuides = relatedGuides(tool);
   const relToolLinks = relTools.map((item) => `<a href="${esc(item.url)}">${toolIcon(item)} ${esc(item.title)}</a>`).join("\n");
   const relGuideLinks = relGuides.map((item) => `<a href="${esc(item.url)}">${entity.book} ${esc(item.title)}</a>`).join("\n");
+  const searchTasks = queryChips(tool);
   return `<!doctype html>
 <html lang="en">
 ${head({
   title,
   description,
   canonical: canonicalFor(tool),
-  extraCss: `<link rel="stylesheet" href="/tools/cms-tools.css?v=14" />`,
+  extraCss: `<link rel="stylesheet" href="${asset("/tools/cms-tools.css", "cmsToolsCss")}" />`,
   jsonLd: toolJsonLd(tool)
 })}
 <body class="bigtext cms-tool-body" data-tool-slug="${esc(tool.slug)}">
@@ -518,16 +701,17 @@ ${head({
       <div class="cms-tool-trust" aria-label="Key benefits">
         ${trustPills(tool)}
       </div>
-      <div class="cms-tool-workflow" aria-label="How to use ${esc(tool.title)}">
-        <article class="cms-step-card"><span class="emoji" aria-hidden="true">${entity.puzzle}</span><div><strong>Problem it solves</strong><span>${esc(flow.problem)}</span></div></article>
-        <article class="cms-step-card"><span class="emoji" aria-hidden="true">${entity.tool}</span><div><strong>How to use it</strong><span>${esc(flow.how)}</span></div></article>
-        <article class="cms-step-card"><span class="emoji" aria-hidden="true">${entity.check}</span><div><strong>Check before copying</strong><span>${esc(flow.check)}</span></div></article>
-      </div>
     </div>
 
-    <section class="cms-tool-panel" data-tool-app="${esc(tool.slug)}" aria-label="${esc(tool.title)} app">
+    <section class="cms-tool-brief cms-box-signal" aria-label="${esc(tool.title)} quick guide">
+      <article><strong>${entity.puzzle} Problem it solves</strong><span>${esc(flow.problem)}</span></article>
+      <article><strong>${entity.tool} How to use it</strong><span>${esc(flow.how)}</span></article>
+      <article><strong>${entity.check} Check before copying</strong><span>${esc(flow.check)}</span></article>
+    </section>
+
+    <section class="cms-tool-panel cms-box-action" id="tool-app" data-tool-app="${esc(tool.slug)}" aria-label="${esc(tool.title)} app">
       <div class="cms-tool-grid">
-        <div class="cms-tool-app">
+        <div class="cms-tool-app cms-box-action">
           <div class="cms-example-box">
             <h3>Examples</h3>
             <pre></pre>
@@ -540,33 +724,33 @@ ${head({
             <button class="btn ghost" type="button" data-action="clear">${entity.spark} Clear input</button>
           </div>
         </div>
-        <aside class="cms-result-card" aria-label="Result">
+        <aside class="cms-result-card cms-box-action" aria-label="Result">
           <h3>Result</h3>
           <p class="cms-result-status">Enter input and run the tool.</p>
           <div class="cms-metrics"></div>
           <div class="cms-output" role="region" aria-live="polite"></div>
         </aside>
       </div>
+    </section>
 
-      <div class="cms-related" aria-label="Related Clickoz pages">
-        <div class="cms-related-box">
-          <h3>Related tools</h3>
-          <div class="cms-related-links">${relToolLinks || `<a href="/tools/">${entity.tool} Browse all tools</a>`}</div>
-        </div>
-        <div class="cms-related-box">
-          <h3>Related guides</h3>
-          <div class="cms-related-links">${relGuideLinks || `<a href="/guides/">${entity.book} Browse all guides</a>`}</div>
-        </div>
+    <section class="cms-related cms-box-flow" aria-label="${esc(tool.title)} related tools and guides">
+      <div class="cms-related-box cms-box-flow">
+        <h3>Related tools</h3>
+        <div class="cms-related-links">${relToolLinks || `<a href="/tools/">${entity.tool} Browse all tools</a>`}</div>
+      </div>
+      <div class="cms-related-box cms-box-flow">
+        <h3>Related guides</h3>
+        <div class="cms-related-links">${relGuideLinks || `<a href="/guides/">${entity.book} Browse all guides</a>`}</div>
       </div>
     </section>
 
-    <section class="cms-ops-strip" aria-label="${esc(tool.title)} quality and safety">
+    <section class="cms-ops-strip cms-box-support" aria-label="${esc(tool.title)} quality signals">
       <article><span>${entity.shield}</span><strong>Input safety</strong><p>Outputs are rendered through the Clickoz safe result layer, with script-like markup blocked from executable output.</p></article>
       <article><span>${entity.bolt}</span><strong>Faster workflow</strong><p>Examples load instantly, inputs auto-run after changes and results stay copy-ready.</p></article>
       <article><span>${entity.search}</span><strong>Search support</strong><p>This page has canonical URL, schema, FAQs, related tools, related guides and clear task intent.</p></article>
     </section>
 
-    <section class="cms-info-grid" aria-label="${esc(tool.title)} guide and SEO support">
+    <section class="cms-info-grid cms-box-support" aria-label="${esc(tool.title)} explanation and FAQ">
       <article class="cms-info-card">
         <h2>What is ${esc(tool.title)}?</h2>
         <p>${esc(info.what)}</p>
@@ -577,26 +761,25 @@ ${head({
       </article>
       <article class="cms-info-card cms-faq">
         <h2>FAQ</h2>
-        <details open><summary>Does ${esc(tool.title)} upload my data?</summary><p>Text tools run on the page and do not require an account. Diagnostic tools only contact the public resolver or target needed for that specific check.</p></details>
-        <details><summary>Can I use the output directly?</summary><p>Yes, copy the result as a working draft. For production, review the context, links, compliance and final wording.</p></details>
-        <details><summary>Why are examples included?</summary><p>Examples are clickable starting points. Pick one to understand the tool quickly, then replace it with your real input.</p></details>
+        ${faqHtml(tool, brief)}
       </article>
       <article class="cms-info-card">
         <h2>Useful search intents</h2>
         <p>These phrases describe real tasks users search for. They keep the page focused on problems, not repeated keywords.</p>
-        <div class="cms-query-grid">${queryChips(tool)}</div>
+        <div class="cms-query-chips">${searchTasks}</div>
       </article>
     </section>
   </main>
 
   ${footer()}
-  ${scripts(`<script src="/tools/cms-tools.js?v=12" defer></script>`)}
+  ${scripts(`<script src="${asset("/tools/cms-tools.js", "cmsToolsJs")}" defer></script>`)}
 </body>
 </html>
 `;
 }
 
 function card(tool) {
+  const brief = toolBrief(tool);
   const features = (tool.features || []).slice(0, 3).map(featureChip).join("");
   return `<a class="card tool-card-enhanced" href="${esc(tool.url)}" data-tool-slug="${esc(tool.slug)}">
     <div class="card-top">
@@ -605,6 +788,15 @@ function card(tool) {
         <h3>${esc(tool.title)}</h3>
         <p>${esc(tool.description)}</p>
       </div>
+    </div>
+    <div class="tool-output-preview">
+      <span>Quick job</span>
+      <strong>${esc(brief.timeSaved)}</strong>
+      <div class="tool-card-flow">
+        <p><b>Input</b>${esc(brief.exampleInput)}</p>
+        <p><b>Output</b>${esc(brief.whatYouGet)}</p>
+      </div>
+      <em>${esc(brief.bestFor)}</em>
     </div>
     <div class="tool-mini-features">${features}</div>
     <span class="tool-cta">Open ${esc(tool.title)} &rarr;</span>
@@ -668,7 +860,7 @@ ${head({
   description: `Browse ${cms.tools.length} free Clickoz tools for SEO, writing, developer debugging, web checks, security, YouTube and social creator workflows.`,
   canonical: `${ORIGIN}/tools/`,
   og: "/assets/og/tools.svg",
-  extraCss: `<link rel="stylesheet" href="/tools/tools.css?v=8" />`,
+  extraCss: `<link rel="stylesheet" href="${asset("/tools/tools.css", "toolsCss")}" />`,
   jsonLd: toolsJsonLd(cms.tools, "Clickoz Tools", "/tools/", "Free online tools for SEO, writing, developers, web checks and creators.")
 })}
 <body class="bigtext tools-page">
@@ -680,19 +872,19 @@ ${head({
     <section class="tools-hero" aria-label="Clickoz tools">
       <div class="tools-hero-top">
         <div>
-          <h1 class="tools-title">TOOLS BUILT LIKE A WORKFLOW SYSTEM</h1>
-          <p class="tools-sub">Pick a category, open the right utility, load an example and move into the matching guide. Clickoz is structured for repeat use, not random one-off pages.</p>
+          <h1 class="tools-title">Start the right web job.</h1>
+          <p class="tools-sub">Search by problem, typo or task: fix JSON, clean text, create an SEO snippet, package a YouTube upload or build a tracking URL. Every tool includes examples, output and a next step.</p>
         </div>
       </div>
       <div class="chips" id="toolsChips" aria-label="Tool categories">${chips}</div>
-      <div class="tools-search"><input id="toolsSearch" class="search" type="search" placeholder="Search tools, workflows or problems..." /></div>
+      <div class="tools-search"><input id="toolsSearch" class="search" type="search" placeholder="Try: broken JSON, clean text, YouTube title, SEO snippet..." /></div>
     </section>
     <div class="tool-sections" aria-label="Tools by category">
       ${sectionOrder.map(sectionHtml).join("\n")}
     </div>
   </main>
   ${footer()}
-  ${scripts(`<script src="/tools/tools.js?v=7" defer></script>`)}
+  ${scripts(`<script src="${asset("/tools/tools.js", "toolsJs")}" defer></script>`)}
 </body>
 </html>
 `;
@@ -710,7 +902,7 @@ ${head({
   description: `${cluster.description} Browse ${items.length} Clickoz tools with examples, usable output and related guides.`,
   canonical: abs(cluster.url),
   og: "/assets/og/tools.svg",
-  extraCss: `<link rel="stylesheet" href="/tools/tools.css?v=8" /><link rel="stylesheet" href="/tools/cms-tools.css?v=14" />`,
+  extraCss: `<link rel="stylesheet" href="${asset("/tools/tools.css", "toolsCss")}" /><link rel="stylesheet" href="${asset("/tools/cms-tools.css", "cmsToolsCss")}" />`,
   jsonLd: toolsJsonLd(items, cluster.title, cluster.url, cluster.description)
 })}
 <body class="bigtext tools-page">
@@ -723,34 +915,33 @@ ${head({
       <div class="tools-hero-top">
         <div>
           <p class="guide-kicker">${esc(ui.label)} CLUSTER</p>
-          <h1 class="tools-title">${esc(cluster.title).toUpperCase()}</h1>
+          <h1 class="tools-title">${esc(cluster.title)}</h1>
           <p class="tools-sub">${esc(cluster.description)}</p>
-          <div class="tools-trust-row"><span>${items.length} focused tools</span><span>Examples included</span><span>Related guides</span><span>Workflow output</span></div>
+          <div class="tools-trust-row"><span>${items.length} focused tools</span><span>Try sample included</span><span>Next tool visible</span><span>Copy-ready output</span></div>
         </div>
       </div>
     </section>
     <section class="tool-section" id="${esc(ui.key)}" data-section="${esc(ui.key)}">
       <div class="section-head">
-        <div><div class="section-kicker"><span class="section-ico" aria-hidden="true">${ui.icon}</span><h2 class="section-name">OPEN THE RIGHT TOOL</h2></div><p class="section-desc">${esc(ui.intro)}</p></div>
+        <div><div class="section-kicker"><span class="section-ico" aria-hidden="true">${ui.icon}</span><h2 class="section-name">Open the right tool</h2></div><p class="section-desc">${esc(ui.intro)}</p></div>
         <span class="section-count">${items.length} tools</span>
       </div>
       <div class="cards-grid">${items.map(card).join("\n")}</div>
     </section>
     <section class="cms-info-grid" aria-label="Related guides">
-      <article class="cms-info-card"><h2>Best next guides</h2><p>Use the guides to turn the tool output into a publishable workflow.</p><div class="cms-related-links">${relatedGuides.map((guide) => `<a href="${esc(guide.url)}">${entity.book} ${esc(guide.title)}</a>`).join("") || `<a href="/guides/">${entity.book} Browse all guides</a>`}</div></article>
-      <article class="cms-info-card"><h2>Why this cluster exists</h2><p>Cluster pages help users and search engines understand the topical area. Each card routes to a specific task page with examples, internal links, FAQ and schema support.</p></article>
+      <article class="cms-info-card"><h2>Best next guides</h2><p>Use the guides when the tool output needs a publishing decision, not just a copied result.</p><div class="cms-related-links">${relatedGuides.map((guide) => `<a href="${esc(guide.url)}">${entity.book} ${esc(guide.title)}</a>`).join("") || `<a href="/guides/">${entity.book} Browse all guides</a>`}</div></article>
+      <article class="cms-info-card"><h2>How this hub helps</h2><p>Each card starts from a concrete job, shows the expected output and routes to a page with examples, local history, related tools, FAQ and schema support.</p></article>
     </section>
   </main>
   ${footer()}
-  ${scripts(`<script src="/tools/tools.js?v=7" defer></script>`)}
+  ${scripts(`<script src="${asset("/tools/tools.js", "toolsJs")}" defer></script>`)}
 </body>
 </html>`;
 }
 
 function sitemap() {
-  const base = ["/", "/tools/", "/guides/", "/workflows/", "/updates/", "/privacy/", "/terms/", "/contact/", "/legal/", "/about/"];
   const clusters = Object.values(cms.clusters).map((cluster) => cluster.url);
-  const urls = [...new Set(base.concat(clusters, cms.tools.map((tool) => tool.url), cms.guides.map((guide) => guide.url)))];
+  const urls = [...new Set(CORE_URLS.concat(clusters, cms.tools.map((tool) => tool.url), cms.guides.map((guide) => guide.url)))];
   const today = new Date().toISOString().slice(0, 10);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

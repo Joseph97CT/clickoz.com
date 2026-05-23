@@ -480,7 +480,7 @@ function guideTemplate(slug, [title, group, desc]) {
   <meta property="og:image" content="https://clickoz.com/assets/img/guides/${visual}.svg" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/assets/site.css?v=13" />
+  <link rel="stylesheet" href="/assets/site.css?v=14" />
   <link rel="stylesheet" href="/assets/guide.css?v=2" />
   <link rel="stylesheet" href="/assets/clickoz-premium.css?v=1" />
   <script type="application/ld+json">${JSON.stringify({
@@ -575,7 +575,7 @@ function guideTemplate(slug, [title, group, desc]) {
 
       <section class="guide-block guide-faq">
         <h2>FAQ</h2>
-        <details open><summary>How long should this workflow take?</summary><p>Most checks take a few minutes. The rewrite takes longer only when the page or video idea is unclear.</p></details>
+        <details><summary>How long should this workflow take?</summary><p>Most checks take a few minutes. The rewrite takes longer only when the page or video idea is unclear.</p></details>
         <details><summary>Should I optimize for search engines first?</summary><p>No. Start with the user task, then use SEO checks to make the page easier to understand and discover.</p></details>
         <details><summary>What should I link to next?</summary><p>Link to the tool that completes the task and a guide that answers the next likely question.</p></details>
       </section>
@@ -663,7 +663,7 @@ function toolPage({ slug, title, desc, mode }) {
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://clickoz.com/assets/og/default.svg" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/assets/site.css?v=13" />
+  <link rel="stylesheet" href="/assets/site.css?v=14" />
   <link rel="stylesheet" href="/tools/tool-improvements.css?v=1" />
   <link rel="stylesheet" href="/assets/clickoz-premium.css?v=1" />
   <script type="application/ld+json">${JSON.stringify({"@context":"https://schema.org","@type":"WebApplication","name":title,"url":canonical,"applicationCategory":"UtilitiesApplication","operatingSystem":"All","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Clickoz"}})}</script>

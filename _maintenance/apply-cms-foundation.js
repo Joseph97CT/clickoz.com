@@ -1,5 +1,6 @@
-const fs = require("fs");
+﻿const fs = require("fs");
 const path = require("path");
+const { ORIGIN, CSP, PERMISSIONS_POLICY, asset } = require("./cms-config");
 
 const root = path.resolve(__dirname, "..");
 const today = "2026-05-18";
@@ -38,11 +39,11 @@ function ensureScripts() {
     let html = fs.readFileSync(file, "utf8");
     const siteScriptPattern = /(\s*<script src="\/assets\/site\.js[^"]*"(?: defer)?><\/script>)/;
     if (!html.includes("/assets/cms-registry.js")) {
-      html = html.replace(siteScriptPattern, `\n  <script src="/assets/cms-registry.js?v=4" defer></script>\n  <script src="/assets/cms-schema.js?v=1" defer></script>\n  <script src="/assets/cms-enhance.js?v=6" defer></script>$1`);
+      html = html.replace(siteScriptPattern, `\n  <script src="${asset("/assets/cms-registry.js", "cmsRegistry")}" defer></script>\n  <script src="${asset("/assets/cms-schema.js", "cmsSchema")}" defer></script>\n  <script src="${asset("/assets/cms-enhance.js", "cmsEnhance")}" defer></script>$1`);
     } else if (!html.includes("/assets/cms-enhance.js")) {
-      html = html.replace(siteScriptPattern, `\n  <script src="/assets/cms-enhance.js?v=6" defer></script>$1`);
+      html = html.replace(siteScriptPattern, `\n  <script src="${asset("/assets/cms-enhance.js", "cmsEnhance")}" defer></script>$1`);
     }
-    html = html.replace(/\/assets\/cms-final\.css\?v=\d+/g, "/assets/cms-final.css?v=55");
+    html = html.replace(/\/assets\/cms-final\.css\?v=\d+/g, asset("/assets/cms-final.css", "cmsFinal"));
     fs.writeFileSync(file, html, "utf8");
   }
 }
@@ -66,28 +67,28 @@ function clusterTemplate(key) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com; frame-src https://translate.google.com https://*.google.com; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="${CSP}" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=()" />
+  <meta http-equiv="Permissions-Policy" content="${PERMISSIONS_POLICY}" />
   <title>${title}</title>
   <meta name="description" content="${desc}" />
-  <link rel="canonical" href="https://clickoz.com${cluster.url}" />
+  <link rel="canonical" href="${ORIGIN}${cluster.url}" />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b0f19" />
   <meta property="og:site_name" content="Clickoz" />
   <meta property="og:title" content="${title}" />
   <meta property="og:description" content="${desc}" />
-  <meta property="og:url" content="https://clickoz.com${cluster.url}" />
+  <meta property="og:url" content="${ORIGIN}${cluster.url}" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://clickoz.com${og}" />
+  <meta property="og:image" content="${ORIGIN}${og}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${title}" />
   <meta name="twitter:description" content="${desc}" />
-  <meta name="twitter:image" content="https://clickoz.com${og}" />
+  <meta name="twitter:image" content="${ORIGIN}${og}" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/assets/site.css?v=13" />
-  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=55" />
+  <link rel="stylesheet" href="${asset("/assets/site.css", "siteCss")}" />
+  <link rel="stylesheet" href="${asset("/assets/clickoz-premium.css", "clickozPremiumCss")}" />
+  <link rel="stylesheet" href="${asset("/assets/cms-final.css", "cmsFinal")}" />
 </head>
 <body class="bigtext cluster-page">
   <div id="clickozParticles" aria-hidden="true"></div>
@@ -123,12 +124,12 @@ function clusterTemplate(key) {
       </div>
     </section>
   </main>
-  <footer class="footer"><div class="container footer-grid"><div><h4>Clickoz</h4><div class="footer-links"><a href="/tools/">Tools</a><a href="/guides/">Guides</a><a href="/updates/">Updates</a></div></div><div><h4>Popular tools</h4><div class="footer-links"><a href="/tools/word-counter/">Word Counter</a><a href="/tools/readability-analyzer/">Readability</a><a href="/tools/meta-tags/">Meta Tags</a><a href="/tools/json-formatter/">JSON Formatter</a></div></div><div><h4>Legal</h4><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a></div></div></div><div class="container" style="margin-top:14px"><hr class="sep" /><div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">© 2026 Clickoz • Fast tools for SEO, writing and developers</div></div></footer>
-  <script src="/assets/cms-registry.js?v=4" defer></script>
-  <script src="/assets/cms-schema.js?v=1" defer></script>
-  <script src="/assets/cms-enhance.js?v=6" defer></script>
-  <script src="/assets/site.js?v=47" defer></script>
-  <script src="/assets/clickoz-premium.js?v=6" defer></script>
+  <footer class="footer"><div class="container footer-grid"><div><h4>Clickoz</h4><div class="footer-links"><a href="/tools/">Tools</a><a href="/guides/">Guides</a><a href="/updates/">Updates</a></div></div><div><h4>Popular tools</h4><div class="footer-links"><a href="/tools/word-counter/">Word Counter</a><a href="/tools/readability-analyzer/">Readability</a><a href="/tools/meta-tags/">Meta Tags</a><a href="/tools/json-formatter/">JSON Formatter</a></div></div><div><h4>Legal</h4><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a></div></div></div><div class="container" style="margin-top:14px"><hr class="sep" /><div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">&copy; 2026 Clickoz - Fast tools for SEO, writing and developers</div></div></footer>
+  <script src="${asset("/assets/cms-registry.js", "cmsRegistry")}" defer></script>
+  <script src="${asset("/assets/cms-schema.js", "cmsSchema")}" defer></script>
+  <script src="${asset("/assets/cms-enhance.js", "cmsEnhance")}" defer></script>
+  <script src="${asset("/assets/site.js", "siteJs")}" defer></script>
+  <script src="${asset("/assets/clickoz-premium.js", "clickozPremiumJs")}" defer></script>
 </body>
 </html>
 `;
@@ -176,7 +177,7 @@ function toolOgSvg(tool) {
   <text x="92" y="135" fill="${accent}" font-family="Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="6">CLICKOZ TOOL</text>
   <text x="92" y="266" fill="#fff" font-family="Arial, sans-serif" font-size="70" font-weight="900">${tool.title}</text>
   <text x="94" y="344" fill="#dbeafe" font-family="Arial, sans-serif" font-size="30">${tool.description}</text>
-  <text x="94" y="505" fill="#fff" font-family="Arial, sans-serif" font-size="28">${(tool.features || []).join(" • ")}</text>
+  <text x="94" y="505" fill="#fff" font-family="Arial, sans-serif" font-size="28">${(tool.features || []).join(" - ")}</text>
 </svg>`;
 }
 
@@ -205,8 +206,8 @@ function updateCanonicals() {
   };
   for (const [rel, canonical] of Object.entries(aliases)) {
     let html = read(rel);
-    html = html.replace(/<link rel="canonical" href="https:\/\/clickoz\.com\/tools\/[^"]+" \/>/, `<link rel="canonical" href="https://clickoz.com${canonical}" />`);
-    html = html.replace(/<meta property="og:url" content="https:\/\/clickoz\.com\/tools\/[^"]+" \/>/, `<meta property="og:url" content="https://clickoz.com${canonical}" />`);
+    html = html.replace(/<link rel="canonical" href="https:\/\/clickoz\.com\/tools\/[^"]+" \/>/, `<link rel="canonical" href="${ORIGIN}${canonical}" />`);
+    html = html.replace(/<meta property="og:url" content="https:\/\/clickoz\.com\/tools\/[^"]+" \/>/, `<meta property="og:url" content="${ORIGIN}${canonical}" />`);
     write(rel, html);
   }
   for (const tool of cms.tools) {
@@ -214,16 +215,16 @@ function updateCanonicals() {
     const file = path.join(root, rel);
     if (!fs.existsSync(file)) continue;
     const canonical = cms.toolBySlug[tool.canonicalSlug] || tool;
-    const image = `https://clickoz.com/assets/og/tool-${canonical.slug}.svg`;
+    const image = `${ORIGIN}/assets/og/tool-${canonical.slug}.svg`;
     let html = read(rel);
     html = html.replace(/<meta property="og:image" content="[^"]+" \/>/, `<meta property="og:image" content="${image}" />`);
     html = html.replace(/<meta name="twitter:image" content="[^"]+" \/>/, `<meta name="twitter:image" content="${image}" />`);
     write(rel, html);
   }
   for (const [rel, image] of Object.entries({
-    "tools/index.html": "https://clickoz.com/assets/og/tools.svg",
-    "guides/index.html": "https://clickoz.com/assets/og/guides.svg",
-    "updates/index.html": "https://clickoz.com/assets/og/updates.svg"
+    "tools/index.html": `${ORIGIN}/assets/og/tools.svg`,
+    "guides/index.html": `${ORIGIN}/assets/og/guides.svg`,
+    "updates/index.html": `${ORIGIN}/assets/og/updates.svg`
   })) {
     let html = read(rel);
     html = html.replace(/<meta property="og:image" content="[^"]+" \/>/, `<meta property="og:image" content="${image}" />`);
@@ -242,7 +243,7 @@ function updateSitemap() {
   const urls = htmlFiles.map((rel) => {
     let loc = rel === "index.html" ? "/" : "/" + rel.replace(/index\.html$/, "");
     const priority = loc === "/" ? "1.00" : loc.startsWith("/tools/") || loc.startsWith("/guides/") ? "0.82" : "0.70";
-    return `  <url><loc>https://clickoz.com${loc}</loc><lastmod>${today}</lastmod><priority>${priority}</priority></url>`;
+    return `  <url><loc>${ORIGIN}${loc}</loc><lastmod>${today}</lastmod><priority>${priority}</priority></url>`;
   }).sort();
   write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`);
 }

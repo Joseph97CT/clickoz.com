@@ -1497,6 +1497,581 @@
     enhanceFooters();
   }
 })();
+
+/* Browser-only work memory: command palette, favorites, recent tools and next steps. */
+(() => {
+  "use strict";
+
+  const cms = window.ClickozCMS || {};
+  const storage = {
+    recent: "clickoz_recent_tools",
+    favorites: "clickoz_favorite_tools"
+  };
+
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[char]));
+  const norm = (value) => String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+
+  const jobCatalog = [
+    {
+      id: "json",
+      title: "Fix broken JSON",
+      url: "/tools/json-formatter/",
+      meta: "Quick job",
+      description: "Paste a payload, format it, validate it and keep debugging.",
+      sampleInput: "{\"title\":\"Clickoz\",\"status\":\"fast\"}",
+      sampleOutput: "Valid formatted JSON",
+      timeSaved: "Fix in 10 sec",
+      usedFor: "Debugging payloads",
+      search: "fix json broken json format json validate payload config sistemare json json rotto"
+    },
+    {
+      id: "snippet",
+      title: "Create SEO snippet",
+      url: "/tools/meta-tags/",
+      meta: "Quick job",
+      description: "Turn a rough page idea into a title, description and preview.",
+      sampleInput: "landing page idea",
+      sampleOutput: "Search-ready title and meta description",
+      timeSaved: "Publish faster",
+      usedFor: "SEO publishing",
+      search: "seo snippet meta title description descrizione serp preview pagina pubblicare"
+    },
+    {
+      id: "clean",
+      title: "Clean pasted text",
+      url: "/tools/whitespace-cleaner/",
+      meta: "Quick job",
+      description: "Remove spacing noise, blank lines and messy paste formatting.",
+      sampleInput: "messy AI draft",
+      sampleOutput: "Copy-ready clean text",
+      timeSaved: "Clean in 5 sec",
+      usedFor: "Client work",
+      search: "clean text whitespace cleaner pulire testo sistemare testo spazi ai draft"
+    },
+    {
+      id: "youtube",
+      title: "Prepare YouTube upload",
+      url: "/tools/youtube-title-generator/",
+      meta: "Quick job",
+      description: "Start with title angles, then move to thumbnail, description and tracking.",
+      sampleInput: "video idea",
+      sampleOutput: "Title angles plus next upload tools",
+      timeSaved: "Upload sprint",
+      usedFor: "Creator uploads",
+      search: "youtube upload title titolo video thumbnail description hashtags creator"
+    },
+    {
+      id: "utm",
+      title: "Build tracking URL",
+      url: "/tools/utm-builder/",
+      meta: "Quick job",
+      description: "Create measurable campaign links without messy parameters.",
+      sampleInput: "campaign link",
+      sampleOutput: "Clean UTM URL",
+      timeSaved: "Track in 20 sec",
+      usedFor: "Campaign work",
+      search: "utm tracking url link campaign marketing sorgente campagna"
+    }
+  ];
+
+  const categoryDefaults = {
+    seo: {
+      problem: "Prepare a page before publishing.",
+      quickJob: "SEO publishing check",
+      sampleInput: "page title or keyword",
+      sampleOutput: "Search-ready page element",
+      timeSaved: "Publish faster",
+      usedFor: "SEO publishing",
+      aliases: "snippet serp meta keyword title description slug"
+    },
+    text: {
+      problem: "Clean, count or improve a draft before sending.",
+      quickJob: "Text cleanup",
+      sampleInput: "messy draft",
+      sampleOutput: "Copy-ready text",
+      timeSaved: "Fix in seconds",
+      usedFor: "Client work",
+      aliases: "clean text writing readability count parole testo pulire"
+    },
+    dev: {
+      problem: "Debug a payload or convert technical text quickly.",
+      quickJob: "Payload repair",
+      sampleInput: "payload or encoded text",
+      sampleOutput: "Readable developer output",
+      timeSaved: "Debug faster",
+      usedFor: "Fast formatting",
+      aliases: "json url base64 regex html developer debug payload"
+    },
+    youtube: {
+      problem: "Package a YouTube upload without opening extra tools.",
+      quickJob: "Upload sprint",
+      sampleInput: "video idea",
+      sampleOutput: "Creator-ready upload asset",
+      timeSaved: "Upload faster",
+      usedFor: "Creator uploads",
+      aliases: "youtube video title thumbnail description hashtag creator upload"
+    },
+    tracking: {
+      problem: "Make links measurable without messy parameters.",
+      quickJob: "Campaign link",
+      sampleInput: "URL and campaign name",
+      sampleOutput: "Clean tracking URL",
+      timeSaved: "Track in seconds",
+      usedFor: "Campaign work",
+      aliases: "utm tracking campaign link url marketing"
+    },
+    web: {
+      problem: "Check web, DNS, security or identifier work quickly.",
+      quickJob: "Web check",
+      sampleInput: "domain, IP or setting",
+      sampleOutput: "Actionable web utility result",
+      timeSaved: "Check faster",
+      usedFor: "Web operations",
+      aliases: "dns http ping password uuid timestamp robots security"
+    },
+    socialai: {
+      problem: "Turn creator ideas into usable social assets.",
+      quickJob: "Creator asset",
+      sampleInput: "post or content idea",
+      sampleOutput: "Ready-to-use creator copy",
+      timeSaved: "Create faster",
+      usedFor: "Creator growth",
+      aliases: "social tiktok instagram linkedin hook caption ai creator"
+    }
+  };
+
+  const explicitProfiles = {
+    "meta-tags": { problem: "Create a search-ready snippet.", quickJob: "SEO snippet", sampleInput: "rough page title", sampleOutput: "Title + meta description", timeSaved: "Fix in 30 sec", usedFor: "SEO publishing", aliases: "snippet meta descrizione title seo" },
+    "word-counter": { problem: "Check if a draft fits the target length.", quickJob: "Live count", sampleInput: "draft text", sampleOutput: "Words, chars and reading time", timeSaved: "Count instantly", usedFor: "Client work", aliases: "count words parole caratteri reading time" },
+    "readability-analyzer": { problem: "Find where a draft feels heavy.", quickJob: "Draft pressure", sampleInput: "long paragraph", sampleOutput: "Readability and sentence pressure", timeSaved: "Edit faster", usedFor: "Readable drafts", aliases: "readability clarity scan sentence testo leggibilita" },
+    "whitespace-cleaner": { problem: "Remove messy spaces and blank lines.", quickJob: "Clean pasted text", sampleInput: "messy AI draft", sampleOutput: "Copy-ready text", timeSaved: "Clean in 5 sec", usedFor: "Text cleanup", aliases: "clean text whitespace spaces pulire testo spazi" },
+    "json-formatter": { problem: "Repair and read JSON quickly.", quickJob: "Fix broken JSON", sampleInput: "{\"status\":\"messy\"}", sampleOutput: "Valid formatted JSON", timeSaved: "Debug in 10 sec", usedFor: "Fast formatting", aliases: "json rotto payload config validate" },
+    "utm-builder": { problem: "Build campaign links without mistakes.", quickJob: "Tracking URL", sampleInput: "landing page URL", sampleOutput: "Clean UTM link", timeSaved: "Track in 20 sec", usedFor: "Campaign work", aliases: "utm tracking link campaign url" },
+    "youtube-title-generator": { problem: "Create usable title angles for an upload.", quickJob: "YouTube title", sampleInput: "video idea", sampleOutput: "Title options", timeSaved: "Upload faster", usedFor: "Creator uploads", aliases: "youtube title titolo video upload creator" },
+    "youtube-description-generator": { problem: "Package a video description faster.", quickJob: "YouTube description", sampleInput: "video topic", sampleOutput: "Description draft", timeSaved: "Write faster", usedFor: "Creator uploads", aliases: "youtube description descrizione video upload" },
+    "thumbnail-brief-generator": { problem: "Turn a video idea into a visual brief.", quickJob: "Thumbnail brief", sampleInput: "video promise", sampleOutput: "Visual brief", timeSaved: "Brief faster", usedFor: "Creator uploads", aliases: "thumbnail brief youtube visual" },
+    "slug-generator": { problem: "Make a clean URL slug.", quickJob: "Clean slug", sampleInput: "page title", sampleOutput: "Short URL slug", timeSaved: "Fix in seconds", usedFor: "SEO publishing", aliases: "slug url seo permalink" },
+    "serp-preview": { problem: "See how a result will look before publishing.", quickJob: "SERP preview", sampleInput: "title and description", sampleOutput: "Search result preview", timeSaved: "Preview faster", usedFor: "SEO publishing", aliases: "serp preview google snippet" }
+  };
+
+  function profileForTool(toolOrSlug) {
+    const tool = typeof toolOrSlug === "string" ? (cms.toolBySlug?.[toolOrSlug] || null) : toolOrSlug;
+    if (!tool) return null;
+    const base = categoryDefaults[tool.category] || categoryDefaults.text;
+    const explicit = explicitProfiles[tool.slug] || {};
+    return {
+      ...base,
+      ...explicit,
+      nextTools: tool.relatedTools || [],
+      search: `${tool.title} ${tool.description} ${(tool.features || []).join(" ")} ${tool.category} ${base.aliases || ""} ${explicit.aliases || ""} ${explicit.problem || base.problem} ${explicit.quickJob || base.quickJob}`
+    };
+  }
+
+  function readList(key) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key) || "[]");
+      return Array.isArray(value) ? value.filter(Boolean) : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function writeList(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (_) {}
+  }
+
+  function toolBySlug(slug) {
+    return cms.toolBySlug?.[slug] || null;
+  }
+
+  window.ClickozWorkCMS = {
+    jobs: jobCatalog,
+    profileForSlug: (slug) => profileForTool(slug),
+    profileForTool
+  };
+
+  function currentTool() {
+    const slug = document.body?.dataset?.toolSlug;
+    if (slug && toolBySlug(slug)) return toolBySlug(slug);
+    const path = window.location.pathname || "";
+    return cms.tools?.find((tool) => tool.url === path) || null;
+  }
+
+  function rememberCurrentTool() {
+    const tool = currentTool();
+    if (!tool) return;
+    const recent = readList(storage.recent).filter((slug) => slug !== tool.slug);
+    writeList(storage.recent, [tool.slug, ...recent].slice(0, 12));
+  }
+
+  function setFavorite(slug, saved) {
+    if (!slug || !toolBySlug(slug)) return;
+    const existing = readList(storage.favorites).filter((item) => item !== slug);
+    const next = saved ? [slug, ...existing].slice(0, 32) : existing;
+    writeList(storage.favorites, next);
+    document.dispatchEvent(new CustomEvent("clickoz:favorites-changed", { detail: { slug, saved } }));
+    syncFavoriteControls();
+  }
+
+  function isFavorite(slug) {
+    return readList(storage.favorites).includes(slug);
+  }
+
+  function syncFavoriteControls() {
+    $$("[data-cz-fav-toggle]").forEach((button) => {
+      const slug = button.getAttribute("data-cz-fav-toggle");
+      const saved = isFavorite(slug);
+      button.classList.toggle("is-saved", saved);
+      button.setAttribute("aria-pressed", String(saved));
+      button.textContent = saved ? "Saved" : "Save tool";
+    });
+  }
+
+  function addFavoriteControl() {
+    const tool = currentTool();
+    const hero = $(".cms-tool-hero");
+    if (!tool || !hero || $("[data-cz-fav-toggle]", hero)) return;
+    const profile = profileForTool(tool);
+    const row = document.createElement("div");
+    row.className = "cz-tool-memory-row";
+    row.innerHTML = `
+      <button class="cz-save-tool" type="button" data-cz-fav-toggle="${esc(tool.slug)}" aria-pressed="false">Save tool</button>
+      <span>${esc(profile?.quickJob || "Fast tool")} - ${esc(profile?.timeSaved || "Stored only in this browser")}. No account.</span>`;
+    hero.appendChild(row);
+    syncFavoriteControls();
+  }
+
+  function addNextTools() {
+    const tool = currentTool();
+    if (!tool || $(".cz-next-tools")) return;
+    if ($(".cms-related")) return;
+    const profile = profileForTool(tool);
+    const related = (tool.relatedTools || []).map(toolBySlug).filter(Boolean).slice(0, 4);
+    if (!related.length) return;
+    const panel = $(".cms-tool-panel") || $("main");
+    if (!panel) return;
+    const section = document.createElement("section");
+    section.className = "cz-next-tools";
+    section.setAttribute("aria-label", "Next tools");
+    section.innerHTML = `
+      <div class="cz-next-head">
+        <p class="guide-kicker">NEXT TOOL</p>
+        <h2>Keep the workflow moving.</h2>
+        <span>After ${esc(profile?.quickJob || tool.title)}, these are the most useful next actions.</span>
+      </div>
+      <div class="cz-next-grid">
+        ${related.map((item) => {
+          const itemProfile = profileForTool(item);
+          return `
+          <a href="${item.url}">
+            <strong>${esc(item.title)}</strong>
+            <span>${esc(itemProfile?.problem || item.description)}</span>
+            <em>${esc(itemProfile?.timeSaved || "Next useful step")}</em>
+          </a>`;
+        }).join("")}
+      </div>`;
+    panel.insertAdjacentElement("afterend", section);
+  }
+
+  function levenshtein(a, b) {
+    if (a === b) return 0;
+    if (!a) return b.length;
+    if (!b) return a.length;
+    const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= a.length; i++) {
+      let prev = i;
+      for (let j = 1; j <= b.length; j++) {
+        const val = a[i - 1] === b[j - 1] ? row[j - 1] : Math.min(row[j - 1], prev, row[j]) + 1;
+        row[j - 1] = prev;
+        prev = val;
+      }
+      row[b.length] = prev;
+    }
+    return row[b.length];
+  }
+
+  function fuzzyScore(query, haystack) {
+    const q = norm(query);
+    const h = norm(haystack);
+    if (!q) return 1;
+    if (h.includes(q)) return 120 - h.indexOf(q);
+    const qWords = q.split(/\s+/).filter(Boolean);
+    const hWords = h.split(/\s+/).filter(Boolean);
+    let score = 0;
+    qWords.forEach((word) => {
+      if (hWords.some((candidate) => candidate.startsWith(word))) score += 32;
+      else if (hWords.some((candidate) => candidate.includes(word))) score += 22;
+      else if (hWords.some((candidate) => Math.min(word.length, candidate.length) >= 4 && levenshtein(word, candidate) <= 2)) score += 14;
+    });
+    return score;
+  }
+
+  function commandItems() {
+    const tools = (cms.tools || []).map((tool) => {
+      const profile = profileForTool(tool);
+      return {
+        type: "tool",
+        title: tool.title,
+        url: tool.url,
+        slug: tool.slug,
+        description: profile?.problem || tool.description,
+        meta: profile?.quickJob || cms.clusters?.[tool.category]?.title || "Tool",
+        output: profile?.sampleOutput || "",
+        time: profile?.timeSaved || "",
+        search: profile?.search || `${tool.title} ${tool.description} ${(tool.features || []).join(" ")} ${tool.category}`
+      };
+    });
+    const guides = (cms.guides || []).map((guide) => ({
+      type: "guide",
+      title: guide.title,
+      url: guide.url,
+      slug: guide.slug,
+      description: guide.description,
+      meta: "Guide",
+      search: `${guide.title} ${guide.description} ${guide.category}`
+    }));
+    const jobs = jobCatalog.map((job) => ({
+      type: "job",
+      title: job.title,
+      url: job.url,
+      slug: job.id,
+      description: job.description,
+      meta: job.meta,
+      output: job.sampleOutput,
+      time: job.timeSaved,
+      search: `${job.title} ${job.description} ${job.sampleInput} ${job.sampleOutput} ${job.usedFor} ${job.search}`
+    }));
+    return [...jobs, ...tools, ...guides];
+  }
+
+  function ensurePalette() {
+    let shell = $("#czCommandPalette");
+    if (shell) return shell;
+    shell = document.createElement("div");
+    shell.className = "cz-command-palette";
+    shell.id = "czCommandPalette";
+    shell.hidden = true;
+    shell.innerHTML = `
+      <div class="cz-command-backdrop" data-command-close></div>
+      <div class="cz-command-dialog" role="dialog" aria-modal="true" aria-label="Clickoz command palette">
+        <div class="cz-command-titlebar">
+          <span>CLICKOZ COMMAND DESK</span>
+          <strong>What do you need to fix?</strong>
+          <em>Ctrl+K on desktop. Four quick taps on mobile.</em>
+        </div>
+        <div class="cz-command-input-row">
+          <span aria-hidden="true">K</span>
+          <input id="czCommandInput" type="search" placeholder="Try: broken JSON, clean text, YouTube title, SEO snippet..." autocomplete="off" />
+          <button type="button" data-command-close aria-label="Close command palette">Close</button>
+        </div>
+        <div class="cz-command-sections">
+          <div class="cz-command-memory" id="czCommandMemory"></div>
+          <div class="cz-command-results" id="czCommandResults" role="listbox"></div>
+        </div>
+      </div>`;
+    document.body.appendChild(shell);
+    return shell;
+  }
+
+  function renderCommandMemory() {
+    const shell = ensurePalette();
+    const target = $("#czCommandMemory", shell);
+    if (!target) return;
+    const recent = readList(storage.recent).map(toolBySlug).filter(Boolean).slice(0, 3);
+    const favorites = readList(storage.favorites).map(toolBySlug).filter(Boolean).slice(0, 3);
+    const items = [
+      ...favorites.map((tool) => ({ label: "Saved", tool })),
+      ...recent.map((tool) => ({ label: "Recent", tool }))
+    ].slice(0, 5);
+    target.innerHTML = items.length ? `
+      <div class="cz-memory-title">Fast access</div>
+      ${items.map(({ label, tool }) => `<a href="${tool.url}"><span>${esc(label)}</span><strong>${esc(tool.title)}</strong></a>`).join("")}
+    ` : `<div class="cz-command-hint">Tip: press Ctrl+K and type a job like "snippet", "json" or "youtube".</div>`;
+  }
+
+  let selectedIndex = 0;
+  let lastResults = [];
+
+  function renderCommandResults(query = "") {
+    const shell = ensurePalette();
+    const target = $("#czCommandResults", shell);
+    const items = commandItems()
+      .map((item) => ({ item, score: fuzzyScore(query, item.search) }))
+      .filter((entry) => !query || entry.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 9)
+      .map((entry) => entry.item);
+    lastResults = items;
+    selectedIndex = Math.min(selectedIndex, Math.max(0, items.length - 1));
+    target.innerHTML = items.length ? items.map((item, index) => `
+      <a class="${index === selectedIndex ? "is-active" : ""}" href="${item.url}" role="option" aria-selected="${index === selectedIndex ? "true" : "false"}" data-command-index="${index}">
+        <span>${esc(item.meta)}</span>
+        <strong>${esc(item.title)}</strong>
+        <em>${esc(item.description)}</em>
+        ${item.output || item.time ? `<small>${esc(item.output || "Useful output")}${item.time ? ` - ${esc(item.time)}` : ""}</small>` : ""}
+      </a>
+    `).join("") : `<div class="cz-command-empty">No exact match. Try "seo", "json", "youtube", "clean text" or "utm".</div>`;
+  }
+
+  function openPalette(query = "") {
+    const shell = ensurePalette();
+    shell.hidden = false;
+    document.documentElement.classList.add("cz-command-open");
+    renderCommandMemory();
+    selectedIndex = 0;
+    renderCommandResults(query);
+    const input = $("#czCommandInput", shell);
+    if (input) {
+      input.value = query;
+      window.setTimeout(() => input.focus(), 20);
+    }
+  }
+
+  function closePalette() {
+    const shell = ensurePalette();
+    shell.hidden = true;
+    document.documentElement.classList.remove("cz-command-open");
+  }
+
+  function bindPalette() {
+    let mobileTapTimes = [];
+
+    function shouldTrackMobileTap(event) {
+      if (!(window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 820)) return false;
+      if (!ensurePalette().hidden) return false;
+      const target = event.target;
+      if (!target || target.closest("a, button, input, textarea, select, [role='button'], .m-menu, .cz-command-palette")) return false;
+      return true;
+    }
+
+    function trackMobileTap(event) {
+      if (!shouldTrackMobileTap(event)) return;
+      const now = Date.now();
+      mobileTapTimes = mobileTapTimes.filter((time) => now - time < 1300);
+      mobileTapTimes.push(now);
+      if (mobileTapTimes.length >= 4) {
+        mobileTapTimes = [];
+        openPalette("");
+      }
+    }
+
+    document.addEventListener("keydown", (event) => {
+      const key = event.key.toLowerCase();
+      if ((event.ctrlKey || event.metaKey) && key === "k") {
+        event.preventDefault();
+        openPalette();
+        return;
+      }
+      if (event.key === "Escape" && !ensurePalette().hidden) closePalette();
+    });
+
+    document.addEventListener("click", (event) => {
+      const commandTrigger = event.target.closest("[data-open-command]");
+      if (commandTrigger) {
+        event.preventDefault();
+        openPalette(commandTrigger.getAttribute("data-command-query") || "");
+        return;
+      }
+      if (event.target.closest("[data-command-close]")) closePalette();
+      const fav = event.target.closest("[data-cz-fav-toggle]");
+      if (fav) {
+        event.preventDefault();
+        const slug = fav.getAttribute("data-cz-fav-toggle");
+        setFavorite(slug, !isFavorite(slug));
+      }
+      trackMobileTap(event);
+    });
+
+    document.addEventListener("clickoz:open-command", (event) => {
+      openPalette(compactEventQuery(event));
+    });
+
+    const shell = ensurePalette();
+    const input = $("#czCommandInput", shell);
+    input?.addEventListener("input", () => {
+      selectedIndex = 0;
+      renderCommandResults(input.value);
+    });
+    input?.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        selectedIndex = Math.min(lastResults.length - 1, selectedIndex + 1);
+        renderCommandResults(input.value);
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        selectedIndex = Math.max(0, selectedIndex - 1);
+        renderCommandResults(input.value);
+      } else if (event.key === "Enter" && lastResults[selectedIndex]) {
+        event.preventDefault();
+        window.location.href = lastResults[selectedIndex].url;
+      }
+    });
+  }
+
+  function compactEventQuery(event) {
+    return String(event?.detail?.query || "").replace(/\s+/g, " ").trim();
+  }
+
+  function enhanceToolsSearch() {
+    const input = $("#toolsSearch");
+    if (!input || $(".cz-tools-search-hint")) return;
+    input.setAttribute("placeholder", "Try: broken JSON, clean text, YouTube title, SEO snippet");
+    const hint = document.createElement("div");
+    hint.className = "cz-tools-search-hint";
+    hint.innerHTML = `Press <kbd>Ctrl</kbd> + <kbd>K</kbd> for the command palette`;
+    input.insertAdjacentElement("afterend", hint);
+  }
+
+  function currentDockSection() {
+    const path = window.location.pathname || "/";
+    if (path === "/" || path === "/index.html") return "home";
+    if (path.startsWith("/tools/") || path === "/tools/") return "tools";
+    if (path.startsWith("/guides/") || path === "/guides/") return "guides";
+    return "more";
+  }
+
+  function ensureAppDock() {
+    if ($(".cz-app-dock")) return;
+    const active = currentDockSection();
+    const dock = document.createElement("nav");
+    dock.className = "cz-app-dock";
+    dock.setAttribute("aria-label", "Mobile Clickoz workbench");
+    dock.innerHTML = `
+      <a href="/" data-dock-section="home"${active === "home" ? ` aria-current="page"` : ""}><span>Home</span></a>
+      <a href="/tools/" data-dock-section="tools"${active === "tools" ? ` aria-current="page"` : ""}><span>Tools</span></a>
+      <button type="button" data-open-command data-dock-center><span>Fix</span></button>
+      <a href="/guides/" data-dock-section="guides"${active === "guides" ? ` aria-current="page"` : ""}><span>Guides</span></a>
+      <button type="button" data-open-command data-command-query=""><span>Saved</span></button>`;
+    document.body.appendChild(dock);
+    document.documentElement.classList.add("cz-app-dock-ready");
+  }
+
+  function init() {
+    rememberCurrentTool();
+    addFavoriteControl();
+    addNextTools();
+    bindPalette();
+    enhanceToolsSearch();
+    ensureAppDock();
+    syncFavoriteControls();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+})();
 /* =========================================================
    Clickoz — guide.js
    SAFE MODE:

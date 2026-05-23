@@ -39,7 +39,7 @@ function layout({ title, description, canonical, active, body }) {
   <link rel="canonical" href="https://clickoz.com${canonical}" />
   <meta name="robots" content="index,follow" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/assets/site.css?v=13" />
+  <link rel="stylesheet" href="/assets/site.css?v=14" />
   <link rel="stylesheet" href="/tools/tool-improvements.css?v=1" />
 </head>
 <body class="bigtext">

@@ -2,6 +2,7 @@
   "use strict";
 
   const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const cms = window.ClickozCMS || {};
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const allowedResultTags = new Set(["DIV", "ARTICLE", "SPAN", "STRONG", "B", "P", "BR", "UL", "OL", "LI", "SMALL", "CODE", "PRE"]);
@@ -14,6 +15,62 @@
   const normUrl = (v) => /^https?:\/\//i.test(String(v || "").trim()) ? String(v).trim() : `https://${String(v || "").trim()}`;
   const int = (v, d = 0) => Number.isFinite(parseInt(v, 10)) ? parseInt(v, 10) : d;
   const cssId = (id) => (window.CSS && CSS.escape) ? CSS.escape(id) : String(id).replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+  /**
+   * Shared CMS interaction model. Keep copy, stage names and timing here so
+   * individual tools can stay focused on input/output logic.
+   */
+  const toolUx = Object.freeze({
+    inputDelay: 220,
+    revealStepMs: 70,
+    sequence: {
+      writing: [
+        ["Paste", "Use a real paragraph, caption or intro, not a perfect sample."],
+        ["Check", "Look for length, density and the first edit that removes friction."],
+        ["Finish", "Copy the cleaner version, then test readability if it still feels heavy."]
+      ],
+      seo: [
+        ["Paste", "Start with the real page title, URL, snippet or keyword section."],
+        ["Check", "Use the result to decide what should change before publishing."],
+        ["Continue", "Open the next SEO tool so title, slug and preview stay aligned."]
+      ],
+      dev: [
+        ["Paste", "Use the exact value from the payload, URL, config or markup."],
+        ["Inspect", "Read the formatted result and the risk note before copying."],
+        ["Apply", "Copy only into the matching context; encoding rules change by context."]
+      ],
+      youtube: [
+        ["Idea", "Start with the real upload promise, not a generic topic."],
+        ["Package", "Compare hook, thumbnail promise, description and metadata direction."],
+        ["Upload", "Move to the next YouTube tool so the upload stays consistent."]
+      ],
+      tracking: [
+        ["Campaign", "Enter the real source, medium, campaign and landing URL."],
+        ["Clean", "Check naming and encoded parameters before the link is shared."],
+        ["Reuse", "Keep the same naming rule across every channel."]
+      ],
+      web: [
+        ["Target", "Use the real domain, IP, timestamp, color or generated value."],
+        ["Verify", "Treat the output as a quick diagnostic, not a production guarantee."],
+        ["Repeat", "Save the result with the tested context so the check is reproducible."]
+      ],
+      socialai: [
+        ["Brief", "Write the real post, creator angle or audience problem."],
+        ["Shape", "Keep one clear hook, one useful body section and one CTA."],
+        ["Post", "Remove any line that could fit every creator before publishing."]
+      ],
+      default: [
+        ["Start", "Paste the real job you need to finish."],
+        ["Review", "Use the result to make one clear decision."],
+        ["Next", "Continue with the related tool or guide while the context is fresh."]
+      ]
+    },
+    runStates: {
+      idle: ["Ready", "Waiting for input", "Output will update here"],
+      running: ["Reading input", "Building result", "Preparing copy"],
+      ready: ["Input checked", "Result built", "Ready to copy"],
+      error: ["Input checked", "Needs review", "Try again"]
+    }
+  });
 
   async function copyText(text) {
     try { await navigator.clipboard.writeText(String(text || "")); return true; }
@@ -147,6 +204,212 @@
     }
 
     target.appendChild(box);
+  }
+
+  const statePrefix = "clickoz_tool_state:";
+  const historyPrefix = "clickoz_tool_history:";
+  const fieldControls = (root) => Array.from(root.querySelectorAll(".cms-form-grid input, .cms-form-grid textarea, .cms-form-grid select"));
+  const stateKey = (slug) => `${statePrefix}${slug}`;
+  const historyKey = (slug) => `${historyPrefix}${slug}`;
+
+  function safeStorage(method, key, value) {
+    try {
+      if (method === "get") return localStorage.getItem(key);
+      if (method === "set") localStorage.setItem(key, value);
+      if (method === "remove") localStorage.removeItem(key);
+    } catch (_) {}
+    return null;
+  }
+
+  function capText(value, max = 16000) {
+    const text = String(value ?? "");
+    return text.length > max ? text.slice(0, max) : text;
+  }
+
+  function toolValues(root, max = 16000) {
+    const values = {};
+    fieldControls(root).forEach((el) => { values[el.id] = capText(el.value, max); });
+    return values;
+  }
+
+  function applyValues(root, values = {}) {
+    fieldControls(root).forEach((el) => {
+      if (Object.prototype.hasOwnProperty.call(values, el.id)) el.value = values[el.id];
+    });
+  }
+
+  function summarizeValues(values) {
+    const first = Object.values(values || {}).map((v) => String(v || "").trim()).find(Boolean);
+    if (!first) return "Empty input";
+    return first.replace(/\s+/g, " ").slice(0, 82);
+  }
+
+  function toolFamily(tool, slug = "") {
+    const category = String(tool?.category || "").toLowerCase();
+    if (toolUx.sequence[category]) return category;
+    if (/meta|serp|keyword|slug|robots/i.test(slug)) return "seo";
+    if (/json|minifier|url|base64|entity|regex|diff/i.test(slug)) return "dev";
+    if (/dns|http|subnet|password|uuid|timestamp|color/i.test(slug)) return "web";
+    if (/youtube|thumbnail|chapter|video|community/i.test(slug)) return "youtube";
+    if (/utm|tracking|campaign/i.test(slug)) return "tracking";
+    if (/word|character|readability|whitespace|case/i.test(slug)) return "writing";
+    return "default";
+  }
+
+  function humanSampleFor(tool) {
+    const title = tool?.title || "this tool";
+    const slug = tool?.slug || "";
+    if (/caption/i.test(slug)) return "New behind-the-scenes shoot in Milan, with one clear tip for creators who want cleaner content.";
+    if (/bio/i.test(slug)) return "Fashion model in Milan. Editorial shoots, brand campaigns and clean portfolio work. DM for bookings.";
+    if (/thread/i.test(slug)) return "A small SEO workflow that fixes title, snippet, readability and internal links before a page goes live.";
+    if (/calendar|planner|repurposing/i.test(slug)) return "One long YouTube video about fixing messy content workflows into Shorts, posts, newsletter and community updates.";
+    if (/media-kit/i.test(slug)) return "Creator in productivity and SEO. 42k monthly views, practical tutorials, brand-safe audience and newsletter reach.";
+    if (/newsletter/i.test(slug)) return "A short issue showing how to finish SEO and creator tasks faster without opening five different apps.";
+    if (/disclosure/i.test(slug)) return "A product review post that includes an affiliate link and one AI-assisted summary paragraph.";
+    if (/alt-text/i.test(slug)) return "A mobile screenshot of a tool result card showing word count, reading time and a copy button.";
+    if (/cta/i.test(slug)) return "A creator post about saving time before publishing: ask people to save the checklist, try the tool and share the result.";
+    if (/hook|shorts|reels|tiktok/i.test(slug)) return "Creators waste ten minutes rewriting the same idea for every platform before they can post.";
+    if (/youtube|thumbnail|chapter|video|community/i.test(slug) || tool?.category === "youtube") return "A YouTube upload about cleaning messy text, checking the snippet and preparing the tracking link before publishing.";
+    if (tool?.category === "socialai") return "A practical post for creators who want to turn one rough idea into a hook, useful body and platform-native CTA.";
+    if (tool?.category === "seo") return "A tool page that helps creators finish a specific SEO task in the browser without signup.";
+    if (tool?.category === "writing") return "Most readers scan on mobile first. Shorter paragraphs, clearer headings and one direct next action make the page easier to use.";
+    if (tool?.category === "dev") return "{\"campaign\":\"spring launch\",\"source\":\"youtube description\",\"tools\":[\"formatter\",\"encoder\"]}";
+    if (tool?.category === "web") return "clickoz.com";
+    if (tool?.category === "tracking") return "Landing page: https://example.com/offer, source: youtube, medium: description, campaign: spring launch";
+    return `${title}: turn the rough input into one result that can be copied, checked and used in the next workflow step.`;
+  }
+
+  function saveToolState(root, slug) {
+    if (!slug) return;
+    const payload = { ts: Date.now(), values: toolValues(root) };
+    safeStorage("set", stateKey(slug), JSON.stringify(payload));
+  }
+
+  function restoreToolState(root, slug) {
+    if (!slug) return false;
+    try {
+      const payload = JSON.parse(safeStorage("get", stateKey(slug)) || "null");
+      if (!payload || !payload.values) return false;
+      applyValues(root, payload.values);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function readHistory(slug) {
+    try {
+      const items = JSON.parse(safeStorage("get", historyKey(slug)) || "[]");
+      return Array.isArray(items) ? items : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function pushToolHistory(root, slug) {
+    if (!slug) return;
+    const values = toolValues(root, 4000);
+    const label = summarizeValues(values);
+    if (label === "Empty input") return;
+    const next = { ts: Date.now(), label, values };
+    const items = readHistory(slug)
+      .filter((item) => item && JSON.stringify(item.values) !== JSON.stringify(values))
+      .slice(0, 5);
+    safeStorage("set", historyKey(slug), JSON.stringify([next, ...items].slice(0, 6)));
+  }
+
+  function ensureToolUx(root) {
+    const app = $(".cms-tool-app", root);
+    if (!app) return;
+    if (!$(".cms-tool-feedback", root)) {
+      app.insertAdjacentHTML("afterbegin", `<div class="cms-tool-feedback" aria-live="polite"></div>`);
+    }
+    if (!$(".cms-example-sequence", root)) {
+      $(".cms-example-box pre", root)?.insertAdjacentHTML("afterend", `<div class="cms-example-sequence" aria-label="Example workflow sequence"></div>`);
+    }
+    if (!$(".cms-local-history", root)) {
+      $(".cms-example-box", root)?.insertAdjacentHTML("afterend", `<details class="cms-local-history" aria-label="Recent local inputs"><summary><strong>Recent inputs</strong><span>Local only</span></summary><div class="cms-history-items"></div></details>`);
+    }
+    if (!$(".cms-run-meter", root)) {
+      $(".cms-tool-actions", root)?.insertAdjacentHTML("afterend", `<div class="cms-run-meter" aria-live="polite"></div>`);
+    }
+    if (!$(".cms-shortcut-row", root)) {
+      $(".cms-tool-actions", root)?.insertAdjacentHTML("beforebegin", `<div class="cms-shortcut-row" aria-label="Keyboard shortcuts"><span>Ctrl+Enter</span><span>Ctrl+Shift+C</span><span>Ctrl+Shift+D</span></div>`);
+    }
+  }
+
+  function renderExampleSequence(root, tool, example, index = 0, state = "preview") {
+    const box = $(".cms-example-sequence", root);
+    if (!box) return;
+    const slug = root.getAttribute("data-tool-app") || "";
+    const family = toolFamily(tool, slug);
+    const steps = toolUx.sequence[family] || toolUx.sequence.default;
+    const label = typeof example === "string" ? `Example ${index + 1}` : example?.label || `Example ${index + 1}`;
+    box.dataset.state = state;
+    box.innerHTML = `<div class="cms-sequence-head"><strong>Sample flow</strong><span>${esc(label)}</span></div>
+      <div class="cms-sequence-track">${steps.map(([title, text], stepIndex) => `<span class="cms-sequence-step${stepIndex === 0 ? " is-active" : ""}" style="--seq-delay:${stepIndex * toolUx.revealStepMs}ms" title="${esc(text)}"><b>${esc(stepIndex + 1)} ${esc(title)}</b><span>${esc(text)}</span></span>`).join("")}</div>`;
+  }
+
+  function renderRunMeter(root, tool, state = "idle") {
+    const meter = $(".cms-run-meter", root);
+    if (!meter) return;
+    const steps = toolUx.runStates[state] || toolUx.runStates.idle;
+    const activeIndex = state === "ready" ? 2 : state === "running" ? 1 : state === "error" ? 1 : 0;
+    meter.dataset.state = state;
+    meter.innerHTML = steps.map((label, index) => `<span class="${index <= activeIndex ? "is-active" : ""}"><i aria-hidden="true"></i>${esc(label)}</span>`).join("");
+  }
+
+  function renderToolHistory(root, slug) {
+    const box = $(".cms-local-history", root);
+    const list = $(".cms-history-items", root);
+    if (!box || !list) return;
+    const items = readHistory(slug);
+    box.classList.toggle("is-empty", !items.length);
+    box.hidden = !items.length;
+    list.innerHTML = items.length
+      ? items.map((item, index) => {
+        const date = new Date(item.ts || Date.now()).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+        const label = item.label || "Saved input";
+        return `<button type="button" class="cms-history-chip" data-history="${index}" title="Restore ${esc(label)}" aria-label="Restore local input from ${esc(date)}: ${esc(label)}"><span>${esc(date)}</span>${esc(label)}</button>`;
+      }).join("")
+      : `<span class="cms-history-empty">Run a real job and it appears here.</span>`;
+  }
+
+  function flashTool(root, message, tone = "ok") {
+    const feedback = $(".cms-tool-feedback", root);
+    if (!feedback) return;
+    clearTimeout(root._feedbackTimer);
+    feedback.textContent = message;
+    feedback.dataset.tone = tone;
+    feedback.classList.add("show");
+    root._feedbackTimer = setTimeout(() => feedback.classList.remove("show"), 1800);
+  }
+
+  function duplicateFocusedField(root) {
+    const el = document.activeElement;
+    if (!el || !root.contains(el) || !/^(TEXTAREA|INPUT)$/i.test(el.tagName)) return false;
+    const selected = typeof el.selectionStart === "number" && el.selectionEnd > el.selectionStart
+      ? el.value.slice(el.selectionStart, el.selectionEnd)
+      : el.value;
+    if (!selected) return false;
+    el.value = el.value ? `${el.value}${el.tagName === "TEXTAREA" ? "\n\n" : " "}${selected}` : selected;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    return true;
+  }
+
+  function selectOutput(root) {
+    try {
+      const out = $(".cms-output", root);
+      if (!out || !out.textContent.trim()) return false;
+      const range = document.createRange();
+      range.selectNodeContents(out);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   function textStats(text) {
@@ -629,8 +892,9 @@
     const topic = compactText(input) || tool.title;
     const platformName = compactText(platform) || "General";
     const score = scoreHook(topic);
-    const category = smartTitle(String(tool.category || "workflow").replace(/ai$/i, " AI"));
+    const category = tool.category === "socialai" ? "Creator workflow" : tool.category === "youtube" ? "YouTube workflow" : smartTitle(String(tool.category || "workflow"));
     const usefulLine = String(output || "").split(/\r?\n/).map((x) => x.trim()).find((line) => line && line !== tool.title && !/:$/.test(line)) || topic;
+    const nextTool = (tool.relatedTools || []).map((slug) => cms.toolBySlug?.[slug]).find(Boolean);
     const job = tool.category === "youtube"
       ? "Package the upload"
       : tool.category === "socialai"
@@ -643,6 +907,11 @@
       : tool.category === "socialai"
         ? "Keep one clear hook, one useful body section and one platform-native CTA."
         : "Copy the result only after checking it in the real page, post, payload or campaign.";
+    const decision = score >= 72
+      ? "Strong enough to refine in the real workflow."
+      : score >= 55
+        ? "Usable draft. Tighten the first line before copying."
+        : "Needs a clearer promise, audience or practical detail before use.";
 
     return `<div class="cms-output-pack">
       <div class="cms-result-hero">
@@ -653,14 +922,19 @@
         <article><b>Score</b><span>${score}/100 clarity estimate</span></article>
         <article><b>Best use</b><span>${esc(job)}</span></article>
         <article><b>Platform</b><span>${esc(platformName)}</span></article>
+        <article><b>Next tool</b><span>${esc(nextTool?.title || "Related workflow")}</span></article>
       </div>
       <div class="cms-output-list">
         <b>Copy-ready result</b>
         <span>${esc(output).replace(/\n/g, "<br>")}</span>
       </div>
       <div class="cms-output-list">
+        <b>Human check</b>
+        <span>${esc(decision)} If one line sounds like it could fit any brand or creator, rewrite that line first.</span>
+      </div>
+      <div class="cms-output-list">
         <b>Before publishing</b>
-        <span>${esc(next)}</span>
+        <span>${esc(next)}${nextTool ? ` Continue with ${esc(nextTool.title)} while the context is fresh.` : ""}</span>
       </div>
     </div>`;
   }
@@ -688,7 +962,7 @@
         : "Balanced draft. Review sentence length and keep the first paragraph direct.";
     return outputPackHtml({
       badge: "Text structure",
-      hero: `${stats.w.length} words · ${duration(stats.w.length / 235 * 60)} reading time`,
+      hero: `${stats.w.length} words - ${duration(stats.w.length / 235 * 60)} reading time`,
       cards: [
         ["Characters", stats.chars],
         ["Sentences", stats.sentences],
@@ -785,20 +1059,45 @@
         { label: "Headline", values: { text: "SEO & Writing Tools > Free, fast, no signup" } },
         { label: "Attribute", values: { text: "title=\"Tom's guide & checklist\"" } }
       ],
+      "html-entity-encoder": [
+        { label: "Encode tag", values: { text: "<span title=\"Save & publish\">5 > 3</span>", mode: "encode" } },
+        { label: "Decode text", values: { text: "Tom &amp; Sara &lt;strong&gt;save now&lt;/strong&gt;", mode: "decode" } },
+        { label: "Auto", values: { text: "SEO & Writing Tools > Free, fast, no signup", mode: "auto" } }
+      ],
+      "html-entity-encoder-decoder": [
+        { label: "Escaped copy", values: { text: "Tom &amp; Sara said &lt;strong&gt;save now&lt;/strong&gt;" } },
+        { label: "Unsafe text", values: { text: "<script>alert('x')</script> & campaign copy" } },
+        { label: "Attribute copy", values: { text: "title=&quot;Creator tools &amp; SEO fixes&quot;" } }
+      ],
       "url-encoder": [
         { label: "Campaign", values: { text: "campaign name=spring launch & source=instagram" } },
         { label: "Search query", values: { text: "best free seo tools for creators" } },
         { label: "UTM value", values: { text: "youtube description / pinned comment" } }
+      ],
+      "url-encoder-decoder": [
+        { label: "Encode value", values: { value: "campaign name=spring launch & source=instagram", mode: "encode" } },
+        { label: "Decode value", values: { value: "youtube%20description%20%2F%20pinned%20comment", mode: "decode" } },
+        { label: "Query clean", values: { value: "utm_source=YouTube Ads&utm_medium=video description&utm_campaign=spring launch", mode: "query" } }
       ],
       "base64": [
         { label: "Text", values: { text: "Clickoz premium tools" } },
         { label: "Payload", values: { text: "{\"role\":\"admin\",\"site\":\"clickoz\"}" } },
         { label: "Token part", values: { text: "eyJzaXRlIjoiQ2xpY2tveiJ9" } }
       ],
+      "base64-encode-decode": [
+        { label: "Encode text", values: { value: "Clickoz premium tools", mode: "encode" } },
+        { label: "Decode payload", values: { value: "eyJzaXRlIjoiQ2xpY2tveiIsInRvb2xzIjo2Nn0=", mode: "decode" } },
+        { label: "Base64URL", values: { value: "eyJwYWdlIjoidG9vbC1kZXNrIn0", mode: "auto" } }
+      ],
       "meta-tags": [
         { label: "Tool page", values: { title: "Free Word Counter Online | Clickoz", description: "Count words, characters, sentences and reading time instantly. Browser-only, mobile-ready and free." } },
         { label: "Guide page", values: { title: "SEO Content Checklist for Better Pages", description: "Use this checklist to match search intent, improve snippets and link to the right next action." } },
         { label: "Creator page", values: { title: "YouTube Title Generator for Better Hooks", description: "Generate clearer title angles, thumbnail promises and upload-ready ideas before publishing." } }
+      ],
+      "meta-tag-optimizer": [
+        { label: "Tool page", values: { url: "https://clickoz.com/tools/word-counter/", title: "Free Word Counter Online | Clickoz", description: "Count words, characters, sentences and reading time instantly. Browser-only, mobile-ready and free.", intent: "count words and reading time quickly" } },
+        { label: "Guide page", values: { url: "https://clickoz.com/guides/seo-content-checklist/", title: "SEO Content Checklist for Better Pages", description: "Use this checklist to match search intent, improve snippets and link to the right next action.", intent: "audit a page before publishing" } },
+        { label: "Weak snippet", values: { url: "https://example.com/page", title: "Best Tools", description: "Useful tools online.", intent: "find fast tools for SEO and creator work" } }
       ],
       "serp-preview": [
         { label: "Homepage", values: { url: "https://clickoz.com/", title: "Clickoz - Free Online Tools", description: "Fast browser tools for SEO, writing, developers and creators. No signup." } },
@@ -866,16 +1165,18 @@
     if (config.examples) return config.examples;
     const firstField = (config.fields || [])[0]?.id || "input";
     if (tool.category === "socialai" || tool.category === "youtube") {
+      const sample = humanSampleFor(tool);
       return [
-        { label: "Hook", values: { [firstField]: `${title}: turn a rough creator idea into a clear first line`, platform: tool.category === "youtube" ? "YouTube" : "Short-form" } },
-        { label: "Launch", values: { [firstField]: "New tool launch for creators who need captions, hooks and reusable content faster.", platform: "Instagram" } },
-        { label: "How-to", values: { [firstField]: "How to plan a week of content from one long video without repeating yourself.", platform: "TikTok" } }
+        { label: "Real brief", values: { [firstField]: sample, platform: tool.category === "youtube" ? "YouTube" : "Short-form" } },
+        { label: "Launch note", values: { [firstField]: "A creator workflow that turns one rough idea into a hook, caption, CTA and next post without sounding generic.", platform: "Instagram" } },
+        { label: "How-to", values: { [firstField]: "How to plan a week of content from one long video without repeating the same point on every platform.", platform: "TikTok" } }
       ];
     }
+    const sample = humanSampleFor(tool);
     return [
-      { label: "Starter", values: Object.fromEntries((config.fields || []).map((f) => [f.id, f.value || config.sample || tool.description || title])) },
-      { label: "Real case", values: { [firstField]: tool.description || title } },
-      { label: "Short test", values: { [firstField]: config.sample || title } }
+      { label: "Real job", values: Object.fromEntries((config.fields || []).map((f) => [f.id, f.value || config.sample || sample])) },
+      { label: "Messy input", values: { [firstField]: sample } },
+      { label: "Publish check", values: { [firstField]: config.sample || sample } }
     ];
   }
 
@@ -915,7 +1216,7 @@
         const output = `Characters: ${t.length}\nCharacters without spaces: ${noSpaces}\nWords: ${words(t).length}\nLines: ${t.split(/\n/).length}`;
         return result("Output ready: character limits and copy length are clear.", [metric("Characters", t.length), metric("No spaces", noSpaces), metric("Words", words(t).length), metric("Lines", t.split(/\n/).length)], output, outputPackHtml({
           badge: "Limit check",
-          hero: `${t.length} characters · ${words(t).length} words`,
+          hero: `${t.length} characters - ${words(t).length} words`,
           cards: [["No spaces", noSpaces], ["Lines", t.split(/\n/).length], ["Best for", "Bios/snippets"], ["Status", t.length > 160 ? "Review length" : "Clean"]],
           sections: [["Copy-ready summary", output], ["How to use it", "Use this before pasting into bios, captions, titles, forms, ads or metadata fields with strict limits."]]
         }));
@@ -941,7 +1242,18 @@
     "text-case-converter": {
       sample: "make this headline cleaner for the page",
       fields: [field("text", "Text", "textarea", "make this headline cleaner for the page", true)],
-      run(v) { const t = String(v.text || ""); const title = t.toLowerCase().replace(/\b\w/g, (m) => m.toUpperCase()); return result("Case formats generated.", [metric("Original chars", t.length), metric("Formats", 4), metric("Words", words(t).length), metric("Copy", "Ready")], `UPPERCASE:\n${t.toUpperCase()}\n\nlowercase:\n${t.toLowerCase()}\n\nTitle Case:\n${title}\n\nSentence case:\n${t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()}`); }
+      run(v) {
+        const t = String(v.text || "");
+        const title = t.toLowerCase().replace(/\b\w/g, (m) => m.toUpperCase());
+        const sentence = t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+        const output = `UPPERCASE:\n${t.toUpperCase()}\n\nlowercase:\n${t.toLowerCase()}\n\nTitle Case:\n${title}\n\nSentence case:\n${sentence}`;
+        return result("Case formats generated with copy-ready variants.", [metric("Original chars", t.length), metric("Formats", 4), metric("Words", words(t).length), metric("Copy", "Ready")], output, outputPackHtml({
+          badge: "Text case",
+          hero: title || "No text yet",
+          cards: [["Formats", 4], ["Words", words(t).length], ["Best for", "Titles/forms"], ["Status", t ? "Ready" : "Needs input"]],
+          sections: [["Title Case", title], ["Sentence case", sentence], ["All formats", output], ["Next step", "Use title case for headings and sentence case for body copy, then check the final field limit before publishing."]]
+        }));
+      }
     },
     "whitespace-cleaner": {
       sample: "Messy    text\n\n\nwith too many      spaces.",
@@ -981,8 +1293,9 @@
         const titleCut = title.length > 60;
         const descCut = desc.length > 158;
         const host = new URL(url).hostname.replace(/^www\./, "");
+        const pathLabel = new URL(url).pathname.replace(/^\/|\/$/g, "").replace(/\//g, " > ") || "home";
         const html = `<div class="cms-output-pack serp-pack">
-          <div class="serp-url">${esc(host)} › ${esc(new URL(url).pathname.replace(/^\/|\/$/g, "").replace(/\//g, " › ") || "home")}</div>
+          <div class="serp-url">${esc(host)} &gt; ${esc(pathLabel)}</div>
           <div class="serp-title">${esc(title || "Untitled result")}</div>
           <div class="serp-desc">${esc(desc || "No description provided.")}</div>
           <div class="cms-quality-grid">
@@ -1005,7 +1318,13 @@
         const rows = [...map].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 12);
         const topDensity = rows[0] && useful.length ? (rows[0][1] / useful.length) * 100 : 0;
         const action = !ws.length ? "Paste real copy first." : topDensity > 8 ? "Reduce repetition and add supporting phrases." : rows.length < 4 ? "Add more context before judging density." : "Use the top terms to check topic focus, not to stuff keywords.";
-        return result("Keyword focus calculated.", [metric("Words", ws.length), metric("Tracked terms", useful.length), metric("Top term", rows[0]?.[0] || "-"), metric("Action", action)], rows.length ? rows.map(([k, n]) => `${k}: ${n} (${((n / useful.length) * 100).toFixed(1)}%)`).join("\n") : "No useful terms found yet.\n\nPaste a paragraph, product description or guide section to inspect real topic focus.");
+        const output = rows.length ? rows.map(([k, n]) => `${k}: ${n} (${((n / useful.length) * 100).toFixed(1)}%)`).join("\n") : "No useful terms found yet.\n\nPaste a paragraph, product description or guide section to inspect real topic focus.";
+        return result("Keyword focus calculated with a clear next edit.", [metric("Words", ws.length), metric("Tracked terms", useful.length), metric("Top term", rows[0]?.[0] || "-"), metric("Action", action)], output, outputPackHtml({
+          badge: "Topic focus",
+          hero: rows[0] ? `${rows[0][0]} leads at ${topDensity.toFixed(1)}%` : "Paste a real section to inspect focus",
+          cards: [["Words", ws.length], ["Tracked terms", useful.length], ["Top term", rows[0]?.[0] || "-"], ["Risk", topDensity > 8 ? "Repetition" : "Balanced"]],
+          sections: [["Top terms", output], ["What this means", action], ["Next edit", "Replace repeated wording with natural variants, examples and supporting phrases before touching the title or meta description."]]
+        }));
       }
     },
     "slug-generator": {
@@ -1018,7 +1337,13 @@
         const primary = parts.join("-").slice(0, 80).replace(/-$/g, "");
         const short = parts.slice(0, 6).join("-");
         const status = primary.length <= 60 ? "Clean" : primary.length <= 80 ? "Usable" : "Too long";
-        return result("SEO slug variants generated.", [metric("Primary length", primary.length), metric("Short length", short.length), metric("Words kept", parts.length), metric("Status", status)], `Primary slug\n${primary || "missing-input"}\n\nShort slug\n${short || primary || "missing-input"}\n\nRecommendation\nUse the short version when the page intent is still clear. Avoid dates unless the content is explicitly year-based.`);
+        const output = `Primary slug\n${primary || "missing-input"}\n\nShort slug\n${short || primary || "missing-input"}\n\nRecommendation\nUse the short version when the page intent is still clear. Avoid dates unless the content is explicitly year-based.`;
+        return result("SEO slug variants generated with publishing guidance.", [metric("Primary length", primary.length), metric("Short length", short.length), metric("Words kept", parts.length), metric("Status", status)], output, outputPackHtml({
+          badge: "URL slug",
+          hero: short || primary || "missing-input",
+          cards: [["Primary length", primary.length], ["Short length", short.length], ["Words kept", parts.length], ["Status", status]],
+          sections: [["Primary slug", primary || "missing-input"], ["Short slug", short || primary || "missing-input"], ["Publishing rule", "Use the shortest version that still explains the page. Avoid dates unless the content is explicitly year-based."]]
+        }));
       }
     },
     "json-formatter": {
@@ -1076,19 +1401,25 @@
         u.searchParams.set("utm_source", source);
         u.searchParams.set("utm_medium", medium);
         u.searchParams.set("utm_campaign", campaign);
-        return result("UTM link built with clean naming.", [metric("Source", source), metric("Medium", medium), metric("Campaign", campaign), metric("URL", "Ready")], `${u.toString()}\n\nNaming rule\nKeep source, medium and campaign lowercase with hyphens. Use the same values across every creator, social and email placement.`);
+        const out = `${u.toString()}\n\nNaming rule\nKeep source, medium and campaign lowercase with hyphens. Use the same values across every creator, social and email placement.`;
+        return result("UTM link built with clean naming.", [metric("Source", source), metric("Medium", medium), metric("Campaign", campaign), metric("URL", "Ready")], out, outputPackHtml({
+          badge: "Tracking URL",
+          hero: u.toString(),
+          cards: [["Source", source], ["Medium", medium], ["Campaign", campaign], ["Status", "Copy-ready"]],
+          sections: [["Final URL", u.toString()], ["Naming rule", "Keep source, medium and campaign lowercase with hyphens. Use the same values across every creator, social and email placement."], ["Next step", "Paste this into the exact placement you want to measure, then keep a separate link for each placement."]]
+        }));
       }
     },
-    "http-ping": { sample: "https://example.com", fields: [field("url", "Website URL", "url", "https://example.com", true)], async run(v) { const tries = []; for (let i = 0; i < 3; i++) tries.push(await pingUrl(v.url)); const avg = Math.round(tries.reduce((a, x) => a + x.ms, 0) / tries.length); return result("Browser HTTP latency estimate.", [metric("Average", `${avg} ms`), metric("Attempts", 3), metric("Mode", "HTTP"), metric("Target", new URL(normUrl(v.url)).hostname)], tries.map((x, i) => `Attempt ${i + 1}: ${x.ms} ms (${x.status})`).join("\n")); } },
-    "dns-lookup": { sample: "example.com A", fields: [field("domain", "Domain", "text", "example.com"), field("record", "Record", "select", "A", false, ["A", "AAAA", "CNAME", "MX", "TXT", "NS"].map((x) => ({ value: x, label: x })))], async run(v) { const d = String(v.domain || "").replace(/^https?:\/\//, "").split("/")[0]; const r = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(d)}&type=${encodeURIComponent(v.record || "A")}`, { headers: { accept: "application/dns-json" } }); const j = await r.json(); const ans = j.Answer || []; return result("DNS lookup complete.", [metric("Domain", d), metric("Type", v.record), metric("Answers", ans.length), metric("Resolver", "Cloudflare")], ans.length ? ans.map((a) => `${a.name} ${a.TTL} ${v.record} ${a.data}`).join("\n") : JSON.stringify(j, null, 2)); } },
-    "ip-subnet-calculator": { sample: "192.168.1.10 / 24", fields: [field("ip", "IPv4", "text", "192.168.1.10"), field("cidr", "CIDR", "number", "24")], run(v) { const ip = ipv4ToNumber(v.ip), cidr = Math.max(0, Math.min(32, int(v.cidr, 24))); const mask = cidr === 0 ? 0 : (0xffffffff << (32 - cidr)) >>> 0; const net = (ip & mask) >>> 0, broad = (net | (~mask >>> 0)) >>> 0; return result("Subnet calculated.", [metric("Network", numberToIpv4(net)), metric("Broadcast", numberToIpv4(broad)), metric("Mask", numberToIpv4(mask)), metric("Usable", cidr >= 31 ? 0 : broad - net - 1)], `Network: ${numberToIpv4(net)}\nFirst host: ${cidr >= 31 ? "n/a" : numberToIpv4(net + 1)}\nLast host: ${cidr >= 31 ? "n/a" : numberToIpv4(broad - 1)}\nBroadcast: ${numberToIpv4(broad)}\nSubnet mask: ${numberToIpv4(mask)}`); } },
-    "password-generator": { sample: "Length 20, symbols on", fields: [field("length", "Length", "number", "20"), field("symbols", "Symbols", "select", "yes", false, [{ value: "yes", label: "Include symbols" }, { value: "no", label: "No symbols" }])], run(v) { const chars = `abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789${v.symbols === "no" ? "" : "!@#$%^&*_-+=?"}`; const bytes = new Uint32Array(Math.min(128, Math.max(8, int(v.length, 20)))); crypto.getRandomValues(bytes); const out = [...bytes].map((b) => chars[b % chars.length]).join(""); return result("Password generated locally.", [metric("Length", out.length), metric("Symbols", v.symbols), metric("Random", "Crypto"), metric("Saved", "No")], out); } },
-    "uuid-generator": { sample: "5 UUIDs", fields: [field("count", "Count", "number", "5")], run(v) { const count = Math.min(100, Math.max(1, int(v.count, 5))); const out = Array.from({ length: count }, uuidv4).join("\n"); return result("UUID v4 generated.", [metric("Count", count), metric("Version", "v4"), metric("Format", "RFC 4122"), metric("Copy", "Ready")], out); } },
-    "timestamp-converter": { sample: "now", fields: [field("timestamp", "Timestamp or date", "text", "now", true)], run(v) { const raw = String(v.timestamp || "now"); const d = raw.toLowerCase() === "now" ? new Date() : /^\d{10}$/.test(raw) ? new Date(+raw * 1000) : /^\d{13}$/.test(raw) ? new Date(+raw) : new Date(raw); if (Number.isNaN(d.getTime())) throw new Error("Invalid date or timestamp."); return result("Timestamp converted.", [metric("Unix seconds", Math.floor(d.getTime() / 1000)), metric("Milliseconds", d.getTime()), metric("Local", d.toLocaleString()), metric("UTC", d.toUTCString())], `ISO: ${d.toISOString()}\nLocal: ${d.toLocaleString()}\nUTC: ${d.toUTCString()}\nUnix seconds: ${Math.floor(d.getTime() / 1000)}`); } },
-    "regex-tester": { sample: "Email regex test", fields: [field("pattern", "Pattern", "text", "\\b[\\w.-]+@[\\w.-]+\\.\\w+\\b"), field("flags", "Flags", "text", "gi"), field("text", "Text", "textarea", "Contact sales@clickoz.com or support@example.com", true)], run(v) { const re = new RegExp(v.pattern, v.flags || "g"); const matches = [...String(v.text || "").matchAll(re)]; return result("Regex tested.", [metric("Matches", matches.length), metric("Flags", v.flags), metric("Groups", matches[0] ? matches[0].length - 1 : 0), metric("Status", "Done")], matches.map((m, i) => `${i + 1}. ${m[0]} at ${m.index}`).join("\n") || "No matches"); } },
-    "text-diff-checker": { sample: "Compare two drafts", fields: [field("left", "Original", "textarea", "The product is fast.\nIt works on mobile.", true), field("right", "Updated", "textarea", "The product is fast and private.\nIt works on mobile.", true)], run(v) { const a = String(v.left || "").split(/\r?\n/), b = String(v.right || "").split(/\r?\n/); const max = Math.max(a.length, b.length); const lines = []; let changed = 0; for (let i = 0; i < max; i++) { if (a[i] === b[i]) lines.push(`  ${a[i] || ""}`); else { changed++; if (a[i] !== undefined) lines.push(`- ${a[i]}`); if (b[i] !== undefined) lines.push(`+ ${b[i]}`); } } return result("Line diff complete.", [metric("Original lines", a.length), metric("New lines", b.length), metric("Changed rows", changed), metric("Mode", "Line")], lines.join("\n")); } },
-    "color-converter": { sample: "#3b82f6", fields: [field("color", "Color", "text", "#3b82f6", true)], run(v) { const rgb = parseColor(v.color), hsl = rgbToHsl(rgb), hex = `#${[rgb.r, rgb.g, rgb.b].map((n) => n.toString(16).padStart(2, "0")).join("")}`.toUpperCase(); return result("Color converted.", [metric("HEX", hex), metric("RGB", `${rgb.r}, ${rgb.g}, ${rgb.b}`), metric("HSL", `${hsl.h}, ${hsl.s}%, ${hsl.l}%`), metric("CSS", "Ready")], `HEX: ${hex}\nRGB: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})\nHSL: hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`); } },
-    "robots-txt-generator": { sample: "Sitemap + private paths", fields: [field("sitemap", "Sitemap URL", "url", "https://example.com/sitemap.xml"), field("disallow", "Disallow paths", "textarea", "/admin/\n/private/", true)], run(v) { const paths = String(v.disallow || "").split(/\r?\n/).map((x) => x.trim()).filter(Boolean); const lines = ["User-agent: *", ...(paths.length ? paths.map((p) => `Disallow: ${p}`) : ["Allow: /"]), "", `Sitemap: ${v.sitemap || ""}`]; return result("robots.txt generated.", [metric("Rules", paths.length || 1), metric("Sitemap", v.sitemap ? "Included" : "Missing"), metric("SEO", "Technical"), metric("Copy", "Ready")], lines.join("\n")); } }
+    "http-ping": { sample: "https://example.com", fields: [field("url", "Website URL", "url", "https://example.com", true)], async run(v) { const tries = []; for (let i = 0; i < 3; i++) tries.push(await pingUrl(v.url)); const target = new URL(normUrl(v.url)).hostname; const avg = Math.round(tries.reduce((a, x) => a + x.ms, 0) / tries.length); const rows = tries.map((x, i) => `Attempt ${i + 1}: ${x.ms} ms (${x.status})`).join("\n"); return result("Browser HTTP latency estimate.", [metric("Average", `${avg} ms`), metric("Attempts", 3), metric("Mode", "HTTP"), metric("Target", target)], rows, outputPackHtml({ badge: "Reachability check", hero: `${target} averaged ${avg} ms`, cards: [["Average", `${avg} ms`], ["Attempts", "3"], ["Mode", "HTTP favicon"], ["Target", target]], sections: [["Attempts", rows], ["How to read it", "This is a browser-side reachability estimate. Use it for quick comparison, not as a full uptime or Core Web Vitals report."]] })); } },
+    "dns-lookup": { sample: "example.com A", fields: [field("domain", "Domain", "text", "example.com"), field("record", "Record", "select", "A", false, ["A", "AAAA", "CNAME", "MX", "TXT", "NS"].map((x) => ({ value: x, label: x })))], async run(v) { const d = String(v.domain || "").replace(/^https?:\/\//, "").split("/")[0]; const type = v.record || "A"; const r = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(d)}&type=${encodeURIComponent(type)}`, { headers: { accept: "application/dns-json" } }); const j = await r.json(); const ans = j.Answer || []; const rows = ans.length ? ans.map((a) => `${a.name} ${a.TTL} ${type} ${a.data}`).join("\n") : JSON.stringify(j, null, 2); return result("DNS lookup complete.", [metric("Domain", d), metric("Type", type), metric("Answers", ans.length), metric("Resolver", "Cloudflare")], rows, outputPackHtml({ badge: "DNS result", hero: `${ans.length} ${type} answer${ans.length === 1 ? "" : "s"} for ${d}`, cards: [["Domain", d], ["Record", type], ["Answers", ans.length], ["Resolver", "Cloudflare"]], sections: [["Records", rows], ["Next step", "If a record changed recently, compare TTL and repeat the lookup after propagation time."]] })); } },
+    "ip-subnet-calculator": { sample: "192.168.1.10 / 24", fields: [field("ip", "IPv4", "text", "192.168.1.10"), field("cidr", "CIDR", "number", "24")], run(v) { const ip = ipv4ToNumber(v.ip), cidr = Math.max(0, Math.min(32, int(v.cidr, 24))); const mask = cidr === 0 ? 0 : (0xffffffff << (32 - cidr)) >>> 0; const net = (ip & mask) >>> 0, broad = (net | (~mask >>> 0)) >>> 0; const first = cidr >= 31 ? "n/a" : numberToIpv4(net + 1); const last = cidr >= 31 ? "n/a" : numberToIpv4(broad - 1); const out = `Network: ${numberToIpv4(net)}\nFirst host: ${first}\nLast host: ${last}\nBroadcast: ${numberToIpv4(broad)}\nSubnet mask: ${numberToIpv4(mask)}`; return result("Subnet calculated.", [metric("Network", numberToIpv4(net)), metric("Broadcast", numberToIpv4(broad)), metric("Mask", numberToIpv4(mask)), metric("Usable", cidr >= 31 ? 0 : broad - net - 1)], out, outputPackHtml({ badge: "IPv4 subnet", hero: `${numberToIpv4(net)}/${cidr}`, cards: [["Network", numberToIpv4(net)], ["Broadcast", numberToIpv4(broad)], ["Usable hosts", cidr >= 31 ? 0 : broad - net - 1], ["Mask", numberToIpv4(mask)]], sections: [["Range", `First host: ${first}\nLast host: ${last}`], ["Copy-ready summary", out]] })); } },
+    "password-generator": { sample: "Length 20, symbols on", fields: [field("length", "Length", "number", "20"), field("symbols", "Symbols", "select", "yes", false, [{ value: "yes", label: "Include symbols" }, { value: "no", label: "No symbols" }])], run(v) { const chars = `abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789${v.symbols === "no" ? "" : "!@#$%^&*_-+=?"}`; const bytes = new Uint32Array(Math.min(128, Math.max(8, int(v.length, 20)))); crypto.getRandomValues(bytes); const out = [...bytes].map((b) => chars[b % chars.length]).join(""); return result("Password generated locally.", [metric("Length", out.length), metric("Symbols", v.symbols), metric("Random", "Crypto"), metric("Saved", "No")], out, outputPackHtml({ badge: "Local password", hero: out, cards: [["Length", out.length], ["Symbols", v.symbols === "no" ? "No" : "Yes"], ["Randomness", "Crypto API"], ["Storage", "Not saved"]], sections: [["Password", out], ["Use safely", "Paste it into a password manager immediately. Do not send generated secrets through chat, email or screenshots."]] })); } },
+    "uuid-generator": { sample: "5 UUIDs", fields: [field("count", "Count", "number", "5")], run(v) { const count = Math.min(100, Math.max(1, int(v.count, 5))); const out = Array.from({ length: count }, uuidv4).join("\n"); return result("UUID v4 generated.", [metric("Count", count), metric("Version", "v4"), metric("Format", "RFC 4122"), metric("Copy", "Ready")], out, outputPackHtml({ badge: "UUID v4", hero: `${count} identifier${count === 1 ? "" : "s"} generated`, cards: [["Count", count], ["Version", "v4"], ["Format", "RFC 4122"], ["Copy", "Ready"]], sections: [["UUID list", out], ["Best use", "Use these as non-sequential IDs for tests, mocks, records or temporary references."]] })); } },
+    "timestamp-converter": { sample: "now", fields: [field("timestamp", "Timestamp or date", "text", "now", true)], run(v) { const raw = String(v.timestamp || "now"); const d = raw.toLowerCase() === "now" ? new Date() : /^\d{10}$/.test(raw) ? new Date(+raw * 1000) : /^\d{13}$/.test(raw) ? new Date(+raw) : new Date(raw); if (Number.isNaN(d.getTime())) throw new Error("Invalid date or timestamp."); const unix = Math.floor(d.getTime() / 1000); const out = `ISO: ${d.toISOString()}\nLocal: ${d.toLocaleString()}\nUTC: ${d.toUTCString()}\nUnix seconds: ${unix}`; return result("Timestamp converted.", [metric("Unix seconds", unix), metric("Milliseconds", d.getTime()), metric("Local", d.toLocaleString()), metric("UTC", d.toUTCString())], out, outputPackHtml({ badge: "Time value", hero: d.toISOString(), cards: [["Unix seconds", unix], ["Milliseconds", d.getTime()], ["Local", d.toLocaleString()], ["UTC", d.toUTCString()]], sections: [["Copy-ready formats", out], ["Next step", "Use ISO for logs and APIs, Unix seconds for many backends, and local time only when presenting to humans."]] })); } },
+    "regex-tester": { sample: "Email regex test", fields: [field("pattern", "Pattern", "text", "\\b[\\w.-]+@[\\w.-]+\\.\\w+\\b"), field("flags", "Flags", "text", "gi"), field("text", "Text", "textarea", "Contact sales@clickoz.com or support@example.com", true)], run(v) { const re = new RegExp(v.pattern, v.flags || "g"); const matches = [...String(v.text || "").matchAll(re)]; const rows = matches.map((m, i) => `${i + 1}. ${m[0]} at ${m.index}`).join("\n") || "No matches"; return result("Regex tested.", [metric("Matches", matches.length), metric("Flags", v.flags), metric("Groups", matches[0] ? matches[0].length - 1 : 0), metric("Status", "Done")], rows, outputPackHtml({ badge: "Regex result", hero: matches.length ? `${matches.length} match${matches.length === 1 ? "" : "es"} found` : "No matches found", cards: [["Matches", matches.length], ["Flags", v.flags || "g"], ["Groups", matches[0] ? matches[0].length - 1 : 0], ["Status", "Done"]], sections: [["Matches", rows], ["Next step", "If the match is too broad, add anchors, word boundaries or a more specific character class before using it in production."]] })); } },
+    "text-diff-checker": { sample: "Compare two drafts", fields: [field("left", "Original", "textarea", "The product is fast.\nIt works on mobile.", true), field("right", "Updated", "textarea", "The product is fast and private.\nIt works on mobile.", true)], run(v) { const a = String(v.left || "").split(/\r?\n/), b = String(v.right || "").split(/\r?\n/); const max = Math.max(a.length, b.length); const lines = []; let changed = 0; for (let i = 0; i < max; i++) { if (a[i] === b[i]) lines.push(`  ${a[i] || ""}`); else { changed++; if (a[i] !== undefined) lines.push(`- ${a[i]}`); if (b[i] !== undefined) lines.push(`+ ${b[i]}`); } } const out = lines.join("\n"); return result("Line diff complete.", [metric("Original lines", a.length), metric("New lines", b.length), metric("Changed rows", changed), metric("Mode", "Line")], out, outputPackHtml({ badge: "Line diff", hero: changed ? `${changed} changed row${changed === 1 ? "" : "s"}` : "No line changes found", cards: [["Original lines", a.length], ["New lines", b.length], ["Changed rows", changed], ["Mode", "Line"]], sections: [["Diff", out || "No content to compare."], ["Review rule", "Read deletions and additions together before copying. A clean diff is still a draft review, not an approval."]] })); } },
+    "color-converter": { sample: "#3b82f6", fields: [field("color", "Color", "text", "#3b82f6", true)], run(v) { const rgb = parseColor(v.color), hsl = rgbToHsl(rgb), hex = `#${[rgb.r, rgb.g, rgb.b].map((n) => n.toString(16).padStart(2, "0")).join("")}`.toUpperCase(); const luma = Math.round((0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b) / 255 * 100); const out = `HEX: ${hex}\nRGB: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})\nHSL: hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`; return result("Color converted.", [metric("HEX", hex), metric("RGB", `${rgb.r}, ${rgb.g}, ${rgb.b}`), metric("HSL", `${hsl.h}, ${hsl.s}%, ${hsl.l}%`), metric("CSS", "Ready")], out, outputPackHtml({ badge: "Color values", hero: hex, cards: [["RGB", `${rgb.r}, ${rgb.g}, ${rgb.b}`], ["HSL", `${hsl.h}, ${hsl.s}%, ${hsl.l}%`], ["Luma", `${luma}%`], ["Text hint", luma > 58 ? "Dark text" : "Light text"]], sections: [["CSS values", out], ["Next step", "Check final contrast in the real UI before using the color for small text or controls."]] })); } },
+    "robots-txt-generator": { sample: "Sitemap + private paths", fields: [field("sitemap", "Sitemap URL", "url", "https://example.com/sitemap.xml"), field("disallow", "Disallow paths", "textarea", "/admin/\n/private/", true)], run(v) { const paths = String(v.disallow || "").split(/\r?\n/).map((x) => x.trim()).filter(Boolean); const lines = ["User-agent: *", ...(paths.length ? paths.map((p) => `Disallow: ${p}`) : ["Allow: /"]), "", `Sitemap: ${v.sitemap || ""}`]; const out = lines.join("\n"); return result("robots.txt generated.", [metric("Rules", paths.length || 1), metric("Sitemap", v.sitemap ? "Included" : "Missing"), metric("SEO", "Technical"), metric("Copy", "Ready")], out, outputPackHtml({ badge: "robots.txt", hero: paths.length ? `${paths.length} disallow rule${paths.length === 1 ? "" : "s"}` : "Allow all crawlable paths", cards: [["Rules", paths.length || 1], ["Sitemap", v.sitemap ? "Included" : "Missing"], ["Scope", "User-agent *"], ["Copy", "Ready"]], sections: [["robots.txt", out], ["Before publishing", "Robots directives affect crawling, not access control. Do not use robots.txt to protect private data."]] })); } }
   };
 
   configs["instagram-bio-optimizer"] = {
@@ -1154,15 +1485,184 @@
     }
   };
 
-  ["meta-tag-optimizer"].forEach((s) => configs[s] = configs["meta-tags"]);
-  ["url-encoder-decoder"].forEach((s) => configs[s] = configs["url-encoder"]);
-  ["base64-encode-decode"].forEach((s) => configs[s] = configs["base64"]);
-  ["html-entity-encoder", "html-entity-encoder-decoder"].forEach((s) => configs[s] = configs["entity-encoder"]);
+  configs["meta-tag-optimizer"] = {
+    sample: "https://clickoz.com/tools/\nTitle: Clickoz Tools - Free Online Tools\nDescription: Fast browser tools for SEO, writing, developers and creators.",
+    fields: [
+      field("url", "Page URL", "url", "https://clickoz.com/tools/", false),
+      field("title", "Current SEO title", "text", "Clickoz Tools - Free Online Tools", false),
+      field("description", "Current meta description", "textarea", "Fast browser tools for SEO, writing, developers and creators.", true),
+      field("intent", "Search intent or page job", "text", "find a fast browser tool", true)
+    ],
+    run(v) {
+      const title = compactText(v.title);
+      const desc = compactText(v.description);
+      const intent = compactText(v.intent);
+      let host = "page";
+      try { host = new URL(normUrl(v.url || "clickoz.com")).hostname.replace(/^www\./, ""); }
+      catch (_) {}
+      const titleStatus = !title ? "Missing" : title.length < 28 ? "Too short" : title.length <= 60 ? "Ready" : title.length <= 68 ? "Tighten" : "Too long";
+      const descStatus = !desc ? "Missing" : desc.length < 80 ? "Too short" : desc.length <= 158 ? "Ready" : desc.length <= 170 ? "Tighten" : "Too long";
+      const hasAction = /\b(fix|check|create|build|write|clean|format|convert|generate|preview|plan|save|find|use|finish|inspect|measure|compare)\b/i.test(`${title} ${desc} ${intent}`);
+      const priority = titleStatus !== "Ready" ? "Fix the title first" : descStatus !== "Ready" ? "Fix the description next" : hasAction ? "Ready for SERP preview" : "Add a stronger action word";
+      const baseIntent = intent || title || "the page job";
+      const suggestedTitle = titleStatus === "Ready" ? title : smartTitle(baseIntent).slice(0, 58).replace(/\s+\S*$/, "");
+      const suggestedDesc = descStatus === "Ready" && hasAction
+        ? desc
+        : `Use this page to ${baseIntent.toLowerCase().replace(/[.!?]$/, "")} with a clear result, practical steps and a next action.`;
+      const output = `Current snippet\n${title || "Missing title"}\n${desc || "Missing description"}\n\nPriority\n${priority}\n\nSuggested title\n${suggestedTitle || "Add a specific title"}\n\nSuggested description\n${suggestedDesc}\n\nHTML\n<title>${suggestedTitle}</title>\n<meta name="description" content="${suggestedDesc.replace(/"/g, "&quot;")}" />`;
+      const html = `<div class="cms-output-pack serp-pack">
+        <div class="serp-url">${esc(host)} &gt; snippet-check</div>
+        <div class="serp-title">${esc(suggestedTitle || title || "Missing title")}</div>
+        <div class="serp-desc">${esc(suggestedDesc || desc || "Missing description")}</div>
+        <div class="cms-quality-grid">
+          <div class="cms-quality-card"><strong>Priority</strong><span>${esc(priority)}</span></div>
+          <div class="cms-quality-card"><strong>Intent signal</strong><span>${esc(hasAction ? "Action wording found." : "Add the job the page helps finish.")}</span></div>
+        </div>
+      </div>`;
+      return result("Meta title and description checked with a publishing priority.", [metric("Title", `${title.length} chars`), metric("Description", `${desc.length} chars`), metric("Priority", priority), metric("Intent", hasAction ? "Clear" : "Weak")], output, html);
+    }
+  };
+
+  configs["url-encoder-decoder"] = {
+    sample: "campaign name=spring launch & source=instagram",
+    fields: [
+      field("value", "URL value, query string or pasted parameter", "textarea", "campaign name=spring launch & source=instagram", true),
+      field("mode", "Mode", "select", "auto", false, [
+        { value: "auto", label: "Auto detect" },
+        { value: "encode", label: "Encode value" },
+        { value: "decode", label: "Decode value" },
+        { value: "query", label: "Clean query string" }
+      ])
+    ],
+    run(v) {
+      const raw = String(v.value || "").trim();
+      const mode = v.mode || "auto";
+      const encoded = encodeURIComponent(raw);
+      let decoded = "";
+      let decodeStatus = "Valid";
+      try { decoded = decodeURIComponent(raw.replace(/\+/g, "%20")); }
+      catch (_) { decoded = "Input is not valid percent-encoded text."; decodeStatus = "Review"; }
+      const querySource = raw.includes("?") ? raw.slice(raw.indexOf("?") + 1) : raw;
+      let queryClean = "";
+      try {
+        const params = new URLSearchParams(querySource);
+        queryClean = [...params.entries()].map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join("&");
+      } catch (_) {
+        queryClean = "";
+      }
+      const hasUnsafe = /[\s<>"'{}|\\^`]/.test(raw);
+      const hasPercent = /%[0-9a-f]{2}/i.test(raw);
+      const primary = mode === "decode" || (mode === "auto" && hasPercent && decodeStatus === "Valid")
+        ? decoded
+        : mode === "query" && queryClean
+          ? queryClean
+          : encoded;
+      const issue = !raw ? "Paste a real value first." : hasUnsafe ? "Unsafe characters found." : hasPercent ? "Percent encoding detected." : "No obvious encoding issue.";
+      const output = `Recommended result\n${primary}\n\nEncoded value\n${encoded}\n\nDecoded attempt\n${decoded}\n\nClean query string\n${queryClean || "No query-style parameters detected."}\n\nDetected issue\n${issue}`;
+      return result("URL value analyzed with encode, decode and query repair paths.", [metric("Mode", mode), metric("Decode", decodeStatus), metric("Unsafe chars", hasUnsafe ? "Yes" : "No"), metric("Copy", "Ready")], output, outputPackHtml({
+        badge: "URL repair",
+        hero: primary || "Paste a real value first",
+        cards: [["Mode", mode], ["Decode", decodeStatus], ["Unsafe chars", hasUnsafe ? "Yes" : "No"], ["Detected", hasPercent ? "Encoded" : "Raw"]],
+        sections: [["Recommended result", primary || "No value yet."], ["Encoded value", encoded], ["Decoded attempt", decoded], ["Rule", "Encode parameter values before they enter a URL. Decode only when inspecting a value that is already encoded."]]
+      }));
+    }
+  };
+
+  configs["base64-encode-decode"] = {
+    sample: "Clickoz premium tools",
+    fields: [
+      field("value", "Text, Base64 or Base64URL", "textarea", "Clickoz premium tools", true),
+      field("mode", "Mode", "select", "auto", false, [
+        { value: "auto", label: "Auto detect" },
+        { value: "encode", label: "Encode text" },
+        { value: "decode", label: "Decode Base64" }
+      ])
+    ],
+    run(v) {
+      const raw = String(v.value || "");
+      const clean = raw.trim().replace(/\s+/g, "");
+      const encoded = utf8ToBase64(raw);
+      let decoded = "";
+      let decodedOk = true;
+      const hasBase64Shape = /^[A-Za-z0-9+/_-]+={0,2}$/.test(clean) && clean.length >= 8 && (clean.length % 4 === 0 || /[-_=]/.test(clean));
+      try {
+        const normalized = clean.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4);
+        decoded = base64ToUtf8(padded);
+      } catch (_) {
+        decoded = "Input is not valid UTF-8 Base64 or Base64URL.";
+        decodedOk = false;
+      }
+      const likelyBase64 = hasBase64Shape && decodedOk;
+      const decodedDisplay = likelyBase64 || v.mode === "decode" ? decoded : "Input looks like plain text. Use Encode text to create Base64.";
+      const primary = v.mode === "decode" || (v.mode === "auto" && likelyBase64) ? decoded : encoded;
+      const output = `Recommended result\n${primary}\n\nEncoded text\n${encoded}\n\nDecoded attempt\n${decodedDisplay}\n\nSecurity note\nBase64 is a transport format, not encryption. Decode only to inspect content you are allowed to inspect.`;
+      return result("Base64 text inspected with encode, decode and safety context.", [metric("Mode", v.mode || "auto"), metric("Encoded chars", encoded.length), metric("Decoded", likelyBase64 ? "Yes" : "Not detected"), metric("Security", "Not encryption")], output, outputPackHtml({
+        badge: "Base64 converter",
+        hero: primary || "No value yet",
+        cards: [["Mode", v.mode || "auto"], ["Decoded", likelyBase64 ? "Yes" : "Not detected"], ["Base64URL", /[-_]/.test(clean) ? "Detected" : "Not detected"], ["Security", "Not encryption"]],
+        sections: [["Recommended result", primary || "No value yet."], ["Encoded text", encoded], ["Decoded attempt", decodedDisplay], ["When to use it", "Use Base64 for transport or inspection, not for hiding secrets. For token-safe values, compare Base64URL rules before copying."]]
+      }));
+    }
+  };
+
+  configs["html-entity-encoder"] = {
+    sample: "<span title=\"Save & publish\">5 > 3</span>",
+    fields: [
+      field("text", "HTML text or escaped entities", "textarea", "<span title=\"Save & publish\">5 > 3</span>", true),
+      field("mode", "Mode", "select", "auto", false, [
+        { value: "auto", label: "Auto detect" },
+        { value: "encode", label: "Encode for HTML" },
+        { value: "decode", label: "Decode entities" }
+      ])
+    ],
+    run(v) {
+      const raw = String(v.text || "");
+      const ta = document.createElement("textarea");
+      ta.innerHTML = raw;
+      const decoded = ta.value;
+      const encoded = esc(raw);
+      const looksEscaped = /&(?:amp|lt|gt|quot|apos|#0?39|#[0-9]+|#x[0-9a-f]+);/i.test(raw);
+      const primary = v.mode === "decode" || (v.mode === "auto" && looksEscaped) ? decoded : encoded;
+      const output = `Recommended result\n${primary}\n\nEncoded for HTML\n${encoded}\n\nDecoded text\n${decoded}\n\nRule\nEncode when text will be inserted into HTML. Decode when you are reading or repairing already escaped content.`;
+      return result("HTML entities converted with a clear context rule.", [metric("Mode", v.mode || "auto"), metric("Escaped input", looksEscaped ? "Yes" : "No"), metric("Original chars", raw.length), metric("Copy", "Ready")], output, outputPackHtml({
+        badge: "HTML entities",
+        hero: primary || "No text yet",
+        cards: [["Mode", v.mode || "auto"], ["Escaped input", looksEscaped ? "Yes" : "No"], ["Chars", raw.length], ["Context", "HTML text"]],
+        sections: [["Recommended result", primary || "No text yet."], ["Encoded for HTML", encoded], ["Decoded text", decoded], ["Rule", "Encode for markup output. Decode only for inspection, cleanup or repair."]]
+      }));
+    }
+  };
+
+  configs["html-entity-encoder-decoder"] = {
+    sample: "Tom &amp; Jerry said &lt;strong&gt;save now&lt;/strong&gt;",
+    fields: [field("text", "Broken, escaped or unsafe HTML text", "textarea", "Tom &amp; Jerry said &lt;strong&gt;save now&lt;/strong&gt;", true)],
+    run(v) {
+      const raw = String(v.text || "");
+      const ta = document.createElement("textarea");
+      ta.innerHTML = raw;
+      const readable = ta.value;
+      const safe = esc(readable);
+      const entityCount = (raw.match(/&(?:amp|lt|gt|quot|apos|#0?39|#[0-9]+|#x[0-9a-f]+);/gi) || []).length;
+      const unsafeCount = (readable.match(/[<>"'&]/g) || []).length;
+      const risk = unsafeCount ? "Review before inserting into markup." : "Safe as plain text.";
+      const output = `Safe HTML text\n${safe}\n\nReadable decoded text\n${readable}\n\nRepair notes\nEntities detected: ${entityCount}\nUnsafe characters after decode: ${unsafeCount}\n${risk}`;
+      return result("HTML entity repair finished with safe and readable versions.", [metric("Entities", entityCount), metric("Unsafe chars", unsafeCount), metric("Repair", safe === raw ? "No change" : "Applied"), metric("Copy", "Safe text")], output, outputPackHtml({
+        badge: "HTML repair",
+        hero: safe || "No text yet",
+        cards: [["Entities", entityCount], ["Unsafe chars", unsafeCount], ["Repair", safe === raw ? "No change" : "Applied"], ["Best use", "Broken markup"]],
+        sections: [["Safe HTML text", safe || "No text yet."], ["Readable decoded text", readable || "No text yet."], ["Risk fixed", risk], ["Next check", "Paste the safe version into the exact HTML context and confirm it displays as text, not as executable markup."]]
+      }));
+    }
+  };
+
   ["youtube-title-generator", "thumbnail-brief-generator", "youtube-description-generator", "youtube-hashtag-generator", "youtubevideotagoptimizer", "community-post-generator"].forEach((s) => {
+    const listedTool = cms.toolBySlug?.[s] || { title: s, slug: s, category: "youtube" };
+    const sample = humanSampleFor(listedTool);
     configs[s] = {
-      sample: cms.toolBySlug?.[s]?.description || "Create a useful creator workflow.",
-      fields: [field("idea", "Video idea or topic", "textarea", cms.toolBySlug?.[s]?.description || "", true)],
-      run(v) { const tool = cms.toolBySlug?.[s] || { title: s, slug: s }; return result(`${tool.title} ready.`, [metric("Score", `${scoreHook(v.idea)}/100`), metric("Format", "YouTube"), metric("Sections", 4), metric("Copy", "Ready")], creatorOutput(tool, v.idea, "YouTube")); }
+      sample,
+      fields: [field("input", "Video idea, comment or upload context", "textarea", sample, true)],
+      run(v) { const tool = cms.toolBySlug?.[s] || { title: s, slug: s }; const output = creatorOutput(tool, v.input, "YouTube"); return result(`${tool.title} ready with a structured upload path.`, [metric("Score", `${scoreHook(v.input)}/100`), metric("Format", "YouTube"), metric("Sections", 4), metric("Copy", "Ready")], output, premiumFallbackHtml(tool, v.input, "YouTube", output)); }
     };
   });
 
@@ -1170,11 +1670,30 @@
     const tool = cms.toolBySlug?.[slug] || { title: slug.replace(/-/g, " "), category: "socialai", description: "" };
     const isCalc = /calculator|rate/i.test(tool.title);
     if (isCalc && slug === "sponsorship-rate-calculator") {
-      return { sample: "100000 views, 4.5% engagement, 1 video + 1 short", fields: [field("views", "Average views", "number", "100000"), field("engagement", "Engagement %", "number", "4.5"), field("deliverables", "Deliverables", "text", "1 video + 1 short", true)], run(v) { const base = int(v.views, 0) * (0.02 + Math.max(0, parseFloat(v.engagement || 0)) / 100); const min = Math.round(base * .7), max = Math.round(base * 1.4); return result("Sponsorship estimate ready.", [metric("Low", `$${min}`), metric("High", `$${max}`), metric("Views", int(v.views, 0)), metric("Deliverables", v.deliverables || "-")], `Estimated range: $${min} - $${max}\nDeliverables: ${v.deliverables}\nNote: validate against niche, audience quality, usage rights and exclusivity.`); } };
+      return {
+        sample: "100000 views, 4.5% engagement, 1 video + 1 short",
+        fields: [field("views", "Average views", "number", "100000"), field("engagement", "Engagement %", "number", "4.5"), field("deliverables", "Deliverables", "text", "1 video + 1 short", true)],
+        run(v) {
+          const views = int(v.views, 0);
+          const engagement = Math.max(0, parseFloat(v.engagement || 0));
+          const base = views * (0.02 + engagement / 100);
+          const min = Math.round(base * .7);
+          const max = Math.round(base * 1.4);
+          const midpoint = Math.round((min + max) / 2);
+          const output = `Estimated range\n$${min} - $${max}\n\nAnchor price\n$${midpoint}\n\nDeliverables\n${v.deliverables || "-"}\n\nNegotiation notes\nValidate against niche, audience quality, usage rights, whitelisting, exclusivity, production effort and revision scope.`;
+          return result("Sponsorship estimate ready with negotiation context.", [metric("Low", `$${min}`), metric("High", `$${max}`), metric("Views", views), metric("Deliverables", v.deliverables || "-")], output, outputPackHtml({
+            badge: "Rate estimate",
+            hero: `$${min} - $${max}`,
+            cards: [["Anchor", `$${midpoint}`], ["Views", views], ["Engagement", `${engagement}%`], ["Scope", v.deliverables || "-"]],
+            sections: [["Estimated range", `$${min} - $${max}`], ["Anchor price", `$${midpoint}`], ["Negotiation notes", "Validate against niche, audience quality, usage rights, whitelisting, exclusivity, production effort and revision scope."], ["Next step", "Use the media kit tool next so the rate is supported by audience, offer and deliverable details."]]
+          }));
+        }
+      };
     }
+    const sample = humanSampleFor(tool);
     return {
-      sample: tool.description || `Create a premium ${tool.title} result.`,
-      fields: [field("input", "Topic, draft or notes", "textarea", tool.description || "", true), field("platform", "Platform", "select", tool.category === "youtube" ? "YouTube" : tool.category === "socialai" ? "Short-form" : "General", false, ["General", "YouTube", "Instagram", "TikTok", "LinkedIn", "X", "Pinterest", "Short-form"].map((x) => ({ value: x, label: x })))],
+      sample,
+      fields: [field("input", "Topic, draft or notes", "textarea", sample, true), field("platform", "Platform", "select", tool.category === "youtube" ? "YouTube" : tool.category === "socialai" ? "Short-form" : "General", false, ["General", "YouTube", "Instagram", "TikTok", "LinkedIn", "X", "Pinterest", "Short-form"].map((x) => ({ value: x, label: x })))],
       run(v) {
         const output = creatorOutput(tool, v.input, v.platform);
         return result(`${tool.title} ready with a structured output.`, [metric("Score", `${scoreHook(v.input)}/100`), metric("Platform", v.platform), metric("Sections", 4), metric("Next", "Copy/refine")], output, premiumFallbackHtml(tool, v.input, v.platform, output));
@@ -1218,13 +1737,89 @@
     ];
   }
 
+  function inputWarningsFor(root, slug, hasOutput) {
+    if (!hasOutput) return [];
+    const values = vals(root);
+    const joined = Object.values(values).map((value) => String(value || "").trim()).filter(Boolean).join(" ");
+    const warnings = [];
+
+    if (/word-counter|character-counter|readability|whitespace|text-case/i.test(slug) && joined.length > 0 && joined.length < 70) {
+      warnings.push("This is a short sample. Use a real paragraph before making length or readability decisions.");
+    }
+    if (/meta/.test(slug)) {
+      const title = String(values.title || "").trim();
+      const desc = String(values.description || "").trim();
+      if (title && title.length < 28) warnings.push("The title may be too short to explain the page value clearly.");
+      if (desc && desc.length < 70) warnings.push("The description may need more context before it can earn the click.");
+    }
+    if (/keyword-density/.test(slug) && joined.split(/\s+/).filter(Boolean).length < 40) {
+      warnings.push("Density checks need enough text to be meaningful. Paste a real section when possible.");
+    }
+    if (/utm-builder/.test(slug) && [values.source, values.medium, values.campaign].some((value) => /^(source|medium|campaign)$/i.test(String(value || "").trim()))) {
+      warnings.push("Replace fallback campaign names before posting, or analytics will be hard to read later.");
+    }
+    if (/password-generator/.test(slug) && int(values.length, 20) < 14) {
+      warnings.push("Use at least 14 characters for sensitive accounts; longer is better when allowed.");
+    }
+
+    return warnings.slice(0, 2);
+  }
+
+  function renderInputWarnings(root, slug, hasOutput) {
+    const card = $(".cms-result-card", root);
+    if (!card) return;
+    let warning = $(".cms-input-warnings", root);
+    if (!warning) {
+      warning = document.createElement("div");
+      warning.className = "cms-input-warnings";
+      const metrics = $(".cms-metrics", root);
+      (metrics || card).insertAdjacentElement(metrics ? "afterend" : "beforeend", warning);
+    }
+    const warnings = inputWarningsFor(root, slug, hasOutput);
+    warning.hidden = warnings.length === 0;
+    warning.innerHTML = warnings.length
+      ? `<strong>Check before copying</strong><ul>${warnings.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>`
+      : "";
+  }
+
+  function setupCmsReveal(root) {
+    if (root.dataset.revealReady === "true") return;
+    root.dataset.revealReady = "true";
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+    const page = root.closest(".cms-tool-page") || document;
+    const items = $$(".cms-tool-brief article, .cms-job-summary article, .cms-step-card, .cms-tool-app, .cms-result-card, .cms-related-box, .cms-ops-strip article, .cms-info-card", page);
+    items.forEach((item, index) => {
+      item.classList.add("cms-reveal");
+      item.style.setProperty("--cms-reveal-delay", `${Math.min(index * 28, 180)}ms`);
+    });
+    if (!("IntersectionObserver" in window)) {
+      items.forEach((item) => item.classList.add("is-visible"));
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.08, rootMargin: "0px 0px -8% 0px" });
+    items.forEach((item) => observer.observe(item));
+  }
+
   function renderResult(root, res) {
     const slug = root.getAttribute("data-tool-app") || "";
     const tool = cms.toolBySlug?.[slug] || { title: slug.replace(/-/g, " "), category: "" };
     const card = $(".cms-result-card", root);
-    if (card) card.classList.add("has-output");
+    const hasOutput = Boolean(String(res.output || "").trim() || String(res.html || "").trim());
+    if (card) {
+      card.classList.toggle("has-output", hasOutput);
+      card.classList.remove("cms-result-updated");
+      requestAnimationFrame(() => card.classList.add("cms-result-updated"));
+    }
+    root.dataset.toolHasOutput = hasOutput ? "true" : "false";
     $(".cms-result-status", root).textContent = res.status || "Result ready.";
     $(".cms-metrics", root).innerHTML = (res.metrics || []).map(([a, b]) => `<div class="cms-metric"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`).join("");
+    renderInputWarnings(root, slug, hasOutput);
     const out = $(".cms-output", root);
     let label = $(".cms-output-label", root);
     if (!label) {
@@ -1232,10 +1827,15 @@
       label.className = "cms-output-label";
       out.insertAdjacentElement("beforebegin", label);
     }
-    label.innerHTML = `<span>Primary output</span><small>Copy-ready result below</small>`;
-    if (res.html) renderSafeHtml(out, res.html);
-    else renderTextOutput(out, res.output || "");
-    out.dataset.copy = res.output || out.textContent || "";
+    label.innerHTML = `<span>${hasOutput ? "Primary output" : "Ready when you are"}</span><small>${hasOutput ? "Copy-ready result below" : "Use a sample or paste real input"}</small>`;
+    if (hasOutput) {
+      if (res.html) renderSafeHtml(out, res.html);
+      else renderTextOutput(out, res.output || "");
+      out.dataset.copy = res.output || out.textContent || "";
+    } else {
+      out.innerHTML = `<div class="cms-output-empty"><b>No output yet</b><span>Pick an example or type real input. Your work stays browser-only and the last input is restored locally.</span></div>`;
+      out.dataset.copy = "";
+    }
 
     let next = $(".cms-next-action", root);
     if (!next) {
@@ -1243,15 +1843,35 @@
       next.className = "cms-next-action";
       out.insertAdjacentElement("afterend", next);
     }
-    next.innerHTML = `<strong>Next best action</strong><span>${esc(nextActionFor(tool, slug))}</span>`;
+    next.innerHTML = hasOutput
+      ? `<strong>Next best action</strong><span>${esc(nextActionFor(tool, slug))}</span>`
+      : `<strong>Start fast</strong><span>Load a sample, paste real input or use Ctrl+K to jump to the next Clickoz job.</span>`;
 
     let quality = $(".cms-quality-action", root);
-    if (!quality) {
+    if (!quality || quality.tagName !== "DETAILS") {
+      const old = quality;
       quality = document.createElement("div");
-      quality.className = "cms-quality-action";
-      next.insertAdjacentElement("afterend", quality);
+      const details = document.createElement("details");
+      details.className = "cms-quality-action";
+      quality = details;
+      if (old) old.replaceWith(quality);
+      else next.insertAdjacentElement("afterend", quality);
     }
-    quality.innerHTML = `<strong>Output quality check</strong><ul>${qualityChecklistFor(tool, slug).map((item) => `<li>${esc(item)}</li>`).join("")}</ul>`;
+    quality.hidden = !hasOutput;
+    if (hasOutput) {
+      quality.open = false;
+      quality.innerHTML = `<summary>Output check</summary><ul>${qualityChecklistFor(tool, slug).map((item) => `<li>${esc(item)}</li>`).join("")}</ul>`;
+    }
+    root.dispatchEvent(new CustomEvent("clickoz:tool-result", { detail: { hasOutput, status: res.status || "" } }));
+  }
+
+  function nextToolChipsFor(tool) {
+    const items = (tool.relatedTools || [])
+      .map((slug) => cms.toolBySlug?.[slug])
+      .filter(Boolean)
+      .slice(0, 3);
+    if (!items.length) return "";
+    return `<div class="cms-next-chips" aria-label="Next useful tools">${items.map((item) => `<a href="${esc(item.url)}">${esc(item.title)}</a>`).join("")}</div>`;
   }
 
   function nextActionFor(tool, slug) {
@@ -1279,16 +1899,42 @@
     return "Copy the result, review it once in context, then continue with the related guide or next connected tool.";
   }
 
-  async function run(root, config) {
+  async function run(root, config, options = {}) {
     const btn = $("[data-action='run']", root);
     const original = btn ? btn.textContent : "";
+    const slug = root.getAttribute("data-tool-app") || "";
+    const tool = cms.toolBySlug?.[slug] || { title: slug.replace(/-/g, " "), category: "" };
+    root.classList.add("is-running");
+    root.dataset.toolPhase = "running";
+    root.setAttribute("aria-busy", "true");
+    renderRunMeter(root, tool, "running");
     try {
-      if (btn) btn.textContent = "Working...";
+      if (btn) {
+        btn.textContent = "Working...";
+        btn.dataset.busy = "true";
+        btn.setAttribute("aria-busy", "true");
+      }
       renderResult(root, await config.run(vals(root)));
+      renderRunMeter(root, tool, "ready");
+      root.dataset.toolPhase = "ready";
+      if (options.save !== false) saveToolState(root, slug);
+      if (options.record) {
+        pushToolHistory(root, slug);
+        renderToolHistory(root, slug);
+      }
     } catch (err) {
       renderResult(root, result("Check the input and try again.", [metric("Status", "Input error"), metric("Privacy", "Browser"), metric("Output", "Blocked"), metric("Fix", "Review")], err?.message || "Unable to run this tool."));
+      renderRunMeter(root, tool, "error");
+      root.dataset.toolPhase = "error";
+      flashTool(root, "Check the input and try again.", "warn");
     } finally {
-      if (btn) btn.textContent = original || "⚡ Run tool";
+      root.classList.remove("is-running");
+      root.setAttribute("aria-busy", "false");
+      if (btn) {
+        delete btn.dataset.busy;
+        btn.removeAttribute("aria-busy");
+        btn.textContent = original || "Run tool";
+      }
     }
   }
 
@@ -1300,26 +1946,48 @@
     const tool = cms.toolBySlug?.[slug] || { title: slug.replace(/-/g, " "), description: "" };
     const examples = toolExamples(slug, config, tool).filter(Boolean).slice(0, 3);
     renderFields(config, root);
+    ensureToolUx(root);
+    renderRunMeter(root, tool, "idle");
+    const restored = restoreToolState(root, slug);
+    renderToolHistory(root, slug);
+    if (restored) flashTool(root, "Last input restored locally.");
+    setupCmsReveal(root);
     const pre = $(".cms-example-box pre", root);
     const options = $(".cms-example-options", root);
     function showExample(index, load = false) {
       const example = examples[index] || examples[0];
       if (pre) pre.textContent = previewExample(example);
+      renderExampleSequence(root, tool, example, index, load ? "loaded" : "preview");
       if (options) {
-        options.querySelectorAll(".cms-example-option").forEach((btn, i) => btn.classList.toggle("active", i === index));
+        options.querySelectorAll(".cms-example-option").forEach((btn, i) => {
+          const active = i === index;
+          btn.classList.toggle("active", active);
+          btn.setAttribute("aria-pressed", active ? "true" : "false");
+        });
       }
       if (load) {
         applyExample(root, config, example);
-        run(root, config);
+        run(root, config, { record: true });
+        flashTool(root, "Example loaded. Output refreshed.");
       }
     }
     if (options) {
-      options.innerHTML = examples.map((example, index) => `<button class="cms-example-option${index === 0 ? " active" : ""}" type="button" data-example="${index}">${esc(typeof example === "string" ? `Example ${index + 1}` : example.label || `Example ${index + 1}`)}</button>`).join("");
+      options.innerHTML = examples.map((example, index) => `<button class="cms-example-option${index === 0 ? " active" : ""}" type="button" data-example="${index}" aria-pressed="${index === 0 ? "true" : "false"}">${esc(typeof example === "string" ? `Example ${index + 1}` : example.label || `Example ${index + 1}`)}</button>`).join("");
     }
     showExample(0, false);
     root.addEventListener("click", async (e) => {
       const btn = e.target.closest("[data-action]");
       const exampleBtn = e.target.closest("[data-example]");
+      const historyBtn = e.target.closest("[data-history]");
+      if (historyBtn) {
+        const item = readHistory(slug)[int(historyBtn.getAttribute("data-history"), 0)];
+        if (item && item.values) {
+          applyValues(root, item.values);
+          await run(root, config, { record: false });
+          flashTool(root, "History restored.");
+        }
+        return;
+      }
       if (exampleBtn) {
         const index = int(exampleBtn.getAttribute("data-example"), 0);
         showExample(index, true);
@@ -1327,12 +1995,62 @@
       }
       if (!btn) return;
       const action = btn.getAttribute("data-action");
-      if (action === "run") await run(root, config);
-      if (action === "clear") { root.querySelectorAll("input, textarea").forEach((el) => { el.value = ""; }); renderResult(root, result("Cleared. Pick an example or enter your own input.", [], "")); }
-      if (action === "copy") { const ok = await copyText($(".cms-output", root)?.dataset.copy || ""); const old = btn.textContent; btn.textContent = ok ? "Copied" : "Copy failed"; setTimeout(() => { btn.textContent = old; }, 900); }
+      if (action === "run") {
+        await run(root, config, { record: true });
+        flashTool(root, "Result refreshed.");
+      }
+      if (action === "clear") {
+        root.querySelectorAll("input, textarea").forEach((el) => { el.value = ""; });
+        safeStorage("remove", stateKey(slug));
+        renderResult(root, result("Cleared. Pick an example or enter your own input.", [], ""));
+        flashTool(root, "Input cleared.");
+      }
+      if (action === "copy") {
+        const text = $(".cms-output", root)?.dataset.copy || "";
+        const hasText = Boolean(text);
+        const ok = hasText && await copyText(text);
+        const old = btn.textContent;
+        btn.textContent = ok ? "Copied" : hasText ? "Copy failed" : "Nothing to copy";
+        btn.classList.toggle("is-copied", ok);
+        if (hasText && !ok) selectOutput(root);
+        flashTool(root, ok ? "Copied to clipboard." : hasText ? "Copy blocked by the browser. Select the output manually." : "Run the tool before copying.", ok ? "ok" : "warn");
+        setTimeout(() => { btn.textContent = old; btn.classList.remove("is-copied"); }, 1000);
+      }
     });
-    $(".cms-form-grid", root)?.addEventListener("input", () => { clearTimeout(root._timer); root._timer = setTimeout(() => run(root, config), 220); });
-    run(root, config);
+    $(".cms-form-grid", root)?.addEventListener("input", () => {
+      saveToolState(root, slug);
+      clearTimeout(root._timer);
+      root._timer = setTimeout(() => run(root, config, { record: false }), 220);
+    });
+    root.addEventListener("keydown", async (e) => {
+      const mod = e.ctrlKey || e.metaKey;
+      if (!mod) return;
+      if (e.key === "Enter") {
+        e.preventDefault();
+        await run(root, config, { record: true });
+        flashTool(root, "Ran from shortcut.");
+      }
+      if (e.shiftKey && e.key.toLowerCase() === "c") {
+        e.preventDefault();
+        const text = $(".cms-output", root)?.dataset.copy || "";
+        const hasText = Boolean(text);
+        const ok = hasText && await copyText(text);
+        if (hasText && !ok) selectOutput(root);
+        flashTool(root, ok ? "Copied to clipboard." : hasText ? "Copy blocked by the browser. Select the output manually." : "Run the tool before copying.", ok ? "ok" : "warn");
+      }
+      if (e.shiftKey && e.key === "Backspace") {
+        e.preventDefault();
+        root.querySelectorAll("input, textarea").forEach((el) => { el.value = ""; });
+        safeStorage("remove", stateKey(slug));
+        renderResult(root, result("Cleared. Pick an example or enter your own input.", [], ""));
+        flashTool(root, "Input cleared.");
+      }
+      if (e.shiftKey && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        if (duplicateFocusedField(root)) flashTool(root, "Focused field duplicated.");
+      }
+    });
+    run(root, config, { save: false, record: false });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

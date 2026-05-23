@@ -1,4 +1,4 @@
-﻿/* /tools/tools.js?v=4
+﻿/* /tools/tools.js?v=11
    Directory behavior:
    - All is the default state, so /tools/ starts at the top.
    - Category chips navigate to sections; they do not hide the catalogue.
@@ -11,7 +11,13 @@
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-  const norm = (s) => (s || "").toLowerCase().replace(/\s+/g, " ").trim();
+  const norm = (s) => (s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 
   const chipsWrap = $("#toolsChips");
   const chips = chipsWrap ? $$(".chip", chipsWrap) : [];
@@ -157,6 +163,33 @@
 
   enhanceToolCards();
 
+  function workProfile(slug) {
+    return window.ClickozWorkCMS?.profileForSlug?.(slug) || null;
+  }
+
+  function enhanceOperationalCards() {
+    $$(".card", sectionsWrap).forEach((card) => {
+      if ($(".tool-output-preview", card)) return;
+      const slug = (card.dataset.toolSlug || (card.getAttribute("href") || "").split("/").filter(Boolean).pop() || "").trim();
+      const profile = workProfile(slug);
+      if (!profile) return;
+
+      const preview = document.createElement("div");
+      preview.className = "tool-output-preview";
+      preview.innerHTML = `
+        <span>${profile.timeSaved || "Fast fix"}</span>
+        <strong>${profile.sampleInput || "Input"} -> ${profile.sampleOutput || "useful output"}</strong>
+        <em>${profile.usedFor || profile.quickJob || "Daily work"}</em>
+      `;
+
+      const cta = $(".tool-cta", card);
+      if (cta && cta.parentElement === card) card.insertBefore(preview, cta);
+      else card.appendChild(preview);
+    });
+  }
+
+  enhanceOperationalCards();
+
   chips.forEach((chip) => {
     chip.setAttribute("role", "button");
     chip.setAttribute("tabindex", "0");
@@ -183,13 +216,73 @@
   });
 
   const allCards = $$(".card", sectionsWrap);
+  function levenshtein(a, b) {
+    if (a === b) return 0;
+    if (!a) return b.length;
+    if (!b) return a.length;
+    const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= a.length; i++) {
+      let prev = i;
+      for (let j = 1; j <= b.length; j++) {
+        const next = a[i - 1] === b[j - 1] ? row[j - 1] : Math.min(row[j - 1], prev, row[j]) + 1;
+        row[j - 1] = prev;
+        prev = next;
+      }
+      row[b.length] = prev;
+    }
+    return row[b.length];
+  }
+
+  function scoreQuery(query, meta) {
+    if (!query) return 1;
+    if (meta.search.includes(query)) return 180 - meta.search.indexOf(query);
+
+    const queryWords = query.split(/\s+/).filter(Boolean);
+    const weakWords = new Set(["fix", "make", "tool", "free", "online", "check", "create", "generate", "build", "best", "new", "quick", "fast"]);
+    const wordMatches = (word) =>
+      meta.title.includes(word) ||
+      meta.slug.includes(word) ||
+      meta.tokens.some((candidate) => candidate.startsWith(word)) ||
+      meta.tokens.some((candidate) => candidate.includes(word)) ||
+      meta.tokens.some((candidate) => Math.min(word.length, candidate.length) >= 4 && levenshtein(word, candidate) <= 2);
+    const requiredWords = queryWords.filter((word) => word.length >= 4 && !weakWords.has(word));
+    if (requiredWords.length && !requiredWords.some(wordMatches)) return 0;
+    let score = 0;
+
+    queryWords.forEach((word) => {
+      if (meta.title.includes(word)) score += 64;
+      else if (meta.slug.includes(word)) score += 56;
+      else if (meta.tokens.some((candidate) => candidate.startsWith(word))) score += 36;
+      else if (meta.tokens.some((candidate) => candidate.includes(word))) score += 24;
+      else if (meta.tokens.some((candidate) => Math.min(word.length, candidate.length) >= 4 && levenshtein(word, candidate) <= 2)) score += 18;
+    });
+
+    if (queryWords.length > 1 && queryWords.every((word) => meta.search.includes(word) || meta.tokens.some((candidate) => candidate.startsWith(word)))) {
+      score += 34;
+    }
+
+    return score;
+  }
+
   const cardMeta = allCards.map((card) => {
     const h = $("h3", card);
     const p = $("p", card);
+    const section = card.closest(".tool-section");
+    const sectionTitle = section ? $(".section-head h2", section) : null;
+    const slug = norm(card.dataset.toolSlug || (card.getAttribute("href") || "").split("/").filter(Boolean).pop() || "");
+    const title = norm(h ? h.textContent : "");
+    const description = norm(p ? p.textContent : "");
+    const featureText = norm($(".tool-mini-features", card)?.textContent || "");
+    const profile = workProfile(slug);
+    const profileText = profile ? `${profile.problem} ${profile.quickJob} ${profile.sampleInput} ${profile.sampleOutput} ${profile.timeSaved} ${profile.usedFor} ${profile.aliases || ""}` : "";
+    const search = norm(`${title} ${description} ${slug.replace(/-/g, " ")} ${featureText} ${profileText} ${section?.dataset.section || ""} ${sectionTitle ? sectionTitle.textContent : ""}`);
     return {
       el: card,
-      text: norm(`${h ? h.textContent : ""} ${p ? p.textContent : ""}`),
-      section: card.closest(".tool-section"),
+      search,
+      title,
+      slug,
+      tokens: Array.from(new Set(search.split(/\s+/).filter(Boolean))),
+      section,
     };
   });
 
@@ -200,8 +293,14 @@
   emptyState.style.display = "none";
   emptyState.innerHTML = `
     <div class="cms-empty-box">
-      <strong>No tools found</strong>
-      <span>Try a different keyword, or clear the search to see the full catalogue.</span>
+      <strong>No matching tool yet</strong>
+      <span>Search by the job you are trying to finish: fix JSON, clean text, SEO snippet, YouTube upload or tracking URL.</span>
+      <div class="tools-empty-suggestions" aria-label="Search suggestions">
+        <button type="button" data-search-suggestion="fix json">Fix JSON</button>
+        <button type="button" data-search-suggestion="clean text">Clean text</button>
+        <button type="button" data-search-suggestion="seo snippet">SEO snippet</button>
+        <button type="button" data-search-suggestion="youtube upload">YouTube upload</button>
+      </div>
     </div>
   `;
 
@@ -210,16 +309,24 @@
   function filterCards(value) {
     const q = norm(value);
     let shown = 0;
+    const sectionScores = new Map();
 
-    cardMeta.forEach(({ el, text }) => {
-      const ok = !q || text.includes(q);
+    cardMeta.forEach((meta) => {
+      const score = q ? scoreQuery(q, meta) : 1;
+      const ok = !q || score >= 18;
+      const { el } = meta;
       el.style.display = ok ? "" : "none";
-      if (ok) shown++;
+      el.style.order = q && ok ? String(Math.max(0, 999 - Math.round(score))) : "";
+      if (ok) {
+        shown++;
+        if (q && meta.section) sectionScores.set(meta.section, Math.max(sectionScores.get(meta.section) || 0, score));
+      }
     });
 
     sections.forEach((section) => {
       const hasVisible = $$(".card", section).some((card) => card.style.display !== "none");
       section.style.display = !q || hasVisible ? "" : "none";
+      section.style.order = q && hasVisible ? String(Math.max(0, 999 - Math.round(sectionScores.get(section) || 0))) : "";
     });
 
     emptyState.style.display = q && shown === 0 ? "" : "none";
@@ -245,6 +352,14 @@
       }
     });
   }
+
+  emptyState.addEventListener("click", (event) => {
+    const suggestion = event.target.closest("[data-search-suggestion]");
+    if (!suggestion || !searchInput) return;
+    searchInput.value = suggestion.getAttribute("data-search-suggestion") || "";
+    filterCards(searchInput.value);
+    searchInput.focus({ preventScroll: true });
+  });
 
   let spyEnabled = true;
   if (searchInput) {

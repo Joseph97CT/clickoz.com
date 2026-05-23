@@ -185,6 +185,39 @@
   transform: translateY(-1px);
 }
 
+.tools-empty{
+  margin-top: 16px;
+}
+
+.tools-empty-suggestions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:8px;
+  margin-top:12px;
+}
+
+.tools-empty-suggestions button{
+  min-height:34px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid rgba(var(--accent-rgb), .22);
+  background:rgba(var(--accent-rgb), .08);
+  color:rgba(255,255,255,.90);
+  font:inherit;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+  transition:transform .14s ease, border-color .14s ease, background .14s ease;
+}
+
+.tools-empty-suggestions button:hover,
+.tools-empty-suggestions button:focus-visible{
+  transform:translateY(-1px);
+  border-color:rgba(var(--accent-rgb), .40);
+  background:rgba(var(--accent-rgb), .13);
+}
+
 /* Give the hero a nice bottom spacing */
 .tools-hero + .tool-sections{
   margin-top: 18px;

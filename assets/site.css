@@ -14,8 +14,6 @@
    - Grain + Particles layers (CSS + canvas ready)
 ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
 /* ---------------- Root + Reset ---------------- */
 :root{
   color-scheme: dark;

@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { ORIGIN, CSP: csp, PERMISSIONS_POLICY, asset } = require("./cms-config");
 
 const root = path.resolve(__dirname, "..");
 const registryCode = fs.readFileSync(path.join(root, "assets", "cms-registry.js"), "utf8");
@@ -9,11 +10,14 @@ vm.createContext(ctx);
 vm.runInContext(registryCode, ctx);
 const cms = ctx.window.ClickozCMS;
 
-const csp = "default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src https://translate.google.com https://*.google.com; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests";
+/**
+ * @typedef {{ slug: string, title: string, category: string, url: string, description: string, tool: string }} CmsGuide
+ * @typedef {{ slug: string, title: string, category: string, url: string, description: string, relatedTools?: string[], relatedGuides?: string[], canonicalSlug?: string }} CmsTool
+ */
 
 const cat = {
   seo: {
-    label: "SEO workflow", icon: "🔎", visual: "seo",
+    label: "SEO workflow", icon: "SEO", visual: "seo",
     problem: "The page may be technically published, but it does not clearly answer search intent or guide the visitor to the next action.",
     cause: "Most SEO issues come from vague intent, weak snippets, repeated keywords, missing internal links or content that answers the topic without helping the user complete the task.",
     avoid: "Do not chase one magic number. Prioritize intent match, clarity, useful structure and internal links.",
@@ -25,7 +29,7 @@ const cat = {
     ]
   },
   writing: {
-    label: "Writing workflow", icon: "✍️", visual: "writing",
+    label: "Writing workflow", icon: "TXT", visual: "writing",
     problem: "The draft contains the right idea, but it feels too long, too unclear or too hard to scan on mobile.",
     cause: "Writing usually fails because the structure is unclear: long sentences, weak first paragraph, mixed intent, repeated filler or no obvious next step.",
     avoid: "Do not polish every sentence at once. Fix structure first, then length, then wording.",
@@ -37,7 +41,7 @@ const cat = {
     ]
   },
   dev: {
-    label: "Developer workflow", icon: "🧪", visual: "dev",
+    label: "Developer workflow", icon: "DEV", visual: "dev",
     problem: "A payload, URL, token or markup snippet looks correct, but breaks when copied into a real environment.",
     cause: "Developer utility problems often come from invisible characters, wrong encoding context, malformed JSON, unsafe escaping or confusing transport formats.",
     avoid: "Do not guess from appearance. Validate the exact input, inspect the transformed output and copy only after checking context.",
@@ -49,7 +53,7 @@ const cat = {
     ]
   },
   tracking: {
-    label: "Tracking workflow", icon: "📈", visual: "tracking",
+    label: "Tracking workflow", icon: "UTM", visual: "tracking",
     problem: "Campaign links exist, but analytics becomes messy because naming, source or medium choices are inconsistent.",
     cause: "Tracking problems usually start before launch: unclear naming conventions, unencoded URLs, duplicate campaign names or links pasted in the wrong place.",
     avoid: "Do not create campaign names on the fly. Decide a naming system before publishing.",
@@ -61,7 +65,7 @@ const cat = {
     ]
   },
   youtube: {
-    label: "YouTube workflow", icon: "▶️", visual: "youtube",
+    label: "YouTube workflow", icon: "YT", visual: "youtube",
     problem: "The video may be good, but the packaging does not make the click promise obvious enough.",
     cause: "Creator pages underperform when title, thumbnail, description, hashtags and tracking are treated as separate tasks instead of one upload system.",
     avoid: "Do not optimize tags before the title and thumbnail promise is clear.",
@@ -73,7 +77,7 @@ const cat = {
     ]
   },
   creator: {
-    label: "Creator system", icon: "🎬", visual: "creator",
+    label: "Creator system", icon: "CR", visual: "creator",
     problem: "Content is created one piece at a time, so ideas, uploads and follow-up posts are hard to repeat.",
     cause: "Creator workflows become fragile when planning, packaging, community posts and tracking are not connected.",
     avoid: "Do not plan uploads without planning the follow-up action.",
@@ -190,25 +194,74 @@ function specFor(tool) {
   return specific[tool.canonicalSlug] || specific[tool.slug] || {
     toolUse: `Open ${tool.title}, test the real input and copy the result only after checking the output.`,
     output: "A practical result that helps the user finish the current task.",
-    example: ["Weak: using a generic explanation without a next step.", "Better: apply the tool to a real input.", "Premium: connect the result to the next guide or tool."]
+    example: ["Weak: explaining the topic without helping the reader finish the task.", "Better: apply the tool to a real input.", "Premium: connect the result to the next guide or tool."]
   };
+}
+
+function guideFocus(guide, tool, cluster) {
+  const map = {
+    "how-to-write-meta-title-description": ["Snippet writing", "Turn a rough page promise into a title and description users can understand before clicking.", "A title, description and first-screen promise that all say the same useful thing."],
+    "meta-tags-length": ["Length control", "Fix truncation risk without reducing the snippet to empty keyword fragments.", "A snippet that stays readable inside common title and description limits."],
+    "meta-tags-checklist": ["Publishing audit", "Check the full metadata routine before the page goes live.", "A practical pre-publish checklist with no fake ranking promises."],
+    "serp-preview": ["Visual preview", "See title, URL and description together before pushing the page live.", "A cleaner search result preview with a visible next edit."],
+    "serp-snippet-ctr": ["CTR testing", "Improve click clarity without drifting into clickbait.", "A testable snippet angle that still matches the real page."],
+    "keyword-density-explained": ["Topic diagnosis", "Use repeated terms as a signal, not as a mechanical ranking target.", "A natural wording plan with variants, examples and supporting phrases."],
+    "keyword-variations": ["Intent coverage", "Expand the topic with adjacent phrases that help the reader, not keyword stuffing.", "A page outline that covers the real search intent more completely."],
+    "seo-content-checklist": ["Whole-page audit", "Review intent, structure, internal links, trust and next action in one pass.", "A page that is ready to publish because the workflow is complete."],
+    "slug-best-practices": ["URL durability", "Create a slug that will still make sense after the page changes.", "A short URL that matches the title and internal link wording."],
+    "internal-linking-tools-sites": ["Discovery flow", "Connect tools and guides so users do not hit dead ends.", "A linked path from problem to tool to next useful page."],
+    "core-web-vitals-tools-sites": ["Performance trust", "Keep interactive pages fast, stable and usable on mobile.", "A tool page that feels responsive before the user reads the copy."],
+    "readability-for-seo": ["Search readability", "Make SEO copy easier to scan without flattening expertise.", "A draft with shorter paragraphs, clearer headings and useful examples."],
+    "readability-score": ["Score interpretation", "Turn a readability number into practical edits.", "A rewrite plan that explains exactly what to shorten or restructure."],
+    "readability-for-ranking": ["Helpful content clarity", "Use clarity to support search usefulness instead of chasing a score.", "A page that reads fast and still answers the query with depth."],
+    "word-count-for-seo": ["Length decision", "Choose page depth from intent and usefulness, not arbitrary word-count targets.", "A content length plan based on the task the page must finish."],
+    "content-brief-template": ["Brief building", "Turn intent into a usable page outline before writing.", "A brief with audience, sections, examples, FAQ and next action."],
+    "text-cleanup-workflow": ["Paste cleanup", "Normalize messy text before editing the message itself.", "Clean copy that can move into a CMS, doc, post or email without broken spacing."],
+    "json-formatter-online": ["JSON inspection", "Format and inspect payloads without losing the original debugging context.", "A readable JSON payload plus the reason it is safe to copy."],
+    "json-formatting-debug": ["Error repair", "Find the smallest broken part before rewriting a payload.", "A focused debugging routine for invalid JSON."],
+    "url-encoding": ["Concept guide", "Understand why URLs break when characters move between contexts.", "A mental model for encoding values, not entire workflows blindly."],
+    "url-encoding-basics": ["Quick encoding fix", "Encode a pasted value safely before it enters a URL.", "A query-safe value and a short rule for when to use it."],
+    "url-encoding-explained": ["Practical repair", "Fix broken links, spaces and symbols in real parameters.", "A repaired URL value with the original problem explained."],
+    "query-string-best-practices": ["Parameter hygiene", "Keep query strings readable, encoded and measurable.", "A naming and encoding routine that survives analytics."],
+    "base64-decode": ["Decode inspection", "Decode payloads only to understand what is inside.", "Readable content plus a safety note that it is not encryption."],
+    "base64-encode-decode": ["Transport format", "Choose encode or decode based on the data movement task.", "A clear before/after result for payload transport."],
+    "base64url-vs-base64": ["Token-safe encoding", "Understand why tokens use URL-safe characters.", "A decision rule for Base64 vs Base64URL."],
+    "debugging-tokens": ["Token debugging", "Inspect token-like strings without exposing or trusting secrets.", "A safer inspection routine with context and caution."],
+    "jwt-basics": ["JWT anatomy", "Understand header, payload and signature at a practical level.", "A basic JWT reading workflow without false security claims."],
+    "html-entities": ["Character safety", "Encode special characters without breaking displayed text.", "Markup-safe text that preserves the intended meaning."],
+    "encoding-vs-escaping": ["Context decision", "Choose the right transformation for URL, HTML, token or payload contexts.", "A rule for avoiding the wrong kind of fix."],
+    "fix-broken-html": ["Markup repair", "Repair unsafe characters and escaped text before it enters a page.", "A safer snippet and a readable decoded version."],
+    "fix-broken-utm-parameters": ["Tracking repair", "Diagnose links before messy campaign data reaches analytics.", "A fixed campaign URL and the naming issue that caused it."],
+    "utm-builder-guide": ["Link building", "Create a campaign URL with consistent source, medium and campaign naming.", "A clean UTM link ready for one exact placement."],
+    "utm-best-practices": ["Naming system", "Define conventions before links multiply across channels.", "A repeatable tracking vocabulary for campaigns and creators."],
+    "instagram-bio-utm": ["Profile tracking", "Measure bio clicks without mixing them with other placements.", "A separate profile link with readable analytics labels."],
+    "youtube-tracking-links": ["Upload attribution", "Track description, pinned comment and social clicks separately.", "A set of links that shows where viewer action came from."],
+    "youtube-title-thumbnail-checklist": ["Click promise", "Make title and thumbnail communicate the same reason to watch.", "A packaging checklist before upload."],
+    "youtube-description-template": ["Upload support", "Write descriptions that help viewers, search and links in the right order.", "A description structure with first lines, chapters, links and CTA."],
+    "youtube-hashtags-guide": ["Hashtag restraint", "Use hashtags as labels instead of stuffing.", "A short relevant hashtag set tied to the video angle."],
+    "youtube-community-post-ideas": ["Retention loop", "Turn one upload into follow-up posts, polls and questions.", "A community post connected to a real viewer action."],
+    "creator-content-calendar": ["Creator system", "Plan long videos, short clips, posts and tracking as one weekly routine.", "A repeatable content lane instead of isolated ideas."]
+  };
+  const item = map[guide.slug] || [cluster.label, `Use ${tool.title} on real input and turn the guide into an action, not a passive read.`, "A practical next step connected to a tool, guide or workflow."];
+  return { role: item[0], job: item[1], deliverable: item[2] };
 }
 
 function page(guide) {
   const tool = toolFor(guide);
   const cluster = cat[guide.category] || cat[tool.category] || cat.seo;
   const spec = specFor(tool);
+  const focus = guideFocus(guide, tool, cluster);
   const relatedT = relatedTools(guide);
   const relatedG = relatedGuides(guide);
   const title = `${guide.title} | Clickoz Guide`;
   const desc = `${guide.description} Learn the problem, common mistakes, Clickoz tool workflow, alternatives, checklist and next actions.`;
-  const url = `https://clickoz.com${guide.url}`;
+  const url = `${ORIGIN}${guide.url}`;
   const visual = `/assets/img/guides/${cluster.visual}.svg`;
   const alt1 = cluster.alternatives[0];
   const alt2 = cluster.alternatives[1];
   const alt3 = cluster.alternatives[2];
   const faq = [
-    [`What problem does ${guide.title} solve?`, `${guide.title} helps when ${cluster.problem.toLowerCase()} It connects the explanation to a working Clickoz tool so the user can act immediately.`],
+    [`What problem does ${guide.title} solve?`, `${guide.title} helps when ${cluster.problem.toLowerCase()} It pairs the explanation with a working Clickoz tool so you can test the fix immediately.`],
     [`Which Clickoz tool should I use with this guide?`, `Start with ${tool.title}. ${spec.toolUse}`],
     ["What should I do if the first workflow does not fit?", `Use the alternatives section. ${alt1[1]} ${alt2[1]}`]
   ];
@@ -226,7 +279,7 @@ function page(guide) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="${csp}" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), interest-cohort=()" />
+  <meta http-equiv="Permissions-Policy" content="${PERMISSIONS_POLICY}" />
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(desc)}" />
   <link rel="canonical" href="${url}" />
@@ -237,30 +290,30 @@ function page(guide) {
   <meta property="og:description" content="${esc(desc)}" />
   <meta property="og:url" content="${url}" />
   <meta property="og:type" content="article" />
-  <meta property="og:image" content="https://clickoz.com${visual}" />
+  <meta property="og:image" content="${ORIGIN}${visual}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${esc(title)}" />
   <meta name="twitter:description" content="${esc(desc)}" />
-  <meta name="twitter:image" content="https://clickoz.com${visual}" />
+  <meta name="twitter:image" content="${ORIGIN}${visual}" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <script>(function(){try{var s=JSON.parse(localStorage.getItem("clickoz_accent")||"null");var a=s&&s.a1?s.a1:"#22d3ee";var b=s&&s.a2?s.a2:"#06b6d4";var h=String(a).replace("#","");var r="34,211,238";if(h.length===3)r=[h[0]+h[0],h[1]+h[1],h[2]+h[2]].map(function(x){return parseInt(x,16)}).join(",");if(h.length===6)r=[h.slice(0,2),h.slice(2,4),h.slice(4,6)].map(function(x){return parseInt(x,16)}).join(",");document.documentElement.style.setProperty("--accent",a);document.documentElement.style.setProperty("--accent2",b);document.documentElement.style.setProperty("--accent-rgb",r);document.documentElement.style.setProperty("--cz-accent",a);document.documentElement.style.setProperty("--cz-accent2",b);document.documentElement.style.setProperty("--cz-accent-rgb",r)}catch(e){}})();</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/site.css?v=13" />
-  <link rel="stylesheet" href="/assets/guide.css?v=4" />
-  <link rel="stylesheet" href="/assets/guide-premium.css?v=5" />
-  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=55" />
+  <link rel="stylesheet" href="${asset("/assets/site.css", "siteCss")}" />
+  <link rel="stylesheet" href="${asset("/assets/guide.css", "guideCss")}" />
+  <link rel="stylesheet" href="${asset("/assets/guide-premium.css", "guidePremiumCss")}" />
+  <link rel="stylesheet" href="${asset("/assets/clickoz-premium.css", "clickozPremiumCss")}" />
+  <link rel="stylesheet" href="${asset("/assets/cms-final.css", "cmsFinal")}" />
   <script type="application/ld+json">${JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Article",
     headline: guide.title,
     description: guide.description,
-    image: `https://clickoz.com${visual}`,
+    image: `${ORIGIN}${visual}`,
     author: { "@type": "Organization", name: "Clickoz" },
-    publisher: { "@type": "Organization", name: "Clickoz", logo: { "@type": "ImageObject", url: "https://clickoz.com/assets/favicon.svg" } },
+    publisher: { "@type": "Organization", name: "Clickoz", logo: { "@type": "ImageObject", url: `${ORIGIN}/assets/favicon.svg` } },
     mainEntityOfPage: url,
     dateModified: "2026-05-19"
   })}</script>
@@ -297,15 +350,20 @@ function page(guide) {
           <div class="guide-hero-text">
             <p class="guide-kicker">${esc(cluster.label)}</p>
             <h1>${esc(guide.title)}</h1>
-            <p class="guide-lead">${esc(guide.description)} This guide is built as a practical workflow: understand the problem, run the right tool, compare alternatives and finish with a clear next action.</p>
+            <p class="guide-lead">${esc(guide.description)} Use this as a working routine: diagnose the blocker, run the right tool, compare the output and finish with a clear next action.</p>
             <div class="guide-intent-row">
               <span>${cluster.icon} Problem-led</span>
-              <span>🛠️ Tool-connected</span>
-              <span>✅ Checklist-ready</span>
-              <span>🔗 Internal next step</span>
+              <span>Tool-connected</span>
+              <span>Checklist-ready</span>
+              <span>Internal next step</span>
             </div>
             <div class="premium-link-grid">
               ${relatedT.map((item) => `<a href="${item.url}">${esc(item.title)}</a>`).join("")}
+            </div>
+            <div class="guide-action-strip" aria-label="${esc(guide.title)} fast actions">
+              <a class="guide-action-primary" href="${tool.url}">Open ${esc(tool.title)}</a>
+              <a href="${relatedT[1]?.url || "/tools/"}">Next tool</a>
+              <a href="${relatedG[0]?.url || "/guides/"}">Related guide</a>
             </div>
           </div>
           <aside class="guide-visual-card" aria-label="${esc(guide.title)} visual workflow">
@@ -320,19 +378,30 @@ function page(guide) {
         </div>
       </header>
 
+      <section class="guide-block guide-tutorial-map">
+        <h2>Tutorial path</h2>
+        <p>Follow this guide in order. The goal is not to read every tip; the goal is to finish one real job with ${esc(tool.title)} and know what to do next.</p>
+        <ol class="guide-tutorial-steps">
+          <li><b>Diagnose</b><span>${esc(focus.job)}</span></li>
+          <li><b>Use the tool</b><span>${esc(spec.toolUse)}</span></li>
+          <li><b>Check the result</b><span>${esc(spec.output)}</span></li>
+          <li><b>Continue</b><span>Move to ${esc(relatedT[1]?.title || "the next related tool")} or ${esc(relatedG[0]?.title || "a related guide")} while the context is still fresh.</span></li>
+        </ol>
+      </section>
+
       <section class="guide-block">
-        <h2>The real problem</h2>
-        <p>${esc(cluster.problem)} For this specific guide, the useful question is: how do you turn "${esc(guide.title)}" from an abstract topic into a repeatable action?</p>
+        <h2>What you are trying to fix</h2>
+        <p>${esc(cluster.problem)} This guide turns "${esc(guide.title)}" into a repeatable action instead of another abstract topic.</p>
         <div class="guide-problem-grid">
-          <div class="guide-problem-card"><span class="mark">⚠️</span><strong>Typical symptom</strong><span>${esc(cluster.cause)}</span></div>
-          <div class="guide-problem-card"><span class="mark">🎯</span><strong>What good looks like</strong><span>${esc(spec.output)}</span></div>
-          <div class="guide-problem-card"><span class="mark">🚫</span><strong>What to avoid</strong><span>${esc(cluster.avoid)}</span></div>
+          <div class="guide-problem-card"><span class="mark">A</span><strong>Typical symptom</strong><span>${esc(cluster.cause)}</span></div>
+          <div class="guide-problem-card"><span class="mark">B</span><strong>What good looks like</strong><span>${esc(spec.output)}</span></div>
+          <div class="guide-problem-card"><span class="mark">C</span><strong>What to avoid</strong><span>${esc(cluster.avoid)}</span></div>
         </div>
       </section>
 
       <section class="guide-block">
-        <h2>Diagnosis before you fix it</h2>
-        <p>Before opening tools, identify the failure mode. This keeps the workflow practical and prevents random edits that make the page, post or payload look busier without solving the problem.</p>
+        <h2>Diagnose before changing anything</h2>
+        <p>First, name the blocker. This keeps the workflow focused and stops extra copy, metadata or UI from hiding the real issue.</p>
         <div class="guide-problem-grid">
           <div class="guide-problem-card"><span class="mark">1</span><strong>Context</strong><span>Where will this be used: Google result, mobile page, creator upload, campaign link or technical payload?</span></div>
           <div class="guide-problem-card"><span class="mark">2</span><strong>Constraint</strong><span>What is limiting the result: length, clarity, intent, platform format, escaping, tracking or trust?</span></div>
@@ -341,19 +410,29 @@ function page(guide) {
       </section>
 
       <section class="guide-block">
-        <h2>Primary Clickoz workflow</h2>
-        <p>Use this path when you want the fastest reliable fix. It keeps the guide practical and gives Google a clear reason to understand the page as a workflow, not a thin article.</p>
+        <h2>Define the finished result</h2>
+        <p>This page has a specific job inside the Clickoz system, so it does not duplicate nearby guides with different intent.</p>
+        <div class="guide-check-grid">
+          <div class="guide-check-card"><span class="mark">01</span><strong>${esc(focus.role)}</strong><span>${esc(focus.job)}</span></div>
+          <div class="guide-check-card"><span class="mark">02</span><strong>Use ${esc(tool.title)}</strong><span>${esc(spec.toolUse)}</span></div>
+          <div class="guide-check-card"><span class="mark">03</span><strong>Finished result</strong><span>${esc(focus.deliverable)}</span></div>
+        </div>
+      </section>
+
+      <section class="guide-block">
+        <h2>Run the primary Clickoz workflow</h2>
+        <p>Use this path when you want the fastest reliable fix. It keeps the page useful for the reader first, while giving search engines a clear workflow to understand.</p>
         <div class="guide-tool-path">
           <div class="guide-path-step"><b>${esc(cluster.primary[0])}</b><p>${esc(guide.description)}</p></div>
-          <div class="guide-path-arrow">→</div>
+          <div class="guide-path-arrow">&rarr;</div>
           <div class="guide-path-step"><b>${esc(cluster.primary[1])}</b><p><a href="${tool.url}">Open ${esc(tool.title)}</a> and apply it to real input.</p></div>
-          <div class="guide-path-arrow">→</div>
+          <div class="guide-path-arrow">&rarr;</div>
           <div class="guide-path-step"><b>${esc(cluster.primary[2])}</b><p>Copy the useful output and continue with the next related guide.</p></div>
         </div>
       </section>
 
       <section class="guide-block">
-        <h2>Step-by-step solution</h2>
+        <h2>Apply the fix step by step</h2>
         <ol class="guide-steps">
           ${howSteps.map(([name, text]) => `<li><strong>${esc(name)}.</strong> ${esc(text)}</li>`).join("")}
           <li><strong>Review on mobile.</strong> Read the title, first paragraph, main output and CTA as if you were in a hurry. If the task is not obvious, simplify before publishing.</li>
@@ -362,12 +441,22 @@ function page(guide) {
 
       <section class="guide-block guide-playbook">
         <h2>Practical playbook</h2>
-        <p>This section turns the guide into a real operating routine. Use it when you are publishing under time pressure and need a repeatable decision, not another generic explanation.</p>
+        <p>Use this playbook when you need a repeatable decision under time pressure. It turns the guide into a practical routine instead of a passive read.</p>
         <div class="guide-playbook-grid">
-          <article><span>Input</span><strong>Use real material</strong><p>Paste the actual draft, title, URL, payload or creator idea. Placeholder text hides the problem and produces generic output.</p></article>
+          <article><span>Input</span><strong>Use real material</strong><p>Paste the actual draft, title, URL, payload or creator idea. Sample text is useful for learning the flow, but real input exposes the actual problem.</p></article>
           <article><span>Tool pass</span><strong>Run ${esc(tool.title)}</strong><p>${esc(spec.toolUse)}</p></article>
           <article><span>Human pass</span><strong>Apply judgment</strong><p>Keep the output only if it matches the user intent, context, platform and next action.</p></article>
           <article><span>Next click</span><strong>Continue internally</strong><p>Move to ${esc(relatedT[1]?.title || "the next related tool")} or ${esc(relatedG[0]?.title || "the next related guide")} so the workflow does not end too early.</p></article>
+        </div>
+      </section>
+
+      <section class="guide-block">
+        <h2>What a useful result should include</h2>
+        <p>The output is only valuable when it can be copied, checked and used in the next step without guessing.</p>
+        <div class="guide-check-grid">
+          <div class="guide-check-card"><span class="mark">A</span><strong>Specific input</strong><span>Use the real draft, URL, payload, page type, platform or campaign placement.</span></div>
+          <div class="guide-check-card"><span class="mark">B</span><strong>Copy-ready output</strong><span>The result should be readable, complete and safe to review in its final context.</span></div>
+          <div class="guide-check-card"><span class="mark">C</span><strong>Next action</strong><span>Finish with ${esc(relatedT[1]?.title || "the next related tool")} or ${esc(relatedG[0]?.title || "a related guide")} instead of stopping at one isolated fix.</span></div>
         </div>
       </section>
 
@@ -396,7 +485,7 @@ function page(guide) {
       <section class="guide-block guide-troubleshooting">
         <h2>Troubleshooting map</h2>
         <div class="guide-trouble-grid">
-          <article><strong>The result feels generic</strong><p>Add the platform, audience, target keyword, page type, campaign source or technical context before running the tool again.</p></article>
+          <article><strong>The result lacks context</strong><p>Add the platform, audience, target keyword, page type, campaign source or technical constraint before running the tool again.</p></article>
           <article><strong>The output is technically correct but not useful</strong><p>Compare it against the problem statement. If it does not help the user act faster, simplify the input and rerun.</p></article>
           <article><strong>The page still feels weak for SEO</strong><p>Add a concrete example, one related tool, one related guide, a short FAQ and a clearer first-screen promise.</p></article>
         </div>
@@ -436,7 +525,7 @@ function page(guide) {
 
       <section class="guide-block guide-faq">
         <h2>FAQ</h2>
-        ${faq.map(([q, a], index) => `<details${index === 0 ? " open" : ""}><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}
+        ${faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}
       </section>
 
       <section class="guide-block">
@@ -453,13 +542,13 @@ function page(guide) {
 
   <footer class="footer"><div class="container footer-grid"><div><h4>Clickoz</h4><div class="footer-links"><a href="/about/">About</a><a href="/tools/">Tools</a><a href="/guides/">Guides</a><a href="/updates/">Updates</a></div></div><div><h4>Workflow hubs</h4><div class="footer-links"><a href="/workflows/">Workflows</a><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/guides/creator/">Creator Guides</a></div></div><div><h4>Popular tools</h4><div class="footer-links"><a href="/tools/word-counter/">Word Counter</a><a href="/tools/meta-tags/">Meta Tags</a><a href="/tools/json-formatter/">JSON Formatter</a><a href="/tools/youtube-title-generator/">YouTube Titles</a></div></div><div><h4>Legal</h4><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a><a href="/404/">404</a></div></div></div><div class="container" style="margin-top:14px"><hr class="sep" /><div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">&copy; 2026 Clickoz &middot; Fast browser tools for SEO, writing, developers and creators</div></div></footer>
 
-  <script src="/assets/cms-registry.js?v=4" defer></script>
-  <script src="/assets/cms-schema.js?v=2" defer></script>
-  <script src="/assets/cms-enhance.js?v=7" defer></script>
-  <script src="/assets/site.js?v=47" defer></script>
-  <script src="/assets/guide.js?v=3" defer></script>
-  <script src="/assets/guide-premium.js?v=6" defer></script>
-  <script src="/assets/clickoz-premium.js?v=6" defer></script>
+  <script src="${asset("/assets/cms-registry.js", "cmsRegistry")}" defer></script>
+  <script src="${asset("/assets/cms-schema.js", "cmsSchema")}" defer></script>
+  <script src="${asset("/assets/cms-enhance.js", "cmsEnhance")}" defer></script>
+  <script src="${asset("/assets/site.js", "siteJs")}" defer></script>
+  <script src="${asset("/assets/guide.js", "guideJs")}" defer></script>
+  <script src="${asset("/assets/guide-premium.js", "guidePremiumJs")}" defer></script>
+  <script src="${asset("/assets/clickoz-premium.js", "clickozPremiumJs")}" defer></script>
 </body>
 </html>
 `;
