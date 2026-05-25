@@ -1,4 +1,4 @@
-﻿/* /tools/tools.js?v=11
+﻿/* /tools/tools.js?v=12
    Directory behavior:
    - All is the default state, so /tools/ starts at the top.
    - Category chips navigate to sections; they do not hide the catalogue.
@@ -44,6 +44,7 @@
     chips.forEach((chip) => {
       const active = chip.getAttribute("data-filter") === key;
       chip.classList.toggle("active", active);
+      chip.setAttribute("aria-pressed", active ? "true" : "false");
       if (active) chip.setAttribute("aria-current", "true");
       else chip.removeAttribute("aria-current");
     });
@@ -216,6 +217,51 @@
   });
 
   const allCards = $$(".card", sectionsWrap);
+  const searchMeta = $("#toolsSearchMeta");
+  const searchMetaText = searchMeta ? searchMeta.querySelector("span") || searchMeta : null;
+  const resetButton = $("#toolsReset");
+  const originalCounts = new Map(sections.map((section) => {
+    const count = $(".section-count", section);
+    const total = $$(".card", section).length;
+    return [section, {
+      total,
+      label: count ? count.textContent.trim() : `${total} ${total === 1 ? "tool" : "tools"}`
+    }];
+  }));
+
+  function toolCountLabel(count) {
+    return `${count} ${count === 1 ? "tool" : "tools"}`;
+  }
+
+  function setDirectoryStatus(query, shown) {
+    if (searchMetaText) {
+      searchMetaText.textContent = query
+        ? `Showing ${toolCountLabel(shown)} for "${query}"`
+        : `Showing ${toolCountLabel(allCards.length)} across ${sections.length} categories`;
+    }
+    if (resetButton) resetButton.hidden = !query;
+  }
+
+  function syncSuggestionState(value) {
+    const activeValue = norm(value);
+    $$("[data-search-suggestion], [data-empty-search-suggestion]").forEach((button) => {
+      const buttonValue = norm(button.getAttribute("data-search-suggestion") || button.getAttribute("data-empty-search-suggestion") || "");
+      const active = Boolean(activeValue) && buttonValue === activeValue;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  }
+
+  function syncSearchUrl(rawValue) {
+    const raw = String(rawValue || "").trim();
+    const url = new URL(window.location.href);
+    if (raw) url.searchParams.set("q", raw);
+    else url.searchParams.delete("q");
+    const next = `${url.pathname}${url.search}${url.hash}`;
+    const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    if (next !== current) history.replaceState(null, "", next);
+  }
+
   function levenshtein(a, b) {
     if (a === b) return 0;
     if (!a) return b.length;
@@ -296,10 +342,10 @@
       <strong>No matching tool yet</strong>
       <span>Search by the job you are trying to finish: fix JSON, clean text, SEO snippet, YouTube upload or tracking URL.</span>
       <div class="tools-empty-suggestions" aria-label="Search suggestions">
-        <button type="button" data-search-suggestion="fix json">Fix JSON</button>
-        <button type="button" data-search-suggestion="clean text">Clean text</button>
-        <button type="button" data-search-suggestion="seo snippet">SEO snippet</button>
-        <button type="button" data-search-suggestion="youtube upload">YouTube upload</button>
+        <button type="button" data-empty-search-suggestion="fix json">Fix JSON</button>
+        <button type="button" data-empty-search-suggestion="clean text">Clean text</button>
+        <button type="button" data-empty-search-suggestion="seo snippet">SEO snippet</button>
+        <button type="button" data-empty-search-suggestion="youtube upload">YouTube upload</button>
       </div>
     </div>
   `;
@@ -307,6 +353,7 @@
   if (shell && !$(".tools-empty")) shell.insertBefore(emptyState, sectionsWrap);
 
   function filterCards(value) {
+    const raw = String(value || "").trim();
     const q = norm(value);
     let shown = 0;
     const sectionScores = new Map();
@@ -315,7 +362,8 @@
       const score = q ? scoreQuery(q, meta) : 1;
       const ok = !q || score >= 18;
       const { el } = meta;
-      el.style.display = ok ? "" : "none";
+      if (ok) el.style.removeProperty("display");
+      else el.style.setProperty("display", "none", "important");
       el.style.order = q && ok ? String(Math.max(0, 999 - Math.round(score))) : "";
       if (ok) {
         shown++;
@@ -324,13 +372,24 @@
     });
 
     sections.forEach((section) => {
-      const hasVisible = $$(".card", section).some((card) => card.style.display !== "none");
-      section.style.display = !q || hasVisible ? "" : "none";
+      const visibleCards = $$(".card", section).filter((card) => card.style.display !== "none");
+      const hasVisible = visibleCards.length > 0;
+      if (!q || hasVisible) section.style.removeProperty("display");
+      else section.style.setProperty("display", "none", "important");
       section.style.order = q && hasVisible ? String(Math.max(0, 999 - Math.round(sectionScores.get(section) || 0))) : "";
+      const count = $(".section-count", section);
+      const original = originalCounts.get(section);
+      if (count) {
+        count.textContent = q && hasVisible
+          ? `${visibleCards.length} / ${original?.total || visibleCards.length} tools`
+          : original?.label || toolCountLabel(visibleCards.length);
+      }
     });
 
     emptyState.style.display = q && shown === 0 ? "" : "none";
     if (q) setActiveChip("all");
+    setDirectoryStatus(raw, shown);
+    syncSuggestionState(raw);
   }
 
   function debounce(fn, wait = 120) {
@@ -342,23 +401,45 @@
   }
 
   if (searchInput) {
-    const handler = debounce(() => filterCards(searchInput.value), 120);
+    const handler = debounce(() => {
+      filterCards(searchInput.value);
+      syncSearchUrl(searchInput.value);
+    }, 120);
     searchInput.addEventListener("input", handler);
     searchInput.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         searchInput.value = "";
         filterCards("");
+        syncSearchUrl("");
         searchInput.blur();
       }
     });
   }
 
-  emptyState.addEventListener("click", (event) => {
-    const suggestion = event.target.closest("[data-search-suggestion]");
-    if (!suggestion || !searchInput) return;
-    searchInput.value = suggestion.getAttribute("data-search-suggestion") || "";
+  if (resetButton && searchInput) {
+    resetButton.addEventListener("click", () => {
+      searchInput.value = "";
+      filterCards("");
+      syncSearchUrl("");
+      searchInput.focus({ preventScroll: true });
+    });
+  }
+
+  function useSearchSuggestion(value) {
+    if (!searchInput) return;
+    searchInput.value = value || "";
     filterCards(searchInput.value);
+    syncSearchUrl(searchInput.value);
+    setActiveChip("all");
+    const y = window.scrollY + searchInput.getBoundingClientRect().top - navOffset() - 12;
+    window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
     searchInput.focus({ preventScroll: true });
+  }
+
+  document.addEventListener("click", (event) => {
+    const suggestion = event.target.closest("[data-search-suggestion], [data-empty-search-suggestion]");
+    if (!suggestion || !searchInput) return;
+    useSearchSuggestion(suggestion.getAttribute("data-search-suggestion") || suggestion.getAttribute("data-empty-search-suggestion") || "");
   });
 
   let spyEnabled = true;
@@ -416,6 +497,16 @@
   }
 
   initFromHash();
+
+  if (searchInput) {
+    const initialQuery = new URLSearchParams(window.location.search).get("q") || "";
+    if (initialQuery) {
+      searchInput.value = initialQuery;
+      filterCards(initialQuery);
+    } else {
+      setDirectoryStatus("", allCards.length);
+    }
+  }
 
   window.addEventListener("hashchange", () => {
     const raw = decodeURIComponent((location.hash || "").replace("#", "").trim());

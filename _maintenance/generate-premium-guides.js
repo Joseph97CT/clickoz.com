@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 const { ORIGIN, CSP: csp, PERMISSIONS_POLICY, asset } = require("./cms-config");
+const { BRAND, INDEX_ROBOTS, iconLinks, logoMarkup, publisherNode } = require("./brand-assets");
 
 const root = path.resolve(__dirname, "..");
 const registryCode = fs.readFileSync(path.join(root, "assets", "cms-registry.js"), "utf8");
@@ -174,6 +175,14 @@ function esc(value) {
   }[char]));
 }
 
+function clipMeta(value, limit = 158) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (text.length <= limit) return text;
+  const cut = text.slice(0, limit - 1);
+  const clean = cut.slice(0, Math.max(0, cut.lastIndexOf(" "))).replace(/[,.:-]+$/, "");
+  return clean || cut.trim();
+}
+
 function toolFor(guide) {
   return cms.toolBySlug[guide.tool] || cms.tools[0];
 }
@@ -254,7 +263,7 @@ function page(guide) {
   const relatedT = relatedTools(guide);
   const relatedG = relatedGuides(guide);
   const title = `${guide.title} | Clickoz Guide`;
-  const desc = `${guide.description} Learn the problem, common mistakes, Clickoz tool workflow, alternatives, checklist and next actions.`;
+  const desc = clipMeta(`${guide.description} See the Clickoz workflow, common mistakes, checklist and next action.`);
   const url = `${ORIGIN}${guide.url}`;
   const visual = `/assets/img/guides/${cluster.visual}.svg`;
   const alt1 = cluster.alternatives[0];
@@ -283,20 +292,27 @@ function page(guide) {
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(desc)}" />
   <link rel="canonical" href="${url}" />
-  <meta name="robots" content="index,follow" />
-  <meta name="theme-color" content="#070b13" />
+  <meta name="robots" content="${INDEX_ROBOTS}" />
+  <meta name="googlebot" content="${INDEX_ROBOTS}" />
+  <meta name="application-name" content="${BRAND.name}" />
+  <meta name="apple-mobile-web-app-title" content="${BRAND.name}" />
+  <meta name="theme-color" content="${BRAND.themeColor}" />
+  <meta property="og:locale" content="en_US" />
   <meta property="og:site_name" content="Clickoz" />
   <meta property="og:title" content="${esc(title)}" />
   <meta property="og:description" content="${esc(desc)}" />
   <meta property="og:url" content="${url}" />
   <meta property="og:type" content="article" />
   <meta property="og:image" content="${ORIGIN}${visual}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="${esc(title)}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${esc(title)}" />
   <meta name="twitter:description" content="${esc(desc)}" />
   <meta name="twitter:image" content="${ORIGIN}${visual}" />
-  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta name="twitter:image:alt" content="${esc(title)}" />
+  ${iconLinks()}
   <script>(function(){try{var s=JSON.parse(localStorage.getItem("clickoz_accent")||"null");var a=s&&s.a1?s.a1:"#22d3ee";var b=s&&s.a2?s.a2:"#06b6d4";var h=String(a).replace("#","");var r="34,211,238";if(h.length===3)r=[h[0]+h[0],h[1]+h[1],h[2]+h[2]].map(function(x){return parseInt(x,16)}).join(",");if(h.length===6)r=[h.slice(0,2),h.slice(2,4),h.slice(4,6)].map(function(x){return parseInt(x,16)}).join(",");document.documentElement.style.setProperty("--accent",a);document.documentElement.style.setProperty("--accent2",b);document.documentElement.style.setProperty("--accent-rgb",r);document.documentElement.style.setProperty("--cz-accent",a);document.documentElement.style.setProperty("--cz-accent2",b);document.documentElement.style.setProperty("--cz-accent-rgb",r)}catch(e){}})();</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -313,7 +329,7 @@ function page(guide) {
     description: guide.description,
     image: `${ORIGIN}${visual}`,
     author: { "@type": "Organization", name: "Clickoz" },
-    publisher: { "@type": "Organization", name: "Clickoz", logo: { "@type": "ImageObject", url: `${ORIGIN}/assets/favicon.svg` } },
+    publisher: publisherNode(ORIGIN),
     mainEntityOfPage: url,
     dateModified: "2026-05-19"
   })}</script>
@@ -336,7 +352,7 @@ function page(guide) {
   <div class="__grain" aria-hidden="true"></div>
   <nav class="nav" aria-label="Primary navigation" id="topNav">
     <div class="container nav-inner">
-      <a class="logo" href="/" aria-label="Clickoz Home"><span class="logo-badge" id="logoBadge" aria-hidden="true"><svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false"><path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="logo-text">Click<span class="logo-oz">oz</span></span></a>
+      <a class="logo" href="/" aria-label="Clickoz Home">${logoMarkup()}</a>
       <div class="nav-links" aria-label="Sections"><a href="/">Home</a><a href="/tools/">Tools</a><a href="/guides/" class="active" aria-current="page">Guides</a><a href="/updates/">Updates</a></div>
       <div class="spacer"></div>
     </div>
@@ -540,7 +556,7 @@ function page(guide) {
     </article>
   </main>
 
-  <footer class="footer"><div class="container footer-grid"><div><h4>Clickoz</h4><div class="footer-links"><a href="/about/">About</a><a href="/tools/">Tools</a><a href="/guides/">Guides</a><a href="/updates/">Updates</a></div></div><div><h4>Workflow hubs</h4><div class="footer-links"><a href="/workflows/">Workflows</a><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/guides/creator/">Creator Guides</a></div></div><div><h4>Popular tools</h4><div class="footer-links"><a href="/tools/word-counter/">Word Counter</a><a href="/tools/meta-tags/">Meta Tags</a><a href="/tools/json-formatter/">JSON Formatter</a><a href="/tools/youtube-title-generator/">YouTube Titles</a></div></div><div><h4>Legal</h4><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a><a href="/404/">404</a></div></div></div><div class="container" style="margin-top:14px"><hr class="sep" /><div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">&copy; 2026 Clickoz &middot; Fast browser tools for SEO, writing, developers and creators</div></div></footer>
+  <footer class="footer"><div class="container footer-grid"><div><h4>Clickoz</h4><div class="footer-links"><a href="/about/">About</a><a href="/tools/">Tools</a><a href="/guides/">Guides</a><a href="/updates/">Updates</a></div></div><div><h4>Tool hubs</h4><div class="footer-links"><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/tools/writing-tools/">Writing Tools</a><a href="/guides/creator/">Creator Guides</a></div></div><div><h4>Popular tools</h4><div class="footer-links"><a href="/tools/word-counter/">Word Counter</a><a href="/tools/meta-tags/">Meta Tags</a><a href="/tools/json-formatter/">JSON Formatter</a><a href="/tools/youtube-title-generator/">YouTube Titles</a></div></div><div><h4>Legal</h4><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a><a href="/404/">404</a></div></div></div><div class="container" style="margin-top:14px"><hr class="sep" /><div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">&copy; 2026 Clickoz &middot; Fast browser tools for SEO, writing, developers and creators</div></div></footer>
 
   <script src="${asset("/assets/cms-registry.js", "cmsRegistry")}" defer></script>
   <script src="${asset("/assets/cms-schema.js", "cmsSchema")}" defer></script>

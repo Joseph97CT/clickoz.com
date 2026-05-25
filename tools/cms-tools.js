@@ -174,7 +174,7 @@
       const section = document.createElement("div");
       section.className = "cms-text-section";
       appendText(section, "b", "", currentTitle || "Output");
-      appendText(section, "span", "", body || "Ready.");
+      appendText(section, "p", "cms-text-body", body || "Ready.");
       box.appendChild(section);
       currentTitle = "";
       currentLines = [];
@@ -199,7 +199,7 @@
       const section = document.createElement("div");
       section.className = "cms-text-section";
       appendText(section, "b", "", "Output");
-      appendText(section, "span", "", raw);
+      appendText(section, "p", "cms-text-body", raw);
       box.appendChild(section);
     }
 
@@ -1014,13 +1014,30 @@
     const raw = String(input || "").trim();
     const hex = raw.match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i);
     const rgb = raw.match(/^rgb\(?\s*(\d{1,3})[\s,]+(\d{1,3})[\s,]+(\d{1,3})\s*\)?$/i);
+    const hsl = raw.match(/^hsl\(?\s*(\d{1,3})[\s,]+(\d{1,3})%?[\s,]+(\d{1,3})%?\s*\)?$/i);
     let r, g, b;
     if (hex) {
       const h = hex[1].length === 3 ? hex[1].split("").map((x) => x + x).join("") : hex[1];
       r = parseInt(h.slice(0, 2), 16); g = parseInt(h.slice(2, 4), 16); b = parseInt(h.slice(4, 6), 16);
-    } else if (rgb) { r = +rgb[1]; g = +rgb[2]; b = +rgb[3]; }
-    else throw new Error("Use HEX like #3b82f6 or RGB like rgb(59,130,246).");
+    } else if (rgb) {
+      r = +rgb[1]; g = +rgb[2]; b = +rgb[3];
+    } else if (hsl) {
+      ({ r, g, b } = hslToRgb(+hsl[1], +hsl[2], +hsl[3]));
+    }
+    else throw new Error("Use HEX like #3b82f6, RGB like rgb(59,130,246) or HSL like hsl(217,91%,60%).");
+    if ([r, g, b].some((n) => !Number.isFinite(n) || n < 0 || n > 255)) throw new Error("Color channel values must stay between 0 and 255.");
     return { r, g, b };
+  }
+
+  function hslToRgb(h, s, l) {
+    h = ((h % 360) + 360) % 360;
+    s = Math.max(0, Math.min(100, s)) / 100;
+    l = Math.max(0, Math.min(100, l)) / 100;
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = l - c / 2;
+    const [rr, gg, bb] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+    return { r: Math.round((rr + m) * 255), g: Math.round((gg + m) * 255), b: Math.round((bb + m) * 255) };
   }
 
   function rgbToHsl({ r, g, b }) {
@@ -1034,6 +1051,20 @@
       h *= 60;
     }
     return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
+  }
+
+  function relativeLuminance({ r, g, b }) {
+    const channel = (v) => {
+      const n = v / 255;
+      return n <= 0.03928 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4;
+    };
+    return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+  }
+
+  function contrastRatio(a, b) {
+    const l1 = relativeLuminance(a);
+    const l2 = relativeLuminance(b);
+    return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
   }
 
   function toolExamples(slug, config, tool) {
@@ -1666,6 +1697,591 @@
     };
   });
 
+  const creatorPlatformOptions = ["General", "YouTube", "Instagram", "TikTok", "LinkedIn", "X", "Pinterest", "Short-form"].map((x) => ({ value: x, label: x }));
+  const creatorPlatformSelect = (value = "General") => field("platform", "Platform", "select", value, false, creatorPlatformOptions);
+
+  function shortPhrase(text, fallback = "the idea", limit = 78) {
+    const t = compactText(text) || fallback;
+    return t.length <= limit ? t : `${t.slice(0, limit - 3).replace(/\s+\S*$/, "")}...`;
+  }
+
+  function firstUsefulLine(output, fallback) {
+    return String(output || "").split(/\r?\n/)
+      .map((line) => line.trim())
+      .find((line) => line && !/:$/.test(line) && !/^(1|2|3|4|5|6|7|8|9)\./.test(line))
+      || shortPhrase(fallback);
+  }
+
+  function topicTerms(text, fallback = ["creator", "workflow", "content"]) {
+    const stop = new Set(["about", "with", "from", "that", "this", "your", "you", "the", "and", "for", "into", "before", "after", "using", "without", "every", "same", "they", "their"]);
+    const seen = new Set();
+    const terms = words(text).map((w) => w.toLowerCase()).filter((w) => w.length > 3 && !stop.has(w) && !seen.has(w) && seen.add(w));
+    return (terms.length ? terms : fallback).slice(0, 8);
+  }
+
+  function creatorConfig(slug, sample, label, platform, build) {
+    const tool = cms.toolBySlug?.[slug] || { title: smartTitle(slug.replace(/-/g, " ")), slug, category: "socialai" };
+    return {
+      sample,
+      fields: [field("input", label, "textarea", sample, true), creatorPlatformSelect(platform)],
+      run(v) {
+        const input = compactText(v.input) || sample;
+        const selectedPlatform = v.platform || platform || "General";
+        const built = build(input, selectedPlatform, tool, v);
+        const output = built.output;
+        return result(built.status || `${tool.title} ready with a task-specific output.`, built.metrics || [
+          metric("Score", `${scoreHook(input)}/100`),
+          metric("Platform", selectedPlatform),
+          metric("Mode", "Specific"),
+          metric("Copy", "Ready")
+        ], output, outputPackHtml({
+          badge: built.badge || tool.title,
+          hero: built.hero || firstUsefulLine(output, input),
+          cards: built.cards || [["Score", `${scoreHook(input)}/100`], ["Platform", selectedPlatform], ["Mode", "Specific"], ["Next", "Review"]],
+          sections: [
+            ["Copy-ready result", output],
+            ["Human check", built.check || "Use this as a structured draft. Remove any line that does not match the real audience, platform or offer."]
+          ]
+        }));
+      }
+    };
+  }
+
+  function buildLineDiff(left, right) {
+    const a = String(left || "").split(/\r?\n/).slice(0, 500);
+    const b = String(right || "").split(/\r?\n/).slice(0, 500);
+    const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+    for (let i = a.length - 1; i >= 0; i--) {
+      for (let j = b.length - 1; j >= 0; j--) dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+    const lines = [];
+    let i = 0, j = 0, added = 0, removed = 0, same = 0;
+    while (i < a.length && j < b.length) {
+      if (a[i] === b[j]) { lines.push(`  ${a[i]}`); i++; j++; same++; }
+      else if (dp[i + 1][j] >= dp[i][j + 1]) { lines.push(`- ${a[i++]}`); removed++; }
+      else { lines.push(`+ ${b[j++]}`); added++; }
+    }
+    while (i < a.length) { lines.push(`- ${a[i++]}`); removed++; }
+    while (j < b.length) { lines.push(`+ ${b[j++]}`); added++; }
+    return { out: lines.join("\n"), added, removed, same, left: a.length, right: b.length };
+  }
+
+  // Task-specific overrides replace the broad creator fallback where the tool name promises a more precise workflow.
+  Object.assign(configs, {
+    "password-generator": {
+      sample: "Length 24, symbols on",
+      fields: [field("length", "Length", "number", "24"), field("count", "How many", "number", "3"), field("symbols", "Symbols", "select", "yes", false, [{ value: "yes", label: "Include symbols" }, { value: "no", label: "No symbols" }])],
+      run(v) {
+        const length = Math.min(128, Math.max(12, int(v.length, 24)));
+        const count = Math.min(20, Math.max(1, int(v.count, 3)));
+        const chars = `abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789${v.symbols === "no" ? "" : "!@#$%^&*_-+=?"}`;
+        const build = () => {
+          const bytes = new Uint32Array(length);
+          crypto.getRandomValues(bytes);
+          return [...bytes].map((b) => chars[b % chars.length]).join("");
+        };
+        const list = Array.from({ length: count }, build);
+        const entropy = Math.round(length * Math.log2(chars.length));
+        const output = `${list.join("\n")}\n\nEntropy estimate: ~${entropy} bits per password\nGenerator: browser Crypto API\nStorage: not saved`;
+        return result("Strong local passwords generated with entropy estimate.", [metric("Length", length), metric("Count", count), metric("Entropy", `~${entropy} bits`), metric("Random", "Crypto API")], output, outputPackHtml({
+          badge: "Local password",
+          hero: `${count} password${count === 1 ? "" : "s"} at ~${entropy} bits each`,
+          cards: [["Length", length], ["Count", count], ["Entropy", `~${entropy} bits`], ["Storage", "Not saved"]],
+          sections: [["Passwords", list.join("\n")], ["Use safely", "Paste one generated password into a password manager immediately. Do not send generated secrets through chat, email or screenshots."]]
+        }));
+      }
+    },
+    "regex-tester": {
+      sample: "Email regex test",
+      fields: [field("pattern", "Pattern", "text", "\\b[\\w.-]+@[\\w.-]+\\.\\w+\\b"), field("flags", "Flags", "text", "gi"), field("text", "Text", "textarea", "Contact sales@clickoz.com or support@example.com", true)],
+      run(v) {
+        const rawFlags = String(v.flags || "g").replace(/[^dgimsuy]/g, "");
+        const flags = [...new Set(rawFlags.split(""))].join("") || "g";
+        const runFlags = flags.includes("g") ? flags : `${flags}g`;
+        const re = new RegExp(v.pattern, runFlags);
+        const matches = [...String(v.text || "").matchAll(re)].slice(0, 100);
+        const rows = matches.map((m, i) => {
+          const groups = m.length > 1 ? ` | groups: ${m.slice(1).map((x) => x ?? "(empty)").join(", ")}` : "";
+          return `${i + 1}. ${m[0]} at ${m.index}${groups}`;
+        }).join("\n") || "No matches";
+        return result("Regex tested with global-safe matching and group preview.", [metric("Matches", matches.length), metric("Flags", runFlags), metric("Groups", matches[0] ? matches[0].length - 1 : 0), metric("Limit", "100 shown")], rows, outputPackHtml({
+          badge: "Regex result",
+          hero: matches.length ? `${matches.length} match${matches.length === 1 ? "" : "es"} found` : "No matches found",
+          cards: [["Matches", matches.length], ["Flags", runFlags], ["Groups", matches[0] ? matches[0].length - 1 : 0], ["Limit", "100 shown"]],
+          sections: [["Matches", rows], ["Next step", "If the match is too broad, add anchors, word boundaries or a more specific character class before using it in production."]]
+        }));
+      }
+    },
+    "text-diff-checker": {
+      sample: "Compare two drafts",
+      fields: [field("left", "Original", "textarea", "The product is fast.\nIt works on mobile.", true), field("right", "Updated", "textarea", "The product is fast and private.\nIt works on mobile.", true)],
+      run(v) {
+        const diff = buildLineDiff(v.left, v.right);
+        return result("Line diff complete with inserted, removed and unchanged lines.", [metric("Added", diff.added), metric("Removed", diff.removed), metric("Unchanged", diff.same), metric("Mode", "LCS line diff")], diff.out, outputPackHtml({
+          badge: "Line diff",
+          hero: diff.added || diff.removed ? `${diff.added} added / ${diff.removed} removed` : "No line changes found",
+          cards: [["Added", diff.added], ["Removed", diff.removed], ["Unchanged", diff.same], ["Mode", "Line LCS"]],
+          sections: [["Diff", diff.out || "No content to compare."], ["Review rule", "Read deletions and additions together before copying. This diff finds moved context better than a simple row-by-row comparison."]]
+        }));
+      }
+    },
+    "color-converter": {
+      sample: "#3b82f6",
+      fields: [field("color", "Color", "text", "#3b82f6", true)],
+      run(v) {
+        const rgb = parseColor(v.color), hsl = rgbToHsl(rgb), hex = `#${[rgb.r, rgb.g, rgb.b].map((n) => n.toString(16).padStart(2, "0")).join("")}`.toUpperCase();
+        const white = contrastRatio(rgb, { r: 255, g: 255, b: 255 });
+        const black = contrastRatio(rgb, { r: 0, g: 0, b: 0 });
+        const bestText = white >= black ? "white text" : "black text";
+        const aa = Math.max(white, black) >= 4.5 ? "AA normal text" : Math.max(white, black) >= 3 ? "Large text only" : "Needs different color";
+        const out = `HEX: ${hex}\nRGB: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})\nHSL: hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)\nContrast on white: ${white.toFixed(2)}:1\nContrast on black: ${black.toFixed(2)}:1\nBest text: ${bestText}`;
+        return result("Color converted with accessibility contrast hints.", [metric("HEX", hex), metric("HSL", `${hsl.h}, ${hsl.s}%, ${hsl.l}%`), metric("Best text", bestText), metric("Contrast", aa)], out, outputPackHtml({
+          badge: "Color values",
+          hero: `${hex} - ${bestText}`,
+          cards: [["RGB", `${rgb.r}, ${rgb.g}, ${rgb.b}`], ["HSL", `${hsl.h}, ${hsl.s}%, ${hsl.l}%`], ["White", `${white.toFixed(2)}:1`], ["Black", `${black.toFixed(2)}:1`]],
+          sections: [["CSS values", out], ["Accessibility note", "Use the higher contrast text color for small labels and controls. Check the final UI state, including hover and disabled colors, before shipping."]]
+        }));
+      }
+    },
+    "youtube-title-generator": creatorConfig("youtube-title-generator", "A YouTube upload about cleaning messy text, checking the snippet and preparing the tracking link before publishing.", "Video idea or upload promise", "YouTube", (input) => {
+      const phrase = shortPhrase(input);
+      const output = [
+        "YouTube title set",
+        "",
+        `1. ${smartTitle(phrase)}: The Faster Workflow`,
+        `2. I Fixed ${phrase.toLowerCase()} Before Publishing`,
+        `3. Before You Upload, Check ${phrase.toLowerCase()}`,
+        `4. The ${topicTerms(input)[0]} mistake costing you clicks`,
+        "",
+        "Pick the title that matches the thumbnail promise. Do not use a curiosity gap the video does not answer."
+      ].join("\n");
+      return { output, hero: `4 title angles for ${phrase}`, cards: [["Angles", 4], ["Intent", "Search + click"], ["Thumbnail", "Must match"], ["Risk", "No bait"]] };
+    }),
+    "thumbnail-brief-generator": creatorConfig("thumbnail-brief-generator", "A YouTube upload about cleaning messy text before publishing.", "Video title, promise or scene", "YouTube", (input) => {
+      const phrase = shortPhrase(input, "the video promise");
+      const overlay = topicTerms(input, ["fix", "publish", "faster"]).slice(0, 3).join(" ").toUpperCase();
+      const output = [
+        "Thumbnail brief",
+        "",
+        `Core promise: ${phrase}`,
+        `Overlay text: ${overlay}`,
+        "Visual direction: one clear face/object, one visible before-state, high contrast background.",
+        "Mobile check: text stays readable at 120px wide.",
+        "Avoid: repeating the full title, tiny UI screenshots and more than one visual metaphor."
+      ].join("\n");
+      return { output, hero: overlay, cards: [["Overlay", "2-4 words"], ["Mobile", "120px check"], ["Contrast", "High"], ["Title sync", "Required"]] };
+    }),
+    "youtube-description-generator": creatorConfig("youtube-description-generator", "How to clean a draft, improve the snippet and publish with a tracking link.", "Video topic, links or upload notes", "YouTube", (input) => {
+      const phrase = shortPhrase(input);
+      const output = [
+        "YouTube description",
+        "",
+        `${phrase}.`,
+        "In this video, you will see the problem, the practical fix and the next Clickoz tool to use before publishing.",
+        "",
+        "Chapters:",
+        "00:00 What this solves",
+        "00:35 Common mistake",
+        "01:20 Step-by-step fix",
+        "02:40 Example result",
+        "03:25 Final checklist",
+        "",
+        "Links:",
+        "- Tool: https://clickoz.com/tools/",
+        "- Guide: https://clickoz.com/guides/",
+        "",
+        "#creatorworkflow #seotools #clickoz"
+      ].join("\n");
+      return { output, hero: "Description with chapters, links and hashtags", cards: [["First lines", "Value first"], ["Chapters", 5], ["Links", "Grouped"], ["Hashtags", 3]] };
+    }),
+    "youtube-hashtag-generator": creatorConfig("youtube-hashtag-generator", "SEO tools for creators who publish faster without keyword stuffing.", "Video topic or niche", "YouTube", (input) => {
+      const terms = topicTerms(input, ["creator", "seo", "workflow", "tools"]);
+      const tags = terms.slice(0, 6).map((term) => `#${term.replace(/[^a-z0-9]/g, "")}`).filter((tag) => tag.length > 1);
+      const output = [
+        "YouTube hashtag mix",
+        "",
+        `Primary: ${tags.slice(0, 3).join(" ")}`,
+        `Support: ${tags.slice(3, 6).join(" ") || "#workflow #tutorial"}`,
+        "",
+        "Use 3 focused hashtags near the end of the description. If a tag does not describe the actual video, remove it."
+      ].join("\n");
+      return { output, hero: tags.slice(0, 3).join(" "), cards: [["Primary tags", Math.min(3, tags.length)], ["Support tags", Math.max(0, tags.length - 3)], ["Stuffing", "Avoid"], ["Placement", "Description end"]] };
+    }),
+    "youtubevideotagoptimizer": creatorConfig("youtubevideotagoptimizer", "Clean messy text before publishing a YouTube tutorial.", "Title, keyword or video promise", "YouTube", (input) => {
+      const terms = topicTerms(input, ["youtube", "tutorial", "workflow"]);
+      const phrase = shortPhrase(input, "video topic", 56);
+      const output = [
+        "YouTube video tags",
+        "",
+        `Primary tags: ${terms.slice(0, 5).join(", ")}`,
+        `Long-tail tags: ${phrase.toLowerCase()} tutorial, ${phrase.toLowerCase()} workflow, ${terms[0]} checklist`,
+        `Do not use: unrelated viral tags, competitor names, repeated plurals that add no intent.`,
+        "",
+        "Metadata rule: tags support title and description; they cannot rescue a vague upload promise."
+      ].join("\n");
+      return { output, hero: `${terms.slice(0, 3).join(", ")} tag direction`, cards: [["Primary", terms.slice(0, 5).length], ["Long-tail", 3], ["Repetition", "Removed"], ["Intent", "Aligned"]] };
+    }),
+    "community-post-generator": creatorConfig("community-post-generator", "A new tutorial about fixing upload metadata before publishing.", "Upload context or community update", "YouTube", (input) => {
+      const phrase = shortPhrase(input);
+      const output = [
+        "YouTube community post set",
+        "",
+        `Teaser: New upload is about ${phrase.toLowerCase()}. The useful part is the checklist you can reuse before publishing.`,
+        "",
+        "Poll:",
+        "- Title and thumbnail",
+        "- Description and links",
+        "- Tags and hashtags",
+        "- Tracking link",
+        "",
+        "Follow-up: What should I break down next: the hook, the metadata or the publishing checklist?"
+      ].join("\n");
+      return { output, hero: "Teaser, poll and follow-up ready", cards: [["Formats", 3], ["Engagement", "Poll"], ["CTA", "Comment"], ["Tone", "Useful"]] };
+    }),
+    "youtube-shorts-hook-analyzer": creatorConfig("youtube-shorts-hook-analyzer", "Creators waste ten minutes rewriting the same idea for every platform before they can post.", "First line or Shorts idea", "YouTube", (input) => {
+      const score = scoreHook(input);
+      const output = [
+        "Shorts hook analysis",
+        "",
+        `Hook score: ${score}/100`,
+        `0-2s line: ${shortPhrase(input, "state the problem first", 64)}`,
+        "Retention fix: show the before-state immediately, then reveal the first useful step before second five.",
+        "Cut: intros, channel context and any line that only explains background."
+      ].join("\n");
+      return { output, hero: `${score}/100 hook clarity`, cards: [["First 2s", "Problem first"], ["Retention", "Before-state"], ["Cut", "Intro"], ["Score", `${score}/100`]] };
+    }),
+    "youtube-competitor-title-analyzer": creatorConfig("youtube-competitor-title-analyzer", "How I fixed my SEO workflow\n7 tools I use before publishing\nStop losing clicks on simple snippets", "Competitor-style titles or title list", "YouTube", (input) => {
+      const titles = String(input || "").split(/\r?\n|[|]/).map((x) => compactText(x)).filter(Boolean).slice(0, 6);
+      const joined = titles.join(" ");
+      const output = [
+        "Competitor title pattern analysis",
+        "",
+        `Titles checked: ${titles.length || 1}`,
+        `Patterns found: ${/\d/.test(joined) ? "number/list, " : ""}${/\b(how|why|stop|before|avoid|mistake)\b/i.test(joined) ? "problem/curiosity, " : ""}${/\b(i|we|tested|fixed)\b/i.test(joined) ? "proof/story" : "utility angle"}`,
+        "",
+        "Original-safe rewrites:",
+        `1. ${smartTitle(shortPhrase(input, "the topic", 54))}: What To Fix First`,
+        `2. Before You Copy This Idea, Check The Promise`,
+        `3. The Cleaner Angle: ${shortPhrase(input, "your topic", 48)}`,
+        "",
+        "Rule: borrow the structure, never the exact wording or unique claim."
+      ].join("\n");
+      return { output, hero: "Patterns extracted without copying", cards: [["Titles", titles.length || 1], ["Rewrites", 3], ["Risk", "No copying"], ["Use", "Angle research"]] };
+    }),
+    "tiktok-hook-generator": creatorConfig("tiktok-hook-generator", "Creators waste ten minutes rewriting the same idea for every platform before they can post.", "Short-form idea or problem", "TikTok", (input) => {
+      const phrase = shortPhrase(input, "this creator problem", 58);
+      const output = [
+        "TikTok hooks",
+        "",
+        `1. Stop doing this before you post: ${phrase}`,
+        `2. If ${phrase.toLowerCase()} feels slow, try this`,
+        `3. I would fix ${phrase.toLowerCase()} in this order`,
+        `4. The mistake is not the idea. It is the packaging.`,
+        "",
+        "Use fast visual proof in the first second: screen, result, before-state or visible checklist."
+      ].join("\n");
+      return { output, hero: "4 short-form hooks", cards: [["Hooks", 4], ["First second", "Visual proof"], ["CTA", "Save/comment"], ["Tone", "Direct"]] };
+    }),
+    "tiktok-caption-seo-checker": creatorConfig("tiktok-caption-seo-checker", "How to clean a messy caption before posting #creatorworkflow #seotips", "TikTok caption draft", "TikTok", (input) => {
+      const hashtags = (input.match(/#[a-z0-9_]+/gi) || []);
+      const hasCta = /\b(save|comment|follow|try|watch|open|share)\b/i.test(input);
+      const terms = topicTerms(input, ["creator", "workflow"]);
+      const score = Math.min(100, 45 + (terms.length >= 3 ? 20 : 8) + (hashtags.length >= 2 && hashtags.length <= 5 ? 18 : 5) + (hasCta ? 17 : 0));
+      const output = [
+        "TikTok caption SEO check",
+        "",
+        `Score: ${score}/100`,
+        `Search phrase: ${terms.slice(0, 3).join(" ")}`,
+        `Hashtags: ${hashtags.length}`,
+        `CTA: ${hasCta ? "present" : "missing"}`,
+        "",
+        `Cleaner caption: ${shortPhrase(input.replace(/#[a-z0-9_]+/gi, ""), "show the practical fix", 110)}. Save this before your next post. ${hashtags.slice(0, 4).join(" ") || "#creatorworkflow #contenttips"}`
+      ].join("\n");
+      return { output, hero: `${score}/100 caption score`, cards: [["Search terms", terms.slice(0, 3).length], ["Hashtags", hashtags.length], ["CTA", hasCta ? "Present" : "Missing"], ["Score", `${score}/100`]] };
+    }),
+    "tiktok-trend-brief-builder": creatorConfig("tiktok-trend-brief-builder", "People show the messy setup first, then reveal the finished workflow in one cut.", "Trend observation or format", "TikTok", (input) => {
+      const phrase = shortPhrase(input);
+      const output = [
+        "TikTok trend brief",
+        "",
+        `Trend observation: ${phrase}`,
+        "Adapted angle: show the messy before-state, then the cleaner result and one repeatable step.",
+        "Shot plan: 1) problem close-up, 2) quick process, 3) final output, 4) save CTA.",
+        "Caption job: name the searchable problem in plain language.",
+        "Risk check: do not copy audio, claims or visual identity if they do not fit the brand."
+      ].join("\n");
+      return { output, hero: "Trend turned into a usable brief", cards: [["Angle", "Adapted"], ["Shots", 4], ["Caption", "Searchable"], ["Risk", "Checked"]] };
+    }),
+    "instagram-reels-hook-analyzer": creatorConfig("instagram-reels-hook-analyzer", "Creators waste ten minutes rewriting the same idea for every platform before they can post.", "Reel first line or first frame idea", "Instagram", (input) => {
+      const score = scoreHook(input);
+      const output = [
+        "Reels hook analysis",
+        "",
+        `Score: ${score}/100`,
+        `First-frame text: ${shortPhrase(input, "show the outcome first", 42)}`,
+        "Visual cue: show the finished result or the obvious mistake before adding context.",
+        "Rewrite: I would fix this before posting: [show the result].",
+        "CTA: Save this checklist for the next Reel."
+      ].join("\n");
+      return { output, hero: `${score}/100 Reels hook`, cards: [["First frame", "Outcome"], ["Text", "Short"], ["CTA", "Save"], ["Score", `${score}/100`]] };
+    }),
+    "hashtag-risk-checker": creatorConfig("hashtag-risk-checker", "#seo #seo #viral #followforfollow #creatorworkflow #contenttips", "Hashtags or caption with hashtags", "Instagram", (input) => {
+      const tags = (input.match(/#[a-z0-9_]+/gi) || []).map((x) => x.toLowerCase());
+      const repeats = tags.length - new Set(tags).size;
+      const broad = tags.filter((tag) => /viral|follow|love|instagood|fyp|trending/.test(tag));
+      const risk = tags.length > 12 || repeats || broad.length ? "Review" : "Balanced";
+      const safe = topicTerms(input, ["creator", "workflow", "content", "seo"]).slice(0, 5).map((term) => `#${term.replace(/[^a-z0-9]/g, "")}`).join(" ");
+      const output = [
+        "Hashtag risk check",
+        "",
+        `Tags found: ${tags.length}`,
+        `Repeated tags: ${repeats}`,
+        `Broad/risky tags: ${broad.join(" ") || "none"}`,
+        `Risk: ${risk}`,
+        "",
+        `Cleaner mix: ${safe}`,
+        "Rule: use fewer, more specific tags that describe the actual post."
+      ].join("\n");
+      return { output, hero: `${risk} hashtag risk`, cards: [["Tags", tags.length], ["Repeats", repeats], ["Broad", broad.length], ["Risk", risk]] };
+    }),
+    "carousel-outline-generator": creatorConfig("carousel-outline-generator", "How to make a tool page useful enough to rank.", "Topic or lesson", "Instagram", (input) => {
+      const phrase = shortPhrase(input, "the lesson");
+      const output = [
+        "Carousel outline",
+        "",
+        `1. Cover: ${smartTitle(phrase)}`,
+        "2. Problem: what users get wrong",
+        "3. Cost: why it slows the workflow",
+        "4. Fix step 1",
+        "5. Fix step 2",
+        "6. Example result",
+        "7. Checklist",
+        "8. CTA: save this before publishing"
+      ].join("\n");
+      return { output, hero: "8-slide carousel structure", cards: [["Slides", 8], ["Story", "Problem/fix"], ["CTA", "Save"], ["Use", "Educational"]] };
+    }),
+    "linkedin-post-formatter": creatorConfig("linkedin-post-formatter", "Good SEO tools should solve one task clearly before asking users to read more.", "Draft or idea", "LinkedIn", (input) => {
+      const phrase = shortPhrase(input, "the lesson", 110);
+      const output = [
+        phrase,
+        "",
+        "What changed:",
+        "- one clear problem",
+        "- one practical workflow",
+        "- one next action",
+        "",
+        "Why it matters:",
+        "People do not need more generic tooling. They need a result they can trust, copy and test in the real workflow.",
+        "",
+        "CTA: What part of your publishing flow still feels too messy?"
+      ].join("\n");
+      return { output, hero: "LinkedIn post formatted for scan", cards: [["Hook", "First line"], ["Bullets", 3], ["CTA", "Question"], ["Mobile", "Short blocks"]] };
+    }),
+    "x-thread-formatter": creatorConfig("x-thread-formatter", "A small SEO workflow that improves pages without keyword spam.", "Thread idea or notes", "X", (input) => {
+      const phrase = shortPhrase(input, "the workflow", 78);
+      const output = [
+        `1/ ${phrase}`,
+        "",
+        "Most people make it harder than it needs to be.",
+        "",
+        "2/ Start with the actual job: title, snippet, readability, link or tracking.",
+        "",
+        "3/ Use one tool, copy one cleaner result, then move to the next related check.",
+        "",
+        "4/ The goal is not more output. The goal is a page or post that is clearer before it goes live.",
+        "",
+        "5/ Save the workflow and reuse it before every publish."
+      ].join("\n");
+      return { output, hero: "5-post thread ready", cards: [["Posts", 5], ["Hook", "Post 1"], ["CTA", "Save"], ["Spacing", "Mobile"]] };
+    }),
+    "pinterest-pin-title-generator": creatorConfig("pinterest-pin-title-generator", "A checklist for creators who want cleaner SEO workflows.", "Pin topic or keyword", "Pinterest", (input) => {
+      const terms = topicTerms(input, ["creator", "seo", "workflow"]);
+      const phrase = shortPhrase(input, "creator workflow", 52);
+      const output = [
+        "Pinterest pin titles",
+        "",
+        `1. ${smartTitle(phrase)} Checklist`,
+        `2. ${smartTitle(terms.slice(0, 2).join(" "))} Workflow You Can Save`,
+        `3. How To Fix ${smartTitle(terms[0] || "Content")} Before Publishing`,
+        `4. Simple ${smartTitle(terms[0] || "Creator")} Tool Stack`,
+        "",
+        "Pin rule: search phrase first, benefit second, no clever wording that hides the topic."
+      ].join("\n");
+      return { output, hero: "4 search-friendly pin titles", cards: [["Titles", 4], ["Keywords", terms.slice(0, 3).join(", ")], ["Benefit", "Clear"], ["Risk", "Low"]] };
+    }),
+    "reddit-title-checker": creatorConfig("reddit-title-checker", "How do I make a tool page useful without stuffing keywords?", "Reddit title draft", "General", (input) => {
+      const spam = /\b(best|ultimate|guaranteed|viral|hack|secret)\b/i.test(input);
+      const question = /\?|\bhow|what|why|where|which\b/i.test(input);
+      const specific = words(input).length >= 7 && words(input).length <= 18;
+      const score = 45 + (question ? 20 : 0) + (specific ? 20 : 0) - (spam ? 25 : 0);
+      const output = [
+        "Reddit title check",
+        "",
+        `Score: ${Math.max(0, Math.min(100, score))}/100`,
+        `Specific: ${specific ? "yes" : "tighten length/context"}`,
+        `Question/community fit: ${question ? "yes" : "add a real question"}`,
+        `Spam risk: ${spam ? "high" : "low"}`,
+        "",
+        `Cleaner title: ${question ? shortPhrase(input, "your question") : `How should I approach ${shortPhrase(input, "this problem", 58).toLowerCase()}?`}`
+      ].join("\n");
+      return { output, hero: `${Math.max(0, Math.min(100, score))}/100 Reddit fit`, cards: [["Question", question ? "Yes" : "No"], ["Specific", specific ? "Yes" : "Review"], ["Spam", spam ? "High" : "Low"], ["Score", `${Math.max(0, Math.min(100, score))}/100`]] };
+    }),
+    "ai-disclosure-checker": creatorConfig("ai-disclosure-checker", "A product review post with one AI-assisted summary paragraph.", "Content context or draft", "General", (input, platform) => {
+      const sensitive = /\b(ad|affiliate|sponsored|health|finance|legal|review|product)\b/i.test(input);
+      const output = [
+        "AI disclosure check",
+        "",
+        `Disclosure need: ${sensitive ? "strongly recommended" : "recommended when AI materially helped"}`,
+        `Platform/context: ${platform}`,
+        "",
+        "Disclosure options:",
+        "- AI helped draft parts of this content; the final version was reviewed and edited.",
+        "- This post includes AI-assisted wording with human review for accuracy and context.",
+        "- AI was used for summarizing notes; recommendations and final claims were checked before publishing.",
+        "",
+        "Use clearer disclosure for ads, affiliate posts, product reviews and sensitive advice."
+      ].join("\n");
+      return { output, hero: sensitive ? "Disclosure strongly recommended" : "Disclosure guidance ready", cards: [["Sensitive", sensitive ? "Yes" : "No"], ["Options", 3], ["Review", "Human"], ["Platform", platform]] };
+    }),
+    "creator-content-calendar-tool": creatorConfig("creator-content-calendar-tool", "One long YouTube video about fixing messy content workflows into Shorts, posts, newsletter and community updates.", "Content pillar, offer or long-form idea", "General", (input) => {
+      const phrase = shortPhrase(input, "content pillar", 78);
+      const output = [
+        "Weekly creator content calendar",
+        "",
+        `Pillar: ${phrase}`,
+        "Monday: long-form outline or guide",
+        "Tuesday: short-form hook from the main problem",
+        "Wednesday: carousel or LinkedIn breakdown",
+        "Thursday: community poll or question",
+        "Friday: newsletter subject + recap CTA",
+        "Weekend: review metrics, update titles and repurpose the best angle"
+      ].join("\n");
+      return { output, hero: "Repeatable weekly plan", cards: [["Days", 6], ["Long-form", "Monday"], ["Shorts", "Tuesday"], ["Review", "Weekend"]] };
+    }),
+    "media-kit-generator": creatorConfig("media-kit-generator", "Creator in productivity and SEO. 42k monthly views, practical tutorials, brand-safe audience and newsletter reach.", "Creator niche, audience and metrics", "General", (input) => {
+      const phrase = shortPhrase(input, "creator profile", 100);
+      const output = [
+        "Media kit draft",
+        "",
+        `Positioning: ${phrase}`,
+        "Audience: describe who watches, what they buy or build, and why they trust the creator.",
+        "Proof: monthly views, engagement, newsletter reach, top content examples and audience geography when available.",
+        "Offer blocks: dedicated video, short-form package, newsletter mention, usage rights add-on.",
+        "Brand safety: practical, educational, reviewed claims, no fake urgency.",
+        "CTA: request campaign goal, deliverables, timeline, usage rights and budget range."
+      ].join("\n");
+      return { output, hero: "Media kit sections ready", cards: [["Sections", 6], ["Offer", "Blocks"], ["Proof", "Metrics"], ["CTA", "Brand brief"]] };
+    }),
+    "affiliate-disclosure-generator": creatorConfig("affiliate-disclosure-generator", "A YouTube description with an affiliate link to the tool I use.", "Affiliate context, placement or product", "General", (input, platform) => {
+      const phrase = shortPhrase(input, "affiliate recommendation", 86);
+      const output = [
+        "Affiliate disclosure options",
+        "",
+        `Context: ${phrase}`,
+        `Platform: ${platform}`,
+        "",
+        "Short disclosure:",
+        "Some links are affiliate links, which means I may earn a commission if you buy through them at no extra cost to you.",
+        "",
+        "Description disclosure:",
+        "This content includes affiliate links. If you purchase through those links, I may earn a commission. I only include links that match the topic of this content.",
+        "",
+        "Placement rule: put the disclosure before or near the affiliate link, not hidden after unrelated copy."
+      ].join("\n");
+      return { output, hero: "Affiliate disclosure ready", cards: [["Options", 2], ["Placement", "Near link"], ["Platform", platform], ["Trust", "Clear"]] };
+    }),
+    "newsletter-subject-generator": creatorConfig("newsletter-subject-generator", "A short issue showing how to finish SEO and creator tasks faster without opening five different apps.", "Newsletter topic or promise", "General", (input) => {
+      const phrase = shortPhrase(input, "the issue", 56);
+      const output = [
+        "Newsletter subject lines",
+        "",
+        `1. ${smartTitle(phrase)}: the faster version`,
+        `2. Before you publish ${phrase.toLowerCase()}`,
+        `3. A cleaner way to handle ${phrase.toLowerCase()}`,
+        `4. Fix this before the next send`,
+        "",
+        "Preheader: A practical checklist you can use today without rebuilding the whole workflow.",
+        "Spam check: no fake urgency, no excessive punctuation, clear benefit in the first 45 characters."
+      ].join("\n");
+      return { output, hero: "4 subjects + preheader", cards: [["Subjects", 4], ["Preheader", "Included"], ["Spam", "Low"], ["Benefit", "Early"]] };
+    }),
+    "podcast-show-notes-generator": creatorConfig("podcast-show-notes-generator", "Episode about turning one content idea into a tool, guide and social workflow.", "Episode notes, guest notes or outline", "General", (input) => {
+      const lines = String(input || "").split(/\r?\n/).map((x) => compactText(x)).filter(Boolean).slice(0, 5);
+      const topics = lines.length ? lines : [shortPhrase(input, "episode topic")];
+      const chapters = topics.map((line, i) => `${String(Math.floor(i * 4)).padStart(2, "0")}:${i % 2 ? "30" : "00"} ${line}`);
+      const output = [
+        "Podcast show notes",
+        "",
+        `Summary: ${shortPhrase(input, "This episode covers the core workflow and practical next steps.", 120)}`,
+        "",
+        "Chapters:",
+        ...chapters,
+        "",
+        "Key takeaways:",
+        "- the problem the listener can solve",
+        "- the practical workflow",
+        "- the next resource or CTA",
+        "",
+        "Promo snippet: Save this episode if your publishing workflow feels too scattered."
+      ].join("\n");
+      return { output, hero: "Summary, chapters and promo snippet", cards: [["Chapters", chapters.length], ["Takeaways", 3], ["Promo", "Included"], ["Links", "Add manually"]] };
+    }),
+    "video-repurposing-planner": creatorConfig("video-repurposing-planner", "One long video about cleaning messy content workflows before publishing.", "Long-form video idea or outline", "General", (input) => {
+      const phrase = shortPhrase(input, "the video", 78);
+      const output = [
+        "Video repurposing plan",
+        "",
+        `Source: ${phrase}`,
+        "Short 1: problem hook from the first mistake",
+        "Short 2: one step from the workflow",
+        "Carousel: checklist version of the process",
+        "LinkedIn: lesson learned and practical framework",
+        "Newsletter: recap with links to tools/guides",
+        "Community post: poll asking which step is hardest",
+        "",
+        "Rule: every repurpose should carry one idea, not a compressed version of the whole video."
+      ].join("\n");
+      return { output, hero: "6 assets from one video", cards: [["Shorts", 2], ["Carousel", 1], ["Newsletter", 1], ["Community", 1]] };
+    }),
+    "content-gap-finder": creatorConfig("content-gap-finder", "A page about free SEO tools for creators with examples and guides.", "Topic, page draft or outline", "General", (input) => {
+      const terms = topicTerms(input, ["tool", "guide", "workflow"]);
+      const output = [
+        "Content gap check",
+        "",
+        `Topic focus: ${terms.slice(0, 4).join(", ")}`,
+        "Missing questions to answer:",
+        `- What problem does ${terms[0]} solve first?`,
+        `- Who should use this workflow and who should not?`,
+        "- What example proves the result?",
+        "- What tool or guide should the reader open next?",
+        "",
+        "Sections to add:",
+        "- quick example",
+        "- common mistake",
+        "- internal link to the next tool",
+        "- final CTA"
+      ].join("\n");
+      return { output, hero: "Questions, sections and links to add", cards: [["Terms", terms.length], ["Questions", 4], ["Sections", 4], ["CTA", "Required"]] };
+    }),
+    "social-cta-generator": creatorConfig("social-cta-generator", "A creator post about saving time before publishing: ask people to save the checklist, try the tool and share the result.", "Post goal or content context", "Instagram", (input, platform) => {
+      const phrase = shortPhrase(input, "this workflow", 70);
+      const output = [
+        "Social CTA set",
+        "",
+        `Context: ${phrase}`,
+        `Platform: ${platform}`,
+        "",
+        "Soft CTA: Save this before your next publish.",
+        "Comment CTA: Comment the step you want checked next.",
+        "Click CTA: Open the related Clickoz tool and test your own draft.",
+        "Share CTA: Send this to someone fixing the same workflow.",
+        "",
+        "Pick one CTA. Multiple CTAs usually make the post weaker."
+      ].join("\n");
+      return { output, hero: "4 CTA options, pick one", cards: [["Soft", "Save"], ["Comment", "Conversation"], ["Click", "Conversion"], ["Rule", "One CTA"]] };
+    })
+  });
+
   function fallbackConfig(slug) {
     const tool = cms.toolBySlug?.[slug] || { title: slug.replace(/-/g, " "), category: "socialai", description: "" };
     const isCalc = /calculator|rate/i.test(tool.title);
@@ -1782,6 +2398,16 @@
       : "";
   }
 
+  function normalizedOutputText(value) {
+    return String(value || "")
+      .replace(/\r/g, "")
+      .split("\n")
+      .map((line) => line.replace(/[ \t]+$/g, ""))
+      .join("\n")
+      .replace(/\n{4,}/g, "\n\n\n")
+      .trim();
+  }
+
   function setupCmsReveal(root) {
     if (root.dataset.revealReady === "true") return;
     root.dataset.revealReady = "true";
@@ -1821,19 +2447,21 @@
     $(".cms-metrics", root).innerHTML = (res.metrics || []).map(([a, b]) => `<div class="cms-metric"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`).join("");
     renderInputWarnings(root, slug, hasOutput);
     const out = $(".cms-output", root);
+    out.setAttribute("aria-live", "polite");
+    out.setAttribute("tabindex", "0");
     let label = $(".cms-output-label", root);
     if (!label) {
       label = document.createElement("div");
       label.className = "cms-output-label";
       out.insertAdjacentElement("beforebegin", label);
     }
-    label.innerHTML = `<span>${hasOutput ? "Primary output" : "Ready when you are"}</span><small>${hasOutput ? "Copy-ready result below" : "Use a sample or paste real input"}</small>`;
+    label.innerHTML = `<span>${hasOutput ? `Output for ${esc(tool.title || "this tool")}` : "Ready when you are"}</span><small>${hasOutput ? "Copy, review, continue" : "Load a sample or paste real input"}</small>`;
     if (hasOutput) {
       if (res.html) renderSafeHtml(out, res.html);
       else renderTextOutput(out, res.output || "");
-      out.dataset.copy = res.output || out.textContent || "";
+      out.dataset.copy = normalizedOutputText(res.output || out.textContent || "");
     } else {
-      out.innerHTML = `<div class="cms-output-empty"><b>No output yet</b><span>Pick an example or type real input. Your work stays browser-only and the last input is restored locally.</span></div>`;
+      out.innerHTML = `<div class="cms-output-empty"><b>No output yet</b><span>Load an example, paste real input or type directly. The tool runs in the browser and keeps the last input locally.</span></div>`;
       out.dataset.copy = "";
     }
 
@@ -1844,7 +2472,7 @@
       out.insertAdjacentElement("afterend", next);
     }
     next.innerHTML = hasOutput
-      ? `<strong>Next best action</strong><span>${esc(nextActionFor(tool, slug))}</span>`
+      ? `<strong>Next best action</strong><span>${esc(nextActionFor(tool, slug))}</span>${nextToolChipsFor(tool)}`
       : `<strong>Start fast</strong><span>Load a sample, paste real input or use Ctrl+K to jump to the next Clickoz job.</span>`;
 
     let quality = $(".cms-quality-action", root);
@@ -1968,7 +2596,6 @@
       if (load) {
         applyExample(root, config, example);
         run(root, config, { record: true });
-        flashTool(root, "Example loaded. Output refreshed.");
       }
     }
     if (options) {

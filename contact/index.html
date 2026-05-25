@@ -3,19 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com; frame-src https://translate.google.com https://*.google.com; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src https://translate.google.com https://*.google.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=()" />
-  <title>Contact Clickoz - Support, Bug Reports and Tool Ideas</title>
-  <meta name="description" content="Contact Clickoz for tool bugs, guide feedback, SEO workflow ideas, creator utilities, partnership notes and public site questions." />
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), interest-cohort=()" />
+  <title>Contact Clickoz - Contact, Tool Requests and Bug Reports</title>
+  <meta name="description" content="Contact Clickoz, request a tool, report a bug or suggest a guide improvement with validation and a support@clickoz.com email fallback." />
   <link rel="canonical" href="https://clickoz.com/contact/" />
-  <meta name="robots" content="index,follow,max-image-preview:large" />
-  <meta property="og:title" content="Contact Clickoz" />
-  <meta property="og:description" content="Send bug reports, tool ideas, guide feedback and workflow suggestions for Clickoz." />
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
+    <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
+  <meta name="application-name" content="Clickoz" />
+  <meta name="apple-mobile-web-app-title" content="Clickoz" />
+<meta property="og:title" content="Contact Clickoz" />
+  <meta property="og:description" content="Contact Clickoz, request a tool, report a bug or suggest a guide improvement." />
   <meta property="og:url" content="https://clickoz.com/contact/" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://clickoz.com/assets/og/default.svg" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
   <script>
   (function(){
     try{
@@ -37,9 +43,9 @@
 </script>
   <link rel="stylesheet" href="/assets/site.css?v=14" />
   <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=75" />
+  <link rel="stylesheet" href="/assets/cms-final.css?v=125" />
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"ContactPage","name":"Contact Clickoz","url":"https://clickoz.com/contact/","publisher":{"@type":"Organization","name":"Clickoz","url":"https://clickoz.com/"}}
+  {"@context":"https://schema.org","@type":"ContactPage","name":"Contact Clickoz","url":"https://clickoz.com/contact/","description":"Request a Clickoz tool, report a bug or suggest a guide improvement.","publisher":{"@type":"Organization","name":"Clickoz","url":"https://clickoz.com/"}}
   </script>
 </head>
 <body class="bigtext">
@@ -50,7 +56,7 @@
       <a class="logo" href="/" aria-label="Clickoz Home">
         <span class="logo-badge" id="logoBadge" aria-hidden="true">
           <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
-            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8s5.4 13.8 12.6 13.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
         <span class="logo-text">Click<span class="logo-oz">oz</span></span>
@@ -65,66 +71,98 @@
     </div>
   </nav>
 
-  <main class="section container trust-shell">
-    <header class="hero-box trust-hero">
-      <p class="guide-kicker">CONTACT</p>
-      <h1 class="section-title">Contact Clickoz</h1>
-      <p class="section-sub">Send clear feedback that can become a better tool, stronger guide or cleaner workflow. The fastest fixes include the page URL, what happened and what you expected.</p>
-      <div class="trust-badges"><span>Bug reports</span><span>Tool ideas</span><span>Guide feedback</span><span>Partnerships</span></div>
+  <main class="section container trust-shell contact-shell">
+    <header class="hero-box trust-hero contact-hero">
+      <p class="guide-kicker">CONTACT CLICKOZ</p>
+      <h1 class="section-title">Contact Clickoz or request the next useful tool.</h1>
+      <p class="section-sub">Use one form for support, tool ideas, bug reports, guide improvements and collaboration notes. Clear requests go to support@clickoz.com with the page, context and message in one structured draft.</p>
+      <div class="trust-badges"><span>Validated form</span><span>support@clickoz.com</span><span>Tool requests</span><span>Bug reports</span></div>
     </header>
 
-    <section class="trust-card-grid" aria-label="Contact reasons">
-      <article class="trust-card"><h3>Bug report</h3><p>Include page URL, browser, input sample if safe, expected result and actual result. Screenshots help when layout or encoding is broken.</p></article>
-      <article class="trust-card"><h3>Tool idea</h3><p>Describe the user, input, output, examples and the next related tool or guide. Practical single-purpose tools fit Clickoz best.</p></article>
-      <article class="trust-card"><h3>Guide improvement</h3><p>Point to the weak section and what is missing: screenshot, source, workflow step, example, internal link or clearer checklist.</p></article>
+    <section class="contact-grid" aria-label="Contact Clickoz">
+      <form id="request" class="contact-form-card" data-clickoz-contact-form data-contact-email="support@clickoz.com" action="mailto:support@clickoz.com" method="post" novalidate>
+        <div class="contact-form-head">
+          <p class="guide-kicker">CONTACT + REQUEST</p>
+          <h2>Send the details needed to act.</h2>
+          <p>If no backend endpoint is configured, the form opens a prefilled email draft to <a href="mailto:support@clickoz.com">support@clickoz.com</a>.</p>
+        </div>
+
+        <input type="hidden" name="page" value="https://clickoz.com/contact/" />
+        <label class="contact-hp" aria-hidden="true">Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+
+        <div class="contact-field-grid">
+          <label>Name
+            <input name="name" type="text" autocomplete="name" required minlength="2" placeholder="Your name" />
+          </label>
+          <label>Email
+            <input name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+          </label>
+        </div>
+
+        <label>Request type
+          <select name="topic" required>
+            <option value="">Choose one</option>
+            <option value="Tool request">Tool request</option>
+            <option value="Bug report">Bug report</option>
+            <option value="Guide improvement">Guide improvement</option>
+            <option value="Tool improvement">Tool improvement</option>
+            <option value="Contact support">Contact support</option>
+            <option value="Partnership note">Partnership note</option>
+          </select>
+        </label>
+
+        <label>Message
+          <textarea name="message" rows="7" required minlength="20" placeholder="Tell us the page, the problem, the expected result and any safe example input."></textarea>
+        </label>
+
+        <div class="contact-form-actions">
+          <button class="btn primary" type="submit">Prepare request</button>
+          <a class="btn" href="/tools/">Browse tools</a>
+        </div>
+        <p class="contact-status" data-form-status hidden role="status" aria-live="polite"></p>
+      </form>
+
+      <aside class="contact-support-panel">
+        <article>
+          <span>01</span>
+          <h2>For tool requests</h2>
+          <p>Describe the user, input, expected output and the next related tool or guide. The best Clickoz tools solve one repeatable job clearly.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h2>For bug reports</h2>
+          <p>Include the exact URL, device, browser, action attempted, expected result and actual result. Avoid pasting private data.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h2>For guide improvements</h2>
+          <p>Point to the weak section and what is missing: example, checklist, screenshot, internal link or clearer next action.</p>
+        </article>
+      </aside>
     </section>
 
-    <div class="trust-grid" style="margin-top:16px">
-      <aside class="trust-nav-card">
-        <h2>Best next links</h2>
-        <a href="/tools/">Browse tools</a>
-        <a href="/guides/">Browse guides</a>
-        <a href="/updates/">Check updates</a>
-        <a href="/legal/">Legal hub</a>
-      </aside>
-      <article class="trust-content-card">
-        <section>
-          <h2>Email</h2>
-          <p>For public site feedback, tool bugs, guide requests and collaboration notes:</p>
-          <p><a class="btn primary" href="mailto:hello@clickoz.com">hello@clickoz.com</a></p>
-        </section>
-        <section>
-          <h2>What to send</h2>
-          <ul>
-            <li>The exact page URL.</li>
-            <li>The action you tried.</li>
-            <li>The result you expected.</li>
-            <li>The result you got.</li>
-            <li>One screenshot if the issue is visual.</li>
-          </ul>
-        </section>
-        <section>
-          <h2>Response priority</h2>
-          <p>Critical broken tools, empty pages, encoding bugs, SEO regressions and security issues should be marked clearly in the subject line so they can be triaged first.</p>
-        </section>
-      </article>
-    </div>
+    <section class="trust-link-grid contact-next-links" aria-label="Next Clickoz routes">
+      <a href="/tools/"><strong>Open tools</strong><span>Use the current CMS utility library.</span></a>
+      <a href="/guides/"><strong>Read guides</strong><span>Find the practical article behind a tool.</span></a>
+      <a href="/tools/seo-tools/"><strong>SEO tools</strong><span>Start from snippets, slugs and content checks.</span></a>
+      <a href="/updates/"><strong>Check updates</strong><span>See what changed in the product.</span></a>
+    </section>
   </main>
 
   <footer class="footer">
     <div class="container footer-grid">
       <div><h4>Clickoz</h4><div class="footer-links"><a href="/about/">About</a><a href="/tools/">Tools</a><a href="/guides/">Guides</a><a href="/updates/">Updates</a></div></div>
-      <div><h4>Workflow hubs</h4><div class="footer-links"><a href="/workflows/">Workflows</a><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/guides/creator/">Creator Guides</a></div></div>
+      <div><h4>Tool hubs</h4><div class="footer-links"><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/tools/writing-tools/">Writing Tools</a><a href="/guides/creator/">Creator Guides</a></div></div>
       <div><h4>Popular tools</h4><div class="footer-links"><a href="/tools/word-counter/">Word Counter</a><a href="/tools/meta-tags/">Meta Tags</a><a href="/tools/json-formatter/">JSON Formatter</a><a href="/tools/youtube-title-generator/">YouTube Titles</a></div></div>
       <div><h4>Legal</h4><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a><a href="/404/">404</a></div></div>
     </div>
     <div class="container" style="margin-top:14px"><hr class="sep" /><div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">&copy; 2026 Clickoz &middot; Fast browser tools for SEO, writing, developers and creators</div></div>
   </footer>
-  <script src="/assets/cms-registry.js?v=4" defer></script>
+  <script src="/assets/cms-registry.js?v=5" defer></script>
   <script src="/assets/cms-schema.js?v=2" defer></script>
-  <script src="/assets/cms-enhance.js?v=7" defer></script>
-  <script src="/assets/site.js?v=53" defer></script>
-  <script src="/assets/clickoz-premium.js?v=6" defer></script>
+  <script src="/assets/cms-enhance.js?v=8" defer></script>
+  <script src="/assets/site.js?v=74" defer></script>
+  <script src="/assets/clickoz-premium.js?v=12" defer></script>
 </body>
 </html>
 

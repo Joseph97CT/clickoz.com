@@ -3,7 +3,7 @@
    - Quickchips appear 1 -> 2 -> 3
    - Top tools box + pick cards stagger
    - Guides box + guide cards stagger
-   - Workflows box + pills + cards stagger
+   - Route box + pills + cards stagger
 */
 
 (() => {
@@ -135,16 +135,16 @@
     observeStagger(guidesGrid, ".guide-card", { step: 95, threshold: 0.14 });
   }
 
-  function setupWorkflowsReveal() {
-    const wfBox = document.querySelector('section[aria-label="Workflows"] .workflow-box');
+  function setupRouteReveal() {
+    const wfBox = document.querySelector('section[aria-label="Next tool routes"] .workflow-box');
     observeReveal(wfBox, { kind: "box", threshold: 0.12 });
 
     // Pills stagger (faster)
-    const pills = document.querySelector('section[aria-label="Workflows"] .workflow-pills');
+    const pills = document.querySelector('section[aria-label="Next tool routes"] .workflow-pills');
     observeStagger(pills, ".workflow-pill", { step: 60, threshold: 0.14 });
 
     // Cards stagger
-    const cards = document.querySelector('section[aria-label="Workflows"] .workflow-grid');
+    const cards = document.querySelector('section[aria-label="Next tool routes"] .workflow-grid');
     observeStagger(cards, ".workflow-card", { step: 120, threshold: 0.16 });
   }
 
@@ -152,8 +152,8 @@
     setupHeroReveal();
     setupTopToolsReveal();
     setupGuidesReveal();
-    setupWorkflowsReveal();
-    setupSurpriseWorkflow();
+    setupRouteReveal();
+    setupSurpriseRoute();
     setupPicksRefresh();
     setupTypewriterHeadlines();
     setupWorkdeskHome();
@@ -176,20 +176,9 @@
       const text = el.dataset.fullText || el.textContent.trim();
       el.dataset.fullText = text;
       el.dataset.typed = "1";
-      el.textContent = "";
+      el.textContent = text;
       el.classList.add("is-typing");
-
-      let i = 0;
-      const step = () => {
-        i += 1;
-        el.textContent = text.slice(0, i);
-        if (i < text.length) {
-          window.setTimeout(step, 24 + Math.random() * 24);
-        } else {
-          el.classList.remove("is-typing");
-        }
-      };
-      window.setTimeout(step, 80);
+      window.setTimeout(() => el.classList.remove("is-typing"), 620);
     }
 
     const io = new IntersectionObserver(
@@ -209,8 +198,8 @@
     });
   }
 
-  function setupSurpriseWorkflow() {
-    const button = document.querySelector("#surpriseWorkflow");
+  function setupSurpriseRoute() {
+    const button = document.querySelector("#surpriseRoute");
     const card = document.querySelector("#surpriseCard");
     if (!button || !card) return;
 

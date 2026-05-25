@@ -1,17 +1,37 @@
 (() => {
   "use strict";
   const swatches = [
-    ["#22d3ee", "#06b6d4", "Cyan"],
-    ["#6366f1", "#8b5cf6", "Violet"],
-    ["#3b82f6", "#60a5fa", "Blue"],
-    ["#10b981", "#34d399", "Green"],
-    ["#fde047", "#eab308", "Yellow"],
-    ["#f59e0b", "#fbbf24", "Amber"],
-    ["#f97316", "#fb923c", "Orange"],
-    ["#ef4444", "#f87171", "Red"],
-    ["#ec4899", "#f472b6", "Pink"],
-    ["#f8fafc", "#cbd5e1", "White"]
+    ["#38e8ff", "#8af3ff", "Cyan"],
+    ["#8b7cff", "#c7b7ff", "Violet"],
+    ["#5ea8ff", "#a9d6ff", "Blue"],
+    ["#31f5bd", "#9af7d7", "Green"],
+    ["#ffe45c", "#fff2a8", "Yellow"],
+    ["#ffb238", "#ffd991", "Amber"],
+    ["#ff7a1a", "#ffbd7a", "Orange"],
+    ["#ff5c6c", "#ffadb6", "Red"],
+    ["#ff5fbd", "#ffb3df", "Pink"],
+    ["#f8fafc", "#ffffff", "White"]
   ];
+
+  const legacySwatches = {
+    "#22d3ee": ["#38e8ff", "#8af3ff"],
+    "#6366f1": ["#8b7cff", "#c7b7ff"],
+    "#3b82f6": ["#5ea8ff", "#a9d6ff"],
+    "#10b981": ["#31f5bd", "#9af7d7"],
+    "#fde047": ["#ffe45c", "#fff2a8"],
+    "#f59e0b": ["#ffb238", "#ffd991"],
+    "#f97316": ["#ff7a1a", "#ffbd7a"],
+    "#ef4444": ["#ff5c6c", "#ffadb6"],
+    "#ec4899": ["#ff5fbd", "#ffb3df"],
+    "#cbd5e1": ["#f8fafc", "#ffffff"]
+  };
+
+  function normalizeAccentPair(a1, a2) {
+    const key = String(a1 || "").toLowerCase();
+    const upgraded = legacySwatches[key];
+    if (upgraded) return upgraded;
+    return [a1 || "#38e8ff", a2 || "#8af3ff"];
+  }
 
   function hexToRgbTriplet(hex) {
     const h = String(hex || "").replace("#", "").trim();
@@ -29,12 +49,11 @@
         parseInt(h.slice(4, 6), 16)
       ].join(",");
     }
-    return "34,211,238";
+    return "56,232,255";
   }
 
   function setPremiumAccent(a1, a2) {
-    const accent = a1 || "#22d3ee";
-    const accent2 = a2 || "#06b6d4";
+    const [accent, accent2] = normalizeAccentPair(a1, a2);
     const rgb = hexToRgbTriplet(accent);
     document.documentElement.style.setProperty("--accent", accent);
     document.documentElement.style.setProperty("--accent2", accent2);
@@ -64,7 +83,7 @@
       const saved = JSON.parse(localStorage.getItem("clickoz_accent") || "null");
       if (saved && saved.a1) return saved;
     } catch (_) {}
-    return { a1: "#22d3ee", a2: "#06b6d4" };
+    return { a1: "#38e8ff", a2: "#8af3ff" };
   }
 
   function ensureThemePicker() {
@@ -86,7 +105,7 @@
       <div class="menu" id="colorMenu" role="menu" aria-label="Pick theme color">
         <div class="menu-title">Theme color</div>
         <div class="color-grid">
-          ${swatches.map(([a1, a2, label]) => `<button class="color-option cz-theme-option" type="button" data-accent="${a1}" data-accent2="${a2}" style="background:${a1}" title="${label}" role="menuitem"></button>`).join("")}
+          ${swatches.map(([a1, a2, label]) => `<button class="color-option cz-theme-option" type="button" data-accent="${a1}" data-accent2="${a2}" style="--swatch:${a1};--swatch2:${a2}" title="${label}" role="menuitem" aria-label="${label} theme"><span class="color-swatch" aria-hidden="true"></span><span class="color-label">${label}</span></button>`).join("")}
         </div>
       </div>`;
     actions.prepend(dropdown);
@@ -116,24 +135,29 @@
 
   document.documentElement.classList.add("cz-premium-ready");
   const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const coarseDevice = window.matchMedia && window.matchMedia("(max-width: 820px), (pointer: coarse)").matches;
+  const coarseDevice = window.matchMedia && window.matchMedia("(max-width: 820px), (pointer: coarse), (max-height: 480px) and (orientation: landscape)").matches;
+  const saveData = Boolean(navigator.connection && (
+    navigator.connection.saveData ||
+    /(^|-)2g/i.test(String(navigator.connection.effectiveType || ""))
+  ));
+  const leanDevice = reduceMotion || coarseDevice || saveData;
   const grid = document.createElement("div");
   grid.className = "cz-neon-grid";
   grid.setAttribute("aria-hidden", "true");
   const scan = document.createElement("div");
   scan.className = "cz-scanline";
   scan.setAttribute("aria-hidden", "true");
-  if (!reduceMotion && !coarseDevice) {
+  if (!leanDevice) {
     const orb = document.createElement("div");
     orb.className = "cz-orb";
     orb.setAttribute("aria-hidden", "true");
     document.body.prepend(orb);
+    document.body.prepend(scan);
+    document.body.prepend(grid);
   }
-  document.body.prepend(scan);
-  document.body.prepend(grid);
 
   let raf = 0;
-  if (!reduceMotion && !coarseDevice) {
+  if (!leanDevice) {
     window.addEventListener("pointermove", (event) => {
       if (raf) return;
       raf = requestAnimationFrame(() => {
@@ -146,7 +170,7 @@
     }, { passive: true });
   }
 
-  if (!reduceMotion && !coarseDevice) {
+  if (!leanDevice) {
     const cards = document.querySelectorAll(".card,.small-card,.guide-x,.release-card,.pick-card,.workflow-card,.lane");
     cards.forEach((card) => {
       card.addEventListener("pointermove", (event) => {

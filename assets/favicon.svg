@@ -1,11 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Clickoz">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#22d3ee"></stop>
-      <stop offset="1" stop-color="#06b6d4"></stop>
+    <linearGradient id="bg" x1="90" y1="72" x2="430" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#20294a"/>
+      <stop offset=".55" stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#151b34"/>
+    </linearGradient>
+    <linearGradient id="a" x1="126" y1="96" x2="386" y2="416" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8af3ff"/>
+      <stop offset=".55" stop-color="#38e8ff"/>
+      <stop offset="1" stop-color="#8b7cff"/>
     </linearGradient>
   </defs>
-  <rect x="10" y="10" width="108" height="108" rx="28" fill="url(#g)"></rect>
-  <path d="M38 64c0-18 13-30 32-30 9 0 16 2 22 6l-10 11c-3-2-7-3-12-3-10 0-17 7-17 16 0 10 7 16 17 16 5 0 9-1 12-3l10 11c-6 4-13 6-22 6-19 0-32-12-32-30z" fill="#07070d" opacity="0.92"></path>
-  <circle cx="92" cy="64" r="6" fill="#07070d" opacity="0.92"></circle>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect x="34" y="34" width="444" height="444" rx="88" fill="none" stroke="#fff" stroke-opacity=".10" stroke-width="4"/>
+  <path d="M347 151c-25-23-57-34-96-34-78 0-136 56-136 139s58 139 136 139c40 0 73-12 99-36" fill="none" stroke="url(#a)" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

@@ -24,30 +24,70 @@
   const prefersReduce = window.matchMedia &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const mobilePerfMode = window.matchMedia &&
-    window.matchMedia("(max-width: 820px), (pointer: coarse)").matches;
+    window.matchMedia("(max-width: 820px), (pointer: coarse), (max-height: 480px) and (orientation: landscape)").matches;
+  const saveDataMode = Boolean(navigator.connection && (
+    navigator.connection.saveData ||
+    /(^|-)2g/i.test(String(navigator.connection.effectiveType || ""))
+  ));
+  const leanPerfMode = prefersReduce || mobilePerfMode || saveDataMode;
   if (mobilePerfMode) document.documentElement.classList.add("mobile-perf-mode");
+  if (leanPerfMode) document.documentElement.classList.add("lean-perf-mode");
+
+  function removeAmbientEffects(){
+    document.getElementById("spaceParticles")?.remove();
+    if (leanPerfMode) document.getElementById("clickozParticles")?.remove();
+  }
+
+  if (leanPerfMode) {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", removeAmbientEffects, { once:true });
+    } else {
+      removeAmbientEffects();
+    }
+  }
 
   const THEME_SWATCHES = [
-    ["#22d3ee", "#06b6d4", "Cyan"],
-    ["#6366f1", "#8b5cf6", "Violet"],
-    ["#3b82f6", "#60a5fa", "Blue"],
-    ["#10b981", "#34d399", "Green"],
-    ["#fde047", "#eab308", "Yellow"],
-    ["#f59e0b", "#fbbf24", "Amber"],
-    ["#f97316", "#fb923c", "Orange"],
-    ["#ef4444", "#f87171", "Red"],
-    ["#ec4899", "#f472b6", "Pink"],
-    ["#f8fafc", "#cbd5e1", "White"]
+    ["#38e8ff", "#8af3ff", "Cyan"],
+    ["#8b7cff", "#c7b7ff", "Violet"],
+    ["#5ea8ff", "#a9d6ff", "Blue"],
+    ["#31f5bd", "#9af7d7", "Green"],
+    ["#ffe45c", "#fff2a8", "Yellow"],
+    ["#ffb238", "#ffd991", "Amber"],
+    ["#ff7a1a", "#ffbd7a", "Orange"],
+    ["#ff5c6c", "#ffadb6", "Red"],
+    ["#ff5fbd", "#ffb3df", "Pink"],
+    ["#f8fafc", "#ffffff", "White"]
   ];
+
+  const LEGACY_SWATCHES = {
+    "#22d3ee": ["#38e8ff", "#8af3ff"],
+    "#6366f1": ["#8b7cff", "#c7b7ff"],
+    "#3b82f6": ["#5ea8ff", "#a9d6ff"],
+    "#10b981": ["#31f5bd", "#9af7d7"],
+    "#fde047": ["#ffe45c", "#fff2a8"],
+    "#f59e0b": ["#ffb238", "#ffd991"],
+    "#f97316": ["#ff7a1a", "#ffbd7a"],
+    "#ef4444": ["#ff5c6c", "#ffadb6"],
+    "#ec4899": ["#ff5fbd", "#ffb3df"],
+    "#cbd5e1": ["#f8fafc", "#ffffff"]
+  };
+
+  function normalizeAccentPair(a1, a2){
+    const key = String(a1 || "").toLowerCase();
+    const upgraded = LEGACY_SWATCHES[key];
+    if (upgraded) return upgraded;
+    return [a1 || "#38e8ff", a2 || "#8af3ff"];
+  }
 
   function closeAllMenus(){
     $$('.menu.active').forEach(m => m.classList.remove('active'));
     $$('[aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false'));
+    document.documentElement.classList.remove('theme-menu-open');
   }
 
   function colorGridMarkup(){
     return THEME_SWATCHES.map(([a1, a2, label]) =>
-      `<button class="color-option" type="button" data-accent="${a1}" data-accent2="${a2}" style="background:${a1}" title="${label}" role="menuitem" aria-label="${label} theme"></button>`
+      `<button class="color-option" type="button" data-accent="${a1}" data-accent2="${a2}" style="--swatch:${a1};--swatch2:${a2}" title="${label}" role="menuitem" aria-label="${label} theme"><span class="color-swatch" aria-hidden="true"></span><span class="color-label">${label}</span></button>`
     ).join("");
   }
 
@@ -93,8 +133,23 @@
         <span class="m-command-icon" aria-hidden="true">⚡</span>
         <div>
           <strong>Start from the job</strong>
-          <p>Pick the page you need, then move to the matching workflow.</p>
+          <p>Open the right tool, guide or request page without the bottom mobile bar.</p>
         </div>
+      </div>
+
+      <div class="m-quick-grid" aria-label="Quick actions">
+        <button type="button" data-open-command data-command-query="">
+          <b>Fix</b>
+          <span>Open command palette</span>
+        </button>
+        <button type="button" data-open-command data-command-query="">
+          <b>Saved</b>
+          <span>Saved and recent tools</span>
+        </button>
+        <a href="/tools/">
+          <b>Tools</b>
+          <span>Browse the full library</span>
+        </a>
       </div>
 
       <div class="m-links" aria-label="Main sections">
@@ -103,7 +158,6 @@
         <a class="m-link" href="/guides/"><span aria-hidden="true">◇</span><strong>Guides</strong></a>
         <a class="m-link" href="/updates/"><span aria-hidden="true">↻</span><strong>Updates</strong></a>
         <a class="m-link" href="/about/"><span aria-hidden="true">i</span><strong>About</strong></a>
-        <a class="m-link" href="/contact/"><span aria-hidden="true">✉</span><strong>Contact</strong></a>
       </div>
 
       <div class="m-block m-theme-block">
@@ -120,12 +174,12 @@
   function normalizeLogo(){
     const logo = $('.logo');
     if(!logo) return;
-    if(logo.querySelector('.logo-text')) return;
+    if(logo.querySelector('.logo-mark')) return;
     logo.setAttribute('aria-label', 'Clickoz Home');
     logo.innerHTML = `
       <span class="logo-badge" id="logoBadge" aria-hidden="true">
         <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
-          <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8s5.4 13.8 12.6 13.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </span>
       <span class="logo-text">Click<span class="logo-oz">oz</span></span>`;
@@ -193,6 +247,8 @@
     }else if(!$('#google_translate_native') && !$('#google_translate_element .goog-te-combo')){
       $('#google_translate_element').insertAdjacentHTML('afterbegin', '<div id="google_translate_native"></div>');
     }
+
+    actions.querySelectorAll('.nav-primary-cta').forEach((item) => item.remove());
 
     if(!$('#burger')){
       actions.insertAdjacentHTML('afterbegin', burgerMarkup());
@@ -309,12 +365,55 @@
       const b = parseInt(h.slice(4,6), 16);
       return `${r},${g},${b}`;
     }
-    return "34,211,238"; // cyan fallback
+    return "56,232,255"; // bright cyan fallback
+  }
+
+  function safeHexColor(value, fallback){
+    const color = String(value || "").trim();
+    return /^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(color) ? color : fallback;
+  }
+
+  function clickozFaviconSvg(accent, accent2){
+    const a1 = safeHexColor(accent, "#38e8ff");
+    const a2 = safeHexColor(accent2, "#8af3ff");
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Clickoz">
+  <defs>
+    <linearGradient id="bg" x1="90" y1="72" x2="430" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#20294a"/>
+      <stop offset=".55" stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#151b34"/>
+    </linearGradient>
+    <linearGradient id="a" x1="126" y1="96" x2="386" y2="416" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="${a2}"/>
+      <stop offset=".58" stop-color="${a1}"/>
+      <stop offset="1" stop-color="${a2}"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect x="34" y="34" width="444" height="444" rx="88" fill="none" stroke="#fff" stroke-opacity=".10" stroke-width="4"/>
+  <path d="M347 151c-25-23-57-34-96-34-78 0-136 56-136 139s58 139 136 139c40 0 73-12 99-36" fill="none" stroke="url(#a)" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+  }
+
+  function syncDynamicFavicon(accent, accent2){
+    const href = `data:image/svg+xml,${encodeURIComponent(clickozFaviconSvg(accent, accent2))}`;
+    let link = document.getElementById("clickozDynamicFavicon");
+    if (!link) {
+      link = document.createElement("link");
+      link.id = "clickozDynamicFavicon";
+      link.rel = "icon";
+      link.type = "image/svg+xml";
+      link.sizes = "any";
+      document.head.appendChild(link);
+    }
+    link.href = href;
+
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) themeColor.setAttribute("content", accent);
   }
 
   function setAccent(a1, a2){
-    const accent  = a1 || '#22d3ee'; // cyan default
-    const accent2 = a2 || '#06b6d4';
+    const [accent, accent2] = normalizeAccentPair(a1, a2);
     const rgb = hexToRgbTriplet(accent);
 
     document.documentElement.style.setProperty('--accent', accent);
@@ -331,6 +430,8 @@
     $$('#logoBadge,.logo-badge').forEach(badge => {
       badge.style.color = accent;
     });
+
+    syncDynamicFavicon(accent, accent2);
 
     try{
       localStorage.setItem('clickoz_accent', JSON.stringify({a1: accent, a2: accent2}));
@@ -407,6 +508,8 @@
     });
 
     menu.addEventListener('click', (e) => {
+      const command = e.target.closest('[data-open-command]');
+      if(command) closeMenu(true);
       const a = e.target.closest('a');
       if(a) closeMenu();
     });
@@ -426,18 +529,149 @@
   })();
 
   /* =========================================================
-     2) ACCENT MENU (DESKTOP + MOBILE GRID)
+     2) CONTACT AND REQUEST FORMS
+  ========================================================= */
+  (function initContactForms(){
+    const forms = $$('[data-clickoz-contact-form]');
+    if(!forms.length) return;
+
+    function field(form, name){
+      return form.querySelector(`[name="${name}"]`);
+    }
+
+    function value(form, name){
+      return String(field(form, name)?.value || "").trim();
+    }
+
+    function setStatus(form, type, message){
+      const target = form.querySelector('[data-form-status]');
+      if(!target) return;
+      target.textContent = message;
+      target.dataset.state = type;
+      target.hidden = false;
+    }
+
+    function mark(input, invalid){
+      if(!input) return;
+      input.setAttribute('aria-invalid', String(Boolean(invalid)));
+    }
+
+    function validEmail(email){
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+    }
+
+    function validate(form){
+      const name = field(form, 'name');
+      const email = field(form, 'email');
+      const topic = field(form, 'topic');
+      const message = field(form, 'message');
+      const errors = [];
+      const checks = [
+        [name, value(form, 'name').length >= 2, 'Add your name.'],
+        [email, validEmail(value(form, 'email')), 'Add a valid email.'],
+        [topic, value(form, 'topic').length > 0, 'Choose the request type.'],
+        [message, value(form, 'message').length >= 20, 'Write at least 20 characters so the request is actionable.']
+      ];
+      checks.forEach(([input, ok, copy]) => {
+        mark(input, !ok);
+        if(!ok) errors.push(copy);
+      });
+      return errors;
+    }
+
+    function mailtoUrl(form){
+      const topic = value(form, 'topic') || 'Clickoz request';
+      const subject = encodeURIComponent(`[Clickoz] ${topic}`);
+      const recipient = (String(form.dataset.contactEmail || 'support@clickoz.com').trim() || 'support@clickoz.com').replace(/[^\w.+@-]/g, '');
+      const lines = [
+        `Name: ${value(form, 'name')}`,
+        `Email: ${value(form, 'email')}`,
+        `Topic: ${topic}`,
+        `Page: ${value(form, 'page') || window.location.href}`,
+        '',
+        value(form, 'message')
+      ];
+      return `mailto:${recipient}?subject=${subject}&body=${encodeURIComponent(lines.join('\n'))}`;
+    }
+
+    async function submitToEndpoint(form, endpoint){
+      const payload = {
+        name: value(form, 'name'),
+        email: value(form, 'email'),
+        topic: value(form, 'topic'),
+        page: value(form, 'page') || window.location.href,
+        message: value(form, 'message')
+      };
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'same-origin'
+      });
+      if(!response.ok) throw new Error(`Request failed with status ${response.status}`);
+    }
+
+    forms.forEach((form) => {
+      if(form.dataset.bound === 'true') return;
+      form.dataset.bound = 'true';
+      const pageInput = field(form, 'page');
+      if(pageInput && !pageInput.value) pageInput.value = window.location.href;
+
+      form.addEventListener('input', (event) => {
+        const target = event.target;
+        if(target && target.matches('input, textarea, select')) mark(target, false);
+      });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if(value(form, 'website') || value(form, 'clickoz_company_url')){
+          setStatus(form, 'error', 'Request blocked by the anti-spam guard.');
+          return;
+        }
+        const errors = validate(form);
+        if(errors.length){
+          setStatus(form, 'error', errors[0]);
+          return;
+        }
+
+        const button = form.querySelector('[type="submit"]');
+        button?.setAttribute('disabled', 'true');
+        setStatus(form, 'pending', 'Preparing your request...');
+        const endpoint = String(form.dataset.endpoint || '').trim();
+
+        try{
+          if(endpoint){
+            await submitToEndpoint(form, endpoint);
+            setStatus(form, 'success', 'Request sent. We will review it from support@clickoz.com.');
+            form.reset();
+          }else{
+            window.location.href = mailtoUrl(form);
+            setStatus(form, 'success', 'Email draft opened with the request details. Send it from your mail app to complete the request.');
+          }
+        }catch(_){
+          window.location.href = mailtoUrl(form);
+          setStatus(form, 'error', 'The endpoint did not accept the request. A mail draft was opened as fallback.');
+        }finally{
+          button?.removeAttribute('disabled');
+        }
+      });
+    });
+  })();
+
+  /* =========================================================
+     3) ACCENT MENU (DESKTOP + MOBILE GRID)
   ========================================================= */
   (function initAccent(){
-    const CYAN  = '#22d3ee';
-    const CYAN2 = '#06b6d4';
+    const CYAN  = '#38e8ff';
+    const CYAN2 = '#8af3ff';
 
     // restore saved accent first
     try{
       const saved = JSON.parse(localStorage.getItem('clickoz_accent') || 'null');
       if(saved?.a1){
-        setAccent(saved.a1, saved.a2);
-        markActiveSwatches(saved.a1);
+        const [accent, accent2] = normalizeAccentPair(saved.a1, saved.a2);
+        setAccent(accent, accent2);
+        markActiveSwatches(accent);
       }else{
         // first visit default
         setAccent(CYAN, CYAN2);
@@ -458,6 +692,7 @@
         closeAllMenus();
         menu.classList.toggle('active', !open);
         toggle.setAttribute('aria-expanded', String(!open));
+        document.documentElement.classList.toggle('theme-menu-open', !open);
       });
 
       menu.addEventListener('click', (e) => {
@@ -975,7 +1210,7 @@
      7) DOM PARTICLES (idle + burst) — NO CLICK
   ========================================================= */
   function ensureParticlesLayer(){
-    if (prefersReduce) {
+    if (leanPerfMode) {
       document.getElementById("clickozParticles")?.remove();
       return null;
     }
@@ -989,7 +1224,7 @@
   }
 
   function buildIdleParticles(){
-    if (prefersReduce) return;
+    if (leanPerfMode) return;
     const layer = ensureParticlesLayer();
     if(!layer) return;
     if (layer.querySelector('.pidle')) return;
@@ -1010,7 +1245,7 @@
   }
 
   function burstParticles(){
-    if (prefersReduce || mobilePerfMode) return;
+    if (leanPerfMode) return;
     const layer = ensureParticlesLayer();
     if(!layer) return;
 
@@ -1053,7 +1288,7 @@
   }
 
   function buildGuideParticles(){
-    if (prefersReduce) return;
+    if (leanPerfMode) return;
     const layer = ensureParticlesLayer();
     if(!layer) return;
     if (layer.querySelector('.pguide')) return;
@@ -1266,8 +1501,8 @@
   ========================================================= */
   (function initFX(){
     const guidePath = (location.pathname || "").includes("/guides/");
-    if (prefersReduce || guidePath || document.body.classList.contains("page-guide")) {
-      if (!prefersReduce && (guidePath || document.body.classList.contains("page-guide"))) {
+    if (leanPerfMode || guidePath || document.body.classList.contains("page-guide")) {
+      if (!leanPerfMode && (guidePath || document.body.classList.contains("page-guide"))) {
         if (document.readyState === "loading"){
           document.addEventListener("DOMContentLoaded", buildGuideParticles, { once:true });
         } else {
@@ -1446,7 +1681,7 @@
 (() => {
   const standardFooterColumns = `
     <div><h4>Clickoz</h4><div class="footer-links"><a href="/about/">About</a><a href="/tools/">Tools</a><a href="/guides/">Guides</a><a href="/updates/">Updates</a></div></div>
-    <div><h4>Workflow hubs</h4><div class="footer-links"><a href="/workflows/">Workflows</a><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/guides/creator/">Creator Guides</a></div></div>
+    <div><h4>Tool hubs</h4><div class="footer-links"><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/tools/writing-tools/">Writing Tools</a><a href="/guides/creator/">Creator Guides</a></div></div>
     <div><h4>Popular tools</h4><div class="footer-links"><a href="/tools/word-counter/">Word Counter</a><a href="/tools/meta-tags/">Meta Tags</a><a href="/tools/json-formatter/">JSON Formatter</a><a href="/tools/youtube-title-generator/">YouTube Titles</a></div></div>
     <div><h4>Legal</h4><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a><a href="/404/">404</a></div></div>`;
 
@@ -1464,9 +1699,8 @@
       brand.setAttribute("aria-label", "Clickoz Home");
       brand.innerHTML = `
         <span class="footer-logo-badge" aria-hidden="true">
-          <svg class="footer-logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
-            <path class="footer-logo-c" d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6"
-              fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg class="footer-logo-mark logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
+            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8s5.4 13.8 12.6 13.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
         <span class="footer-brand-copy">
@@ -1496,6 +1730,218 @@
   } else {
     enhanceFooters();
   }
+})();
+
+/* Guide library search: filter long guide hubs without flattening the CMS structure. */
+(() => {
+  "use strict";
+
+  const input = document.getElementById("guideSearch");
+  if (!input) return;
+
+  const reset = document.getElementById("guideSearchReset");
+  const status = document.getElementById("guideSearchStatus");
+  const panel = input.closest(".guide-search-panel");
+  const overview = document.querySelector(".guide-hub-overview");
+  const bands = Array.from(document.querySelectorAll(".guide-category-band"));
+  const cards = Array.from(document.querySelectorAll(".guide-category-band .guide-hub-card"));
+
+  if (!cards.length) return;
+
+  const norm = (value) => String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const cardMeta = cards.map((card) => ({
+    el: card,
+    band: card.closest(".guide-category-band"),
+    text: norm(card.textContent)
+  }));
+  const guideSearchChips = Array.from(document.querySelectorAll("[data-guide-search]"));
+
+  const empty = document.createElement("div");
+  empty.className = "guide-search-empty";
+  empty.hidden = true;
+  empty.setAttribute("role", "status");
+  empty.innerHTML = `
+    <strong>No guide matches that search.</strong>
+    <span>Try a job or tool name: meta title, JSON error, UTM, readability, YouTube description.</span>
+    <a href="/contact/#request">Request a guide</a>
+  `;
+  panel?.insertAdjacentElement("afterend", empty);
+
+  function syncUrl(rawValue) {
+    const raw = String(rawValue || "").trim();
+    const url = new URL(window.location.href);
+    if (raw) url.searchParams.set("q", raw);
+    else url.searchParams.delete("q");
+    const next = `${url.pathname}${url.search}${url.hash}`;
+    const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    if (next !== current) history.replaceState(null, "", next);
+  }
+
+  function apply(rawValue) {
+    const raw = String(rawValue || "").trim();
+    const query = norm(raw);
+    let shown = 0;
+
+    cardMeta.forEach((meta) => {
+      const ok = !query || query.split(/\s+/).every((part) => meta.text.includes(part));
+      meta.el.hidden = !ok;
+      if (ok) meta.el.style.removeProperty("display");
+      else meta.el.style.setProperty("display", "none", "important");
+      if (ok) shown += 1;
+    });
+
+    bands.forEach((band) => {
+      const visible = Array.from(band.querySelectorAll(".guide-hub-card")).filter((card) => !card.hidden).length;
+      band.hidden = Boolean(query) && visible === 0;
+      if (band.hidden) band.style.setProperty("display", "none", "important");
+      else band.style.removeProperty("display");
+      const head = band.querySelector(".authority-head p:last-child");
+      if (head && query) {
+        head.dataset.searchCount = `${visible} matching guides`;
+      } else if (head) {
+        delete head.dataset.searchCount;
+      }
+    });
+
+    if (overview) {
+      overview.hidden = Boolean(query);
+      if (overview.hidden) overview.style.setProperty("display", "none", "important");
+      else overview.style.removeProperty("display");
+    }
+    if (reset) reset.hidden = !query;
+    if (empty) empty.hidden = !query || shown > 0;
+    if (status) {
+      status.textContent = query
+        ? `Showing ${shown} of ${cards.length} guides for "${raw}"`
+        : `Showing ${cards.length} practical guides`;
+    }
+    guideSearchChips.forEach((chip) => {
+      const active = Boolean(query) && norm(chip.getAttribute("data-guide-search")) === query;
+      chip.classList.toggle("active", active);
+      chip.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  }
+
+  let timer = null;
+  input.addEventListener("input", () => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => {
+      apply(input.value);
+      syncUrl(input.value);
+    }, 120);
+  });
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    input.value = "";
+    apply("");
+    syncUrl("");
+  });
+
+  reset?.addEventListener("click", () => {
+    input.value = "";
+    apply("");
+    syncUrl("");
+    input.focus({ preventScroll: true });
+  });
+
+  document.addEventListener("click", (event) => {
+    const chip = event.target instanceof Element ? event.target.closest("[data-guide-search]") : null;
+    if (!chip) return;
+    const value = chip.getAttribute("data-guide-search") || "";
+    input.value = value;
+    apply(value);
+    syncUrl(value);
+    input.focus({ preventScroll: true });
+  });
+
+  const initialQuery = new URLSearchParams(window.location.search).get("q") || "";
+  if (initialQuery) {
+    input.value = initialQuery;
+    apply(initialQuery);
+  } else {
+    apply("");
+  }
+})();
+
+/* Updates release board: filter changelog cards by product impact. */
+(() => {
+  "use strict";
+
+  const panel = document.querySelector(".updates-control-panel");
+  if (!panel) return;
+
+  const buttons = Array.from(panel.querySelectorAll("[data-release-filter]"));
+  const cards = Array.from(document.querySelectorAll(".release-lab-grid .release-card"));
+  const status = panel.querySelector(".updates-filter-status");
+  if (!buttons.length || !cards.length) return;
+
+  const norm = (value) => String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  function syncUrl(filter) {
+    const url = new URL(window.location.href);
+    if (filter && filter !== "all") url.searchParams.set("release", filter);
+    else url.searchParams.delete("release");
+    const next = `${url.pathname}${url.search}${url.hash}`;
+    const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    if (next !== current) history.replaceState(null, "", next);
+  }
+
+  function setFilter(filter, { sync = true } = {}) {
+    const active = norm(filter) || "all";
+    const aliases = {
+      tools: ["tool", "tools"],
+      guide: ["guide", "guides"],
+      seo: ["seo", "schema", "search"],
+      performance: ["performance", "mobile", "runtime"],
+      ux: ["ux", "ui", "design", "motion"]
+    };
+    const wanted = aliases[active] || [active];
+    let shown = 0;
+
+    buttons.forEach((button) => {
+      const selected = button.getAttribute("data-release-filter") === active;
+      button.classList.toggle("active", selected);
+      button.setAttribute("aria-pressed", selected ? "true" : "false");
+    });
+
+    cards.forEach((card) => {
+      const tags = norm(card.getAttribute("data-release-tags") || card.textContent || "");
+      const tokens = tags.split(" ").filter(Boolean);
+      const visible = active === "all" || wanted.some((token) => tokens.includes(token));
+      card.hidden = !visible;
+      if (visible) {
+        card.style.removeProperty("display");
+        shown += 1;
+      } else {
+        card.style.setProperty("display", "none", "important");
+      }
+    });
+
+    if (status) status.textContent = active === "all"
+      ? `Showing ${cards.length} releases`
+      : `Showing ${shown} ${shown === 1 ? "release" : "releases"} for ${active}`;
+    if (sync) syncUrl(active);
+  }
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => setFilter(button.getAttribute("data-release-filter") || "all"));
+  });
+
+  const initial = norm(new URLSearchParams(window.location.search).get("release") || "all");
+  const allowed = buttons.some((button) => button.getAttribute("data-release-filter") === initial) ? initial : "all";
+  setFilter(allowed, { sync: false });
 })();
 
 /* Browser-only work memory: command palette, favorites, recent tools and next steps. */
@@ -2041,19 +2487,8 @@
   }
 
   function ensureAppDock() {
-    if ($(".cz-app-dock")) return;
-    const active = currentDockSection();
-    const dock = document.createElement("nav");
-    dock.className = "cz-app-dock";
-    dock.setAttribute("aria-label", "Mobile Clickoz workbench");
-    dock.innerHTML = `
-      <a href="/" data-dock-section="home"${active === "home" ? ` aria-current="page"` : ""}><span>Home</span></a>
-      <a href="/tools/" data-dock-section="tools"${active === "tools" ? ` aria-current="page"` : ""}><span>Tools</span></a>
-      <button type="button" data-open-command data-dock-center><span>Fix</span></button>
-      <a href="/guides/" data-dock-section="guides"${active === "guides" ? ` aria-current="page"` : ""}><span>Guides</span></a>
-      <button type="button" data-open-command data-command-query=""><span>Saved</span></button>`;
-    document.body.appendChild(dock);
-    document.documentElement.classList.add("cz-app-dock-ready");
+    $$(".cz-app-dock").forEach((dock) => dock.remove());
+    document.documentElement.classList.remove("cz-app-dock-ready");
   }
 
   function init() {
@@ -2787,4 +3222,497 @@
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initCmsNeuralMap, { once: true });
   else initCmsNeuralMap();
+})();
+
+/* Clickoz operations guard: client error monitoring, basic bot protection and release diagnostics. */
+(() => {
+  "use strict";
+
+  const EVENT_KEY = "clickoz_ops_events";
+  const MAX_EVENTS = 40;
+  const MAX_FIELD = 180;
+  const MAX_REMOTE_EVENTS = 12;
+  const startedAt = Date.now();
+  const clickWindow = [];
+  const submitWindow = [];
+  const remoteWindow = [];
+  let slowLoadReported = false;
+  let longTaskReported = false;
+
+  function trim(value, max = MAX_FIELD) {
+    return String(value ?? "").replace(/\s+/g, " ").trim().slice(0, max);
+  }
+
+  function readEvents() {
+    try {
+      const events = JSON.parse(localStorage.getItem(EVENT_KEY) || "[]");
+      return Array.isArray(events) ? events : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function writeEvents(events) {
+    try {
+      localStorage.setItem(EVENT_KEY, JSON.stringify(events.slice(-MAX_EVENTS)));
+    } catch (_) {}
+  }
+
+  function endpointUrl() {
+    const configured = document.querySelector('meta[name="clickoz-error-endpoint"]')?.getAttribute("content") || "/api/client-error";
+    try {
+      const url = new URL(configured, window.location.origin);
+      if (url.origin !== window.location.origin) return "";
+      if (/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/i.test(window.location.hostname)) return "";
+      if (window.location.protocol === "file:") return "";
+      return url.pathname + url.search;
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function eventBase(type, detail) {
+    return {
+      type: trim(type, 48),
+      detail: detail || {},
+      path: trim(window.location.pathname || "/", 120),
+      lang: trim(document.documentElement.lang || "en", 16),
+      viewport: `${window.innerWidth || 0}x${window.innerHeight || 0}`,
+      ts: new Date().toISOString()
+    };
+  }
+
+  function sendEvent(event) {
+    const endpoint = endpointUrl();
+    if (!endpoint) return;
+    const now = Date.now();
+    remoteWindow.push(now);
+    while (remoteWindow.length && now - remoteWindow[0] > 60000) remoteWindow.shift();
+    if (remoteWindow.length > MAX_REMOTE_EVENTS) return;
+    const body = JSON.stringify(event);
+    try {
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(endpoint, new Blob([body], { type: "application/json" }));
+        return;
+      }
+      fetch(endpoint, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body,
+        keepalive: true,
+        credentials: "same-origin"
+      }).catch(() => {});
+    } catch (_) {}
+  }
+
+  function report(type, detail) {
+    const event = eventBase(type, detail);
+    writeEvents(readEvents().concat(event));
+    sendEvent(event);
+    document.dispatchEvent(new CustomEvent("clickoz:ops-event", { detail: event }));
+    return event;
+  }
+
+  function errorDetail(error, extra = {}) {
+    const err = error instanceof Error ? error : null;
+    return {
+      message: trim(err ? err.message : error, 220),
+      name: trim(err?.name || "Error", 80),
+      source: trim(extra.source || "", 160),
+      line: Number(extra.line || 0) || 0,
+      column: Number(extra.column || 0) || 0
+    };
+  }
+
+  window.addEventListener("error", (event) => {
+    report("client-error", errorDetail(event.error || event.message, {
+      source: event.filename,
+      line: event.lineno,
+      column: event.colno
+    }));
+  });
+
+  window.addEventListener("unhandledrejection", (event) => {
+    report("client-rejection", errorDetail(event.reason || "Unhandled promise rejection"));
+  });
+
+  function installFormGuard(form) {
+    if (!form || form.dataset.clickozGuard === "1") return;
+    form.dataset.clickozGuard = "1";
+    form.dataset.clickozStartedAt = String(Date.now());
+
+    const honeyName = "clickoz_company_url";
+    if (!form.querySelector(`[name="${honeyName}"]`)) {
+      const honey = document.createElement("input");
+      honey.type = "text";
+      honey.name = honeyName;
+      honey.tabIndex = -1;
+      honey.autocomplete = "off";
+      honey.setAttribute("aria-hidden", "true");
+      honey.className = "clickoz-bot-field";
+      honey.style.cssText = "position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;";
+      form.appendChild(honey);
+    }
+
+    form.addEventListener("submit", (event) => {
+      const now = Date.now();
+      const honey = form.querySelector(`[name="${honeyName}"]`);
+      const elapsed = now - Number(form.dataset.clickozStartedAt || startedAt);
+      submitWindow.push(now);
+      while (submitWindow.length && now - submitWindow[0] > 10000) submitWindow.shift();
+
+      if (honey && honey.value.trim()) {
+        event.preventDefault();
+        report("bot-honeypot", { form: trim(form.id || form.name || form.action || "unknown") });
+        return;
+      }
+
+      if (submitWindow.length > 3) {
+        event.preventDefault();
+        report("bot-submit-burst", { count: submitWindow.length, elapsed });
+      }
+    }, true);
+  }
+
+  function installBotGuard() {
+    document.querySelectorAll("form").forEach(installFormGuard);
+    try {
+      new MutationObserver((records) => {
+        records.forEach((record) => {
+          record.addedNodes.forEach((node) => {
+            if (!(node instanceof Element)) return;
+            if (node.matches("form")) installFormGuard(node);
+            node.querySelectorAll?.("form").forEach(installFormGuard);
+          });
+        });
+      }).observe(document.documentElement, { childList: true, subtree: true });
+    } catch (_) {}
+
+    document.addEventListener("click", (event) => {
+      const target = event.target instanceof Element ? event.target.closest("button, a, [role='button']") : null;
+      if (!target) return;
+      const now = Date.now();
+      clickWindow.push(now);
+      while (clickWindow.length && now - clickWindow[0] > 12000) clickWindow.shift();
+      if (clickWindow.length === 50) {
+        report("interaction-burst", { count: clickWindow.length, target: trim(target.getAttribute("aria-label") || target.textContent || target.id || target.className, 120) });
+      }
+      if (clickWindow.length > 70) {
+        event.preventDefault();
+        report("interaction-blocked", { count: clickWindow.length });
+      }
+    }, true);
+  }
+
+  function installPerformanceWatch() {
+    window.addEventListener("load", () => {
+      window.setTimeout(() => {
+        if (slowLoadReported) return;
+        const nav = performance.getEntriesByType?.("navigation")?.[0];
+        const duration = nav ? Math.round(nav.duration) : Math.round(performance.now());
+        if (duration > 4500) {
+          slowLoadReported = true;
+          report("slow-load", { duration, connection: trim(navigator.connection?.effectiveType || "unknown", 24) });
+        }
+      }, 0);
+    }, { once: true });
+
+    try {
+      const observer = new PerformanceObserver((list) => {
+        if (longTaskReported) return;
+        const entry = list.getEntries().find((item) => item.duration > 160);
+        if (!entry) return;
+        longTaskReported = true;
+        report("long-task", { duration: Math.round(entry.duration), name: trim(entry.name || "task", 80) });
+        observer.disconnect();
+      });
+      observer.observe({ entryTypes: ["longtask"] });
+    } catch (_) {}
+  }
+
+  function initOpsGuard() {
+    document.documentElement.dataset.clickozOps = "active";
+    installBotGuard();
+    installPerformanceWatch();
+  }
+
+  window.ClickozOps = Object.freeze({
+    events: readEvents,
+    clear() { writeEvents([]); },
+    report,
+    status() {
+      return {
+        bufferedEvents: readEvents().length,
+        endpoint: endpointUrl() || "local-buffer",
+        guard: "active"
+      };
+    }
+  });
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initOpsGuard, { once: true });
+  else initOpsGuard();
+})();
+
+/* App runtime: route state, scroll feedback, reveal motion and fast internal navigation. */
+(() => {
+  "use strict";
+
+  if (window.ClickozAppRuntime) return;
+
+  const doc = document.documentElement;
+  const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches || false;
+  const coarsePointer = window.matchMedia?.("(pointer: coarse)")?.matches || false;
+  const saveData = Boolean(navigator.connection?.saveData);
+  const canAnimate = !reduceMotion && !saveData;
+  const prefetched = new Set();
+  const MAX_PREFETCH = 14;
+  const REVEAL_SELECTOR = [
+    ".cz-workdesk-hero",
+    ".home-workdesk .quick-job-grid a",
+    ".home-workdesk .pipeline-grid a",
+    ".tools-page .tools-hero",
+    ".tools-prompt-dock button",
+    ".tools-page .tools-route-grid a",
+    ".tools-page .tool-section",
+    ".tools-page .tool-card-enhanced",
+    ".guides-page .guide-hub-hero",
+    ".guide-hub-page .guide-hub-hero",
+    ".guide-route-panel a",
+    ".guide-search-chips button",
+    ".guide-category-band",
+    ".guide-hub-card",
+    ".updates-hero-v2",
+    ".updates-control-panel",
+    ".updates-filter-buttons button",
+    ".updates-box",
+    ".release-lab-grid .release-card",
+    ".request-mega-cta"
+  ].join(",");
+  const SPOTLIGHT_SELECTOR = [
+    ".tool-card-enhanced",
+    ".guide-hub-card",
+    ".release-card",
+    ".tools-route-grid a",
+    ".tools-prompt-dock button",
+    ".guide-route-panel a",
+    ".guide-search-chips button",
+    ".updates-filter-buttons button",
+    ".contact-next-links a",
+    ".quick-job-grid a",
+    ".pipeline-grid a",
+    ".request-mega-cta"
+  ].join(",");
+
+  let progressBar = null;
+  let progressFrame = 0;
+  let scrollFrame = 0;
+  let lastY = window.scrollY || 0;
+  let revealObserver = null;
+  let sectionObserver = null;
+
+  function pageName() {
+    const path = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
+    if (path === "/") return "home";
+    const parts = path.split("/").filter(Boolean);
+    if (parts[0] === "tools" && parts.length > 1) return "tool";
+    if (parts[0] === "guides" && parts.length > 1) return "guide";
+    return parts[0] || "home";
+  }
+
+  function ensureProgress() {
+    progressBar = document.querySelector(".cz-app-progress");
+    if (progressBar) return progressBar;
+    progressBar = document.createElement("div");
+    progressBar.className = "cz-app-progress";
+    progressBar.setAttribute("aria-hidden", "true");
+    document.body.prepend(progressBar);
+    return progressBar;
+  }
+
+  function updateProgress() {
+    if (progressFrame) return;
+    progressFrame = window.requestAnimationFrame(() => {
+      progressFrame = 0;
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const ratio = Math.min(1, Math.max(0, (window.scrollY || 0) / max));
+      doc.style.setProperty("--cz-progress", ratio.toFixed(4));
+    });
+  }
+
+  function updateScrollState() {
+    if (scrollFrame) return;
+    scrollFrame = window.requestAnimationFrame(() => {
+      scrollFrame = 0;
+      const y = window.scrollY || 0;
+      doc.classList.toggle("cz-page-scrolled", y > 10);
+      doc.classList.toggle("cz-scroll-down", y > lastY && y > 80);
+      doc.classList.toggle("cz-scroll-up", y < lastY && y > 80);
+      lastY = y;
+      updateProgress();
+    });
+  }
+
+  function initReveal() {
+    const nodes = Array.from(document.querySelectorAll(REVEAL_SELECTOR))
+      .filter((node) => node instanceof HTMLElement && !node.classList.contains("cz-reveal-ignore"));
+    if (!nodes.length) return;
+
+    if (revealObserver) revealObserver.disconnect();
+
+    if (!canAnimate || !("IntersectionObserver" in window)) {
+      nodes.forEach((node) => node.classList.add("is-visible"));
+      return;
+    }
+
+    nodes.forEach((node, index) => {
+      node.classList.add("cz-reveal-ready");
+      node.style.setProperty("--cz-reveal-delay", `${Math.min(180, index * 18)}ms`);
+    });
+
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        revealObserver.unobserve(entry.target);
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+
+    nodes.forEach((node) => revealObserver.observe(node));
+  }
+
+  function initSectionState() {
+    const sections = Array.from(document.querySelectorAll("main section[id]"))
+      .filter((section) => section instanceof HTMLElement && section.offsetParent !== null);
+    if (!sections.length || !("IntersectionObserver" in window)) return;
+    if (sectionObserver) sectionObserver.disconnect();
+
+    sectionObserver = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (!visible.length) return;
+      const active = visible[0].target;
+      doc.dataset.activeSection = active.id || "";
+      sections.forEach((section) => section.classList.toggle("is-current-section", section === active));
+    }, { rootMargin: "-24% 0px -62% 0px", threshold: [0, 0.25, 0.6] });
+
+    sections.forEach((section) => sectionObserver.observe(section));
+  }
+
+  function initSpotlight() {
+    if (coarsePointer || !canAnimate) return;
+    let frame = 0;
+    let pending = null;
+
+    document.addEventListener("pointermove", (event) => {
+      const target = event.target instanceof Element ? event.target.closest(SPOTLIGHT_SELECTOR) : null;
+      if (!(target instanceof HTMLElement)) return;
+      pending = { target, x: event.clientX, y: event.clientY };
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        if (!pending) return;
+        const rect = pending.target.getBoundingClientRect();
+        pending.target.style.setProperty("--spot-x", `${pending.x - rect.left}px`);
+        pending.target.style.setProperty("--spot-y", `${pending.y - rect.top}px`);
+        pending = null;
+      });
+    }, { passive: true });
+  }
+
+  function canPrefetch(anchor) {
+    if (!(anchor instanceof HTMLAnchorElement)) return false;
+    const raw = anchor.getAttribute("href") || "";
+    if (!raw || raw.startsWith("#") || raw.startsWith("mailto:") || raw.startsWith("tel:")) return false;
+    if (anchor.hasAttribute("download") || anchor.target === "_blank") return false;
+    try {
+      const url = new URL(anchor.href, window.location.href);
+      if (url.origin !== window.location.origin) return false;
+      if (url.pathname === window.location.pathname && !url.search) return false;
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function prefetch(anchor) {
+    if (saveData || prefetched.size >= MAX_PREFETCH || !canPrefetch(anchor)) return;
+    const url = new URL(anchor.href, window.location.href);
+    const href = `${url.pathname}${url.search}`;
+    const exists = Array.from(document.head.querySelectorAll('link[rel="prefetch"]'))
+      .some((link) => link.getAttribute("href") === href);
+    if (prefetched.has(href) || exists) return;
+    prefetched.add(href);
+    const link = document.createElement("link");
+    link.rel = "prefetch";
+    link.href = href;
+    link.as = "document";
+    document.head.appendChild(link);
+  }
+
+  function initPrefetch() {
+    if (saveData) return;
+    const schedule = (anchor) => {
+      if (!anchor) return;
+      const run = () => prefetch(anchor);
+      if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 1200 });
+      else window.setTimeout(run, 120);
+    };
+
+    document.addEventListener("mouseover", (event) => {
+      schedule(event.target instanceof Element ? event.target.closest("a[href]") : null);
+    }, { passive: true });
+
+    document.addEventListener("focusin", (event) => {
+      schedule(event.target instanceof Element ? event.target.closest("a[href]") : null);
+    });
+  }
+
+  function initFormState() {
+    document.addEventListener("submit", (event) => {
+      const form = event.target instanceof Element ? event.target.closest("form") : null;
+      if (!(form instanceof HTMLFormElement)) return;
+      if (typeof form.checkValidity === "function" && !form.checkValidity()) return;
+      window.setTimeout(() => {
+        if (event.defaultPrevented || !form.isConnected) return;
+        form.classList.add("is-submitting");
+        form.setAttribute("aria-busy", "true");
+        form.querySelectorAll("button[type='submit'], input[type='submit']").forEach((button) => {
+          button.setAttribute("aria-disabled", "true");
+        });
+      }, 0);
+    }, true);
+  }
+
+  function refresh() {
+    initReveal();
+    initSectionState();
+    updateProgress();
+  }
+
+  function init() {
+    const page = pageName();
+    doc.dataset.clickozPage = page;
+    doc.classList.add("cz-app-ready", `cz-route-${page}`);
+    ensureProgress();
+    updateProgress();
+    updateScrollState();
+    initReveal();
+    initSectionState();
+    initSpotlight();
+    initPrefetch();
+    initFormState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    window.addEventListener("resize", updateProgress, { passive: true });
+    document.dispatchEvent(new CustomEvent("clickoz:app-ready", { detail: { page } }));
+  }
+
+  window.ClickozAppRuntime = Object.freeze({
+    page: pageName,
+    refresh,
+    progress: updateProgress
+  });
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
+  else init();
 })();

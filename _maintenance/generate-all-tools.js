@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 const { ORIGIN, CSP: csp, PERMISSIONS_POLICY, CORE_URLS, asset } = require("./cms-config");
+const { BRAND, INDEX_ROBOTS, iconLinks, logoMarkup, normalizeRobots, publisherNode } = require("./brand-assets");
 
 const root = path.resolve(__dirname, "..");
 
@@ -158,9 +159,8 @@ function featureChip(feature) {
 }
 
 function trustPills(tool) {
-  const base = (tool.features || []).slice(0, 3).map((feature) => `${featureIcon[feature] || entity.spark} ${esc(feature)}`);
-  const fourth = `${entity.mobile} Mobile-ready`;
-  return [...base, fourth].slice(0, 4).map((item) => `<span class="cms-pill">${item}</span>`).join("\n");
+  const items = [...(tool.features || []).slice(0, 3), "Mobile-ready"].slice(0, 4);
+  return items.map((item) => `<span class="cms-pill"><span class="cms-pill-icon" aria-hidden="true"></span>${esc(item)}</span>`).join("\n");
 }
 
 function workflowCopy(tool) {
@@ -406,7 +406,7 @@ const specificBriefs = {
   "meta-tags": {
     bestFor: "Finishing an SEO title and meta description before publishing",
     useWhen: "Your snippet exists but may be too long, vague or weak in the search result.",
-    exampleInput: "Free Word Counter Online | Count words, characters and reading time instantly.",
+    exampleInput: "Clickoz Tools | Fast browser utilities for SEO, writing and creators.",
     whatYouGet: "Length status, intent guidance and a snippet you can test in SERP Preview.",
     timeSaved: "Fix title and description in one pass instead of rewriting them after launch."
   },
@@ -504,12 +504,7 @@ function nav(active) {
   return `<nav class="nav" aria-label="Primary navigation" id="topNav">
     <div class="container nav-inner">
       <a class="logo" href="/" aria-label="Clickoz Home">
-        <span class="logo-badge" id="logoBadge" aria-hidden="true">
-          <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
-            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <span class="logo-text">Click<span class="logo-oz">oz</span></span>
+        ${logoMarkup()}
       </a>
       <div class="nav-links" aria-label="Sections">
         <a href="/"${current("home")}>Home</a>
@@ -526,7 +521,7 @@ function footer() {
   return `<footer class="footer">
     <div class="container footer-grid">
       <div><h4>Clickoz</h4><div class="footer-links"><a href="/about/">About</a><a href="/tools/">Tools</a><a href="/guides/">Guides</a><a href="/updates/">Updates</a></div></div>
-      <div><h4>Workflow hubs</h4><div class="footer-links"><a href="/workflows/">Workflows</a><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/guides/creator/">Creator Guides</a></div></div>
+      <div><h4>Tool hubs</h4><div class="footer-links"><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/tools/writing-tools/">Writing Tools</a><a href="/guides/creator/">Creator Guides</a></div></div>
       <div><h4>Popular tools</h4><div class="footer-links"><a href="/tools/word-counter/">Word Counter</a><a href="/tools/meta-tags/">Meta Tags</a><a href="/tools/json-formatter/">JSON Formatter</a><a href="/tools/youtube-title-generator/">YouTube Titles</a></div></div>
       <div><h4>Legal</h4><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a><a href="/404/">404</a></div></div>
     </div>
@@ -534,9 +529,31 @@ function footer() {
   </footer>`;
 }
 
-function head({ title, description, canonical, og = "/assets/og/default.svg", extraCss = "", jsonLd = "" }) {
+function routeFinalStrip(label = "Clickoz route") {
+  return `<section class="route-final-strip" aria-label="${esc(label)} operating route">
+      <article><span>01</span><strong>Search by problem</strong><p>Start from the messy input or task, not from a long category list.</p></article>
+      <article><span>02</span><strong>Use the exact tool</strong><p>Open the focused utility that matches the job you need to finish.</p></article>
+      <article><span>03</span><strong>Copy a clean result</strong><p>Keep output, copy controls and checks in one predictable surface.</p></article>
+      <article><span>04</span><strong>Read when needed</strong><p>Use guides only when the copied result needs a better decision behind it.</p></article>
+      <article><span>05</span><strong>Request gaps</strong><p>Ask for a missing tool, fix or guide when the current route does not cover the job.</p></article>
+    </section>`;
+}
+
+function requestMegaCta(title = "Missing a tool, guide or workflow?", copy = "Send the exact job you are trying to finish. Clickoz requests go through the validated contact form and email fallback.") {
+  return `<section class="request-mega-cta" aria-label="Request a Clickoz tool">
+      <div>
+        <p class="guide-kicker">CONTACT / REQUEST</p>
+        <h2>${esc(title)}</h2>
+        <p>${esc(copy)}</p>
+      </div>
+      <a class="btn btn-accent" href="/contact/#request">Request a tool</a>
+    </section>`;
+}
+
+function head({ title, description, canonical, og = BRAND.defaultOg, extraCss = "", jsonLd = "", robots = INDEX_ROBOTS }) {
   const safeTitle = esc(title);
   const safeDesc = esc(description);
+  const safeRobots = esc(normalizeRobots(robots));
   return `<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -546,20 +563,27 @@ function head({ title, description, canonical, og = "/assets/og/default.svg", ex
   <title>${safeTitle}</title>
   <meta name="description" content="${safeDesc}" />
   <link rel="canonical" href="${esc(canonical)}" />
-  <meta name="robots" content="index,follow" />
-  <meta name="theme-color" content="#0b0f19" />
+  <meta name="robots" content="${safeRobots}" />
+  <meta name="googlebot" content="${safeRobots}" />
+  <meta name="application-name" content="${BRAND.name}" />
+  <meta name="apple-mobile-web-app-title" content="${BRAND.name}" />
+  <meta name="theme-color" content="${BRAND.themeColor}" />
+  <meta property="og:locale" content="en_US" />
   <meta property="og:site_name" content="Clickoz" />
   <meta property="og:title" content="${safeTitle}" />
   <meta property="og:description" content="${safeDesc}" />
   <meta property="og:url" content="${esc(canonical)}" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="${esc(`${ORIGIN}${og}`)}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="${safeTitle}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${safeTitle}" />
   <meta name="twitter:description" content="${safeDesc}" />
   <meta name="twitter:image" content="${esc(`${ORIGIN}${og}`)}" />
-  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta name="twitter:image:alt" content="${safeTitle}" />
+  ${iconLinks()}
   <script>(function(){try{var s=JSON.parse(localStorage.getItem("clickoz_accent")||"null");var a=s&&s.a1?s.a1:"#22d3ee";var b=s&&s.a2?s.a2:"#06b6d4";var h=String(a).replace("#","");var r="34,211,238";if(h.length===3)r=[h[0]+h[0],h[1]+h[1],h[2]+h[2]].map(function(x){return parseInt(x,16)}).join(",");if(h.length===6)r=[h.slice(0,2),h.slice(2,4),h.slice(4,6)].map(function(x){return parseInt(x,16)}).join(",");document.documentElement.style.setProperty("--accent",a);document.documentElement.style.setProperty("--accent2",b);document.documentElement.style.setProperty("--accent-rgb",r);document.documentElement.style.setProperty("--cz-accent",a);document.documentElement.style.setProperty("--cz-accent2",b);document.documentElement.style.setProperty("--cz-accent-rgb",r)}catch(e){}})();</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -606,7 +630,8 @@ function toolJsonLd(tool) {
         browserRequirements: "Requires JavaScript",
         isAccessibleForFree: true,
         offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-        publisher: { "@type": "Organization", name: "Clickoz", url: `${ORIGIN}/` },
+        publisher: publisherNode(ORIGIN),
+        image: `${ORIGIN}${BRAND.logoPng}`,
         featureList: (tool.features || []).concat(["Examples", "Related tools", "Related guides", "Copy-ready output"])
       },
       {
@@ -669,8 +694,8 @@ function toolPage(tool) {
   const flow = workflowCopy(tool);
   const info = explainTool(tool);
   const brief = toolBrief(tool);
-  const title = `${tool.title} - Free Online Tool | Clickoz`;
-  const description = clipMeta(`${tool.title}: ${sentence(brief.bestFor)} ${sentence(brief.whatYouGet)} No signup.`);
+  const title = `${tool.title} - Free Browser Tool | Clickoz`;
+  const description = clipMeta(`${tool.title}: ${sentence(brief.bestFor)} ${sentence(brief.whatYouGet)} Runs in your browser with no signup or upload.`);
   const relTools = relatedTools(tool);
   const relGuides = relatedGuides(tool);
   const relToolLinks = relTools.map((item) => `<a href="${esc(item.url)}">${toolIcon(item)} ${esc(item.title)}</a>`).join("\n");
@@ -704,9 +729,9 @@ ${head({
     </div>
 
     <section class="cms-tool-brief cms-box-signal" aria-label="${esc(tool.title)} quick guide">
-      <article><strong>${entity.puzzle} Problem it solves</strong><span>${esc(flow.problem)}</span></article>
-      <article><strong>${entity.tool} How to use it</strong><span>${esc(flow.how)}</span></article>
-      <article><strong>${entity.check} Check before copying</strong><span>${esc(flow.check)}</span></article>
+      <article><strong><span class="cms-brief-icon" aria-hidden="true">01</span>Problem it solves</strong><span>${esc(flow.problem)}</span></article>
+      <article><strong><span class="cms-brief-icon" aria-hidden="true">02</span>How to use it</strong><span>${esc(flow.how)}</span></article>
+      <article><strong><span class="cms-brief-icon" aria-hidden="true">03</span>Check before copying</strong><span>${esc(flow.check)}</span></article>
     </section>
 
     <section class="cms-tool-panel cms-box-action" id="tool-app" data-tool-app="${esc(tool.slug)}" aria-label="${esc(tool.title)} app">
@@ -746,7 +771,7 @@ ${head({
 
     <section class="cms-ops-strip cms-box-support" aria-label="${esc(tool.title)} quality signals">
       <article><span>${entity.shield}</span><strong>Input safety</strong><p>Outputs are rendered through the Clickoz safe result layer, with script-like markup blocked from executable output.</p></article>
-      <article><span>${entity.bolt}</span><strong>Faster workflow</strong><p>Examples load instantly, inputs auto-run after changes and results stay copy-ready.</p></article>
+      <article><span>${entity.bolt}</span><strong>Faster task flow</strong><p>Examples load instantly, inputs auto-run after changes and results stay copy-ready.</p></article>
       <article><span>${entity.search}</span><strong>Search support</strong><p>This page has canonical URL, schema, FAQs, related tools, related guides and clear task intent.</p></article>
     </section>
 
@@ -793,8 +818,8 @@ function card(tool) {
       <span>Quick job</span>
       <strong>${esc(brief.timeSaved)}</strong>
       <div class="tool-card-flow">
-        <p><b>Input</b>${esc(brief.exampleInput)}</p>
-        <p><b>Output</b>${esc(brief.whatYouGet)}</p>
+        <p><b>Input</b><span>${esc(brief.exampleInput)}</span></p>
+        <p><b>Output</b><span>${esc(brief.whatYouGet)}</span></p>
       </div>
       <em>${esc(brief.bestFor)}</em>
     </div>
@@ -811,6 +836,7 @@ function toolsJsonLd(items, title, url, description) {
     url: abs(url),
     description,
     isPartOf: { "@type": "WebSite", name: "Clickoz", url: `${ORIGIN}/` },
+    publisher: publisherNode(ORIGIN),
     mainEntity: {
       "@type": "ItemList",
       name: title,
@@ -856,8 +882,8 @@ function toolsIndexPage() {
   return `<!doctype html>
 <html lang="en">
 ${head({
-  title: "Clickoz Tools - Free Online Tools for SEO, Writing, Dev, Web and Creators",
-  description: `Browse ${cms.tools.length} free Clickoz tools for SEO, writing, developer debugging, web checks, security, YouTube and social creator workflows.`,
+  title: "Free Online Tools for SEO, Writing, YouTube and JSON | Clickoz",
+  description: `Search ${cms.tools.length} free browser tools for meta tags, word count, JSON formatting, UTM links, YouTube titles and security checks. No account or upload.`,
   canonical: `${ORIGIN}/tools/`,
   og: "/assets/og/tools.svg",
   extraCss: `<link rel="stylesheet" href="${asset("/tools/tools.css", "toolsCss")}" />`,
@@ -872,16 +898,37 @@ ${head({
     <section class="tools-hero" aria-label="Clickoz tools">
       <div class="tools-hero-top">
         <div>
-          <h1 class="tools-title">Start the right web job.</h1>
-          <p class="tools-sub">Search by problem, typo or task: fix JSON, clean text, create an SEO snippet, package a YouTube upload or build a tracking URL. Every tool includes examples, output and a next step.</p>
+          <p class="guide-kicker">CLICKOZ TOOL DIRECTORY</p>
+          <h1 class="tools-title">Find the right tool by job, not by category.</h1>
+          <p class="tools-sub">Search by problem, typo or task: fix JSON, clean text, create an SEO snippet, package a YouTube upload or build a tracking URL. Every tool includes examples, output, copy controls and a next page.</p>
         </div>
       </div>
-      <div class="chips" id="toolsChips" aria-label="Tool categories">${chips}</div>
-      <div class="tools-search"><input id="toolsSearch" class="search" type="search" placeholder="Try: broken JSON, clean text, YouTube title, SEO snippet..." /></div>
+      <div class="chips" id="toolsChips" aria-label="Tool categories">${chips.replace('data-filter="all"', 'data-filter="all" aria-pressed="true"')}</div>
+      <div class="tools-search">
+        <input id="toolsSearch" class="search" type="search" placeholder="Try: broken JSON, clean text, YouTube title, SEO snippet..." aria-describedby="toolsSearchMeta" />
+        <div class="tools-search-meta" id="toolsSearchMeta" aria-live="polite">
+          <span>Search all ${cms.tools.length} tools</span>
+          <button type="button" id="toolsReset" hidden>Reset search</button>
+        </div>
+      </div>
+      <div class="tools-prompt-dock" aria-label="Popular tool starts">
+        <button type="button" data-search-suggestion="seo snippet"><b>SEO snippet</b><span>title + description</span></button>
+        <button type="button" data-search-suggestion="fix json"><b>Fix JSON</b><span>format + validate</span></button>
+        <button type="button" data-search-suggestion="clean text"><b>Clean text</b><span>readability + copy</span></button>
+        <button type="button" data-search-suggestion="youtube upload"><b>YouTube upload</b><span>title + package</span></button>
+      </div>
+      <div class="tools-route-grid" aria-label="Start with a common job">
+        <a href="/tools/seo-tools/"><b>SEO publishing</b><span>Titles, descriptions, slugs and page checks.</span><em>Open SEO tools</em></a>
+        <a href="/tools/writing-tools/"><b>Writing cleanup</b><span>Count, readability, cleanup and copy formatting.</span><em>Open writing tools</em></a>
+        <a href="/tools/developer-tools/"><b>Developer debug</b><span>JSON, URL encoding, Base64, entities and regex.</span><em>Open dev tools</em></a>
+        <a href="/tools/youtube-tools/"><b>Creator upload</b><span>Titles, thumbnails, descriptions, hashtags and tracking.</span><em>Open creator tools</em></a>
+      </div>
     </section>
     <div class="tool-sections" aria-label="Tools by category">
       ${sectionOrder.map(sectionHtml).join("\n")}
     </div>
+    ${routeFinalStrip("Tools page")}
+    ${requestMegaCta()}
   </main>
   ${footer()}
   ${scripts(`<script src="${asset("/tools/tools.js", "toolsJs")}" defer></script>`)}
@@ -895,11 +942,13 @@ function clusterPage(category) {
   const ui = categoryUI[category];
   const items = cms.tools.filter((tool) => tool.category === category);
   const relatedGuides = cms.guides.filter((guide) => items.some((tool) => tool.slug === guide.tool || (tool.relatedGuides || []).includes(guide.slug))).slice(0, 8);
+  const featured = items.slice(0, 3);
+  const countLabel = `${items.length} ${items.length === 1 ? "tool" : "tools"}`;
   return `<!doctype html>
 <html lang="en">
 ${head({
   title: `${cluster.title} - Free ${ui.label} Utilities | Clickoz`,
-  description: `${cluster.description} Browse ${items.length} Clickoz tools with examples, usable output and related guides.`,
+  description: clipMeta(`${cluster.description} Browse ${countLabel} with examples, usable output and related guides.`),
   canonical: abs(cluster.url),
   og: "/assets/og/tools.svg",
   extraCss: `<link rel="stylesheet" href="${asset("/tools/tools.css", "toolsCss")}" /><link rel="stylesheet" href="${asset("/tools/cms-tools.css", "cmsToolsCss")}" />`,
@@ -916,9 +965,12 @@ ${head({
         <div>
           <p class="guide-kicker">${esc(ui.label)} CLUSTER</p>
           <h1 class="tools-title">${esc(cluster.title)}</h1>
-          <p class="tools-sub">${esc(cluster.description)}</p>
-          <div class="tools-trust-row"><span>${items.length} focused tools</span><span>Try sample included</span><span>Next tool visible</span><span>Copy-ready output</span></div>
+          <p class="tools-sub">${esc(cluster.description)} Start with the exact job, use the output, then open the guide only when the decision needs context.</p>
         </div>
+      </div>
+      <div class="cluster-focus-grid" aria-label="${esc(cluster.title)} focus routes">
+        ${featured.map((tool, index) => `<a href="${esc(tool.url)}"><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(tool.title)}</strong><em>${esc(tool.description)}</em></a>`).join("\n")}
+        <a class="cluster-request-card" href="/contact/#request"><span>+</span><strong>Need another tool?</strong><em>Request the exact workflow you need.</em></a>
       </div>
     </section>
     <section class="tool-section" id="${esc(ui.key)}" data-section="${esc(ui.key)}">
@@ -932,6 +984,8 @@ ${head({
       <article class="cms-info-card"><h2>Best next guides</h2><p>Use the guides when the tool output needs a publishing decision, not just a copied result.</p><div class="cms-related-links">${relatedGuides.map((guide) => `<a href="${esc(guide.url)}">${entity.book} ${esc(guide.title)}</a>`).join("") || `<a href="/guides/">${entity.book} Browse all guides</a>`}</div></article>
       <article class="cms-info-card"><h2>How this hub helps</h2><p>Each card starts from a concrete job, shows the expected output and routes to a page with examples, local history, related tools, FAQ and schema support.</p></article>
     </section>
+    ${routeFinalStrip(`${cluster.title} route`)}
+    ${requestMegaCta(`Need a ${cluster.title.toLowerCase()} that is missing?`, `Send the exact ${ui.label.toLowerCase()} job, input and expected output. Clickoz will use it to prioritize the next focused tool or guide.`)}
   </main>
   ${footer()}
   ${scripts(`<script src="${asset("/tools/tools.js", "toolsJs")}" defer></script>`)}

@@ -40,49 +40,49 @@
       title: "SEO Tools",
       url: "/tools/seo-tools/",
       icon: "Search",
-      description: "Create search snippets, slugs, keyword checks and publishing decisions before a page goes live.",
+      description: "Finish search-facing page work: snippets, slugs, keyword balance and publishing checks in one clear route.",
       cta: "Open SEO tools"
     },
     writing: {
       title: "Writing Tools",
       url: "/tools/writing-tools/",
       icon: "Text",
-      description: "Clean, measure and restructure drafts so they scan faster on mobile and copy cleanly into the final place.",
+      description: "Clean, measure and reshape drafts so copied text is easier to scan, send and publish on any device.",
       cta: "Open writing tools"
     },
     dev: {
       title: "Developer Tools",
       url: "/tools/developer-tools/",
       icon: "Code",
-      description: "Format, encode, decode and inspect payloads without opening heavier software for a quick fix.",
+      description: "Format, encode, decode and inspect payloads when a small technical issue is blocking the next web task.",
       cta: "Open developer tools"
     },
     youtube: {
       title: "YouTube Tools",
       url: "/tools/youtube-tools/",
       icon: "Creator",
-      description: "Package a video upload from title and thumbnail promise to description, hashtags, tags and tracking.",
+      description: "Package an upload from hook and thumbnail promise to description, hashtags, tags and tracking links.",
       cta: "Open YouTube tools"
     },
     tracking: {
       title: "Marketing & Tracking Tools",
       url: "/tools/marketing-tracking-tools/",
       icon: "Chart",
-      description: "Build clean campaign links before analytics turns messy across posts, descriptions, ads and newsletters.",
+      description: "Build trackable links with clean campaign naming before posts, ads, descriptions and newsletters go live.",
       cta: "Open tracking tools"
     },
     web: {
       title: "Web & Security Tools",
       url: "/tools/web-security-tools/",
       icon: "Shield",
-      description: "Check domains, HTTP, IP ranges, timestamps, passwords and crawl files quickly from the browser.",
+      description: "Check domains, HTTP reachability, IP ranges, timestamps, passwords and crawl files without leaving the browser.",
       cta: "Open web tools"
     },
     socialai: {
       title: "Social & AI Creator Tools",
       url: "/tools/social-ai-tools/",
       icon: "Spark",
-      description: "Turn creator ideas into platform-specific hooks, posts, disclosures, reusable assets and business blocks.",
+      description: "Turn creator ideas into platform-specific hooks, posts, disclosures, reusable assets and brand-ready blocks.",
       cta: "Open creator growth tools"
     }
   };

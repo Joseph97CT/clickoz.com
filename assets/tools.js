@@ -127,7 +127,7 @@
 
       if (type === 'success') dot.style.background = 'rgba(34,197,94,.95)';
       else if (type === 'error') dot.style.background = 'rgba(239,68,68,.95)';
-      else if (type === 'warn') dot.style.background = 'rgba(245,158,11,.95)';
+      else if (type === 'warn') dot.style.background = 'rgba(var(--accent-rgb,34,211,238),.95)';
       else dot.style.background = 'rgba(124,92,255,.95)';
 
       const text = document.createElement('div');

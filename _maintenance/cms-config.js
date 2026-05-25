@@ -7,27 +7,28 @@ const ORIGIN = "https://clickoz.com";
  */
 const ASSET_VERSIONS = Object.freeze({
   siteCss: 14,
-  siteJs: 53,
-  homeCss: 20,
-  homeJs: 21,
+  siteJs: 74,
+  homeCss: 21,
+  homeJs: 23,
   guideCss: 4,
   guideJs: 3,
   guidePremiumCss: 5,
   guidePremiumJs: 6,
   clickozPremiumCss: 4,
-  clickozPremiumJs: 6,
-  cmsRegistry: 4,
+  clickozPremiumJs: 12,
+  cmsRegistry: 5,
   cmsSchema: 2,
-  cmsEnhance: 7,
-  cmsFinal: 75,
+  cmsEnhance: 8,
+  cmsFinal: 125,
   toolsCss: 9,
-  toolsJs: 11,
-  cmsToolsCss: 19,
-  cmsToolsJs: 24
+  toolsJs: 14,
+  cmsToolsCss: 22,
+  cmsToolsJs: 28
 });
 
 /** @type {string} */
-const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src https://translate.google.com https://*.google.com; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests";
+const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src https://translate.google.com https://*.google.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests";
+const CSP_HEADER = `${CSP}; frame-ancestors 'self'`;
 const PERMISSIONS_POLICY = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), interest-cohort=()";
 
 /** @type {ReadonlyArray<string>} */
@@ -35,7 +36,10 @@ const CORE_URLS = Object.freeze([
   "/",
   "/tools/",
   "/guides/",
-  "/workflows/",
+  "/guides/seo/",
+  "/guides/writing/",
+  "/guides/dev/",
+  "/guides/creator/",
   "/updates/",
   "/privacy/",
   "/terms/",
@@ -74,6 +78,7 @@ module.exports = {
   ORIGIN,
   ASSET_VERSIONS,
   CSP,
+  CSP_HEADER,
   PERMISSIONS_POLICY,
   CORE_URLS,
   SMOKE_PATHS,

@@ -9,7 +9,10 @@ Use this when adding or changing Clickoz tools, guides, clusters, metadata, or g
 - Schema layer: `assets/cms-schema.js`
 - UI enhancer: `assets/cms-enhance.js`
 - Shared maintenance config: `_maintenance/cms-config.js`
+- Security/asset sync: `_maintenance/sync-security-assets.js`
 - Audit gate: `_maintenance/audit-site.js`
+- Operations runbook: `_maintenance/CLICKOZ-OPERATIONS-RUNBOOK.md`
+- Client error endpoint: `api/client-error.js`
 
 ## Publish Flow
 
@@ -20,7 +23,8 @@ Use this when adding or changing Clickoz tools, guides, clusters, metadata, or g
    - Tools and cluster pages: `node _maintenance\generate-all-tools.js`
    - Guide pages: `node _maintenance\generate-premium-guides.js`
 5. Review generated diffs before publishing. Regeneration touches many pages, so treat it as a risky change.
-6. Run the validation commands below.
+6. If CSP, Permissions-Policy or asset versions changed, run `node _maintenance\sync-security-assets.js`.
+7. Run the validation commands below.
 
 ## Validation Commands
 
@@ -30,9 +34,11 @@ node --check assets\cms-schema.js
 node --check assets\cms-enhance.js
 node --check tools\cms-tools.js
 node --check _maintenance\cms-config.js
+node --check _maintenance\sync-security-assets.js
 node --check _maintenance\audit-site.js
 node --check _maintenance\generate-all-tools.js
 node --check _maintenance\generate-premium-guides.js
+node --check api\client-error.js
 node _maintenance\audit-site.js
 ```
 
@@ -53,6 +59,8 @@ Check these on desktop and mobile after any shared UI, runtime, or generated-pag
 
 Confirm each page has visible navigation, stable layout, no text overflow, working primary actions, no blank result areas, and expected CMS assets.
 
+For production releases, also confirm `ClickozOps.status()` reports an active guard in the browser console and review `_maintenance/CLICKOZ-OPERATIONS-RUNBOOK.md` for rollback steps.
+
 ## Acceptance Criteria
 
 - Audit report returns `"ok": true`.
@@ -61,6 +69,7 @@ Confirm each page has visible navigation, stable layout, no text overflow, worki
 - No registry placeholders or unresolved related links exist.
 - Sitemap includes all canonical CMS pages.
 - Robots does not block indexed CMS paths.
+- Vercel headers, HTML security meta and API no-store headers pass the audit.
 - Tool pages keep copy, local history, empty state, example loading, and output rendering working.
 
 ## Backlog After Consolidation

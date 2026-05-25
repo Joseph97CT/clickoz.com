@@ -122,15 +122,7 @@ write(path.join(root, "about", "index.html"), layout({
   body: `<section class="section container cz-guide-shell"><div class="cz-hero"><h1>About Clickoz</h1><p>Clickoz helps people fix content, data and links quickly without signup-heavy workflows.</p></div><div class="cz-guide-card"><h2>What improved</h2><p>The site now keeps the original rich tools, repairs broken pages, adds missing guides and improves SEO support around each workflow.</p><p><a class="cz-btn primary" href="/tools/">Open tools</a></p></div></section>`
 }));
 
-write(path.join(root, "workflows", "index.html"), layout({
-  title: "Clickoz Workflows",
-  description: "Tool combinations for SEO publishing, JSON debugging, campaign tracking and text cleanup.",
-  canonical: "/workflows/",
-  active: "",
-  body: `<section class="section container cz-guide-shell"><div class="cz-hero"><h1>Clickoz workflows</h1><p>Use these combinations when one tool is not enough.</p></div><div class="cz-guide-card"><h2>Publish a page</h2><p>Word Counter -> Readability Analyzer -> Keyword Density Checker -> Meta Tag Optimizer -> SERP Preview.</p><h2>Debug data</h2><p>JSON Formatter -> JSON Minifier -> URL Encoder -> Base64.</p><h2>Clean copied text</h2><p>Whitespace Cleaner -> Text Case Converter -> Slug Generator.</p></div></section>`
-}));
-
 fs.mkdirSync(path.join(root, "assets"), { recursive: true });
 fs.writeFileSync(path.join(root, "assets", "apple-touch-icon.png"), Buffer.from("iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAIElEQVR4AWP8z8Dwn4ECwESJ5lEDRg0YNWDUgFEDBgBUdQIfT3zfWQAAAABJRU5ErkJggg==", "base64"));
 
-console.log(`Added ${extraGuides.length} guide pages, ${redirects.length} redirects, about/workflows and apple-touch-icon.`);
+console.log(`Added ${extraGuides.length} guide pages, ${redirects.length} redirects, about and apple-touch-icon.`);

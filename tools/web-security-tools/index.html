@@ -3,35 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src https://translate.google.com https://*.google.com; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src https://translate.google.com https://*.google.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), interest-cohort=()" />
   <title>Web &amp; Security Tools - Free Web Utilities | Clickoz</title>
-  <meta name="description" content="Check domains, HTTP, IP ranges, timestamps, passwords and crawl files quickly from the browser. Browse 10 Clickoz tools with examples, usable output and related guides." />
+  <meta name="description" content="Check domains, HTTP reachability, IP ranges, timestamps, passwords and crawl files without leaving the browser. Browse 10 tools with examples, usable output" />
   <link rel="canonical" href="https://clickoz.com/tools/web-security-tools/" />
-  <meta name="robots" content="index,follow" />
-  <meta name="theme-color" content="#0b0f19" />
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
+  <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
+  <meta name="application-name" content="Clickoz" />
+  <meta name="apple-mobile-web-app-title" content="Clickoz" />
+  <meta name="theme-color" content="#101828" />
+  <meta property="og:locale" content="en_US" />
   <meta property="og:site_name" content="Clickoz" />
   <meta property="og:title" content="Web &amp; Security Tools - Free Web Utilities | Clickoz" />
-  <meta property="og:description" content="Check domains, HTTP, IP ranges, timestamps, passwords and crawl files quickly from the browser. Browse 10 Clickoz tools with examples, usable output and related guides." />
+  <meta property="og:description" content="Check domains, HTTP reachability, IP ranges, timestamps, passwords and crawl files without leaving the browser. Browse 10 tools with examples, usable output" />
   <meta property="og:url" content="https://clickoz.com/tools/web-security-tools/" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://clickoz.com/assets/og/tools.svg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Web &amp; Security Tools - Free Web Utilities | Clickoz" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Web &amp; Security Tools - Free Web Utilities | Clickoz" />
-  <meta name="twitter:description" content="Check domains, HTTP, IP ranges, timestamps, passwords and crawl files quickly from the browser. Browse 10 Clickoz tools with examples, usable output and related guides." />
+  <meta name="twitter:description" content="Check domains, HTTP reachability, IP ranges, timestamps, passwords and crawl files without leaving the browser. Browse 10 tools with examples, usable output" />
   <meta name="twitter:image" content="https://clickoz.com/assets/og/tools.svg" />
+  <meta name="twitter:image:alt" content="Web &amp; Security Tools - Free Web Utilities | Clickoz" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
   <script>(function(){try{var s=JSON.parse(localStorage.getItem("clickoz_accent")||"null");var a=s&&s.a1?s.a1:"#22d3ee";var b=s&&s.a2?s.a2:"#06b6d4";var h=String(a).replace("#","");var r="34,211,238";if(h.length===3)r=[h[0]+h[0],h[1]+h[1],h[2]+h[2]].map(function(x){return parseInt(x,16)}).join(",");if(h.length===6)r=[h.slice(0,2),h.slice(2,4),h.slice(4,6)].map(function(x){return parseInt(x,16)}).join(",");document.documentElement.style.setProperty("--accent",a);document.documentElement.style.setProperty("--accent2",b);document.documentElement.style.setProperty("--accent-rgb",r);document.documentElement.style.setProperty("--cz-accent",a);document.documentElement.style.setProperty("--cz-accent2",b);document.documentElement.style.setProperty("--cz-accent-rgb",r)}catch(e){}})();</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/assets/site.css?v=14" />
-  <link rel="stylesheet" href="/tools/tools.css?v=9" /><link rel="stylesheet" href="/tools/cms-tools.css?v=19" />
+  <link rel="stylesheet" href="/tools/tools.css?v=9" /><link rel="stylesheet" href="/tools/cms-tools.css?v=22" />
   <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=75" />
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Web & Security Tools","url":"https://clickoz.com/tools/web-security-tools/","description":"Check domains, HTTP, IP ranges, timestamps, passwords and crawl files quickly from the browser.","isPartOf":{"@type":"WebSite","name":"Clickoz","url":"https://clickoz.com/"},"mainEntity":{"@type":"ItemList","name":"Web & Security Tools","itemListOrder":"https://schema.org/ItemListUnordered","numberOfItems":10,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://clickoz.com/tools/http-ping/","name":"HTTP Ping Checker"},{"@type":"ListItem","position":2,"url":"https://clickoz.com/tools/dns-lookup/","name":"DNS Lookup"},{"@type":"ListItem","position":3,"url":"https://clickoz.com/tools/ip-subnet-calculator/","name":"IP Subnet Calculator"},{"@type":"ListItem","position":4,"url":"https://clickoz.com/tools/password-generator/","name":"Password Generator"},{"@type":"ListItem","position":5,"url":"https://clickoz.com/tools/uuid-generator/","name":"UUID Generator"},{"@type":"ListItem","position":6,"url":"https://clickoz.com/tools/timestamp-converter/","name":"Timestamp Converter"},{"@type":"ListItem","position":7,"url":"https://clickoz.com/tools/regex-tester/","name":"Regex Tester"},{"@type":"ListItem","position":8,"url":"https://clickoz.com/tools/text-diff-checker/","name":"Text Diff Checker"},{"@type":"ListItem","position":9,"url":"https://clickoz.com/tools/color-converter/","name":"Color Converter"},{"@type":"ListItem","position":10,"url":"https://clickoz.com/tools/robots-txt-generator/","name":"Robots.txt Generator"}]}}</script>
+  <link rel="stylesheet" href="/assets/cms-final.css?v=125" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Web & Security Tools","url":"https://clickoz.com/tools/web-security-tools/","description":"Check domains, HTTP reachability, IP ranges, timestamps, passwords and crawl files without leaving the browser.","isPartOf":{"@type":"WebSite","name":"Clickoz","url":"https://clickoz.com/"},"publisher":{"@type":"Organization","name":"Clickoz","url":"https://clickoz.com/","logo":{"@type":"ImageObject","url":"https://clickoz.com/assets/clickoz-logo-512.png","width":512,"height":512}},"mainEntity":{"@type":"ItemList","name":"Web & Security Tools","itemListOrder":"https://schema.org/ItemListUnordered","numberOfItems":10,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://clickoz.com/tools/http-ping/","name":"HTTP Ping Checker"},{"@type":"ListItem","position":2,"url":"https://clickoz.com/tools/dns-lookup/","name":"DNS Lookup"},{"@type":"ListItem","position":3,"url":"https://clickoz.com/tools/ip-subnet-calculator/","name":"IP Subnet Calculator"},{"@type":"ListItem","position":4,"url":"https://clickoz.com/tools/password-generator/","name":"Password Generator"},{"@type":"ListItem","position":5,"url":"https://clickoz.com/tools/uuid-generator/","name":"UUID Generator"},{"@type":"ListItem","position":6,"url":"https://clickoz.com/tools/timestamp-converter/","name":"Timestamp Converter"},{"@type":"ListItem","position":7,"url":"https://clickoz.com/tools/regex-tester/","name":"Regex Tester"},{"@type":"ListItem","position":8,"url":"https://clickoz.com/tools/text-diff-checker/","name":"Text Diff Checker"},{"@type":"ListItem","position":9,"url":"https://clickoz.com/tools/color-converter/","name":"Color Converter"},{"@type":"ListItem","position":10,"url":"https://clickoz.com/tools/robots-txt-generator/","name":"Robots.txt Generator"}]}}</script>
 </head>
 <body class="bigtext tools-page">
   <div id="clickozParticles" aria-hidden="true"></div>
@@ -42,7 +52,7 @@
       <a class="logo" href="/" aria-label="Clickoz Home">
         <span class="logo-badge" id="logoBadge" aria-hidden="true">
           <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
-            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8s5.4 13.8 12.6 13.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
         <span class="logo-text">Click<span class="logo-oz">oz</span></span>
@@ -62,9 +72,14 @@
         <div>
           <p class="guide-kicker">Web CLUSTER</p>
           <h1 class="tools-title">Web &amp; Security Tools</h1>
-          <p class="tools-sub">Check domains, HTTP, IP ranges, timestamps, passwords and crawl files quickly from the browser.</p>
-          <div class="tools-trust-row"><span>10 focused tools</span><span>Try sample included</span><span>Next tool visible</span><span>Copy-ready output</span></div>
+          <p class="tools-sub">Check domains, HTTP reachability, IP ranges, timestamps, passwords and crawl files without leaving the browser. Start with the exact job, use the output, then open the guide only when the decision needs context.</p>
         </div>
+      </div>
+      <div class="cluster-focus-grid" aria-label="Web &amp; Security Tools focus routes">
+        <a href="/tools/http-ping/"><span>01</span><strong>HTTP Ping Checker</strong><em>Measure browser HTTP latency and basic reachability for any public website.</em></a>
+<a href="/tools/dns-lookup/"><span>02</span><strong>DNS Lookup</strong><em>Look up DNS records with a clean browser interface and readable results.</em></a>
+<a href="/tools/ip-subnet-calculator/"><span>03</span><strong>IP Subnet Calculator</strong><em>Calculate IPv4 network range, broadcast address, host range and wildcard mask.</em></a>
+        <a class="cluster-request-card" href="/contact/#request"><span>+</span><strong>Need another tool?</strong><em>Request the exact workflow you need.</em></a>
       </div>
     </section>
     <section class="tool-section" id="web" data-section="web">
@@ -84,8 +99,8 @@
       <span>Quick job</span>
       <strong>Complete the lookup or generated value without opening a separate dashboard.</strong>
       <div class="tool-card-flow">
-        <p><b>Input</b>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</p>
-        <p><b>Output</b>A focused diagnostic result with the values that are safe to copy.</p>
+        <p><b>Input</b><span>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</span></p>
+        <p><b>Output</b><span>A focused diagnostic result with the values that are safe to copy.</span></p>
       </div>
       <em>Quick operational checks before a technical change</em>
     </div>
@@ -104,8 +119,8 @@
       <span>Quick job</span>
       <strong>Complete the lookup or generated value without opening a separate dashboard.</strong>
       <div class="tool-card-flow">
-        <p><b>Input</b>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</p>
-        <p><b>Output</b>A focused diagnostic result with the values that are safe to copy.</p>
+        <p><b>Input</b><span>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</span></p>
+        <p><b>Output</b><span>A focused diagnostic result with the values that are safe to copy.</span></p>
       </div>
       <em>Quick operational checks before a technical change</em>
     </div>
@@ -124,8 +139,8 @@
       <span>Quick job</span>
       <strong>Complete the lookup or generated value without opening a separate dashboard.</strong>
       <div class="tool-card-flow">
-        <p><b>Input</b>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</p>
-        <p><b>Output</b>A focused diagnostic result with the values that are safe to copy.</p>
+        <p><b>Input</b><span>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</span></p>
+        <p><b>Output</b><span>A focused diagnostic result with the values that are safe to copy.</span></p>
       </div>
       <em>Quick operational checks before a technical change</em>
     </div>
@@ -144,8 +159,8 @@
       <span>Quick job</span>
       <strong>Complete the lookup or generated value without opening a separate dashboard.</strong>
       <div class="tool-card-flow">
-        <p><b>Input</b>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</p>
-        <p><b>Output</b>A focused diagnostic result with the values that are safe to copy.</p>
+        <p><b>Input</b><span>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</span></p>
+        <p><b>Output</b><span>A focused diagnostic result with the values that are safe to copy.</span></p>
       </div>
       <em>Quick operational checks before a technical change</em>
     </div>
@@ -164,8 +179,8 @@
       <span>Quick job</span>
       <strong>Complete the lookup or generated value without opening a separate dashboard.</strong>
       <div class="tool-card-flow">
-        <p><b>Input</b>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</p>
-        <p><b>Output</b>A focused diagnostic result with the values that are safe to copy.</p>
+        <p><b>Input</b><span>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</span></p>
+        <p><b>Output</b><span>A focused diagnostic result with the values that are safe to copy.</span></p>
       </div>
       <em>Quick operational checks before a technical change</em>
     </div>
@@ -184,8 +199,8 @@
       <span>Quick job</span>
       <strong>Complete the lookup or generated value without opening a separate dashboard.</strong>
       <div class="tool-card-flow">
-        <p><b>Input</b>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</p>
-        <p><b>Output</b>A focused diagnostic result with the values that are safe to copy.</p>
+        <p><b>Input</b><span>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</span></p>
+        <p><b>Output</b><span>A focused diagnostic result with the values that are safe to copy.</span></p>
       </div>
       <em>Quick operational checks before a technical change</em>
     </div>
@@ -204,8 +219,8 @@
       <span>Quick job</span>
       <strong>Complete the lookup or generated value without opening a separate dashboard.</strong>
       <div class="tool-card-flow">
-        <p><b>Input</b>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</p>
-        <p><b>Output</b>A focused diagnostic result with the values that are safe to copy.</p>
+        <p><b>Input</b><span>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</span></p>
+        <p><b>Output</b><span>A focused diagnostic result with the values that are safe to copy.</span></p>
       </div>
       <em>Quick operational checks before a technical change</em>
     </div>
@@ -224,8 +239,8 @@
       <span>Quick job</span>
       <strong>Complete the lookup or generated value without opening a separate dashboard.</strong>
       <div class="tool-card-flow">
-        <p><b>Input</b>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</p>
-        <p><b>Output</b>A focused diagnostic result with the values that are safe to copy.</p>
+        <p><b>Input</b><span>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</span></p>
+        <p><b>Output</b><span>A focused diagnostic result with the values that are safe to copy.</span></p>
       </div>
       <em>Quick operational checks before a technical change</em>
     </div>
@@ -244,8 +259,8 @@
       <span>Quick job</span>
       <strong>Complete the lookup or generated value without opening a separate dashboard.</strong>
       <div class="tool-card-flow">
-        <p><b>Input</b>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</p>
-        <p><b>Output</b>A focused diagnostic result with the values that are safe to copy.</p>
+        <p><b>Input</b><span>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</span></p>
+        <p><b>Output</b><span>A focused diagnostic result with the values that are safe to copy.</span></p>
       </div>
       <em>Quick operational checks before a technical change</em>
     </div>
@@ -264,8 +279,8 @@
       <span>Quick job</span>
       <strong>Complete the lookup or generated value without opening a separate dashboard.</strong>
       <div class="tool-card-flow">
-        <p><b>Input</b>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</p>
-        <p><b>Output</b>A focused diagnostic result with the values that are safe to copy.</p>
+        <p><b>Input</b><span>A public URL, domain, IPv4 range, timestamp, color value or crawl rule.</span></p>
+        <p><b>Output</b><span>A focused diagnostic result with the values that are safe to copy.</span></p>
       </div>
       <em>Quick operational checks before a technical change</em>
     </div>
@@ -277,21 +292,36 @@
       <article class="cms-info-card"><h2>Best next guides</h2><p>Use the guides when the tool output needs a publishing decision, not just a copied result.</p><div class="cms-related-links"><a href="/guides/seo-content-checklist/">&#128218; SEO Content Checklist</a><a href="/guides/internal-linking-tools-sites/">&#128218; Internal Linking for Tool Sites</a><a href="/guides/core-web-vitals-tools-sites/">&#128218; Core Web Vitals for Tool Sites</a><a href="/guides/content-brief-template/">&#128218; Content Brief Template</a><a href="/guides/text-cleanup-workflow/">&#128218; Text Cleanup Workflow</a><a href="/guides/json-formatter-online/">&#128218; JSON Formatter Online Guide</a><a href="/guides/json-formatting-debug/">&#128218; Fix JSON Errors</a><a href="/guides/query-string-best-practices/">&#128218; Query String Best Practices</a></div></article>
       <article class="cms-info-card"><h2>How this hub helps</h2><p>Each card starts from a concrete job, shows the expected output and routes to a page with examples, local history, related tools, FAQ and schema support.</p></article>
     </section>
+    <section class="route-final-strip" aria-label="Web &amp; Security Tools route operating route">
+      <article><span>01</span><strong>Search by problem</strong><p>Start from the messy input or task, not from a long category list.</p></article>
+      <article><span>02</span><strong>Use the exact tool</strong><p>Open the focused utility that matches the job you need to finish.</p></article>
+      <article><span>03</span><strong>Copy a clean result</strong><p>Keep output, copy controls and checks in one predictable surface.</p></article>
+      <article><span>04</span><strong>Read when needed</strong><p>Use guides only when the copied result needs a better decision behind it.</p></article>
+      <article><span>05</span><strong>Request gaps</strong><p>Ask for a missing tool, fix or guide when the current route does not cover the job.</p></article>
+    </section>
+    <section class="request-mega-cta" aria-label="Request a Clickoz tool">
+      <div>
+        <p class="guide-kicker">CONTACT / REQUEST</p>
+        <h2>Need a web &amp; security tools that is missing?</h2>
+        <p>Send the exact web job, input and expected output. Clickoz will use it to prioritize the next focused tool or guide.</p>
+      </div>
+      <a class="btn btn-accent" href="/contact/#request">Request a tool</a>
+    </section>
   </main>
   <footer class="footer">
     <div class="container footer-grid">
       <div><h4>Clickoz</h4><div class="footer-links"><a href="/about/">About</a><a href="/tools/">Tools</a><a href="/guides/">Guides</a><a href="/updates/">Updates</a></div></div>
-      <div><h4>Workflow hubs</h4><div class="footer-links"><a href="/workflows/">Workflows</a><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/guides/creator/">Creator Guides</a></div></div>
+      <div><h4>Tool hubs</h4><div class="footer-links"><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/tools/writing-tools/">Writing Tools</a><a href="/guides/creator/">Creator Guides</a></div></div>
       <div><h4>Popular tools</h4><div class="footer-links"><a href="/tools/word-counter/">Word Counter</a><a href="/tools/meta-tags/">Meta Tags</a><a href="/tools/json-formatter/">JSON Formatter</a><a href="/tools/youtube-title-generator/">YouTube Titles</a></div></div>
       <div><h4>Legal</h4><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a><a href="/404/">404</a></div></div>
     </div>
     <div class="container" style="margin-top:14px"><hr class="sep" /><div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">&copy; 2026 Clickoz &middot; Fast browser tools for SEO, writing, developers and creators</div></div>
   </footer>
-  <script src="/assets/cms-registry.js?v=4" defer></script>
+  <script src="/assets/cms-registry.js?v=5" defer></script>
   <script src="/assets/cms-schema.js?v=2" defer></script>
-  <script src="/assets/cms-enhance.js?v=7" defer></script>
-  <script src="/assets/site.js?v=53" defer></script>
-  <script src="/assets/clickoz-premium.js?v=6" defer></script>
-  <script src="/tools/tools.js?v=11" defer></script>
+  <script src="/assets/cms-enhance.js?v=8" defer></script>
+  <script src="/assets/site.js?v=74" defer></script>
+  <script src="/assets/clickoz-premium.js?v=12" defer></script>
+  <script src="/tools/tools.js?v=14" defer></script>
 </body>
 </html>

@@ -10,14 +10,14 @@
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
   const categoryLabel = {
-    seo: "Search workflow",
-    writing: "Writing workflow",
-    dev: "Developer workflow",
-    web: "Web workflow",
-    socialai: "Creator workflow",
-    tracking: "Tracking workflow",
-    youtube: "YouTube workflow",
-    creator: "Creator workflow"
+    seo: "Search route",
+    writing: "Writing route",
+    dev: "Developer route",
+    web: "Web route",
+    socialai: "Creator route",
+    tracking: "Tracking route",
+    youtube: "YouTube route",
+    creator: "Creator route"
   };
 
   const categoryMark = {
@@ -105,7 +105,7 @@
       const meta = document.createElement("div");
       meta.className = "guide-card-meta";
       meta.innerHTML = [
-        categoryLabel[guide.category] || "Guide workflow",
+        categoryLabel[guide.category] || "Guide route",
         tool ? tool.title : toolName(guide.tool),
         "Checklist"
       ].map((trait) => `<span>${esc(trait)}</span>`).join("") +
@@ -142,7 +142,7 @@
       const key = el.getAttribute("data-cms-label");
       if (key === "tools") el.textContent = `${counts.tools} live tools`;
       if (key === "guides") el.textContent = `${counts.guides} practical guides`;
-      if (key === "clusters") el.textContent = `${counts.clusters} workflow clusters`;
+      if (key === "clusters") el.textContent = `${counts.clusters} tool clusters`;
     });
   }
 
@@ -169,7 +169,7 @@
       <article>
         <span>03</span>
         <h2>Next step</h2>
-        <p>Move into <a href="${esc(cluster?.url || "/tools/")}">${esc(cluster?.title || "the related workflow")}</a> when you need the next connected action.</p>
+        <p>Move into <a href="${esc(cluster?.url || "/tools/")}">${esc(cluster?.title || "the related route")}</a> when you need the next connected action.</p>
       </article>
     `;
     hero.insertAdjacentElement("afterend", summary);

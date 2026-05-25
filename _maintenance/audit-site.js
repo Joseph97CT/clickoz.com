@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
-const { ORIGIN, ASSET_VERSIONS, CORE_URLS, SMOKE_PATHS, asset } = require("./cms-config");
+const { ORIGIN, ASSET_VERSIONS, CSP, CSP_HEADER, PERMISSIONS_POLICY, CORE_URLS, SMOKE_PATHS, asset } = require("./cms-config");
 
 const root = path.resolve(__dirname, "..");
 const skipDirs = new Set(["node_modules", ".git"]);
@@ -38,7 +38,7 @@ const configuredAssetVersions = new Map([
  */
 
 function read(relPath) {
-  return fs.readFileSync(path.join(root, relPath), "utf8");
+  return fs.readFileSync(path.isAbsolute(relPath) ? relPath : path.join(root, relPath), "utf8");
 }
 
 function rel(file) {
@@ -115,6 +115,7 @@ function validateMaintenanceConfigUsage() {
   const activeScripts = [
     "_maintenance/generate-all-tools.js",
     "_maintenance/generate-premium-guides.js",
+    "_maintenance/sync-security-assets.js",
     "_maintenance/audit-site.js"
   ];
   activeScripts.forEach((relPath) => {
@@ -378,6 +379,108 @@ function validateRobots(robots, sitemapUrls) {
   return { hasAllowAll, hasSitemap, hasMaintenanceBlock, blocksIndexedCms, disallowRules };
 }
 
+function validateSecurityConfig() {
+  const file = "vercel.json";
+  const requiredHeaders = [
+    "X-Content-Type-Options",
+    "X-Frame-Options",
+    "Referrer-Policy",
+    "Permissions-Policy",
+    "X-DNS-Prefetch-Control",
+    "X-Download-Options",
+    "Origin-Agent-Cluster",
+    "Cross-Origin-Opener-Policy",
+    "Cross-Origin-Resource-Policy",
+    "X-Permitted-Cross-Domain-Policies",
+    "Content-Security-Policy",
+    "Strict-Transport-Security"
+  ];
+  const requiredCspFragments = [
+    "default-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self' mailto:",
+    "script-src-attr 'none'",
+    "worker-src 'self' blob:",
+    "manifest-src 'self'",
+    "upgrade-insecure-requests",
+    "frame-ancestors 'self'"
+  ];
+  const report = {
+    hasConfig: false,
+    missingHeaders: [],
+    missingCspFragments: [],
+    cspMatchesConfig: false,
+    permissionsMatchesConfig: false,
+    apiNoStore: false,
+    apiNoIndex: false,
+    assetsImmutable: false
+  };
+
+  let config;
+  try {
+    config = JSON.parse(read(file));
+    report.hasConfig = true;
+  } catch (error) {
+    addFinding("security-config-invalid", file, error.message);
+    return report;
+  }
+
+  const headers = Array.isArray(config.headers) ? config.headers : [];
+  const globalRule = headers.find((rule) => rule.source === "/(.*)");
+  const globalHeaders = new Map((globalRule?.headers || []).map((item) => [item.key, item.value]));
+
+  requiredHeaders.forEach((key) => {
+    if (!globalHeaders.has(key)) report.missingHeaders.push(key);
+  });
+  report.missingHeaders.forEach((key) => addFinding("security-header-missing", file, key));
+
+  const headerCsp = String(globalHeaders.get("Content-Security-Policy") || "");
+  requiredCspFragments.forEach((fragment) => {
+    if (!headerCsp.includes(fragment)) report.missingCspFragments.push(fragment);
+  });
+  report.missingCspFragments.forEach((fragment) => addFinding("security-csp-weak", file, fragment));
+  report.cspMatchesConfig = headerCsp === CSP_HEADER;
+  if (!report.cspMatchesConfig) addFinding("security-csp-out-of-sync", file, "vercel Content-Security-Policy must match CSP_HEADER from cms-config");
+
+  report.permissionsMatchesConfig = globalHeaders.get("Permissions-Policy") === PERMISSIONS_POLICY;
+  if (!report.permissionsMatchesConfig) addFinding("permissions-policy-out-of-sync", file, "vercel Permissions-Policy must match cms-config");
+
+  const apiRule = headers.find((rule) => rule.source === "/api/(.*)") || headers.find((rule) => rule.source === "/api/client-error");
+  const apiHeaders = new Map((apiRule?.headers || []).map((item) => [item.key, item.value]));
+  report.apiNoStore = apiHeaders.get("Cache-Control") === "no-store";
+  report.apiNoIndex = /noindex/i.test(String(apiHeaders.get("X-Robots-Tag") || ""));
+  if (!report.apiNoStore) addFinding("api-cache-header-missing", file, "API routes must use Cache-Control: no-store");
+  if (!report.apiNoIndex) addFinding("api-robots-header-missing", file, "API routes must use X-Robots-Tag: noindex");
+
+  const assetRule = headers.find((rule) => rule.source === "/assets/(.*)");
+  const assetHeaders = new Map((assetRule?.headers || []).map((item) => [item.key, item.value]));
+  report.assetsImmutable = /immutable/i.test(String(assetHeaders.get("Cache-Control") || ""));
+  if (!report.assetsImmutable) addFinding("asset-cache-header-weak", file, "assets should use immutable cache headers");
+
+  return report;
+}
+
+function validateHtmlSecurityMeta() {
+  const report = { checked: 0, cspOutOfSync: 0, permissionsOutOfSync: 0 };
+  htmlFiles.forEach((file) => {
+    const source = read(file);
+    const fileRel = rel(file);
+    const cspMatch = source.match(/<meta http-equiv="Content-Security-Policy" content="([^"]*)" \/>/i);
+    const permissionsMatch = source.match(/<meta http-equiv="Permissions-Policy" content="([^"]*)" \/>/i);
+    report.checked += 1;
+    if (!cspMatch || cspMatch[1] !== CSP) {
+      report.cspOutOfSync += 1;
+      addFinding("html-csp-out-of-sync", fileRel, "meta CSP must match cms-config CSP");
+    }
+    if (!permissionsMatch || permissionsMatch[1] !== PERMISSIONS_POLICY) {
+      report.permissionsOutOfSync += 1;
+      addFinding("html-permissions-out-of-sync", fileRel, "meta Permissions-Policy must match cms-config");
+    }
+  });
+  return report;
+}
+
 function validateSmokeTemplates() {
   return SMOKE_PATHS.map((url) => {
     const exists = fileExistsForUrl(url);
@@ -422,12 +525,17 @@ validateCmsRuntimeIntegrity();
 const cms = loadCMS();
 validateRegistry(cms);
 
-const workflows = read("workflows/index.html");
 const sitemap = read("sitemap.xml");
 const robots = read("robots.txt");
+const workflowsInSitemap = sitemap.includes(`${ORIGIN}/workflows/`);
+const workflowsVisibleLinkCount = htmlFiles.reduce((count, file) => count + (read(file).match(/href=["']\/workflows\//g) || []).length, 0);
+if (workflowsInSitemap) findings.push("Removed route /workflows/ is still present in sitemap.xml.");
+if (workflowsVisibleLinkCount) findings.push(`Removed route /workflows/ is still linked ${workflowsVisibleLinkCount} time(s) from HTML files.`);
 const stats = registryStats(cms);
 const sitemapReport = validateSitemap(cms, sitemap);
 const robotsReport = validateRobots(robots, CORE_URLS.concat(Object.values(cms.clusters || {}).map((cluster) => cluster.url), cms.tools.map((tool) => tool.url), cms.guides.map((guide) => guide.url)));
+const securityHeadersReport = validateSecurityConfig();
+const htmlSecurityMetaReport = validateHtmlSecurityMeta();
 const smokeTemplates = validateSmokeTemplates();
 
 const report = {
@@ -439,17 +547,17 @@ const report = {
     !stats.registryFindings.length,
   assetVersions: ASSET_VERSIONS,
   stats,
-  workflows: {
-    indexable: workflows.includes("index,follow"),
-    inSitemap: sitemap.includes(`${ORIGIN}/workflows/`),
-    faqSchema: workflows.includes("FAQPage"),
-    collectionSchema: workflows.includes("CollectionPage")
+  removedRoutes: {
+    workflowsInSitemap,
+    workflowsVisibleLinkCount
   },
   securitySeo: {
     robotsHasSitemap: robots.includes(`Sitemap: ${ORIGIN}/sitemap.xml`),
     hasSecurityHeadersConfig: fs.existsSync(path.join(root, "vercel.json")),
     has404: fs.existsSync(path.join(root, "404.html")) && fs.existsSync(path.join(root, "404", "index.html")),
     has500: fs.existsSync(path.join(root, "500.html")) && fs.existsSync(path.join(root, "500", "index.html")),
+    headers: securityHeadersReport,
+    htmlMeta: htmlSecurityMetaReport,
     sitemap: sitemapReport,
     robots: robotsReport
   },

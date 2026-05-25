@@ -3,26 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com; frame-src https://translate.google.com https://*.google.com; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src https://translate.google.com https://*.google.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), interest-cohort=()" />
-  <title>Clickoz Guides - SEO, Writing, Developer and Creator Workflows</title>
-  <meta name="description" content="Problem-first Clickoz guides connected to browser tools, examples, checklists and internal workflows for SEO, writing, development and creators." />
+  <title>Clickoz Guides - SEO, Writing, Creator and Developer Guides</title>
+  <meta name="description" content="Practical guides for SEO snippets, readable drafts, JSON fixes, UTM tracking and YouTube uploads, linked to free Clickoz tools." />
   <link rel="canonical" href="https://clickoz.com/guides/" />
-  <meta name="robots" content="index,follow" />
-  <meta name="theme-color" content="#0b0f19" />
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
+  <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
+  <meta name="application-name" content="Clickoz" />
+  <meta name="apple-mobile-web-app-title" content="Clickoz" />
+  <meta name="theme-color" content="#101828" />
+  <meta property="og:locale" content="en_US" />
   <meta property="og:site_name" content="Clickoz" />
-  <meta property="og:title" content="Clickoz Guides - SEO, Writing, Developer and Creator Workflows" />
-  <meta property="og:description" content="Problem-first Clickoz guides connected to browser tools, examples, checklists and internal workflows for SEO, writing, development and creators." />
+  <meta property="og:title" content="Clickoz Guides - SEO, Writing, Creator and Developer Guides" />
+  <meta property="og:description" content="Practical guides for SEO snippets, readable drafts, JSON fixes, UTM tracking and YouTube uploads, linked to free Clickoz tools." />
   <meta property="og:url" content="https://clickoz.com/guides/" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://clickoz.com/assets/og/guides.svg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Clickoz Guides - SEO, Writing, Creator and Developer Guides" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Clickoz Guides - SEO, Writing, Developer and Creator Workflows" />
-  <meta name="twitter:description" content="Problem-first Clickoz guides connected to browser tools, examples, checklists and internal workflows for SEO, writing, development and creators." />
+  <meta name="twitter:title" content="Clickoz Guides - SEO, Writing, Creator and Developer Guides" />
+  <meta name="twitter:description" content="Practical guides for SEO snippets, readable drafts, JSON fixes, UTM tracking and YouTube uploads, linked to free Clickoz tools." />
   <meta name="twitter:image" content="https://clickoz.com/assets/og/guides.svg" />
+  <meta name="twitter:image:alt" content="Clickoz Guides - SEO, Writing, Creator and Developer Guides" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
   <script>
   (function(){
     try{
@@ -48,9 +58,9 @@
   <link rel="stylesheet" href="/assets/site.css?v=14" />
   
   <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=75" />
+  <link rel="stylesheet" href="/assets/cms-final.css?v=125" />
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://clickoz.com/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://clickoz.com/guides/"}]}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Clickoz Guides","url":"https://clickoz.com/guides/","description":"Problem-first Clickoz guides connected to browser tools, examples, checklists and internal workflows.","isPartOf":{"@type":"WebSite","name":"Clickoz","url":"https://clickoz.com/"},"mainEntity":{"@type":"ItemList","name":"Clickoz Guides","numberOfItems":41,"itemListElement":[{"@type":"ListItem","position":1,"name":"SEO Content Checklist","url":"https://clickoz.com/guides/seo-content-checklist/"},{"@type":"ListItem","position":2,"name":"How to Write Meta Titles and Descriptions","url":"https://clickoz.com/guides/how-to-write-meta-title-description/"},{"@type":"ListItem","position":3,"name":"Keyword Density Explained","url":"https://clickoz.com/guides/keyword-density-explained/"},{"@type":"ListItem","position":4,"name":"Meta Tags Length","url":"https://clickoz.com/guides/meta-tags-length/"},{"@type":"ListItem","position":5,"name":"Meta Tags Checklist","url":"https://clickoz.com/guides/meta-tags-checklist/"},{"@type":"ListItem","position":6,"name":"SERP Preview Guide","url":"https://clickoz.com/guides/serp-preview/"},{"@type":"ListItem","position":7,"name":"SERP Snippets and CTR Testing","url":"https://clickoz.com/guides/serp-snippet-ctr/"},{"@type":"ListItem","position":8,"name":"Slug Best Practices","url":"https://clickoz.com/guides/slug-best-practices/"},{"@type":"ListItem","position":9,"name":"Internal Linking for Tool Sites","url":"https://clickoz.com/guides/internal-linking-tools-sites/"},{"@type":"ListItem","position":10,"name":"Core Web Vitals for Tool Sites","url":"https://clickoz.com/guides/core-web-vitals-tools-sites/"},{"@type":"ListItem","position":11,"name":"Keyword Variations","url":"https://clickoz.com/guides/keyword-variations/"},{"@type":"ListItem","position":12,"name":"Readability for SEO","url":"https://clickoz.com/guides/readability-for-seo/"},{"@type":"ListItem","position":13,"name":"Readability Score Guide","url":"https://clickoz.com/guides/readability-score/"},{"@type":"ListItem","position":14,"name":"Readability for Ranking","url":"https://clickoz.com/guides/readability-for-ranking/"},{"@type":"ListItem","position":15,"name":"Word Count for SEO","url":"https://clickoz.com/guides/word-count-for-seo/"},{"@type":"ListItem","position":16,"name":"Content Brief Template","url":"https://clickoz.com/guides/content-brief-template/"},{"@type":"ListItem","position":17,"name":"Text Cleanup Workflow","url":"https://clickoz.com/guides/text-cleanup-workflow/"},{"@type":"ListItem","position":18,"name":"JSON Formatter Online Guide","url":"https://clickoz.com/guides/json-formatter-online/"},{"@type":"ListItem","position":19,"name":"Fix JSON Errors","url":"https://clickoz.com/guides/json-formatting-debug/"},{"@type":"ListItem","position":20,"name":"URL Encoding Explained","url":"https://clickoz.com/guides/url-encoding/"},{"@type":"ListItem","position":21,"name":"URL Encoding Basics","url":"https://clickoz.com/guides/url-encoding-basics/"},{"@type":"ListItem","position":22,"name":"URL Encoding Explained in Practice","url":"https://clickoz.com/guides/url-encoding-explained/"},{"@type":"ListItem","position":23,"name":"Query String Best Practices","url":"https://clickoz.com/guides/query-string-best-practices/"},{"@type":"ListItem","position":24,"name":"Base64 Decode Guide","url":"https://clickoz.com/guides/base64-decode/"},{"@type":"ListItem","position":25,"name":"Base64 Encode and Decode","url":"https://clickoz.com/guides/base64-encode-decode/"},{"@type":"ListItem","position":26,"name":"Base64URL vs Base64","url":"https://clickoz.com/guides/base64url-vs-base64/"},{"@type":"ListItem","position":27,"name":"Debugging Tokens","url":"https://clickoz.com/guides/debugging-tokens/"},{"@type":"ListItem","position":28,"name":"JWT Basics","url":"https://clickoz.com/guides/jwt-basics/"},{"@type":"ListItem","position":29,"name":"HTML Entities Explained","url":"https://clickoz.com/guides/html-entities/"},{"@type":"ListItem","position":30,"name":"Encoding vs Escaping","url":"https://clickoz.com/guides/encoding-vs-escaping/"},{"@type":"ListItem","position":31,"name":"Fix Broken HTML","url":"https://clickoz.com/guides/fix-broken-html/"},{"@type":"ListItem","position":32,"name":"Fix Broken UTM Parameters","url":"https://clickoz.com/guides/fix-broken-utm-parameters/"},{"@type":"ListItem","position":33,"name":"UTM Builder Guide","url":"https://clickoz.com/guides/utm-builder-guide/"},{"@type":"ListItem","position":34,"name":"UTM Best Practices","url":"https://clickoz.com/guides/utm-best-practices/"},{"@type":"ListItem","position":35,"name":"Instagram Bio UTM Links","url":"https://clickoz.com/guides/instagram-bio-utm/"},{"@type":"ListItem","position":36,"name":"YouTube Tracking Links","url":"https://clickoz.com/guides/youtube-tracking-links/"},{"@type":"ListItem","position":37,"name":"YouTube Title and Thumbnail Checklist","url":"https://clickoz.com/guides/youtube-title-thumbnail-checklist/"},{"@type":"ListItem","position":38,"name":"YouTube Description Template","url":"https://clickoz.com/guides/youtube-description-template/"},{"@type":"ListItem","position":39,"name":"YouTube Hashtags Guide","url":"https://clickoz.com/guides/youtube-hashtags-guide/"},{"@type":"ListItem","position":40,"name":"YouTube Community Post Ideas","url":"https://clickoz.com/guides/youtube-community-post-ideas/"},{"@type":"ListItem","position":41,"name":"Creator Content Calendar","url":"https://clickoz.com/guides/creator-content-calendar/"}]}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Clickoz Guides","url":"https://clickoz.com/guides/","description":"Problem-first Clickoz guides connected to browser tools, examples, checklists and practical next steps.","isPartOf":{"@type":"WebSite","name":"Clickoz","url":"https://clickoz.com/"},"publisher":{"@type":"Organization","name":"Clickoz","url":"https://clickoz.com/","logo":{"@type":"ImageObject","url":"https://clickoz.com/assets/clickoz-logo-512.png","width":512,"height":512}},"mainEntity":{"@type":"ItemList","name":"Clickoz Guides","numberOfItems":41,"itemListElement":[{"@type":"ListItem","position":1,"name":"SEO Content Checklist","url":"https://clickoz.com/guides/seo-content-checklist/"},{"@type":"ListItem","position":2,"name":"How to Write Meta Titles and Descriptions","url":"https://clickoz.com/guides/how-to-write-meta-title-description/"},{"@type":"ListItem","position":3,"name":"Keyword Density Explained","url":"https://clickoz.com/guides/keyword-density-explained/"},{"@type":"ListItem","position":4,"name":"Meta Tags Length","url":"https://clickoz.com/guides/meta-tags-length/"},{"@type":"ListItem","position":5,"name":"Meta Tags Checklist","url":"https://clickoz.com/guides/meta-tags-checklist/"},{"@type":"ListItem","position":6,"name":"SERP Preview Guide","url":"https://clickoz.com/guides/serp-preview/"},{"@type":"ListItem","position":7,"name":"SERP Snippets and CTR Testing","url":"https://clickoz.com/guides/serp-snippet-ctr/"},{"@type":"ListItem","position":8,"name":"Slug Best Practices","url":"https://clickoz.com/guides/slug-best-practices/"},{"@type":"ListItem","position":9,"name":"Internal Linking for Tool Sites","url":"https://clickoz.com/guides/internal-linking-tools-sites/"},{"@type":"ListItem","position":10,"name":"Core Web Vitals for Tool Sites","url":"https://clickoz.com/guides/core-web-vitals-tools-sites/"},{"@type":"ListItem","position":11,"name":"Keyword Variations","url":"https://clickoz.com/guides/keyword-variations/"},{"@type":"ListItem","position":12,"name":"Readability for SEO","url":"https://clickoz.com/guides/readability-for-seo/"},{"@type":"ListItem","position":13,"name":"Readability Score Guide","url":"https://clickoz.com/guides/readability-score/"},{"@type":"ListItem","position":14,"name":"Readability for Ranking","url":"https://clickoz.com/guides/readability-for-ranking/"},{"@type":"ListItem","position":15,"name":"Word Count for SEO","url":"https://clickoz.com/guides/word-count-for-seo/"},{"@type":"ListItem","position":16,"name":"Content Brief Template","url":"https://clickoz.com/guides/content-brief-template/"},{"@type":"ListItem","position":17,"name":"Text Cleanup Workflow","url":"https://clickoz.com/guides/text-cleanup-workflow/"},{"@type":"ListItem","position":18,"name":"JSON Formatter Online Guide","url":"https://clickoz.com/guides/json-formatter-online/"},{"@type":"ListItem","position":19,"name":"Fix JSON Errors","url":"https://clickoz.com/guides/json-formatting-debug/"},{"@type":"ListItem","position":20,"name":"URL Encoding Explained","url":"https://clickoz.com/guides/url-encoding/"},{"@type":"ListItem","position":21,"name":"URL Encoding Basics","url":"https://clickoz.com/guides/url-encoding-basics/"},{"@type":"ListItem","position":22,"name":"URL Encoding Explained in Practice","url":"https://clickoz.com/guides/url-encoding-explained/"},{"@type":"ListItem","position":23,"name":"Query String Best Practices","url":"https://clickoz.com/guides/query-string-best-practices/"},{"@type":"ListItem","position":24,"name":"Base64 Decode Guide","url":"https://clickoz.com/guides/base64-decode/"},{"@type":"ListItem","position":25,"name":"Base64 Encode and Decode","url":"https://clickoz.com/guides/base64-encode-decode/"},{"@type":"ListItem","position":26,"name":"Base64URL vs Base64","url":"https://clickoz.com/guides/base64url-vs-base64/"},{"@type":"ListItem","position":27,"name":"Debugging Tokens","url":"https://clickoz.com/guides/debugging-tokens/"},{"@type":"ListItem","position":28,"name":"JWT Basics","url":"https://clickoz.com/guides/jwt-basics/"},{"@type":"ListItem","position":29,"name":"HTML Entities Explained","url":"https://clickoz.com/guides/html-entities/"},{"@type":"ListItem","position":30,"name":"Encoding vs Escaping","url":"https://clickoz.com/guides/encoding-vs-escaping/"},{"@type":"ListItem","position":31,"name":"Fix Broken HTML","url":"https://clickoz.com/guides/fix-broken-html/"},{"@type":"ListItem","position":32,"name":"Fix Broken UTM Parameters","url":"https://clickoz.com/guides/fix-broken-utm-parameters/"},{"@type":"ListItem","position":33,"name":"UTM Builder Guide","url":"https://clickoz.com/guides/utm-builder-guide/"},{"@type":"ListItem","position":34,"name":"UTM Best Practices","url":"https://clickoz.com/guides/utm-best-practices/"},{"@type":"ListItem","position":35,"name":"Instagram Bio UTM Links","url":"https://clickoz.com/guides/instagram-bio-utm/"},{"@type":"ListItem","position":36,"name":"YouTube Tracking Links","url":"https://clickoz.com/guides/youtube-tracking-links/"},{"@type":"ListItem","position":37,"name":"YouTube Title and Thumbnail Checklist","url":"https://clickoz.com/guides/youtube-title-thumbnail-checklist/"},{"@type":"ListItem","position":38,"name":"YouTube Description Template","url":"https://clickoz.com/guides/youtube-description-template/"},{"@type":"ListItem","position":39,"name":"YouTube Hashtags Guide","url":"https://clickoz.com/guides/youtube-hashtags-guide/"},{"@type":"ListItem","position":40,"name":"YouTube Community Post Ideas","url":"https://clickoz.com/guides/youtube-community-post-ideas/"},{"@type":"ListItem","position":41,"name":"Creator Content Calendar","url":"https://clickoz.com/guides/creator-content-calendar/"}]}}</script>
 </head>
 <body class="bigtext guides-page guide-hub-page">
   <div id="clickozParticles" aria-hidden="true"></div>
@@ -60,7 +70,7 @@
       <a class="logo" href="/" aria-label="Clickoz Home">
         <span class="logo-badge" id="logoBadge" aria-hidden="true">
           <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
-            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8S16.4 37.8 23.6 37.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8s5.4 13.8 12.6 13.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
         <span class="logo-text">Click<span class="logo-oz">oz</span></span>
@@ -83,23 +93,46 @@
       <a class="m-link active" href="/guides/">Guides</a>
       <a class="m-link" href="/updates/">Updates</a>
       <a class="m-link" href="/about/">About</a>
-      <a class="m-link" href="/privacy/">Privacy</a>
     </div>
   </aside>
   <main class="section container guide-hub-shell">
     <header class="guide-hub-hero guides-library-hero">
       <div>
         <p class="guide-kicker">CLICKOZ GUIDE LIBRARY</p>
-        <h1>Guides that make the tools useful on the first visit.</h1>
-        <p>Each guide starts with the problem, links the matching tool and ends with the next action. No isolated AI text, no empty checklist.</p>
-        <div class="dash-actions"><a class="btn btn-accent" href="/tools/">Open tools</a><a class="btn btn-outline" href="/guides/seo/">Start with SEO</a><a class="btn btn-outline" href="/guides/creator/">Creator hub</a></div>
+        <h1>Guides that turn tool output into a better decision.</h1>
+        <p>Use guides when a copied result still needs context: SEO intent, publishing checks, creator packaging, readable drafts or safe technical handling.</p>
+        <div class="dash-actions"><a class="btn btn-accent" href="/tools/">Use a tool first</a><a class="btn btn-outline" href="/guides/seo/">Start with SEO</a></div>
       </div>
       <aside class="guide-hub-checklist">
-        <article><span>01</span><strong>Find the problem</strong><p>Search by workflow, not by random article title.</p></article>
+        <article><span>01</span><strong>Find the problem</strong><p>Search by decision, not by random article title.</p></article>
         <article><span>02</span><strong>Run the tool</strong><p>Use real input and keep the result copy-ready.</p></article>
         <article><span>03</span><strong>Move to the next page</strong><p>Every article connects into another useful Clickoz action.</p></article>
       </aside>
     </header>
+    <section class="guide-route-panel" aria-label="Guide starting points">
+      <a href="/guides/seo/"><b>SEO decision</b><span>Make titles, snippets, slugs and internal links search-ready.</span></a>
+      <a href="/guides/writing/"><b>Writing decision</b><span>Use word count and readability as practical editing signals.</span></a>
+      <a href="/guides/dev/"><b>Technical decision</b><span>Understand encoding, escaping and payload fixes before copying.</span></a>
+      <a href="/guides/creator/"><b>Creator decision</b><span>Package titles, descriptions, hashtags and tracking as one upload route.</span></a>
+    </section>
+    <section class="guide-search-panel" aria-label="Search Clickoz guides">
+      <div>
+        <p class="guide-kicker">FIND THE RIGHT GUIDE</p>
+        <h2>Search by decision, tool or problem.</h2>
+        <p>Filter the library without losing the category structure. Use it when you know the job but not the article name.</p>
+      </div>
+      <div class="guide-search-control">
+        <input id="guideSearch" class="search" type="search" placeholder="Try: meta title, JSON error, UTM, readability, YouTube description" aria-describedby="guideSearchStatus" />
+        <p id="guideSearchStatus" class="guide-search-status" aria-live="polite">Showing 41 practical guides</p>
+        <button type="button" id="guideSearchReset" hidden>Reset guide search</button>
+      </div>
+      <div class="guide-search-chips" aria-label="Popular guide searches">
+        <button type="button" data-guide-search="meta title">Meta title</button>
+        <button type="button" data-guide-search="json error">JSON error</button>
+        <button type="button" data-guide-search="utm">UTM</button>
+        <button type="button" data-guide-search="youtube description">YouTube description</button>
+      </div>
+    </section>
     <section class="guide-hub-grid guide-hub-overview"><a class="guide-hub-card guide-hub-entry" href="/guides/seo/"><div class="authority-card-head"><span>SEO</span><h2>SEO Guides</h2></div><p>Search intent, snippets, internal links and publishing decisions.</p><div class="guide-card-meta"><span>15 guides</span><span>Tool-linked</span><span>Checklist</span></div></a><a class="guide-hub-card guide-hub-entry" href="/guides/writing/"><div class="authority-card-head"><span>TXT</span><h2>Writing Guides</h2></div><p>Readable drafts, content briefs, cleanup and word count decisions.</p><div class="guide-card-meta"><span>6 guides</span><span>Tool-linked</span><span>Checklist</span></div></a><a class="guide-hub-card guide-hub-entry" href="/guides/dev/"><div class="authority-card-head"><span>DEV</span><h2>Developer Guides</h2></div><p>JSON, URL encoding, Base64, HTML entities and debugging context.</p><div class="guide-card-meta"><span>14 guides</span><span>Tool-linked</span><span>Checklist</span></div></a><a class="guide-hub-card guide-hub-entry" href="/guides/creator/"><div class="authority-card-head"><span>YT</span><h2>Creator Guides</h2></div><p>YouTube packaging, descriptions, community posts and creator planning.</p><div class="guide-card-meta"><span>6 guides</span><span>Tool-linked</span><span>Checklist</span></div></a></section>
     <section class="guide-category-band" id="seo"><div class="authority-head"><p class="guide-kicker">SEO Guides</p><h2>Search intent, snippets, internal links and publishing decisions.</h2><p><a href="/guides/seo/">Open the full seo guides hub</a></p></div><div class="guide-hub-grid"><a class="guide-hub-card" href="/guides/seo-content-checklist/">
     <div class="authority-card-head"><span aria-hidden="true">SEO</span><h3>SEO Content Checklist</h3></div>
@@ -127,7 +160,7 @@
     <div class="guide-card-meta"><span>SERP Snippet Preview</span><span>Problem first</span><span>Checklist</span></div>
   </a><a class="guide-hub-card" href="/guides/serp-snippet-ctr/">
     <div class="authority-card-head"><span aria-hidden="true">SEO</span><h3>SERP Snippets and CTR Testing</h3></div>
-    <p>Plan useful snippet tests without clickbait.</p>
+    <p>Plan useful snippet tests that improve click clarity without drifting into clickbait or mismatched page promises.</p>
     <div class="guide-card-meta"><span>SERP Snippet Preview</span><span>Problem first</span><span>Checklist</span></div>
   </a><a class="guide-hub-card" href="/guides/slug-best-practices/">
     <div class="authority-card-head"><span aria-hidden="true">SEO</span><h3>Slug Best Practices</h3></div>
@@ -195,11 +228,11 @@
     <div class="guide-card-meta"><span>JSON Formatter</span><span>Problem first</span><span>Checklist</span></div>
   </a><a class="guide-hub-card" href="/guides/url-encoding/">
     <div class="authority-card-head"><span aria-hidden="true">DEV</span><h3>URL Encoding Explained</h3></div>
-    <p>Understand when and why query strings break.</p>
+    <p>Understand when query strings break, which values need encoding and how to avoid damaging a full URL.</p>
     <div class="guide-card-meta"><span>URL Encoder / Decoder</span><span>Problem first</span><span>Checklist</span></div>
   </a><a class="guide-hub-card" href="/guides/url-encoding-basics/">
     <div class="authority-card-head"><span aria-hidden="true">DEV</span><h3>URL Encoding Basics</h3></div>
-    <p>Encode values safely for URLs and forms.</p>
+    <p>Encode pasted values safely for URLs, forms and tracking links before they break in the final context.</p>
     <div class="guide-card-meta"><span>URL Encoder / Decoder</span><span>Problem first</span><span>Checklist</span></div>
   </a><a class="guide-hub-card" href="/guides/url-encoding-explained/">
     <div class="authority-card-head"><span aria-hidden="true">DEV</span><h3>URL Encoding Explained in Practice</h3></div>
@@ -219,11 +252,11 @@
     <div class="guide-card-meta"><span>Base64 Encode / Decode</span><span>Problem first</span><span>Checklist</span></div>
   </a><a class="guide-hub-card" href="/guides/base64url-vs-base64/">
     <div class="authority-card-head"><span aria-hidden="true">DEV</span><h3>Base64URL vs Base64</h3></div>
-    <p>Understand token-safe encoding differences.</p>
+    <p>Understand token-safe encoding differences before copying payloads into URLs, APIs or debugging notes.</p>
     <div class="guide-card-meta"><span>Base64 Encode / Decode</span><span>Problem first</span><span>Checklist</span></div>
   </a><a class="guide-hub-card" href="/guides/debugging-tokens/">
     <div class="authority-card-head"><span aria-hidden="true">DEV</span><h3>Debugging Tokens</h3></div>
-    <p>Inspect token segments carefully and safely.</p>
+    <p>Inspect token segments carefully without treating decoded payloads as proof of trust or security.</p>
     <div class="guide-card-meta"><span>Base64 Encode / Decode</span><span>Problem first</span><span>Checklist</span></div>
   </a><a class="guide-hub-card" href="/guides/jwt-basics/">
     <div class="authority-card-head"><span aria-hidden="true">DEV</span><h3>JWT Basics</h3></div>
@@ -239,7 +272,7 @@
     <div class="guide-card-meta"><span>HTML Entity Encoder</span><span>Problem first</span><span>Checklist</span></div>
   </a><a class="guide-hub-card" href="/guides/fix-broken-html/">
     <div class="authority-card-head"><span aria-hidden="true">DEV</span><h3>Fix Broken HTML</h3></div>
-    <p>Repair messy markup and unsafe characters.</p>
+    <p>Repair messy markup, escaped text and unsafe characters before snippets break a page or CMS field.</p>
     <div class="guide-card-meta"><span>HTML Entity Encoder</span><span>Problem first</span><span>Checklist</span></div>
   </a></div></section><section class="guide-category-band" id="yt"><div class="authority-head"><p class="guide-kicker">Creator Guides</p><h2>YouTube packaging, descriptions, community posts and creator planning.</h2><p><a href="/guides/creator/">Open the full creator guides hub</a></p></div><div class="guide-hub-grid"><a class="guide-hub-card" href="/guides/youtube-tracking-links/">
     <div class="authority-card-head"><span aria-hidden="true">YT</span><h3>YouTube Tracking Links</h3></div>
@@ -266,21 +299,36 @@
     <p>Plan videos, shorts, posts and tracking links together.</p>
     <div class="guide-card-meta"><span>YouTube Title Generator</span><span>Problem first</span><span>Checklist</span></div>
   </a></div></section>
+    <section class="route-final-strip" aria-label="Guide library operating route">
+      <article><span>01</span><strong>Search by problem</strong><p>Start from the messy input or task, not from a long category list.</p></article>
+      <article><span>02</span><strong>Use the exact tool</strong><p>Open the focused utility that matches the job you need to finish.</p></article>
+      <article><span>03</span><strong>Copy a clean result</strong><p>Keep output, copy controls and checks in one predictable surface.</p></article>
+      <article><span>04</span><strong>Read when needed</strong><p>Use guides only when the copied result needs a better decision behind it.</p></article>
+      <article><span>05</span><strong>Request gaps</strong><p>Ask for a missing tool, fix or guide when the current route does not cover the job.</p></article>
+    </section>
+    <section class="request-mega-cta" aria-label="Request a Clickoz tool">
+      <div>
+        <p class="guide-kicker">CONTACT / REQUEST</p>
+        <h2>Missing a practical guide?</h2>
+        <p>Send the tool output or publishing decision that still feels unclear. Clickoz will turn useful requests into a focused guide or matching utility.</p>
+      </div>
+      <a class="btn btn-accent" href="/contact/#request">Request a tool</a>
+    </section>
   </main>
   <footer class="footer">
     <div class="container footer-grid">
       <div><h4>Clickoz</h4><div class="footer-links"><a href="/about/">About</a><a href="/tools/">Tools</a><a href="/guides/">Guides</a><a href="/updates/">Updates</a></div></div>
-      <div><h4>Workflow hubs</h4><div class="footer-links"><a href="/workflows/">Workflows</a><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/guides/creator/">Creator Guides</a></div></div>
+      <div><h4>Tool hubs</h4><div class="footer-links"><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/tools/writing-tools/">Writing Tools</a><a href="/guides/creator/">Creator Guides</a></div></div>
       <div><h4>Popular tools</h4><div class="footer-links"><a href="/tools/word-counter/">Word Counter</a><a href="/tools/meta-tags/">Meta Tags</a><a href="/tools/json-formatter/">JSON Formatter</a><a href="/tools/youtube-title-generator/">YouTube Titles</a></div></div>
       <div><h4>Legal</h4><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a><a href="/404/">404</a></div></div>
     </div>
     <div class="container" style="margin-top:14px"><hr class="sep" /><div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">&copy; 2026 Clickoz &middot; Fast browser tools for SEO, writing, developers and creators</div></div>
   </footer>
-  <script src="/assets/cms-registry.js?v=4" defer></script>
+  <script src="/assets/cms-registry.js?v=5" defer></script>
   <script src="/assets/cms-schema.js?v=2" defer></script>
-  <script src="/assets/cms-enhance.js?v=7" defer></script>
-  <script src="/assets/site.js?v=53" defer></script>
-  <script src="/assets/clickoz-premium.js?v=6" defer></script>
+  <script src="/assets/cms-enhance.js?v=8" defer></script>
+  <script src="/assets/site.js?v=74" defer></script>
+  <script src="/assets/clickoz-premium.js?v=12" defer></script>
   
 </body>
 </html>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Clickoz logo">
+  <defs>
+    <linearGradient id="bg" x1="90" y1="72" x2="430" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#20294a"/>
+      <stop offset=".55" stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#151b34"/>
+    </linearGradient>
+    <linearGradient id="a" x1="126" y1="96" x2="386" y2="416" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8af3ff"/>
+      <stop offset=".55" stop-color="#38e8ff"/>
+      <stop offset="1" stop-color="#8b7cff"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect x="34" y="34" width="444" height="444" rx="88" fill="none" stroke="#fff" stroke-opacity=".10" stroke-width="4"/>
+  <path d="M347 151c-25-23-57-34-96-34-78 0-136 56-136 139s58 139 136 139c40 0 73-12 99-36" fill="none" stroke="url(#a)" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
