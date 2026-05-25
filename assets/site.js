@@ -48,35 +48,47 @@
 
   const THEME_SWATCHES = [
     ["#38e8ff", "#8af3ff", "Cyan"],
-    ["#8b7cff", "#c7b7ff", "Violet"],
-    ["#5ea8ff", "#a9d6ff", "Blue"],
-    ["#31f5bd", "#9af7d7", "Green"],
-    ["#ffe45c", "#fff2a8", "Yellow"],
-    ["#ffb238", "#ffd991", "Amber"],
-    ["#ff7a1a", "#ffbd7a", "Orange"],
-    ["#ff5c6c", "#ffadb6", "Red"],
-    ["#ff5fbd", "#ffb3df", "Pink"],
-    ["#f8fafc", "#ffffff", "White"]
+    ["#6fb6ff", "#b9e2ff", "Blue"],
+    ["#9b8cff", "#d6ccff", "Violet"],
+    ["#5cff9d", "#c7ffd6", "Green"],
+    ["#ff6f7d", "#ffc0c7", "Red"],
+    ["#ff6fde", "#ffc2f0", "Pink"],
+    ["#fff36d", "#fff8b8", "Yellow"],
+    ["#ffc85f", "#ffe0a3", "Amber"]
   ];
 
   const LEGACY_SWATCHES = {
     "#22d3ee": ["#38e8ff", "#8af3ff"],
-    "#6366f1": ["#8b7cff", "#c7b7ff"],
-    "#3b82f6": ["#5ea8ff", "#a9d6ff"],
-    "#10b981": ["#31f5bd", "#9af7d7"],
-    "#fde047": ["#ffe45c", "#fff2a8"],
-    "#f59e0b": ["#ffb238", "#ffd991"],
-    "#f97316": ["#ff7a1a", "#ffbd7a"],
-    "#ef4444": ["#ff5c6c", "#ffadb6"],
-    "#ec4899": ["#ff5fbd", "#ffb3df"],
-    "#cbd5e1": ["#f8fafc", "#ffffff"]
+    "#38e8ff": ["#38e8ff", "#8af3ff"],
+    "#6366f1": ["#9b8cff", "#d6ccff"],
+    "#8b7cff": ["#9b8cff", "#d6ccff"],
+    "#3b82f6": ["#6fb6ff", "#b9e2ff"],
+    "#5ea8ff": ["#6fb6ff", "#b9e2ff"],
+    "#10b981": ["#5cff9d", "#c7ffd6"],
+    "#31f5bd": ["#5cff9d", "#c7ffd6"],
+    "#39f5c7": ["#5cff9d", "#c7ffd6"],
+    "#ef4444": ["#ff6f7d", "#ffc0c7"],
+    "#ff5c6c": ["#ff6f7d", "#ffc0c7"],
+    "#ff6fa8": ["#ff6f7d", "#ffc0c7"],
+    "#ec4899": ["#ff6fde", "#ffc2f0"],
+    "#ff5fbd": ["#ff6fde", "#ffc2f0"],
+    "#fde047": ["#fff36d", "#fff8b8"],
+    "#ffe45c": ["#fff36d", "#fff8b8"],
+    "#f59e0b": ["#ffc85f", "#ffe0a3"],
+    "#ffb238": ["#ffc85f", "#ffe0a3"],
+    "#f97316": ["#ffc85f", "#ffe0a3"],
+    "#ff7a1a": ["#ffc85f", "#ffe0a3"],
+    "#cbd5e1": ["#38e8ff", "#8af3ff"],
+    "#f8fafc": ["#38e8ff", "#8af3ff"]
   };
 
   function normalizeAccentPair(a1, a2){
     const key = String(a1 || "").toLowerCase();
     const upgraded = LEGACY_SWATCHES[key];
     if (upgraded) return upgraded;
-    return [a1 || "#38e8ff", a2 || "#8af3ff"];
+    const current = THEME_SWATCHES.find(([accent]) => accent.toLowerCase() === key);
+    if (current) return [current[0], current[1]];
+    return ["#38e8ff", "#8af3ff"];
   }
 
   function closeAllMenus(){
@@ -129,27 +141,26 @@
         <button class="m-close" id="mClose" type="button" aria-label="Close menu">&times;</button>
       </div>
 
-      <div class="m-command-card" aria-label="Quick route">
-        <span class="m-command-icon" aria-hidden="true">⚡</span>
-        <div>
-          <strong>Start from the job</strong>
-          <p>Open the right tool, guide or request page without the bottom mobile bar.</p>
+      <div class="m-tools-card" aria-label="Tool shortcuts">
+        <div class="m-label">Tools</div>
+        <div class="m-tool-grid">
+          <a href="/tools/">
+            <b>All</b>
+            <span>66 tools</span>
+          </a>
+          <a href="/tools/seo-tools/">
+            <b>SEO</b>
+            <span>Snippets</span>
+          </a>
+          <a href="/tools/writing-tools/">
+            <b>Write</b>
+            <span>Clean text</span>
+          </a>
+          <a href="/tools/dev-tools/">
+            <b>Dev</b>
+            <span>JSON, URL</span>
+          </a>
         </div>
-      </div>
-
-      <div class="m-quick-grid" aria-label="Quick actions">
-        <button type="button" data-open-command data-command-query="">
-          <b>Fix</b>
-          <span>Open command palette</span>
-        </button>
-        <button type="button" data-open-command data-command-query="">
-          <b>Saved</b>
-          <span>Saved and recent tools</span>
-        </button>
-        <a href="/tools/">
-          <b>Tools</b>
-          <span>Browse the full library</span>
-        </a>
       </div>
 
       <div class="m-links" aria-label="Main sections">
@@ -159,6 +170,14 @@
         <a class="m-link" href="/updates/"><span aria-hidden="true">↻</span><strong>Updates</strong></a>
         <a class="m-link" href="/about/"><span aria-hidden="true">i</span><strong>About</strong></a>
       </div>
+
+      <button class="m-command-card m-advanced-search" type="button" data-open-command data-command-query="" aria-label="Open advanced search">
+        <span class="m-command-icon" aria-hidden="true">K</span>
+        <div>
+          <strong>Advanced Search</strong>
+          <p>Search tools, guides, saved items and recent routes.</p>
+        </div>
+      </button>
 
       <div class="m-block m-theme-block">
         <div class="m-label">Theme color</div>
@@ -378,20 +397,25 @@
     const a2 = safeHexColor(accent2, "#8af3ff");
     return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Clickoz">
   <defs>
-    <linearGradient id="bg" x1="90" y1="72" x2="430" y2="448" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#20294a"/>
-      <stop offset=".55" stop-color="#0b1020"/>
-      <stop offset="1" stop-color="#151b34"/>
-    </linearGradient>
-    <linearGradient id="a" x1="126" y1="96" x2="386" y2="416" gradientUnits="userSpaceOnUse">
+    <linearGradient id="badge" x1="84" y1="58" x2="428" y2="454" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="${a2}"/>
-      <stop offset=".58" stop-color="${a1}"/>
+      <stop offset=".54" stop-color="${a1}"/>
       <stop offset="1" stop-color="${a2}"/>
     </linearGradient>
+    <radialGradient id="shine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(172 118) rotate(47) scale(190 118)">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+      <stop offset=".34" stop-color="#ffffff" stop-opacity=".30"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-24%" y="-24%" width="148%" height="148%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="18" flood-color="${a1}" flood-opacity=".54"/>
+      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#000000" flood-opacity=".28"/>
+    </filter>
   </defs>
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <rect x="34" y="34" width="444" height="444" rx="88" fill="none" stroke="#fff" stroke-opacity=".10" stroke-width="4"/>
-  <path d="M347 151c-25-23-57-34-96-34-78 0-136 56-136 139s58 139 136 139c40 0 73-12 99-36" fill="none" stroke="url(#a)" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect width="512" height="512" rx="118" fill="url(#badge)" filter="url(#glow)"/>
+  <rect width="512" height="512" rx="118" fill="url(#shine)"/>
+  <rect x="18" y="18" width="476" height="476" rx="104" fill="none" stroke="#ffffff" stroke-opacity=".34" stroke-width="8"/>
+  <path d="M347 151c-25-23-57-34-96-34-78 0-136 56-136 139s58 139 136 139c40 0 73-12 99-36" fill="none" stroke="#061018" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
   }
 
@@ -1230,7 +1254,7 @@
     if (layer.querySelector('.pidle')) return;
 
     const isMobile = window.matchMedia("(max-width: 720px)").matches;
-    const COUNT = isMobile || mobilePerfMode ? 28 : 82;
+    const COUNT = isMobile || mobilePerfMode ? 28 : 120;
 
     for(let i=0;i<COUNT;i++){
       const p = document.createElement('span');
@@ -1296,7 +1320,7 @@
     layer.querySelectorAll(".pburst").forEach((node) => node.remove());
 
     const isMobile = window.matchMedia("(max-width: 720px)").matches;
-    const COUNT = isMobile || mobilePerfMode ? 24 : 58;
+    const COUNT = isMobile || mobilePerfMode ? 24 : 80;
 
     for(let i = 0; i < COUNT; i++){
       const p = document.createElement("span");
@@ -2471,11 +2495,13 @@
   function enhanceToolsSearch() {
     const input = $("#toolsSearch");
     if (!input || $(".cz-tools-search-hint")) return;
-    input.setAttribute("placeholder", "Try: broken JSON, clean text, YouTube title, SEO snippet");
+    input.setAttribute("placeholder", "Try: Broken JSON, clean text, YouTube title, SEO snippet");
     const hint = document.createElement("div");
     hint.className = "cz-tools-search-hint";
     hint.innerHTML = `Press <kbd>Ctrl</kbd> + <kbd>K</kbd> for the command palette`;
-    input.insertAdjacentElement("afterend", hint);
+    const title = $(".tools-hero .tools-title");
+    if (title) title.insertAdjacentElement("afterend", hint);
+    else input.insertAdjacentElement("afterend", hint);
   }
 
   function currentDockSection() {

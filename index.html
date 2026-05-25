@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -39,6 +39,9 @@
       var saved = JSON.parse(localStorage.getItem("clickoz_accent") || "null");
       var a1 = saved && saved.a1 ? saved.a1 : "#22d3ee";
       var a2 = saved && saved.a2 ? saved.a2 : "#06b6d4";
+      var map = {"#22d3ee":["#38e8ff","#8af3ff"],"#38e8ff":["#38e8ff","#8af3ff"],"#6366f1":["#9b8cff","#d6ccff"],"#8b7cff":["#9b8cff","#d6ccff"],"#3b82f6":["#6fb6ff","#b9e2ff"],"#5ea8ff":["#6fb6ff","#b9e2ff"],"#10b981":["#5cff9d","#c7ffd6"],"#31f5bd":["#5cff9d","#c7ffd6"],"#39f5c7":["#5cff9d","#c7ffd6"],"#ef4444":["#ff6f7d","#ffc0c7"],"#ff5c6c":["#ff6f7d","#ffc0c7"],"#ff6fa8":["#ff6f7d","#ffc0c7"],"#ec4899":["#ff6fde","#ffc2f0"],"#ff5fbd":["#ff6fde","#ffc2f0"],"#fde047":["#fff36d","#fff8b8"],"#ffe45c":["#fff36d","#fff8b8"],"#f59e0b":["#ffc85f","#ffe0a3"],"#ffb238":["#ffc85f","#ffe0a3"],"#f97316":["#ffc85f","#ffe0a3"],"#ff7a1a":["#ffc85f","#ffe0a3"],"#cbd5e1":["#38e8ff","#8af3ff"],"#f8fafc":["#38e8ff","#8af3ff"],"#ffffff":["#38e8ff","#8af3ff"]};
+      var pair = map[String(a1).toLowerCase()] || ["#38e8ff","#8af3ff"];
+      a1 = pair[0]; a2 = pair[1];
       var h = String(a1).replace("#", "");
       var rgb = "34,211,238";
       if(h.length === 3) rgb = [h[0]+h[0], h[1]+h[1], h[2]+h[2]].map(function(x){ return parseInt(x,16); }).join(",");
@@ -58,7 +61,8 @@
   <link rel="stylesheet" href="/assets/site.css?v=14" />
   <link rel="stylesheet" href="/assets/home.css?v=21" />
   <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=125" />
+  <link rel="stylesheet" href="/assets/cms-final.css?v=152" />
+  <link rel="stylesheet" href="/assets/home-leadership.css?v=12" />
   <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://clickoz.com/#organization","name":"Clickoz","url":"https://clickoz.com/","logo":{"@type":"ImageObject","url":"https://clickoz.com/assets/clickoz-logo-512.png","width":512,"height":512}},{"@type":"WebSite","@id":"https://clickoz.com/#website","name":"Clickoz","alternateName":["Clickoz Tools","Clickoz Tool Network"],"url":"https://clickoz.com/","publisher":{"@id":"https://clickoz.com/#organization"},"inLanguage":"en","potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://clickoz.com/tools/?q={search_term_string}"},"query-input":"required name=search_term_string"}},{"@type":"SoftwareApplication","name":"Clickoz","url":"https://clickoz.com/","applicationCategory":"WebApplication","operatingSystem":"All","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@id":"https://clickoz.com/#organization"},"image":"https://clickoz.com/assets/clickoz-logo-512.png","featureList":["SEO tools","Creator tools","Writing utilities","Developer utilities","Browser-first privacy"]}]}</script>
 </head>
 <body class="bigtext">
@@ -97,35 +101,25 @@
   <main class="home-workdesk">
     <header class="cz-workdesk-hero hero-simple-v2" aria-label="Clickoz tool network">
       <section class="workdesk-copy">
-        <p class="dash-kicker">CLICKOZ TOOL NETWORK</p>
-        <h1>Tools and guides for fast web work.</h1>
-        <p class="hero-workdesk-sub">Open the exact browser tool for the job, get a clean output, then use the matching guide when you need the decision behind it. No account, no upload, no heavy setup.</p>
+        <h1>Clickoz turns web work into clean workflows.</h1>
+        <p class="hero-workdesk-sub">Route the task, preview the output, open the exact browser tool, then use the matching guide when the decision matters. SEO, creator packaging, writing cleanup and developer fixes stay in one fast system.</p>
         <div class="dash-actions hero-direct-actions">
           <a class="btn btn-accent" href="/tools/">Browse tools</a>
           <a class="btn btn-outline" href="/guides/">Read guides</a>
           <a class="btn btn-outline" href="/contact/#request">Request a tool</a>
         </div>
-        <div class="hero-fix-console" aria-label="Live Clickoz tool router">
-          <div class="hero-console-head"><span>Live tool router</span><strong>What do you need to fix?</strong></div>
+        <div class="hero-fix-console" aria-label="Clickoz tool router">
+          <p class="hero-router-question">What do you need to fix?</p>
           <label class="hero-input-label" for="heroJobInput">Describe the task</label>
           <div class="hero-fix-input-row">
             <input id="heroJobInput" type="search" value="create seo snippet" autocomplete="off" />
             <button class="btn btn-accent" id="heroStartJob" type="button">Find tool</button>
           </div>
-          <div class="hero-job-chips" aria-label="Common Clickoz tasks">
-            <button type="button" data-hero-job="json">Fix JSON</button>
-            <button class="active" type="button" data-hero-job="snippet">SEO snippet</button>
-            <button type="button" data-hero-job="clean">Clean text</button>
-            <button type="button" data-hero-job="youtube">YouTube upload</button>
-          </div>
-          <div class="hero-flow-row" aria-label="Clickoz route">
-            <span>Paste input</span><span>Copy output</span><span>Read guide</span>
-          </div>
-          <p class="hero-command-note">Search, Ctrl+K and the hamburger menu all lead to the same clean route.</p>
+          <p class="hero-command-note">Advanced Search press <kbd>Ctrl</kbd> + <kbd>K</kbd></p>
         </div>
         <div class="hero-assurance-row" aria-label="Clickoz operating promises">
           <a href="/tools/"><strong>No account</strong><span>Start instantly</span></a>
-          <a href="/privacy/"><strong>No upload</strong><span>Browser-first</span></a>
+          <a href="/privacy/"><strong>100% FREE</strong><span>All tools are free to use</span></a>
           <a href="/tools/"><strong>Local saves</strong><span>Recents and favorites</span></a>
         </div>
       </section>
@@ -133,7 +127,7 @@
 
     <section class="section container friendly-tools-section" aria-label="Daily tool picks">
       <div class="friendly-section-intro">
-        <div><h2>Tools that match real daily jobs.</h2><p class="section-sub">Refresh the set when you want a different route through the CMS without scrolling a long directory.</p></div>
+        <div><h2>Tools that match real daily jobs.</h2><p class="section-sub">Start from the problem, not from a directory. Each card points to a practical route through the Clickoz system.</p></div>
       </div>
       <div class="picks-grid" id="picksGrid">
         <a class="pick-card" href="/tools/meta-tags/"><div class="pick-head"><span class="pick-icon">SEO</span><h3 class="pick-title">Meta Tag Optimizer</h3></div><p class="pick-desc">Preview titles and descriptions before publishing a search result.</p><div class="pick-meta"><span class="pick-cat">SEO Tools</span><span class="pick-cta">Open</span></div></a>
@@ -223,8 +217,8 @@
   <script src="/assets/cms-registry.js?v=5" defer></script>
   <script src="/assets/cms-schema.js?v=2" defer></script>
   <script src="/assets/cms-enhance.js?v=8" defer></script>
-  <script src="/assets/site.js?v=74" defer></script>
-  <script src="/assets/clickoz-premium.js?v=12" defer></script>
-  <script src="/assets/home.js?v=23" defer></script>
+  <script src="/assets/site.js?v=79" defer></script>
+  <script src="/assets/clickoz-premium.js?v=14" defer></script>
+  <script src="/assets/home.js?v=25" defer></script>
 </body>
 </html>

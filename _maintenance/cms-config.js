@@ -7,21 +7,22 @@ const ORIGIN = "https://clickoz.com";
  */
 const ASSET_VERSIONS = Object.freeze({
   siteCss: 14,
-  siteJs: 74,
+  siteJs: 79,
   homeCss: 21,
-  homeJs: 23,
+  homeLeadershipCss: 12,
+  homeJs: 25,
   guideCss: 4,
   guideJs: 3,
   guidePremiumCss: 5,
   guidePremiumJs: 6,
   clickozPremiumCss: 4,
-  clickozPremiumJs: 12,
+  clickozPremiumJs: 14,
   cmsRegistry: 5,
   cmsSchema: 2,
   cmsEnhance: 8,
-  cmsFinal: 125,
+  cmsFinal: 152,
   toolsCss: 9,
-  toolsJs: 14,
+  toolsJs: 15,
   cmsToolsCss: 22,
   cmsToolsJs: 28
 });

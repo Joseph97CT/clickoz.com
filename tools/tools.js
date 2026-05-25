@@ -374,7 +374,10 @@
     sections.forEach((section) => {
       const visibleCards = $$(".card", section).filter((card) => card.style.display !== "none");
       const hasVisible = visibleCards.length > 0;
-      if (!q || hasVisible) section.style.removeProperty("display");
+      const hasDirectoryControls = Boolean($(".tools-directory-controls", section));
+      const controlsOnly = Boolean(q && hasDirectoryControls && !hasVisible);
+      section.classList.toggle("tools-section-controls-only", controlsOnly);
+      if (!q || hasVisible || hasDirectoryControls) section.style.removeProperty("display");
       else section.style.setProperty("display", "none", "important");
       section.style.order = q && hasVisible ? String(Math.max(0, 999 - Math.round(sectionScores.get(section) || 0))) : "";
       const count = $(".section-count", section);

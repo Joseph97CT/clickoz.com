@@ -58,6 +58,9 @@ function earlyThemeScript() {
       var saved = JSON.parse(localStorage.getItem("clickoz_accent") || "null");
       var a1 = saved && saved.a1 ? saved.a1 : "#22d3ee";
       var a2 = saved && saved.a2 ? saved.a2 : "#06b6d4";
+      var map = {"#22d3ee":["#38e8ff","#8af3ff"],"#38e8ff":["#38e8ff","#8af3ff"],"#6366f1":["#9b8cff","#d6ccff"],"#8b7cff":["#9b8cff","#d6ccff"],"#3b82f6":["#6fb6ff","#b9e2ff"],"#5ea8ff":["#6fb6ff","#b9e2ff"],"#10b981":["#5cff9d","#c7ffd6"],"#31f5bd":["#5cff9d","#c7ffd6"],"#39f5c7":["#5cff9d","#c7ffd6"],"#ef4444":["#ff6f7d","#ffc0c7"],"#ff5c6c":["#ff6f7d","#ffc0c7"],"#ff6fa8":["#ff6f7d","#ffc0c7"],"#ec4899":["#ff6fde","#ffc2f0"],"#ff5fbd":["#ff6fde","#ffc2f0"],"#fde047":["#fff36d","#fff8b8"],"#ffe45c":["#fff36d","#fff8b8"],"#f59e0b":["#ffc85f","#ffe0a3"],"#ffb238":["#ffc85f","#ffe0a3"],"#f97316":["#ffc85f","#ffe0a3"],"#ff7a1a":["#ffc85f","#ffe0a3"],"#cbd5e1":["#38e8ff","#8af3ff"],"#f8fafc":["#38e8ff","#8af3ff"],"#ffffff":["#38e8ff","#8af3ff"]};
+      var pair = map[String(a1).toLowerCase()] || ["#38e8ff","#8af3ff"];
+      a1 = pair[0]; a2 = pair[1];
       var h = String(a1).replace("#", "");
       var rgb = "34,211,238";
       if(h.length === 3) rgb = [h[0]+h[0], h[1]+h[1], h[2]+h[2]].map(function(x){ return parseInt(x,16); }).join(",");
@@ -292,31 +295,21 @@ function homePage() {
   const main = `<main class="home-workdesk">
     <header class="cz-workdesk-hero hero-simple-v2" aria-label="Clickoz tool network">
       <section class="workdesk-copy">
-        <p class="dash-kicker">CLICKOZ TOOL NETWORK</p>
-        <h1>Tools and guides for fast web work.</h1>
-        <p class="hero-workdesk-sub">Open the exact browser tool for the job, get a clean output, then use the matching guide when you need the decision behind it. No account, no upload, no heavy setup.</p>
+        <h1>Clickoz turns web work into clean workflows.</h1>
+        <p class="hero-workdesk-sub">Route the task, preview the output, open the exact browser tool, then use the matching guide when the decision matters. SEO, creator packaging, writing cleanup and developer fixes stay in one fast system.</p>
         <div class="dash-actions hero-direct-actions">
           <a class="btn btn-accent" href="/tools/">Browse tools</a>
           <a class="btn btn-outline" href="/guides/">Read guides</a>
           <a class="btn btn-outline" href="/contact/#request">Request a tool</a>
         </div>
-        <div class="hero-fix-console" aria-label="Live Clickoz tool router">
-          <div class="hero-console-head"><span>Live tool router</span><strong>What do you need to fix?</strong></div>
+        <div class="hero-fix-console" aria-label="Clickoz tool router">
+          <p class="hero-router-question">What do you need to fix?</p>
           <label class="hero-input-label" for="heroJobInput">Describe the task</label>
           <div class="hero-fix-input-row">
             <input id="heroJobInput" type="search" value="create seo snippet" autocomplete="off" />
             <button class="btn btn-accent" id="heroStartJob" type="button">Find tool</button>
           </div>
-          <div class="hero-job-chips" aria-label="Common Clickoz tasks">
-            <button type="button" data-hero-job="json">Fix JSON</button>
-            <button class="active" type="button" data-hero-job="snippet">SEO snippet</button>
-            <button type="button" data-hero-job="clean">Clean text</button>
-            <button type="button" data-hero-job="youtube">YouTube upload</button>
-          </div>
-          <div class="hero-flow-row" aria-label="Clickoz route">
-            <span>Paste input</span><span>Copy output</span><span>Read guide</span>
-          </div>
-          <p class="hero-command-note">Search, Ctrl+K and the hamburger menu all lead to the same clean route.</p>
+          <p class="hero-command-note">Advanced Search press <kbd>Ctrl</kbd> + <kbd>K</kbd></p>
         </div>
         <div class="hero-assurance-row" aria-label="Clickoz operating promises">
           <a href="/tools/"><strong>No account</strong><span>Start instantly</span></a>
@@ -328,7 +321,7 @@ function homePage() {
 
     <section class="section container friendly-tools-section" aria-label="Daily tool picks">
       <div class="friendly-section-intro">
-        <div><h2>Tools that match real daily jobs.</h2><p class="section-sub">Refresh the set when you want a different route through the CMS without scrolling a long directory.</p></div>
+        <div><h2>Tools that match real daily jobs.</h2><p class="section-sub">Start from the problem, not from a directory. Each card points to a practical route through the Clickoz system.</p></div>
       </div>
       <div class="picks-grid" id="picksGrid">
         <a class="pick-card" href="/tools/meta-tags/"><div class="pick-head"><span class="pick-icon">SEO</span><h3 class="pick-title">Meta Tag Optimizer</h3></div><p class="pick-desc">Preview titles and descriptions before publishing a search result.</p><div class="pick-meta"><span class="pick-cat">SEO Tools</span><span class="pick-cta">Open</span></div></a>
@@ -369,7 +362,8 @@ function homePage() {
     ${routeFinalStrip("Clickoz home route")}
     ${requestMegaCta("Need a tool that is missing?", "Send the exact job, output or guide you expected to find. Clickoz uses requests to prioritize the next browser utility without adding random filler.")}
   </main>`;
-  return page({ active: "home", title, description, canonical: "/", jsonLd: schema, extraCss: `<link rel="stylesheet" href="${asset("/assets/home.css", "homeCss")}" />`, main, extraScripts: `<script src="${asset("/assets/home.js", "homeJs")}" defer></script>` });
+  return page({ active: "home", title, description, canonical: "/", jsonLd: schema, extraCss: `<link rel="stylesheet" href="${asset("/assets/home.css", "homeCss")}" />
+  <link rel="stylesheet" href="${asset("/assets/home-leadership.css", "homeLeadershipCss")}" />`, main, extraScripts: `<script src="${asset("/assets/home.js", "homeJs")}" defer></script>` });
 }
 
 const guideHubs = {
@@ -721,6 +715,7 @@ function replaceVersionsInHtml() {
     html = html
       .replace(/\/assets\/site\.css\?v=\d+/g, asset("/assets/site.css", "siteCss"))
       .replace(/\/assets\/home\.css\?v=\d+/g, asset("/assets/home.css", "homeCss"))
+      .replace(/\/assets\/home-leadership\.css\?v=\d+/g, asset("/assets/home-leadership.css", "homeLeadershipCss"))
       .replace(/\/assets\/home\.js\?v=\d+/g, asset("/assets/home.js", "homeJs"))
       .replace(/\/assets\/cms-registry\.js\?v=\d+/g, asset("/assets/cms-registry.js", "cmsRegistry"))
       .replace(/\/assets\/clickoz-premium\.css\?v=\d+/g, asset("/assets/clickoz-premium.css", "clickozPremiumCss"))

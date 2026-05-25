@@ -14,6 +14,7 @@ const configuredAssetVersions = new Map([
   ["/assets/site.css", "siteCss"],
   ["/assets/site.js", "siteJs"],
   ["/assets/home.css", "homeCss"],
+  ["/assets/home-leadership.css", "homeLeadershipCss"],
   ["/assets/home.js", "homeJs"],
   ["/assets/guide.css", "guideCss"],
   ["/assets/guide.js", "guideJs"],

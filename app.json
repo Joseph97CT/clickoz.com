@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Polyhive Weather Edge",
+    "slug": "polyhive-weather-edge",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#030712"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#030712"
+      }
+    }
+  }
+}

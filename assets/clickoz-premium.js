@@ -2,35 +2,47 @@
   "use strict";
   const swatches = [
     ["#38e8ff", "#8af3ff", "Cyan"],
-    ["#8b7cff", "#c7b7ff", "Violet"],
-    ["#5ea8ff", "#a9d6ff", "Blue"],
-    ["#31f5bd", "#9af7d7", "Green"],
-    ["#ffe45c", "#fff2a8", "Yellow"],
-    ["#ffb238", "#ffd991", "Amber"],
-    ["#ff7a1a", "#ffbd7a", "Orange"],
-    ["#ff5c6c", "#ffadb6", "Red"],
-    ["#ff5fbd", "#ffb3df", "Pink"],
-    ["#f8fafc", "#ffffff", "White"]
+    ["#6fb6ff", "#b9e2ff", "Blue"],
+    ["#9b8cff", "#d6ccff", "Violet"],
+    ["#5cff9d", "#c7ffd6", "Green"],
+    ["#ff6f7d", "#ffc0c7", "Red"],
+    ["#ff6fde", "#ffc2f0", "Pink"],
+    ["#fff36d", "#fff8b8", "Yellow"],
+    ["#ffc85f", "#ffe0a3", "Amber"]
   ];
 
   const legacySwatches = {
     "#22d3ee": ["#38e8ff", "#8af3ff"],
-    "#6366f1": ["#8b7cff", "#c7b7ff"],
-    "#3b82f6": ["#5ea8ff", "#a9d6ff"],
-    "#10b981": ["#31f5bd", "#9af7d7"],
-    "#fde047": ["#ffe45c", "#fff2a8"],
-    "#f59e0b": ["#ffb238", "#ffd991"],
-    "#f97316": ["#ff7a1a", "#ffbd7a"],
-    "#ef4444": ["#ff5c6c", "#ffadb6"],
-    "#ec4899": ["#ff5fbd", "#ffb3df"],
-    "#cbd5e1": ["#f8fafc", "#ffffff"]
+    "#38e8ff": ["#38e8ff", "#8af3ff"],
+    "#6366f1": ["#9b8cff", "#d6ccff"],
+    "#8b7cff": ["#9b8cff", "#d6ccff"],
+    "#3b82f6": ["#6fb6ff", "#b9e2ff"],
+    "#5ea8ff": ["#6fb6ff", "#b9e2ff"],
+    "#10b981": ["#5cff9d", "#c7ffd6"],
+    "#31f5bd": ["#5cff9d", "#c7ffd6"],
+    "#39f5c7": ["#5cff9d", "#c7ffd6"],
+    "#ef4444": ["#ff6f7d", "#ffc0c7"],
+    "#ff5c6c": ["#ff6f7d", "#ffc0c7"],
+    "#ff6fa8": ["#ff6f7d", "#ffc0c7"],
+    "#ec4899": ["#ff6fde", "#ffc2f0"],
+    "#ff5fbd": ["#ff6fde", "#ffc2f0"],
+    "#fde047": ["#fff36d", "#fff8b8"],
+    "#ffe45c": ["#fff36d", "#fff8b8"],
+    "#f59e0b": ["#ffc85f", "#ffe0a3"],
+    "#ffb238": ["#ffc85f", "#ffe0a3"],
+    "#f97316": ["#ffc85f", "#ffe0a3"],
+    "#ff7a1a": ["#ffc85f", "#ffe0a3"],
+    "#cbd5e1": ["#38e8ff", "#8af3ff"],
+    "#f8fafc": ["#38e8ff", "#8af3ff"]
   };
 
   function normalizeAccentPair(a1, a2) {
     const key = String(a1 || "").toLowerCase();
     const upgraded = legacySwatches[key];
     if (upgraded) return upgraded;
-    return [a1 || "#38e8ff", a2 || "#8af3ff"];
+    const current = swatches.find(([accent]) => accent.toLowerCase() === key);
+    if (current) return [current[0], current[1]];
+    return ["#38e8ff", "#8af3ff"];
   }
 
   function hexToRgbTriplet(hex) {

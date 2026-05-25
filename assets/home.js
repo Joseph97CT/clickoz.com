@@ -315,6 +315,8 @@
     const sampleButtons = Array.from(document.querySelectorAll("#liveDemoSample, [data-live-demo-sample]"));
     const link = document.querySelector("[data-demo-link]");
     if (!root || !input || !output) return;
+    const status = root.querySelector("[data-demo-status]");
+    const routeCards = Array.from(root.querySelectorAll("[data-dashboard-route]"));
 
     let mode = "snippet";
     const samples = {
@@ -328,13 +330,29 @@
       snippet: "/tools/meta-tags/",
       clean: "/tools/whitespace-cleaner/",
       json: "/tools/json-formatter/",
+      readability: "/tools/readability-analyzer/",
       youtube: "/tools/youtube-title-generator/"
     };
     const modeCtas = {
       snippet: "Continue in SEO tool",
       clean: "Continue in text cleaner",
       json: "Continue in JSON tool",
+      readability: "Continue in readability tool",
       youtube: "Continue in title tool"
+    };
+    const modeStatus = {
+      snippet: "SEO route active",
+      clean: "Writing route active",
+      json: "Dev route active",
+      readability: "Writing route active",
+      youtube: "Creator route active"
+    };
+    const modeRoute = {
+      snippet: "seo",
+      clean: "writing",
+      json: "dev",
+      readability: "writing",
+      youtube: "creator"
     };
 
     function slugify(text) {
@@ -471,6 +489,10 @@
         link.href = modeLinks[mode] || "/tools/";
         link.textContent = modeCtas[mode] || "Open matching tool";
       }
+      if (status) status.textContent = modeStatus[mode] || "Workflow route active";
+      routeCards.forEach((card) => {
+        card.classList.toggle("active", card.dataset.dashboardRoute === modeRoute[mode]);
+      });
     }
 
     function setMode(nextMode, nextText) {
@@ -568,7 +590,11 @@
     });
 
     start.addEventListener("click", openCommand);
-    chips[1]?.click();
+    if (chips.length) {
+      chips[1]?.click();
+    } else {
+      preview("snippet", "");
+    }
   }
 
   function readStorage(key, fallback) {

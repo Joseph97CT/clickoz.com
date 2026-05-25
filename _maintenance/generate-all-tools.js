@@ -852,10 +852,11 @@ function toolsJsonLd(items, title, url, description) {
   })}</script>`;
 }
 
-function sectionHtml(category) {
+function sectionHtml(category, directoryControls = "") {
   const ui = categoryUI[category];
   const items = cms.tools.filter((tool) => tool.category === category);
   return `<section class="tool-section" id="${esc(ui.key)}" data-section="${esc(ui.key)}" aria-label="${esc(ui.title)}">
+    ${directoryControls}
     <div class="section-head">
       <div>
         <div class="section-kicker"><span class="section-ico" aria-hidden="true">${ui.icon}</span><h2 class="section-name">${esc(ui.title)}</h2></div>
@@ -903,29 +904,24 @@ ${head({
           <p class="tools-sub">Search by problem, typo or task: fix JSON, clean text, create an SEO snippet, package a YouTube upload or build a tracking URL. Every tool includes examples, output, copy controls and a next page.</p>
         </div>
       </div>
-      <div class="chips" id="toolsChips" aria-label="Tool categories">${chips.replace('data-filter="all"', 'data-filter="all" aria-pressed="true"')}</div>
       <div class="tools-search">
-        <input id="toolsSearch" class="search" type="search" placeholder="Try: broken JSON, clean text, YouTube title, SEO snippet..." aria-describedby="toolsSearchMeta" />
-        <div class="tools-search-meta" id="toolsSearchMeta" aria-live="polite">
-          <span>Search all ${cms.tools.length} tools</span>
-          <button type="button" id="toolsReset" hidden>Reset search</button>
-        </div>
-      </div>
-      <div class="tools-prompt-dock" aria-label="Popular tool starts">
-        <button type="button" data-search-suggestion="seo snippet"><b>SEO snippet</b><span>title + description</span></button>
-        <button type="button" data-search-suggestion="fix json"><b>Fix JSON</b><span>format + validate</span></button>
-        <button type="button" data-search-suggestion="clean text"><b>Clean text</b><span>readability + copy</span></button>
-        <button type="button" data-search-suggestion="youtube upload"><b>YouTube upload</b><span>title + package</span></button>
-      </div>
-      <div class="tools-route-grid" aria-label="Start with a common job">
-        <a href="/tools/seo-tools/"><b>SEO publishing</b><span>Titles, descriptions, slugs and page checks.</span><em>Open SEO tools</em></a>
-        <a href="/tools/writing-tools/"><b>Writing cleanup</b><span>Count, readability, cleanup and copy formatting.</span><em>Open writing tools</em></a>
-        <a href="/tools/developer-tools/"><b>Developer debug</b><span>JSON, URL encoding, Base64, entities and regex.</span><em>Open dev tools</em></a>
-        <a href="/tools/youtube-tools/"><b>Creator upload</b><span>Titles, thumbnails, descriptions, hashtags and tracking.</span><em>Open creator tools</em></a>
+        <input id="toolsSearch" class="search" type="search" placeholder="Try: Broken JSON, clean text, YouTube title, SEO snippet..." aria-describedby="toolsSearchMeta" />
       </div>
     </section>
     <div class="tool-sections" aria-label="Tools by category">
-      ${sectionOrder.map(sectionHtml).join("\n")}
+      ${sectionOrder.map((category, index) => sectionHtml(category, index === 0 ? `<section class="tools-directory-controls" aria-label="Tool directory controls">
+      <div class="chips tools-category-bar" id="toolsChips" aria-label="Tool categories">${chips.replace('data-filter="all"', 'data-filter="all" aria-pressed="true"')}</div>
+    </section>` : "")).join("\n")}
+    </div>
+    <div class="tools-search-meta tools-directory-meta tools-route-status" id="toolsSearchMeta" aria-live="polite">
+      <span>Showing ${cms.tools.length} tools across ${sectionOrder.length} categories</span>
+      <button type="button" id="toolsReset" hidden>Reset search</button>
+    </div>
+    <div class="tools-route-grid tools-route-grid-after" aria-label="Start with a common job">
+      <a href="/tools/seo-tools/"><b>SEO publishing</b><span>Titles, descriptions, slugs and page checks.</span><em>Open SEO tools</em></a>
+      <a href="/tools/writing-tools/"><b>Writing cleanup</b><span>Count, readability, cleanup and copy formatting.</span><em>Open writing tools</em></a>
+      <a href="/tools/developer-tools/"><b>Developer debug</b><span>JSON, URL encoding, Base64, entities and regex.</span><em>Open dev tools</em></a>
+      <a href="/tools/youtube-tools/"><b>Creator upload</b><span>Titles, thumbnails, descriptions, hashtags and tracking.</span><em>Open creator tools</em></a>
     </div>
     ${routeFinalStrip("Tools page")}
     ${requestMegaCta()}
