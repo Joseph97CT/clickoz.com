@@ -37,13 +37,13 @@
   (function(){
     try{
       var saved = JSON.parse(localStorage.getItem("clickoz_accent") || "null");
-      var a1 = saved && saved.a1 ? saved.a1 : "#22d3ee";
-      var a2 = saved && saved.a2 ? saved.a2 : "#06b6d4";
+      var a1 = saved && saved.a1 ? saved.a1 : "#9b8cff";
+      var a2 = saved && saved.a2 ? saved.a2 : "#d6ccff";
       var map = {"#22d3ee":["#38e8ff","#8af3ff"],"#38e8ff":["#38e8ff","#8af3ff"],"#6366f1":["#9b8cff","#d6ccff"],"#8b7cff":["#9b8cff","#d6ccff"],"#3b82f6":["#6fb6ff","#b9e2ff"],"#5ea8ff":["#6fb6ff","#b9e2ff"],"#10b981":["#5cff9d","#c7ffd6"],"#31f5bd":["#5cff9d","#c7ffd6"],"#39f5c7":["#5cff9d","#c7ffd6"],"#ef4444":["#ff6f7d","#ffc0c7"],"#ff5c6c":["#ff6f7d","#ffc0c7"],"#ff6fa8":["#ff6f7d","#ffc0c7"],"#ec4899":["#ff6fde","#ffc2f0"],"#ff5fbd":["#ff6fde","#ffc2f0"],"#fde047":["#fff36d","#fff8b8"],"#ffe45c":["#fff36d","#fff8b8"],"#f59e0b":["#ffc85f","#ffe0a3"],"#ffb238":["#ffc85f","#ffe0a3"],"#f97316":["#ffc85f","#ffe0a3"],"#ff7a1a":["#ffc85f","#ffe0a3"],"#cbd5e1":["#38e8ff","#8af3ff"],"#f8fafc":["#38e8ff","#8af3ff"],"#ffffff":["#38e8ff","#8af3ff"]};
-      var pair = map[String(a1).toLowerCase()] || ["#38e8ff","#8af3ff"];
+      var pair = map[String(a1).toLowerCase()] || ["#9b8cff","#d6ccff"];
       a1 = pair[0]; a2 = pair[1];
       var h = String(a1).replace("#", "");
-      var rgb = "34,211,238";
+      var rgb = "155,140,255";
       if(h.length === 3) rgb = [h[0]+h[0], h[1]+h[1], h[2]+h[2]].map(function(x){ return parseInt(x,16); }).join(",");
       if(h.length === 6) rgb = [h.slice(0,2), h.slice(2,4), h.slice(4,6)].map(function(x){ return parseInt(x,16); }).join(",");
       document.documentElement.style.setProperty("--accent", a1);
@@ -58,11 +58,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/site.css?v=14" />
+  <link rel="stylesheet" href="/assets/site.css?v=15" />
   <link rel="stylesheet" href="/assets/home.css?v=21" />
-  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=171" />
-  <link rel="stylesheet" href="/assets/home-leadership.css?v=15" />
+  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=5" />
+  <link rel="stylesheet" href="/assets/cms-final.css?v=180" />
+  <link rel="stylesheet" href="/assets/home-leadership.css?v=21" />
   <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://clickoz.com/#organization","name":"Clickoz","url":"https://clickoz.com/","logo":{"@type":"ImageObject","url":"https://clickoz.com/assets/clickoz-logo-512.png","width":512,"height":512}},{"@type":"WebSite","@id":"https://clickoz.com/#website","name":"Clickoz","alternateName":["Clickoz Tools","Clickoz Tool Network"],"url":"https://clickoz.com/","publisher":{"@id":"https://clickoz.com/#organization"},"inLanguage":"en","potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://clickoz.com/tools/?q={search_term_string}"},"query-input":"required name=search_term_string"}},{"@type":"SoftwareApplication","name":"Clickoz","url":"https://clickoz.com/","applicationCategory":"WebApplication","operatingSystem":"All","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@id":"https://clickoz.com/#organization"},"image":"https://clickoz.com/assets/clickoz-logo-512.png","featureList":["SEO tools","Creator tools","Writing utilities","Developer utilities","Browser-first privacy"]}]}</script>
 </head>
 <body class="bigtext">
@@ -101,10 +101,10 @@
   <main class="home-workdesk">
     <header class="cz-workdesk-hero hero-simple-v2" aria-label="Clickoz tool network">
       <section class="workdesk-copy">
-        <h1>Clickoz turns web work into clean workflows.</h1>
-        <p class="hero-workdesk-sub">Route the task, preview the output, open the exact browser tool, then use the matching guide when the decision matters. SEO, creator packaging, writing cleanup and developer fixes stay in one fast system.</p>
+        <h1>Your browser is now a free full web workstation.</h1>
+        <p class="hero-workdesk-sub">SEO tools, creator utilities, cleanup systems, packaging flows and developer fixes are connected inside one intelligent workspace.</p>
         <div class="dash-actions hero-direct-actions">
-          <a class="btn btn-accent" href="/tools/">Browse tools</a>
+          <a class="btn btn-accent" href="/tools/">Open tools hub</a>
           <a class="btn btn-outline" href="/guides/">Read guides</a>
           <a class="btn btn-outline" href="/contact/#request">Request a tool</a>
         </div>
@@ -115,7 +115,7 @@
             <input id="heroJobInput" type="search" value="create seo snippet" autocomplete="off" />
             <button class="btn btn-accent" id="heroStartJob" type="button">Find tool</button>
           </div>
-          <p class="hero-command-note">Advanced Search press <kbd>Ctrl</kbd> + <kbd>K</kbd></p>
+          <p class="hero-command-note" role="button" tabindex="0" data-open-command data-command-query="" aria-label="Open Advanced Search with Ctrl K or five quick taps">Advanced Search <span class="command-shortcut">press <kbd>Ctrl</kbd> + <kbd>K</kbd></span> <span class="command-burst">or 5 quick taps/clicks anywhere</span></p>
         </div>
         <div class="hero-assurance-row" aria-label="Clickoz operating promises">
           <a href="/tools/"><strong>No account</strong><span>Start instantly</span></a>
@@ -217,8 +217,8 @@
   <script src="/assets/cms-registry.js?v=5" defer></script>
   <script src="/assets/cms-schema.js?v=2" defer></script>
   <script src="/assets/cms-enhance.js?v=9" defer></script>
-  <script src="/assets/site.js?v=83" defer></script>
-  <script src="/assets/clickoz-premium.js?v=14" defer></script>
+  <script src="/assets/site.js?v=87" defer></script>
+  <script src="/assets/clickoz-premium.js?v=15" defer></script>
   <script src="/assets/home.js?v=25" defer></script>
 </body>
 </html>

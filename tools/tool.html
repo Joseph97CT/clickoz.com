@@ -37,10 +37,10 @@
   (function(){
     try{
       var saved = JSON.parse(localStorage.getItem("clickoz_accent") || "null");
-      var a1 = saved && saved.a1 ? saved.a1 : "#22d3ee";
-      var a2 = saved && saved.a2 ? saved.a2 : "#06b6d4";
+      var a1 = saved && saved.a1 ? saved.a1 : "#9b8cff";
+      var a2 = saved && saved.a2 ? saved.a2 : "#d6ccff";
       var h = String(a1).replace("#", "");
-      var rgb = "34,211,238";
+      var rgb = "155,140,255";
       if(h.length === 3) rgb = [h[0]+h[0], h[1]+h[1], h[2]+h[2]].map(function(x){ return parseInt(x,16); }).join(",");
       if(h.length === 6) rgb = [h.slice(0,2), h.slice(2,4), h.slice(4,6)].map(function(x){ return parseInt(x,16); }).join(",");
       document.documentElement.style.setProperty("--accent", a1);
@@ -55,10 +55,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/site.css?v=14" />
+  <link rel="stylesheet" href="/assets/site.css?v=15" />
   
-  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=171" />
+  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=5" />
+  <link rel="stylesheet" href="/assets/cms-final.css?v=180" />
   
 </head>
 <body class="bigtext">
@@ -117,8 +117,8 @@
   <script src="/assets/cms-registry.js?v=5" defer></script>
   <script src="/assets/cms-schema.js?v=2" defer></script>
   <script src="/assets/cms-enhance.js?v=9" defer></script>
-  <script src="/assets/site.js?v=83" defer></script>
-  <script src="/assets/clickoz-premium.js?v=14" defer></script>
+  <script src="/assets/site.js?v=87" defer></script>
+  <script src="/assets/clickoz-premium.js?v=15" defer></script>
   
 </body>
 </html>

@@ -10,6 +10,9 @@
     ["#fff36d", "#fff8b8", "Yellow"],
     ["#ffc85f", "#ffe0a3", "Amber"]
   ];
+  const DEFAULT_ACCENT = "#9b8cff";
+  const DEFAULT_ACCENT2 = "#d6ccff";
+  const DEFAULT_ACCENT_RGB = "155,140,255";
 
   const legacySwatches = {
     "#22d3ee": ["#38e8ff", "#8af3ff"],
@@ -42,7 +45,7 @@
     if (upgraded) return upgraded;
     const current = swatches.find(([accent]) => accent.toLowerCase() === key);
     if (current) return [current[0], current[1]];
-    return ["#38e8ff", "#8af3ff"];
+    return [DEFAULT_ACCENT, DEFAULT_ACCENT2];
   }
 
   function hexToRgbTriplet(hex) {
@@ -61,7 +64,7 @@
         parseInt(h.slice(4, 6), 16)
       ].join(",");
     }
-    return "56,232,255";
+    return DEFAULT_ACCENT_RGB;
   }
 
   function setPremiumAccent(a1, a2) {
@@ -95,7 +98,7 @@
       const saved = JSON.parse(localStorage.getItem("clickoz_accent") || "null");
       if (saved && saved.a1) return saved;
     } catch (_) {}
-    return { a1: "#38e8ff", a2: "#8af3ff" };
+    return { a1: DEFAULT_ACCENT, a2: DEFAULT_ACCENT2 };
   }
 
   function ensureThemePicker() {

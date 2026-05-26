@@ -344,6 +344,124 @@ async function smokePage(cdp, url, viewport) {
   })()`);
 }
 
+async function smokeCookieConsent(cdp, url) {
+  await cdp.send("Emulation.setDeviceMetricsOverride", {
+    width: 390,
+    height: 844,
+    deviceScaleFactor: 2,
+    mobile: true
+  });
+  await cdp.send("Page.navigate", { url });
+  await waitForReady(cdp);
+  await new Promise((resolve) => setTimeout(resolve, 650));
+  return evalJson(cdp, `(async () => {
+    const banner = document.querySelector(".cookie.cookie-pro");
+    const title = document.querySelector("#clickozConsentTitle")?.textContent.trim() || "";
+    const text = document.querySelector("#clickozConsentText")?.textContent.trim() || "";
+    const link = banner?.querySelector('a[href="/privacy/#cookies"]');
+    const buttons = Array.from(banner?.querySelectorAll("button") || []).map((button) => button.textContent.trim());
+    const rect = banner?.getBoundingClientRect();
+    const visibleBefore = Boolean(
+      banner &&
+      banner.classList.contains("show") &&
+      banner.getAttribute("aria-hidden") === "false" &&
+      rect &&
+      rect.width <= innerWidth &&
+      rect.bottom <= innerHeight &&
+      rect.height > 100
+    );
+    document.querySelector("#cookieEssential")?.click();
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    const hiddenAfter = Boolean(
+      banner &&
+      !banner.classList.contains("show") &&
+      banner.getAttribute("aria-hidden") === "true" &&
+      document.documentElement.dataset.clickozConsent === "essential"
+    );
+    return {
+      ok: visibleBefore &&
+        hiddenAfter &&
+        /browser handshake/i.test(title) &&
+        /privacy|cache|cookie/i.test(text) &&
+        Boolean(link) &&
+        buttons.includes("Allow smart cache") &&
+        buttons.includes("Essential only") &&
+        buttons.includes("No extras"),
+      title,
+      buttons,
+      link: link ? link.getAttribute("href") : null,
+      visibleBefore,
+      hiddenAfter,
+      width: rect ? Math.round(rect.width) : 0,
+      bottom: rect ? Math.round(rect.bottom) : 0
+    };
+  })()`);
+}
+
+async function smokeAdvancedSearchAccess(cdp, baseUrl) {
+  await cdp.send("Emulation.setDeviceMetricsOverride", {
+    width: 390,
+    height: 844,
+    deviceScaleFactor: 2,
+    mobile: true
+  });
+  await cdp.send("Page.navigate", { url: `${baseUrl}/` });
+  await waitForReady(cdp);
+  await new Promise((resolve) => setTimeout(resolve, 450));
+  const homeAccess = await evalJson(cdp, `(async () => {
+    const note = document.querySelector(".hero-command-note[data-open-command]");
+    const text = note?.textContent.replace(/\\s+/g, " ").trim() || "";
+    note?.click();
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    const opened = Boolean(document.querySelector("#czCommandPalette") && !document.querySelector("#czCommandPalette").hidden);
+    document.querySelector("[data-command-close]")?.click();
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    return {
+      copy: text,
+      opened,
+      mentionsFive: /5 quick/i.test(text),
+      mentionsCtrl: /Ctrl/i.test(text) && /K/.test(text)
+    };
+  })()`);
+
+  await cdp.send("Page.navigate", { url: `${baseUrl}/tools/` });
+  await waitForReady(cdp);
+  await new Promise((resolve) => setTimeout(resolve, 450));
+  const toolsAccess = await evalJson(cdp, `(async () => {
+    const hint = document.querySelector(".cz-tools-search-hint[data-open-command]");
+    const text = hint?.textContent.replace(/\\s+/g, " ").trim() || "";
+    const click = () => document.body.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0, clientX: 24, clientY: 240 }));
+    for (let i = 0; i < 5; i += 1) click();
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    const openedByBurst = Boolean(document.querySelector("#czCommandPalette") && !document.querySelector("#czCommandPalette").hidden);
+    document.querySelector("[data-command-close]")?.click();
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    hint?.click();
+    await new Promise((resolve) => setTimeout(resolve, 160));
+    const openedByHint = Boolean(document.querySelector("#czCommandPalette") && !document.querySelector("#czCommandPalette").hidden);
+    document.querySelector("[data-command-close]")?.click();
+    return {
+      copy: text,
+      openedByBurst,
+      openedByHint,
+      mentionsFive: /5 quick/i.test(text),
+      mentionsCtrl: /Ctrl/i.test(text) && /K/.test(text)
+    };
+  })()`);
+
+  return {
+    ok: homeAccess.opened &&
+      homeAccess.mentionsFive &&
+      homeAccess.mentionsCtrl &&
+      toolsAccess.openedByBurst &&
+      toolsAccess.openedByHint &&
+      toolsAccess.mentionsFive &&
+      toolsAccess.mentionsCtrl,
+    homeAccess,
+    toolsAccess
+  };
+}
+
 async function main() {
   const userDataDir = path.join(ROOT, ".chrome-smoke-cdp");
   fs.rmSync(userDataDir, { recursive: true, force: true });
@@ -379,6 +497,7 @@ async function main() {
       { name: "desktop", width: 1366, height: 900, mobile: false },
       { name: "wide", width: 1920, height: 1080, mobile: false }
     ];
+    const cookieConsent = await smokeCookieConsent(cdp, `${BASE_URL}/`);
     const responsivePaths = ["/", "/contact/", "/tools/", "/guides/", "/updates/", "/tools/meta-tags/", "/tools/json-formatter/", "/tools/word-counter/", "/tools/youtube-title-generator/"];
     for (const viewport of viewportMatrix) {
       for (const pathName of responsivePaths) {
@@ -437,6 +556,8 @@ async function main() {
       };
     })()`);
 
+    const advancedSearchAccess = await smokeAdvancedSearchAccess(cdp, BASE_URL);
+
     await cdp.send("Page.navigate", { url: `${BASE_URL}/tools/` });
     await waitForReady(cdp);
     const toolUrls = await evalJson(cdp, `(() => (window.ClickozCMS?.tools || []).map((tool) => tool.url))()`);
@@ -457,14 +578,23 @@ async function main() {
       if (event.method === "Log.entryAdded") return event.params?.entry?.level === "error";
       return false;
     });
+    const mobileViewportNames = new Set(["small-phone", "mobile", "phone-landscape", "tablet"]);
+    const mobileAmbientStable = (item) => {
+      if (!mobileViewportNames.has(item.viewport)) return true;
+      if (item.ambient.leanMode) return true;
+      const hasAmbient = item.ambient.particleNodes > 0 || item.ambient.hasSpaceCanvas || item.ambient.hasNeonGrid;
+      return hasAmbient && item.ambient.particleNodes <= 240;
+    };
     const failures = [
       ...pageChecks.filter((item) =>
         item.overflowX ||
         item.fixedBottomCount ||
         item.visualOverflowCount ||
-        ((item.viewport === "small-phone" || item.viewport === "mobile" || item.viewport === "tablet" || item.viewport === "phone-landscape") && (item.ambient.particleNodes || item.ambient.hasSpaceCanvas || item.ambient.hasNeonGrid))
+        !mobileAmbientStable(item)
       ),
       ...toolChecks.filter((item) => item.overflowX || !item.hasToolOutput || !item.exampleOk),
+      ...[cookieConsent].filter((item) => !item.ok).map((item) => ({ path: "/", interaction: "cookie-consent", ...item })),
+      ...[advancedSearchAccess].filter((item) => !item.ok).map((item) => ({ path: "/", interaction: "advanced-search-access", ...item })),
       ...[toolsInteraction].filter((item) => !item.ok).map((item) => ({ path: "/tools/", interaction: "tools-search", ...item })),
       ...[guidesInteraction].filter((item) => !item.ok).map((item) => ({ path: "/guides/", interaction: "guide-search", ...item }))
     ];
@@ -476,10 +606,10 @@ async function main() {
       responsiveSummary: {
         pageOverflowChecks: pageChecks.filter((item) => item.overflowX || item.visualOverflowCount).length,
         fixedBottomIssues: pageChecks.filter((item) => item.fixedBottomCount).length,
-        mobileAmbientIssues: pageChecks.filter((item) => (item.viewport === "small-phone" || item.viewport === "mobile" || item.viewport === "tablet" || item.viewport === "phone-landscape") && (item.ambient.particleNodes || item.ambient.hasSpaceCanvas || item.ambient.hasNeonGrid)).length
+        mobileAmbientIssues: pageChecks.filter((item) => !mobileAmbientStable(item)).length
       },
       contactTarget: pageChecks.find((item) => item.path === "/contact/")?.contactEmail || null,
-      interactions: { toolsSearch: toolsInteraction, guidesSearch: guidesInteraction },
+      interactions: { cookieConsent, advancedSearchAccess, toolsSearch: toolsInteraction, guidesSearch: guidesInteraction },
       failures,
       browserErrors: events.map((event) => event.params?.entry?.text || event.params?.exceptionDetails?.text || event.method)
     };

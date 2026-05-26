@@ -627,7 +627,7 @@ function head({ title, description, canonical, og = BRAND.defaultOg, extraCss = 
   <meta name="twitter:image" content="${esc(`${ORIGIN}${og}`)}" />
   <meta name="twitter:image:alt" content="${safeTitle}" />
   ${iconLinks()}
-  <script>(function(){try{var s=JSON.parse(localStorage.getItem("clickoz_accent")||"null");var a=s&&s.a1?s.a1:"#22d3ee";var b=s&&s.a2?s.a2:"#06b6d4";var h=String(a).replace("#","");var r="34,211,238";if(h.length===3)r=[h[0]+h[0],h[1]+h[1],h[2]+h[2]].map(function(x){return parseInt(x,16)}).join(",");if(h.length===6)r=[h.slice(0,2),h.slice(2,4),h.slice(4,6)].map(function(x){return parseInt(x,16)}).join(",");document.documentElement.style.setProperty("--accent",a);document.documentElement.style.setProperty("--accent2",b);document.documentElement.style.setProperty("--accent-rgb",r);document.documentElement.style.setProperty("--cz-accent",a);document.documentElement.style.setProperty("--cz-accent2",b);document.documentElement.style.setProperty("--cz-accent-rgb",r)}catch(e){}})();</script>
+  <script>(function(){try{var s=JSON.parse(localStorage.getItem("clickoz_accent")||"null");var a=s&&s.a1?s.a1:"#9b8cff";var b=s&&s.a2?s.a2:"#d6ccff";var h=String(a).replace("#","");var r="155,140,255";if(h.length===3)r=[h[0]+h[0],h[1]+h[1],h[2]+h[2]].map(function(x){return parseInt(x,16)}).join(",");if(h.length===6)r=[h.slice(0,2),h.slice(2,4),h.slice(4,6)].map(function(x){return parseInt(x,16)}).join(",");document.documentElement.style.setProperty("--accent",a);document.documentElement.style.setProperty("--accent2",b);document.documentElement.style.setProperty("--accent-rgb",r);document.documentElement.style.setProperty("--cz-accent",a);document.documentElement.style.setProperty("--cz-accent2",b);document.documentElement.style.setProperty("--cz-accent-rgb",r)}catch(e){}})();</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -1034,7 +1034,10 @@ ${head({
 
 function sitemap() {
   const clusters = Object.values(cms.clusters).map((cluster) => cluster.url);
-  const urls = [...new Set(CORE_URLS.concat(clusters, cms.tools.map((tool) => tool.url), cms.guides.map((guide) => guide.url)))];
+  const canonicalToolUrls = cms.tools
+    .filter((tool) => !tool.canonicalSlug || tool.canonicalSlug === tool.slug)
+    .map((tool) => tool.url);
+  const urls = [...new Set(CORE_URLS.concat(clusters, canonicalToolUrls, cms.guides.map((guide) => guide.url)))];
   const today = new Date().toISOString().slice(0, 10);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

@@ -31,9 +31,9 @@
   --radius: 14px;
 
   /* accent overridden by JS/color picker */
- --accent: #22d3ee;        /* cyan */
- --accent2:#06b6d4;        /* cyan 2 (opzionale) */
-  --accent-rgb: 34,211,238; /* rgb del cyan */
+ --accent: #9b8cff;        /* violet */
+ --accent2:#d6ccff;        /* violet 2 */
+  --accent-rgb: 155,140,255; /* rgb del violet */
 
 
   --shadow: 0 18px 60px rgba(0,0,0,.40);

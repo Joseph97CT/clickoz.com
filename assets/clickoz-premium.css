@@ -13,9 +13,9 @@
   --cz-violet: #06b6d4;
   --cz-panel: rgba(8, 16, 30, .76);
   --cz-panel2: rgba(12, 23, 40, .88);
-  --cz-accent: var(--accent, #22d3ee);
-  --cz-accent2: var(--accent2, #06b6d4);
-  --cz-accent-rgb: var(--accent-rgb, 34,211,238);
+  --cz-accent: var(--accent, #9b8cff);
+  --cz-accent2: var(--accent2, #d6ccff);
+  --cz-accent-rgb: var(--accent-rgb, 155,140,255);
 }
 
 html { scroll-behavior: smooth; }

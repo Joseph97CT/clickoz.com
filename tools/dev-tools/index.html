@@ -17,10 +17,10 @@
   (function(){
     try{
       var saved = JSON.parse(localStorage.getItem("clickoz_accent") || "null");
-      var a1 = saved && saved.a1 ? saved.a1 : "#22d3ee";
-      var a2 = saved && saved.a2 ? saved.a2 : "#06b6d4";
+      var a1 = saved && saved.a1 ? saved.a1 : "#9b8cff";
+      var a2 = saved && saved.a2 ? saved.a2 : "#d6ccff";
       var h = String(a1).replace("#", "");
-      var rgb = "34,211,238";
+      var rgb = "155,140,255";
       if(h.length === 3) rgb = [h[0]+h[0], h[1]+h[1], h[2]+h[2]].map(function(x){ return parseInt(x,16); }).join(",");
       if(h.length === 6) rgb = [h.slice(0,2), h.slice(2,4), h.slice(4,6)].map(function(x){ return parseInt(x,16); }).join(",");
       document.documentElement.style.setProperty("--accent", a1);
@@ -36,9 +36,9 @@
   <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
-  <link rel="stylesheet" href="/assets/site.css?v=14" />
-  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=171" />
+  <link rel="stylesheet" href="/assets/site.css?v=15" />
+  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=5" />
+  <link rel="stylesheet" href="/assets/cms-final.css?v=180" />
 </head>
 <body class="bigtext">
   <nav class="nav" aria-label="Primary navigation" id="topNav">
@@ -80,6 +80,6 @@
     <div class="container" style="margin-top:14px"><hr class="sep" /><div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">&copy; 2026 Clickoz &middot; Fast browser tools for SEO, writing, developers and creators</div></div>
   </footer>
 
-  <script src="/assets/site.js?v=83" defer></script>
+  <script src="/assets/site.js?v=87" defer></script>
 </body>
 </html>

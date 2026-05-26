@@ -56,13 +56,13 @@ function earlyThemeScript() {
   (function(){
     try{
       var saved = JSON.parse(localStorage.getItem("clickoz_accent") || "null");
-      var a1 = saved && saved.a1 ? saved.a1 : "#22d3ee";
-      var a2 = saved && saved.a2 ? saved.a2 : "#06b6d4";
+      var a1 = saved && saved.a1 ? saved.a1 : "#9b8cff";
+      var a2 = saved && saved.a2 ? saved.a2 : "#d6ccff";
       var map = {"#22d3ee":["#38e8ff","#8af3ff"],"#38e8ff":["#38e8ff","#8af3ff"],"#6366f1":["#9b8cff","#d6ccff"],"#8b7cff":["#9b8cff","#d6ccff"],"#3b82f6":["#6fb6ff","#b9e2ff"],"#5ea8ff":["#6fb6ff","#b9e2ff"],"#10b981":["#5cff9d","#c7ffd6"],"#31f5bd":["#5cff9d","#c7ffd6"],"#39f5c7":["#5cff9d","#c7ffd6"],"#ef4444":["#ff6f7d","#ffc0c7"],"#ff5c6c":["#ff6f7d","#ffc0c7"],"#ff6fa8":["#ff6f7d","#ffc0c7"],"#ec4899":["#ff6fde","#ffc2f0"],"#ff5fbd":["#ff6fde","#ffc2f0"],"#fde047":["#fff36d","#fff8b8"],"#ffe45c":["#fff36d","#fff8b8"],"#f59e0b":["#ffc85f","#ffe0a3"],"#ffb238":["#ffc85f","#ffe0a3"],"#f97316":["#ffc85f","#ffe0a3"],"#ff7a1a":["#ffc85f","#ffe0a3"],"#cbd5e1":["#38e8ff","#8af3ff"],"#f8fafc":["#38e8ff","#8af3ff"],"#ffffff":["#38e8ff","#8af3ff"]};
-      var pair = map[String(a1).toLowerCase()] || ["#38e8ff","#8af3ff"];
+      var pair = map[String(a1).toLowerCase()] || ["#9b8cff","#d6ccff"];
       a1 = pair[0]; a2 = pair[1];
       var h = String(a1).replace("#", "");
-      var rgb = "34,211,238";
+      var rgb = "155,140,255";
       if(h.length === 3) rgb = [h[0]+h[0], h[1]+h[1], h[2]+h[2]].map(function(x){ return parseInt(x,16); }).join(",");
       if(h.length === 6) rgb = [h.slice(0,2), h.slice(2,4), h.slice(4,6)].map(function(x){ return parseInt(x,16); }).join(",");
       document.documentElement.style.setProperty("--accent", a1);
@@ -332,10 +332,10 @@ function homePage() {
   const main = `<main class="home-workdesk">
     <header class="cz-workdesk-hero hero-simple-v2" aria-label="Clickoz tool network">
       <section class="workdesk-copy">
-        <h1>Clickoz turns web work into clean workflows.</h1>
-        <p class="hero-workdesk-sub">Route the task, preview the output, open the exact browser tool, then use the matching guide when the decision matters. SEO, creator packaging, writing cleanup and developer fixes stay in one fast system.</p>
+        <h1>Your browser is now a free full web workstation.</h1>
+        <p class="hero-workdesk-sub">SEO tools, creator utilities, cleanup systems, packaging flows and developer fixes are connected inside one intelligent workspace.</p>
         <div class="dash-actions hero-direct-actions">
-          <a class="btn btn-accent" href="/tools/">Browse tools</a>
+          <a class="btn btn-accent" href="/tools/">Open tools hub</a>
           <a class="btn btn-outline" href="/guides/">Read guides</a>
           <a class="btn btn-outline" href="/contact/#request">Request a tool</a>
         </div>
@@ -346,11 +346,11 @@ function homePage() {
             <input id="heroJobInput" type="search" value="create seo snippet" autocomplete="off" />
             <button class="btn btn-accent" id="heroStartJob" type="button">Find tool</button>
           </div>
-          <p class="hero-command-note">Advanced Search press <kbd>Ctrl</kbd> + <kbd>K</kbd></p>
+          <p class="hero-command-note" role="button" tabindex="0" data-open-command data-command-query="" aria-label="Open Advanced Search with Ctrl K or five quick taps">Advanced Search <span class="command-shortcut">press <kbd>Ctrl</kbd> + <kbd>K</kbd></span> <span class="command-burst">or 5 quick taps/clicks anywhere</span></p>
         </div>
         <div class="hero-assurance-row" aria-label="Clickoz operating promises">
           <a href="/tools/"><strong>No account</strong><span>Start instantly</span></a>
-          <a href="/privacy/"><strong>No upload</strong><span>Browser-first</span></a>
+          <a href="/privacy/"><strong>100% FREE</strong><span>All tools are free to use</span></a>
           <a href="/tools/"><strong>Local saves</strong><span>Recents and favorites</span></a>
         </div>
       </section>
@@ -699,6 +699,9 @@ function removedLegacyRoutePage() {
 
 function sitemap() {
   const today = new Date().toISOString().slice(0, 10);
+  const canonicalToolUrls = cms.tools
+    .filter((tool) => !tool.canonicalSlug || tool.canonicalSlug === tool.slug)
+    .map((tool) => tool.url);
   const urls = [
     "/",
     "/about/",
@@ -714,7 +717,7 @@ function sitemap() {
     "/legal/",
     "/contact/",
     ...Object.values(cms.clusters).map((cluster) => cluster.url),
-    ...cms.tools.map((tool) => tool.url),
+    ...canonicalToolUrls,
     ...cms.guides.map((guide) => guide.url)
   ];
   const unique = Array.from(new Set(urls)).sort();
@@ -885,7 +888,9 @@ function main() {
   fs.writeFileSync(path.join(root, "sitemap.xml"), sitemap(), "utf8");
   fs.writeFileSync(path.join(root, "robots.txt"), `User-agent: *
 Allow: /
+Disallow: /api/
 Disallow: /_maintenance/
+Disallow: /workflows/
 Disallow: /404/
 Disallow: /500/
 Disallow: /tools/tool.html

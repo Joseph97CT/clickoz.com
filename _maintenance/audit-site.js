@@ -345,21 +345,30 @@ function parseSitemapLocs(source) {
 
 function validateSitemap(cms, sitemap) {
   const clusters = Object.values(cms.clusters || {}).map((cluster) => cluster.url);
-  const expected = [...new Set(CORE_URLS.concat(clusters, cms.tools.map((tool) => tool.url), cms.guides.map((guide) => guide.url)))];
+  const canonicalToolUrls = cms.tools
+    .filter((tool) => !tool.canonicalSlug || tool.canonicalSlug === tool.slug)
+    .map((tool) => tool.url);
+  const expected = [...new Set(CORE_URLS.concat(clusters, canonicalToolUrls, cms.guides.map((guide) => guide.url)))];
+  const nonCanonicalToolUrls = cms.tools
+    .filter((tool) => tool.canonicalSlug && tool.canonicalSlug !== tool.slug)
+    .map((tool) => `${ORIGIN}${tool.url}`);
   const locs = parseSitemapLocs(sitemap);
   const locSet = new Set(locs);
   const missing = expected.filter((url) => !locSet.has(`${ORIGIN}${url}`));
+  const nonCanonicalListed = nonCanonicalToolUrls.filter((url) => locSet.has(url));
   const duplicateLocs = duplicateValues(locs.map((loc) => ({ loc })), (item) => item.loc);
   const hasEnvelope = sitemap.includes("<urlset") && sitemap.includes("</urlset>");
 
   if (!hasEnvelope) addFinding("invalid-sitemap", "sitemap.xml", "missing urlset envelope");
   missing.forEach((url) => addFinding("sitemap-missing-url", "sitemap.xml", `${ORIGIN}${url}`));
+  nonCanonicalListed.forEach((url) => addFinding("sitemap-non-canonical-url", "sitemap.xml", url));
   duplicateLocs.forEach((url) => addFinding("sitemap-duplicate-url", "sitemap.xml", url));
 
   return {
     expectedUrls: expected.length,
     actualUrls: locs.length,
     missing,
+    nonCanonicalListed,
     duplicateLocs,
     hasEnvelope
   };
@@ -370,14 +379,18 @@ function validateRobots(robots, sitemapUrls) {
   const hasAllowAll = /^Allow:\s*\/\s*$/mi.test(robots);
   const hasSitemap = robots.includes(`Sitemap: ${ORIGIN}/sitemap.xml`);
   const hasMaintenanceBlock = disallowRules.includes("/_maintenance/");
+  const hasApiBlock = disallowRules.includes("/api/");
+  const hasWorkflowsBlock = disallowRules.includes("/workflows/");
   const blocksIndexedCms = sitemapUrls.some((url) => disallowRules.some((rule) => rule !== "/" && url.startsWith(rule)));
 
   if (!hasAllowAll) addFinding("robots-missing-allow", "robots.txt", "expected Allow: /");
   if (!hasSitemap) addFinding("robots-missing-sitemap", "robots.txt", `${ORIGIN}/sitemap.xml`);
   if (!hasMaintenanceBlock) addFinding("robots-missing-maintenance-block", "robots.txt", "expected Disallow: /_maintenance/");
+  if (!hasApiBlock) addFinding("robots-missing-api-block", "robots.txt", "expected Disallow: /api/");
+  if (!hasWorkflowsBlock) addFinding("robots-missing-workflows-block", "robots.txt", "expected Disallow: /workflows/");
   if (blocksIndexedCms) addFinding("robots-blocks-indexed-cms", "robots.txt", "a sitemap URL is blocked by robots.txt");
 
-  return { hasAllowAll, hasSitemap, hasMaintenanceBlock, blocksIndexedCms, disallowRules };
+  return { hasAllowAll, hasSitemap, hasMaintenanceBlock, hasApiBlock, hasWorkflowsBlock, blocksIndexedCms, disallowRules };
 }
 
 function validateSecurityConfig() {
@@ -534,7 +547,12 @@ if (workflowsInSitemap) findings.push("Removed route /workflows/ is still presen
 if (workflowsVisibleLinkCount) findings.push(`Removed route /workflows/ is still linked ${workflowsVisibleLinkCount} time(s) from HTML files.`);
 const stats = registryStats(cms);
 const sitemapReport = validateSitemap(cms, sitemap);
-const robotsReport = validateRobots(robots, CORE_URLS.concat(Object.values(cms.clusters || {}).map((cluster) => cluster.url), cms.tools.map((tool) => tool.url), cms.guides.map((guide) => guide.url)));
+const sitemapIndexedUrls = CORE_URLS.concat(
+  Object.values(cms.clusters || {}).map((cluster) => cluster.url),
+  cms.tools.filter((tool) => !tool.canonicalSlug || tool.canonicalSlug === tool.slug).map((tool) => tool.url),
+  cms.guides.map((guide) => guide.url)
+);
+const robotsReport = validateRobots(robots, sitemapIndexedUrls);
 const securityHeadersReport = validateSecurityConfig();
 const htmlSecurityMetaReport = validateHtmlSecurityMeta();
 const smokeTemplates = validateSmokeTemplates();

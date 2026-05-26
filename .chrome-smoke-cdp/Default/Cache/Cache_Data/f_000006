@@ -1,7 +1,7 @@
 ﻿/* =========================================================
    Clickoz — site.js (CLEAN + PRO)
    - One file, used across all pages
-   - Cyan default accent on first visit
+   - Violet default accent on first visit
    - Mobile drawer + dropdown close helpers
    - Search + chips (only if present)
    - Recommended random picks (home) + manual refresh (if present)
@@ -56,6 +56,9 @@
     ["#fff36d", "#fff8b8", "Yellow"],
     ["#ffc85f", "#ffe0a3", "Amber"]
   ];
+  const DEFAULT_ACCENT = "#9b8cff";
+  const DEFAULT_ACCENT2 = "#d6ccff";
+  const DEFAULT_ACCENT_RGB = "155,140,255";
 
   const LEGACY_SWATCHES = {
     "#22d3ee": ["#38e8ff", "#8af3ff"],
@@ -88,7 +91,7 @@
     if (upgraded) return upgraded;
     const current = THEME_SWATCHES.find(([accent]) => accent.toLowerCase() === key);
     if (current) return [current[0], current[1]];
-    return ["#38e8ff", "#8af3ff"];
+    return [DEFAULT_ACCENT, DEFAULT_ACCENT2];
   }
 
   function closeAllMenus(){
@@ -156,7 +159,7 @@
         <span class="m-command-icon" aria-hidden="true">K</span>
         <div>
           <strong>Advanced Search</strong>
-          <p>Search tools, guides, saved items and recent routes.</p>
+          <p>Press Ctrl+K or make 5 quick taps anywhere.</p>
         </div>
       </button>
 
@@ -363,7 +366,7 @@
       const b = parseInt(h.slice(4,6), 16);
       return `${r},${g},${b}`;
     }
-    return "56,232,255"; // bright cyan fallback
+    return DEFAULT_ACCENT_RGB;
   }
 
   function safeHexColor(value, fallback){
@@ -372,8 +375,8 @@
   }
 
   function clickozFaviconSvg(accent, accent2){
-    const a1 = safeHexColor(accent, "#38e8ff");
-    const a2 = safeHexColor(accent2, "#8af3ff");
+    const a1 = safeHexColor(accent, DEFAULT_ACCENT);
+    const a2 = safeHexColor(accent2, DEFAULT_ACCENT2);
     return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Clickoz">
   <defs>
     <linearGradient id="badge" x1="72" y1="56" x2="438" y2="454" gradientUnits="userSpaceOnUse">
@@ -669,8 +672,8 @@
      3) ACCENT MENU (DESKTOP + MOBILE GRID)
   ========================================================= */
   (function initAccent(){
-    const CYAN  = '#38e8ff';
-    const CYAN2 = '#8af3ff';
+    const FIRST_ACCENT = DEFAULT_ACCENT;
+    const FIRST_ACCENT2 = DEFAULT_ACCENT2;
 
     // restore saved accent first
     try{
@@ -681,12 +684,12 @@
         markActiveSwatches(accent);
       }else{
         // first visit default
-        setAccent(CYAN, CYAN2);
-        markActiveSwatches(CYAN);
+        setAccent(FIRST_ACCENT, FIRST_ACCENT2);
+        markActiveSwatches(FIRST_ACCENT);
       }
     }catch(_){
-      setAccent(CYAN, CYAN2);
-      markActiveSwatches(CYAN);
+      setAccent(FIRST_ACCENT, FIRST_ACCENT2);
+      markActiveSwatches(FIRST_ACCENT);
     }
 
     const toggle = $('#colorToggle');
@@ -877,7 +880,6 @@
     const KEY = "clickoz_consent";
     const LANG_KEY = "clickoz_language";
     const LANG_EXPLICIT_KEY = "clickoz_language_explicit";
-    const banner = $('.cookie');
     const gtWrap  = $('#gtNavWrap');
     const LANGUAGES = [
       ["en", "English"],
@@ -904,6 +906,48 @@
     const SUPPORTED = new Set(LANGUAGES.map(([code]) => code));
     let targetLang = "en";
 
+    function consentMarkup(){
+      return `
+        <div class="cookie cookie-pro" role="dialog" aria-modal="false" aria-hidden="true" aria-labelledby="clickozConsentTitle" aria-describedby="clickozConsentText">
+          <div class="cookie-card cookie-dev-card">
+            <div class="cookie-status-row">
+              <button class="cookie-x" id="cookieClose" type="button" aria-label="Close consent panel">x</button>
+              <div class="cookie-status" aria-hidden="true">
+                <span class="cookie-led"></span>
+                <span>DEV CONSENT</span>
+              </div>
+            </div>
+            <div class="cookie-content">
+              <div class="cookie-title" id="clickozConsentTitle">Tiny browser handshake?</div>
+              <p class="cookie-text" id="clickozConsentText">
+                Clickoz can remember useful browser preferences for this device. Essential keeps theme, language and this privacy choice; smart cache adds faster internal routes and optional translation only when requested. No account, no uploads, no dark pattern.
+                <a href="/privacy/#cookies">Read cache and cookie notes</a>.
+              </p>
+              <div class="cookie-mini-grid" aria-label="Consent details">
+                <span data-choice="all"><b>Allow smart cache</b> faster routes + optional translate</span>
+                <span data-choice="essential"><b>Essential only</b> theme, language, consent</span>
+                <span data-choice="none"><b>No extras</b> only remember this choice</span>
+              </div>
+            </div>
+            <div class="cookie-actions">
+              <button class="btn primary cookie-btn" id="cookieAccept" type="button">Allow smart cache</button>
+              <button class="btn btn-outline cookie-btn" id="cookieEssential" type="button">Essential only</button>
+              <button class="btn btn-outline cookie-btn" id="cookieReject" type="button">No extras</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function ensureConsentBanner(){
+      let node = $('.cookie');
+      if(node) return node;
+      if(!document.body) return null;
+      document.body.insertAdjacentHTML("beforeend", consentMarkup());
+      return $('.cookie');
+    }
+
+    const banner = ensureConsentBanner();
+
     function setCookie(name, value, days){
       const maxAge = days ? `; Max-Age=${days*24*60*60}` : "";
       document.cookie = `${name}=${encodeURIComponent(value)}${maxAge}; Path=/; SameSite=Lax`;
@@ -923,13 +967,18 @@
     function store(val){
       try { localStorage.setItem(KEY, val); } catch(e){}
       setCookie(KEY, val, 365);
+      document.documentElement.dataset.clickozConsent = val;
+      document.dispatchEvent(new CustomEvent("clickoz:consent-changed", { detail: { value: val } }));
     }
 
     function readStored(){
       try { return localStorage.getItem(KEY); } catch(e){ return null; }
     }
 
-    function hideBanner(){ banner?.classList.remove('show'); }
+    function hideBanner(){
+      banner?.classList.remove('show');
+      banner?.setAttribute("aria-hidden", "true");
+    }
 
     function normalizeLang(code){
       const raw = String(code || "").trim();
@@ -1180,7 +1229,9 @@
 
     if (!existing){
       banner?.classList.add('show');
+      banner?.setAttribute("aria-hidden", "false");
     } else {
+      document.documentElement.dataset.clickozConsent = existing;
       if(existing === "all" && gtWrap) gtWrap.classList.add('show');
     }
 
@@ -2318,7 +2369,7 @@
         <div class="cz-command-titlebar">
           <span>CLICKOZ COMMAND DESK</span>
           <strong>What do you need to fix?</strong>
-          <em>Ctrl+K on desktop. Four quick taps on mobile.</em>
+          <em>Ctrl+K on desktop. Five quick clicks or taps anywhere.</em>
         </div>
         <div class="cz-command-input-row">
           <span aria-hidden="true">K</span>
@@ -2395,28 +2446,44 @@
   }
 
   function bindPalette() {
-    let mobileTapTimes = [];
+    let commandBurstTimes = [];
+    let commandBurstReset = 0;
 
-    function shouldTrackMobileTap(event) {
-      if (!(window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 820)) return false;
+    function shouldTrackCommandBurst(event) {
       if (!ensurePalette().hidden) return false;
+      if (event.defaultPrevented || (event.button != null && event.button !== 0)) return false;
+      if (event.ctrlKey || event.metaKey || event.altKey) return false;
       const target = event.target;
-      if (!target || target.closest("a, button, input, textarea, select, [role='button'], .m-menu, .cz-command-palette")) return false;
+      if (!target || target.closest("input, textarea, select, option, [contenteditable='true'], .m-menu, .menu, .cookie, .cz-command-palette, #google_translate_element, #google_translate_element_mobile")) return false;
       return true;
     }
 
-    function trackMobileTap(event) {
-      if (!shouldTrackMobileTap(event)) return;
+    function trackCommandBurst(event) {
+      if (!shouldTrackCommandBurst(event)) return;
       const now = Date.now();
-      mobileTapTimes = mobileTapTimes.filter((time) => now - time < 1300);
-      mobileTapTimes.push(now);
-      if (mobileTapTimes.length >= 4) {
-        mobileTapTimes = [];
+      commandBurstTimes = commandBurstTimes.filter((time) => now - time < 1600);
+      commandBurstTimes.push(now);
+      document.documentElement.dataset.commandBurst = String(commandBurstTimes.length);
+      window.clearTimeout(commandBurstReset);
+      commandBurstReset = window.setTimeout(() => {
+        commandBurstTimes = [];
+        delete document.documentElement.dataset.commandBurst;
+      }, 1650);
+      if (commandBurstTimes.length >= 5) {
+        commandBurstTimes = [];
+        delete document.documentElement.dataset.commandBurst;
+        if (event.cancelable) event.preventDefault();
         openPalette("");
       }
     }
 
     document.addEventListener("keydown", (event) => {
+      const commandActivator = event.target.closest?.("[data-open-command]");
+      if (commandActivator && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        openPalette(commandActivator.getAttribute("data-command-query") || "");
+        return;
+      }
       const key = event.key.toLowerCase();
       if ((event.ctrlKey || event.metaKey) && key === "k") {
         event.preventDefault();
@@ -2440,7 +2507,7 @@
         const slug = fav.getAttribute("data-cz-fav-toggle");
         setFavorite(slug, !isFavorite(slug));
       }
-      trackMobileTap(event);
+      trackCommandBurst(event);
     });
 
     document.addEventListener("clickoz:open-command", (event) => {
@@ -2477,9 +2544,13 @@
     const input = $("#toolsSearch");
     if (!input || $(".cz-tools-search-hint")) return;
     input.setAttribute("placeholder", "Try: Broken JSON, clean text, YouTube title, SEO snippet");
-    const hint = document.createElement("div");
+    const hint = document.createElement("button");
+    hint.type = "button";
     hint.className = "cz-tools-search-hint";
-    hint.innerHTML = `Press <kbd>Ctrl</kbd> + <kbd>K</kbd> for the command palette`;
+    hint.setAttribute("data-open-command", "");
+    hint.setAttribute("data-command-query", "");
+    hint.setAttribute("aria-label", "Open Advanced Search with Ctrl K or five quick taps");
+    hint.innerHTML = `Advanced Search <span class="command-shortcut">press <kbd>Ctrl</kbd> + <kbd>K</kbd></span> <span class="command-burst">or 5 quick taps/clicks anywhere</span>`;
     const title = $(".tools-hero .tools-title");
     if (title) title.insertAdjacentElement("afterend", hint);
     else input.insertAdjacentElement("afterend", hint);
@@ -3642,8 +3713,18 @@
     }
   }
 
+  function allowsOptionalCache() {
+    let value = "";
+    try { value = localStorage.getItem("clickoz_consent") || ""; } catch (_) {}
+    if (!value) {
+      const match = document.cookie.match(/(?:^|;\s*)clickoz_consent=([^;]+)/);
+      value = match ? decodeURIComponent(match[1]) : "";
+    }
+    return value === "all";
+  }
+
   function prefetch(anchor) {
-    if (saveData || prefetched.size >= MAX_PREFETCH || !canPrefetch(anchor)) return;
+    if (saveData || prefetched.size >= MAX_PREFETCH || !allowsOptionalCache() || !canPrefetch(anchor)) return;
     const url = new URL(anchor.href, window.location.href);
     const href = `${url.pathname}${url.search}`;
     const exists = Array.from(document.head.querySelectorAll('link[rel="prefetch"]'))

@@ -426,6 +426,530 @@
   }
 }
 
+/* v19 cascade lock: keep tightened hero spacing and LED markers after older layers. */
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-workdesk-sub{
+  margin-top:clamp(12px, 1.6vw, 20px) !important;
+  line-height:1.48 !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .dash-actions.hero-direct-actions{
+  margin-top:clamp(14px, 1.8vw, 20px) !important;
+  margin-bottom:0 !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-fix-console{
+  margin-top:clamp(12px, 1.5vw, 16px) !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-router-question{
+  margin-bottom:5px !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-input-label{
+  margin-bottom:14px !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a::before{
+  width:6px !important;
+  height:6px !important;
+  border:1px solid rgba(255,255,255,.46) !important;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255,255,255,.96) 0 16%, rgb(var(--accent-rgb)) 42%, rgba(var(--accent-rgb), .62) 100%) !important;
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-rgb), .12),
+    0 0 12px rgba(var(--accent-rgb), .76),
+    0 0 28px rgba(var(--accent-rgb), .42) !important;
+  animation:czHeroPromiseLedPulse 1320ms ease-in-out infinite !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a:nth-child(2)::before{
+  animation-duration:1760ms !important;
+  animation-delay:-420ms !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a:nth-child(3)::before{
+  animation-duration:2140ms !important;
+  animation-delay:-880ms !important;
+}
+
+/* v21: make the router question one pixel quieter without changing hero structure. */
+html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-fix-console .hero-router-question{
+  font-size:clamp(12px, calc(1.08vw - 1px), 15px) !important;
+}
+
+@media (max-width:760px){
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-workdesk-sub{
+    margin-top:12px !important;
+    line-height:1.45 !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .dash-actions.hero-direct-actions{
+    margin-top:12px !important;
+    margin-bottom:0 !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-fix-console{
+    margin-top:10px !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-input-label{
+    margin-bottom:12px !important;
+  }
+}
+
+/* v20: stronger palette LEDs for the hero promise rail. */
+html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a::before{
+  width:8px !important;
+  height:8px !important;
+  border:1px solid rgba(255,255,255,.70) !important;
+  background:
+    radial-gradient(circle at 32% 24%, rgba(255,255,255,1) 0 15%, color-mix(in srgb, rgb(var(--accent-rgb)) 58%, #ffffff 42%) 31%, rgb(var(--accent-rgb)) 58%, color-mix(in srgb, rgb(var(--accent-rgb)) 72%, #000 28%) 100%) !important;
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-rgb), .18),
+    0 0 12px rgba(var(--accent-rgb), .98),
+    0 0 28px rgba(var(--accent-rgb), .72),
+    0 0 58px rgba(var(--accent-rgb), .42),
+    0 0 86px rgba(var(--accent-rgb), .20) !important;
+  filter:brightness(1.24) saturate(1.36) !important;
+  animation:czHeroPromiseLedPulseStrong 1320ms ease-in-out infinite !important;
+}
+
+html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a:nth-child(2)::before{
+  animation-duration:1760ms !important;
+  animation-delay:-420ms !important;
+}
+
+html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a:nth-child(3)::before{
+  animation-duration:2140ms !important;
+  animation-delay:-880ms !important;
+}
+
+@keyframes czHeroPromiseLedPulseStrong{
+  0%, 100%{
+    opacity:.70;
+    filter:brightness(1.02) saturate(1.18);
+    box-shadow:
+      0 0 0 3px rgba(var(--accent-rgb), .12),
+      0 0 10px rgba(var(--accent-rgb), .70),
+      0 0 26px rgba(var(--accent-rgb), .46),
+      0 0 48px rgba(var(--accent-rgb), .22);
+  }
+  34%{
+    opacity:1;
+    filter:brightness(1.74) saturate(1.62);
+    box-shadow:
+      0 0 0 5px rgba(var(--accent-rgb), .24),
+      0 0 18px rgba(var(--accent-rgb), 1),
+      0 0 44px rgba(var(--accent-rgb), .88),
+      0 0 82px rgba(var(--accent-rgb), .54),
+      0 0 124px rgba(var(--accent-rgb), .25);
+  }
+  62%{
+    opacity:.86;
+    filter:brightness(1.28) saturate(1.36);
+    box-shadow:
+      0 0 0 4px rgba(var(--accent-rgb), .17),
+      0 0 14px rgba(var(--accent-rgb), .88),
+      0 0 34px rgba(var(--accent-rgb), .62),
+      0 0 66px rgba(var(--accent-rgb), .34);
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a::before{
+    animation:none !important;
+    opacity:1 !important;
+    filter:brightness(1.24) saturate(1.34) !important;
+  }
+}
+
+/* v19: tighten the home hero stack and turn promise markers into async LEDs. */
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-workdesk-sub{
+  margin-top:clamp(12px, 1.6vw, 20px) !important;
+  line-height:1.48 !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .dash-actions.hero-direct-actions{
+  margin-top:clamp(14px, 1.8vw, 20px) !important;
+  margin-bottom:0 !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-fix-console{
+  margin-top:clamp(12px, 1.5vw, 16px) !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-router-question{
+  margin-bottom:5px !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-input-label{
+  margin-bottom:14px !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a::before{
+  width:6px !important;
+  height:6px !important;
+  border:1px solid rgba(255,255,255,.46) !important;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255,255,255,.96) 0 16%, rgb(var(--accent-rgb)) 42%, rgba(var(--accent-rgb), .62) 100%) !important;
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-rgb), .12),
+    0 0 12px rgba(var(--accent-rgb), .76),
+    0 0 28px rgba(var(--accent-rgb), .42) !important;
+  animation:czHeroPromiseLedPulse 1320ms ease-in-out infinite !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a:nth-child(2)::before{
+  animation-duration:1760ms !important;
+  animation-delay:-420ms !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a:nth-child(3)::before{
+  animation-duration:2140ms !important;
+  animation-delay:-880ms !important;
+}
+
+@keyframes czHeroPromiseLedPulse{
+  0%, 100%{
+    opacity:.56;
+    filter:brightness(.86) saturate(1);
+    box-shadow:
+      0 0 0 2px rgba(var(--accent-rgb), .08),
+      0 0 8px rgba(var(--accent-rgb), .46),
+      0 0 20px rgba(var(--accent-rgb), .22);
+  }
+  38%{
+    opacity:1;
+    filter:brightness(1.45) saturate(1.18);
+    box-shadow:
+      0 0 0 4px rgba(var(--accent-rgb), .16),
+      0 0 16px rgba(var(--accent-rgb), .92),
+      0 0 38px rgba(var(--accent-rgb), .56);
+  }
+  62%{
+    opacity:.72;
+    filter:brightness(1.04) saturate(1.08);
+    box-shadow:
+      0 0 0 3px rgba(var(--accent-rgb), .10),
+      0 0 11px rgba(var(--accent-rgb), .62),
+      0 0 26px rgba(var(--accent-rgb), .34);
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a::before{
+    animation:none !important;
+    opacity:.9 !important;
+    filter:none !important;
+  }
+}
+
+/* v19 specificity lock: enforce the tighter stack over legacy home layers. */
+html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-workdesk-sub{
+  margin-top:clamp(12px, 1.6vw, 20px) !important;
+  line-height:1.48 !important;
+}
+
+html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .dash-actions.hero-direct-actions{
+  margin-top:clamp(14px, 1.8vw, 20px) !important;
+  margin-bottom:0 !important;
+}
+
+html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-fix-console{
+  margin-top:clamp(12px, 1.5vw, 16px) !important;
+}
+
+html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-router-question{
+  margin-bottom:5px !important;
+}
+
+html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-input-label{
+  margin-bottom:14px !important;
+}
+
+html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a::before{
+  width:8px !important;
+  height:8px !important;
+  border:1px solid rgba(255,255,255,.70) !important;
+  background:
+    radial-gradient(circle at 32% 24%, rgba(255,255,255,1) 0 15%, color-mix(in srgb, rgb(var(--accent-rgb)) 58%, #ffffff 42%) 31%, rgb(var(--accent-rgb)) 58%, color-mix(in srgb, rgb(var(--accent-rgb)) 72%, #000 28%) 100%) !important;
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-rgb), .18),
+    0 0 12px rgba(var(--accent-rgb), .98),
+    0 0 28px rgba(var(--accent-rgb), .72),
+    0 0 58px rgba(var(--accent-rgb), .42),
+    0 0 86px rgba(var(--accent-rgb), .20) !important;
+  filter:brightness(1.24) saturate(1.36) !important;
+  animation:czHeroPromiseLedPulseStrong 1320ms ease-in-out infinite !important;
+}
+
+html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a:nth-child(2)::before{
+  animation-duration:1760ms !important;
+  animation-delay:-420ms !important;
+}
+
+html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a:nth-child(3)::before{
+  animation-duration:2140ms !important;
+  animation-delay:-880ms !important;
+}
+
+@media (max-width:760px){
+  html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-workdesk-sub{
+    margin-top:12px !important;
+    line-height:1.45 !important;
+  }
+
+  html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .dash-actions.hero-direct-actions{
+    margin-top:12px !important;
+    margin-bottom:0 !important;
+  }
+
+  html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-fix-console{
+    margin-top:10px !important;
+  }
+
+  html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-input-label{
+    margin-bottom:12px !important;
+  }
+}
+
+@media (max-width:760px){
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-workdesk-sub{
+    margin-top:12px !important;
+    line-height:1.45 !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .dash-actions.hero-direct-actions{
+    margin-top:12px !important;
+    margin-bottom:0 !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-fix-console{
+    margin-top:10px !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-input-label{
+    margin-bottom:12px !important;
+  }
+}
+
+/* v18: attach the home promise cards to the router panel as one composed unit. */
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-fix-console{
+  width:min(1040px, 100%) !important;
+  max-width:1040px !important;
+  margin-inline:auto !important;
+  margin-bottom:0 !important;
+  padding-bottom:clamp(24px, 2.5vw, 34px) !important;
+  border-bottom-color:rgba(var(--accent-rgb), .42) !important;
+  border-bottom-left-radius:0 !important;
+  border-bottom-right-radius:0 !important;
+  box-shadow:
+    0 24px 80px rgba(0,0,0,.32),
+    0 0 0 1px rgba(var(--accent-rgb), .06),
+    inset 0 1px 0 rgba(255,255,255,.09) !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row{
+  position:relative !important;
+  width:min(1040px, 100%) !important;
+  max-width:1040px !important;
+  margin:-1px auto 0 !important;
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+  gap:0 !important;
+  padding:0 !important;
+  border:1px solid rgba(var(--accent-rgb), .42) !important;
+  border-top:0 !important;
+  border-radius:0 0 22px 22px !important;
+  overflow:hidden !important;
+  background:
+    linear-gradient(180deg, rgba(var(--accent-rgb), .115), rgba(var(--accent-rgb), .05)),
+    rgba(3, 9, 18, .62) !important;
+  box-shadow:
+    0 24px 80px rgba(0,0,0,.34),
+    0 0 34px rgba(var(--accent-rgb), .12),
+    inset 0 1px 0 rgba(255,255,255,.06) !important;
+  backdrop-filter:blur(18px) saturate(1.08);
+  -webkit-backdrop-filter:blur(18px) saturate(1.08);
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  pointer-events:none !important;
+  background:
+    linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent),
+    radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb), .18), transparent 58%) !important;
+  opacity:.72 !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a{
+  position:relative !important;
+  z-index:1 !important;
+  min-height:74px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  padding:15px clamp(14px, 2.1vw, 28px) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.018)),
+    rgba(0,0,0,.10) !important;
+  box-shadow:none !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a + a{
+  border-left:1px solid rgba(var(--accent-rgb), .25) !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a::before{
+  content:"" !important;
+  position:absolute !important;
+  top:12px !important;
+  left:50% !important;
+  width:5px !important;
+  height:5px !important;
+  border-radius:999px !important;
+  transform:translateX(-50%) !important;
+  background:rgb(var(--accent-rgb)) !important;
+  box-shadow:0 0 14px rgba(var(--accent-rgb), .84) !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row strong{
+  margin-top:8px !important;
+  color:#fff !important;
+  font-size:clamp(13px, 1vw, 15px) !important;
+  letter-spacing:.02em !important;
+  text-shadow:0 0 14px rgba(var(--accent-rgb), .24), 0 1px 8px rgba(0,0,0,.55) !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row span{
+  color:rgba(248,252,255,.70) !important;
+  font-size:clamp(12.5px, .9vw, 14px) !important;
+  line-height:1.25 !important;
+}
+
+@media (hover:hover) and (pointer:fine){
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a:hover,
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a:focus-visible{
+    background:
+      linear-gradient(180deg, rgba(var(--accent-rgb), .16), rgba(var(--accent-rgb), .055)),
+      rgba(0,0,0,.12) !important;
+    transform:none !important;
+  }
+}
+
+@media (max-width:760px){
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-fix-console{
+    width:100% !important;
+    padding-bottom:18px !important;
+    border-bottom-left-radius:0 !important;
+    border-bottom-right-radius:0 !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row{
+    width:100% !important;
+    grid-template-columns:1fr !important;
+    border-radius:0 0 18px 18px !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a{
+    min-height:58px !important;
+    padding:12px 14px 12px 42px !important;
+    align-items:flex-start !important;
+    text-align:left !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a + a{
+    border-left:0 !important;
+    border-top:1px solid rgba(var(--accent-rgb), .22) !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a::before{
+    left:20px !important;
+    top:20px !important;
+    transform:none !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row strong{
+    margin-top:0 !important;
+  }
+}
+
+/* v17: stronger home hero message without changing the workstation layout. */
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 > section.workdesk-copy{
+  position:relative;
+  isolation:isolate;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 > section.workdesk-copy::after{
+  content:"";
+  position:absolute;
+  inset:clamp(18px, 4vw, 48px) clamp(14px, 4vw, 72px) auto;
+  height:clamp(160px, 24vw, 330px);
+  z-index:-1;
+  pointer-events:none;
+  background:
+    radial-gradient(closest-side at 50% 26%, rgba(255,255,255,.22), transparent 62%),
+    radial-gradient(closest-side at 50% 44%, rgba(var(--accent-rgb), .42), transparent 70%);
+  filter:blur(6px) saturate(1.15);
+  opacity:.72;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 > section.workdesk-copy > h1{
+  max-width:1120px !important;
+  font-size:clamp(54px, 7.15vw, 108px) !important;
+  line-height:.90 !important;
+  text-wrap:balance !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.90) 42%, color-mix(in srgb, rgb(var(--accent-rgb)) 38%, #ffffff 62%) 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:
+    0 0 18px rgba(255,255,255,.18),
+    0 0 44px rgba(var(--accent-rgb), .34),
+    0 18px 46px rgba(0,0,0,.42) !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-workdesk-sub{
+  max-width:930px !important;
+  margin-top:clamp(18px, 2.4vw, 28px) !important;
+  font-size:clamp(18px, 1.55vw, 23px) !important;
+  line-height:1.54 !important;
+  color:rgba(248,252,255,.80) !important;
+  text-shadow:0 10px 30px rgba(0,0,0,.42) !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .dash-actions.hero-direct-actions{
+  margin-top:clamp(24px, 3vw, 36px) !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .dash-actions.hero-direct-actions > a.btn.btn-accent{
+  min-width:230px !important;
+}
+
+@media (max-width:760px){
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 > section.workdesk-copy::after{
+    inset:18px 8px auto;
+    height:260px;
+    opacity:.62;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 > section.workdesk-copy > h1{
+    font-size:clamp(43px, 12.8vw, 66px) !important;
+    line-height:.94 !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-workdesk-sub{
+    font-size:clamp(16.5px, 4.4vw, 19px) !important;
+    line-height:1.52 !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .dash-actions.hero-direct-actions > a.btn.btn-accent{
+    min-width:100% !important;
+  }
+}
+
 @media (max-width:1120px){
   .home-workdesk .cz-workdesk-hero.hero-simple-v2{
     width:min(100% - 28px, 1280px);
@@ -1489,6 +2013,75 @@ body.bigtext .home-workdesk .friendly-tools-section .rec-refresh{
   }
 }
 
+/* v16: keep the Refresh picks CTA consistent with picked-color buttons. */
+body.bigtext .home-workdesk .friendly-tools-section .picks-actions-bottom .rec-refresh,
+body.bigtext .home-workdesk .friendly-tools-section .rec-refresh{
+  min-height:50px !important;
+  min-width:178px !important;
+  padding:0 24px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border-radius:16px !important;
+  border:1px solid rgba(255,255,255,.44) !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+  -webkit-text-stroke:.48px rgba(0,0,0,.94) !important;
+  paint-order:stroke fill !important;
+  font-size:15px !important;
+  font-weight:950 !important;
+  line-height:1 !important;
+  letter-spacing:.01em !important;
+  text-align:center !important;
+  text-shadow:
+    0 1px 0 rgba(0,0,0,.98),
+    0 2px 10px rgba(0,0,0,.58),
+    0 0 18px rgba(0,0,0,.34) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,.10) 42%, rgba(0,0,0,.26) 100%),
+    radial-gradient(circle at 24% 12%, rgba(255,255,255,.42), transparent 30%),
+    linear-gradient(135deg,
+      color-mix(in srgb, rgb(var(--accent-rgb, 56,232,255)) 62%, #ffffff 38%),
+      rgb(var(--accent-rgb, 56,232,255)) 76%,
+      color-mix(in srgb, rgb(var(--accent-rgb, 56,232,255)) 78%, #001018 22%)
+    ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.54),
+    inset 0 -1px 0 rgba(0,0,0,.34),
+    0 0 0 1px rgba(var(--accent-rgb, 56,232,255), .34),
+    0 0 34px rgba(var(--accent-rgb, 56,232,255), .44),
+    0 16px 38px rgba(0,0,0,.34) !important;
+  filter:saturate(1.04) contrast(1.04) !important;
+}
+
+@media (hover:hover) and (pointer:fine){
+  body.bigtext .home-workdesk .friendly-tools-section .picks-actions-bottom .rec-refresh:hover,
+  body.bigtext .home-workdesk .friendly-tools-section .rec-refresh:hover{
+    color:#020812 !important;
+    -webkit-text-fill-color:#020812 !important;
+    -webkit-text-stroke:.34px rgba(255,255,255,.94) !important;
+    text-shadow:
+      0 1px 0 rgba(255,255,255,.88),
+      0 0 14px rgba(255,255,255,.46),
+      0 2px 14px rgba(0,0,0,.18) !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.50), rgba(255,255,255,.22) 42%, rgba(0,0,0,.08) 100%),
+      radial-gradient(circle at 22% 12%, rgba(255,255,255,.62), transparent 32%),
+      linear-gradient(135deg,
+        color-mix(in srgb, rgb(var(--accent-rgb, 56,232,255)) 54%, #ffffff 46%),
+        rgb(var(--accent-rgb, 56,232,255)) 74%,
+        color-mix(in srgb, rgb(var(--accent-rgb, 56,232,255)) 92%, #ffffff 8%)
+      ) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.70),
+      inset 0 -1px 0 rgba(0,0,0,.18),
+      0 0 0 1px rgba(255,255,255,.22),
+      0 0 42px rgba(var(--accent-rgb, 56,232,255), .56),
+      0 18px 42px rgba(0,0,0,.30) !important;
+    transform:translateY(-1px) !important;
+  }
+}
+
 /* v8: keep picked-color CTA text consistent after home-specific overrides. */
 body.bigtext .home-workdesk .hero-direct-actions .btn,
 body.bigtext .home-workdesk .hero-fix-input-row .btn.btn-accent,
@@ -1831,5 +2424,69 @@ body.bigtext main.home-workdesk > section.friendly-tools-section .picks-grid .pi
         color-mix(in srgb, rgb(var(--accent-rgb)) 92%, #061018 8%)
       ) !important;
     filter:saturate(1.04) brightness(1.05) !important;
+  }
+}
+
+/* v19 cascade lock: keep tightened hero spacing and LED markers after older layers. */
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-workdesk-sub{
+  margin-top:clamp(12px, 1.6vw, 20px) !important;
+  line-height:1.48 !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .dash-actions.hero-direct-actions{
+  margin-top:clamp(16px, 2vw, 24px) !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-fix-console{
+  margin-top:clamp(14px, 1.8vw, 20px) !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-router-question{
+  margin-bottom:5px !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-input-label{
+  margin-bottom:14px !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a::before{
+  width:6px !important;
+  height:6px !important;
+  border:1px solid rgba(255,255,255,.46) !important;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255,255,255,.96) 0 16%, rgb(var(--accent-rgb)) 42%, rgba(var(--accent-rgb), .62) 100%) !important;
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-rgb), .12),
+    0 0 12px rgba(var(--accent-rgb), .76),
+    0 0 28px rgba(var(--accent-rgb), .42) !important;
+  animation:czHeroPromiseLedPulse 1320ms ease-in-out infinite !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a:nth-child(2)::before{
+  animation-duration:1760ms !important;
+  animation-delay:-420ms !important;
+}
+
+body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a:nth-child(3)::before{
+  animation-duration:2140ms !important;
+  animation-delay:-880ms !important;
+}
+
+@media (max-width:760px){
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-workdesk-sub{
+    margin-top:12px !important;
+    line-height:1.45 !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .dash-actions.hero-direct-actions{
+    margin-top:14px !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-fix-console{
+    margin-top:12px !important;
+  }
+
+  body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-input-label{
+    margin-bottom:12px !important;
   }
 }

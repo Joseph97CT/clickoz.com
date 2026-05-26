@@ -22,9 +22,9 @@
   <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
-  <link rel="stylesheet" href="/assets/site.css?v=14" />
-  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=4" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=171" />
+  <link rel="stylesheet" href="/assets/site.css?v=15" />
+  <link rel="stylesheet" href="/assets/clickoz-premium.css?v=5" />
+  <link rel="stylesheet" href="/assets/cms-final.css?v=180" />
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebPage","name":"Clickoz Privacy Policy","url":"https://clickoz.com/privacy/","publisher":{"@type":"Organization","name":"Clickoz","url":"https://clickoz.com/"}}
   </script>
@@ -86,18 +86,21 @@
 
         <section id="cookies">
           <h2>Cookies and local storage</h2>
-          <p>Clickoz uses essential local storage for interface preferences such as theme color and privacy consent. This keeps the CMS consistent when you move between tools, guides and updates.</p>
+          <p>Clickoz uses small browser-side preferences to keep the interface consistent and fast on your device. These choices are not accounts, uploads or advertising profiles.</p>
+          <p><b>Essential only</b> keeps the privacy choice plus interface preferences such as theme color and language, so the CMS does not reset while you move between tools, guides and updates. <b>Allow smart cache</b> also lets the browser prepare likely internal Clickoz routes so tools can open faster, and enables translation only when you request another language. <b>No extras</b> turns off smart route cache and optional translation; Clickoz only remembers that choice so the consent panel does not keep appearing.</p>
+          <p>Browser cache means your browser may reuse static Clickoz files such as styles, scripts and icons instead of downloading them again on every page. It does not give Clickoz access to files on your device, and it does not store the private text you paste into tools.</p>
           <ul>
             <li><b>clickoz_consent:</b> remembers your privacy choice.</li>
             <li><b>clickoz_accent:</b> remembers your selected theme color.</li>
-            <li><b>Browser storage:</b> may be used for temporary UI state, not account tracking.</li>
+            <li><b>clickoz_language:</b> remembers the language selector when you choose one.</li>
+            <li><b>Browser storage:</b> may be used for temporary UI state and faster internal navigation, not account tracking.</li>
           </ul>
         </section>
 
         <section id="third-party">
           <h2>Optional third-party services</h2>
-          <p>If you accept optional services, Clickoz may load Google Translate to provide language selection. Google may process technical data under its own terms and privacy policies.</p>
-          <p>If you choose essential-only or refuse optional services, the site keeps a fallback language button and does not intentionally load the translation widget.</p>
+          <p>If you request translation, Clickoz may contact Google Translate to translate visible page text. Google may process technical data under its own terms and privacy policies.</p>
+          <p>If you choose essential-only or no extras and do not request translation, Clickoz does not intentionally call the translation service.</p>
         </section>
 
         <section id="security">
@@ -127,8 +130,8 @@
   <script src="/assets/cms-registry.js?v=5" defer></script>
   <script src="/assets/cms-schema.js?v=2" defer></script>
   <script src="/assets/cms-enhance.js?v=9" defer></script>
-  <script src="/assets/site.js?v=83" defer></script>
-  <script src="/assets/clickoz-premium.js?v=14" defer></script>
+  <script src="/assets/site.js?v=87" defer></script>
+  <script src="/assets/clickoz-premium.js?v=15" defer></script>
 </body>
 </html>
 
