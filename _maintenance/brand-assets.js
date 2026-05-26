@@ -27,9 +27,7 @@ function iconLinks() {
 
 function logoMarkup() {
   return `<span class="logo-badge" id="logoBadge" aria-hidden="true">
-          <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
-            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8s5.4 13.8 12.6 13.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <img class="logo-mark logo-img" src="${BRAND.logoPng}" alt="" width="48" height="48" decoding="async" />
         </span>
         <span class="logo-text">Click<span class="logo-oz">oz</span></span>`;
 }

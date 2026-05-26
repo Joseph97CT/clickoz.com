@@ -29,7 +29,7 @@
     navigator.connection.saveData ||
     /(^|-)2g/i.test(String(navigator.connection.effectiveType || ""))
   ));
-  const leanPerfMode = prefersReduce || mobilePerfMode || saveDataMode;
+  const leanPerfMode = prefersReduce || saveDataMode;
   if (mobilePerfMode) document.documentElement.classList.add("mobile-perf-mode");
   if (leanPerfMode) document.documentElement.classList.add("lean-perf-mode");
 
@@ -141,34 +141,15 @@
         <button class="m-close" id="mClose" type="button" aria-label="Close menu">&times;</button>
       </div>
 
-      <div class="m-tools-card" aria-label="Tool shortcuts">
-        <div class="m-label">Tools</div>
-        <div class="m-tool-grid">
-          <a href="/tools/">
-            <b>All</b>
-            <span>66 tools</span>
-          </a>
-          <a href="/tools/seo-tools/">
-            <b>SEO</b>
-            <span>Snippets</span>
-          </a>
-          <a href="/tools/writing-tools/">
-            <b>Write</b>
-            <span>Clean text</span>
-          </a>
-          <a href="/tools/dev-tools/">
-            <b>Dev</b>
-            <span>JSON, URL</span>
-          </a>
+      <div class="m-category-block" aria-label="Categories">
+        <div class="m-label">Categories</div>
+        <div class="m-links" aria-label="Main sections">
+          <a class="m-link" href="/"><span aria-hidden="true">⌂</span><strong>Home</strong></a>
+          <a class="m-link" href="/tools/"><span aria-hidden="true">⚙</span><strong>Tools</strong></a>
+          <a class="m-link" href="/guides/"><span aria-hidden="true">◇</span><strong>Guides</strong></a>
+          <a class="m-link" href="/updates/"><span aria-hidden="true">↻</span><strong>Updates</strong></a>
+          <a class="m-link" href="/about/"><span aria-hidden="true">i</span><strong>About</strong></a>
         </div>
-      </div>
-
-      <div class="m-links" aria-label="Main sections">
-        <a class="m-link" href="/"><span aria-hidden="true">⌂</span><strong>Home</strong></a>
-        <a class="m-link" href="/tools/"><span aria-hidden="true">⚙</span><strong>Tools</strong></a>
-        <a class="m-link" href="/guides/"><span aria-hidden="true">◇</span><strong>Guides</strong></a>
-        <a class="m-link" href="/updates/"><span aria-hidden="true">↻</span><strong>Updates</strong></a>
-        <a class="m-link" href="/about/"><span aria-hidden="true">i</span><strong>About</strong></a>
       </div>
 
       <button class="m-command-card m-advanced-search" type="button" data-open-command data-command-query="" aria-label="Open advanced search">
@@ -197,9 +178,7 @@
     logo.setAttribute('aria-label', 'Clickoz Home');
     logo.innerHTML = `
       <span class="logo-badge" id="logoBadge" aria-hidden="true">
-        <svg class="logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
-          <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8s5.4 13.8 12.6 13.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <img class="logo-mark logo-img" src="/assets/clickoz-logo-512.png" alt="" width="48" height="48" decoding="async" />
       </span>
       <span class="logo-text">Click<span class="logo-oz">oz</span></span>`;
   }
@@ -397,25 +376,24 @@
     const a2 = safeHexColor(accent2, "#8af3ff");
     return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Clickoz">
   <defs>
-    <linearGradient id="badge" x1="84" y1="58" x2="428" y2="454" gradientUnits="userSpaceOnUse">
+    <linearGradient id="badge" x1="72" y1="56" x2="438" y2="454" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="${a2}"/>
-      <stop offset=".54" stop-color="${a1}"/>
-      <stop offset="1" stop-color="${a2}"/>
+      <stop offset=".55" stop-color="${a1}"/>
+      <stop offset="1" stop-color="${a1}"/>
     </linearGradient>
     <radialGradient id="shine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(172 118) rotate(47) scale(190 118)">
-      <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
-      <stop offset=".34" stop-color="#ffffff" stop-opacity=".30"/>
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".42"/>
+      <stop offset=".36" stop-color="#ffffff" stop-opacity=".16"/>
       <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
     <filter id="glow" x="-24%" y="-24%" width="148%" height="148%" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="0" stdDeviation="18" flood-color="${a1}" flood-opacity=".54"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="16" flood-color="${a1}" flood-opacity=".46"/>
       <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#000000" flood-opacity=".28"/>
     </filter>
   </defs>
   <rect width="512" height="512" rx="118" fill="url(#badge)" filter="url(#glow)"/>
   <rect width="512" height="512" rx="118" fill="url(#shine)"/>
-  <rect x="18" y="18" width="476" height="476" rx="104" fill="none" stroke="#ffffff" stroke-opacity=".34" stroke-width="8"/>
-  <path d="M347 151c-25-23-57-34-96-34-78 0-136 56-136 139s58 139 136 139c40 0 73-12 99-36" fill="none" stroke="#061018" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+  <path fill="#f8fbff" stroke="#071018" stroke-width="24" stroke-linejoin="round" paint-order="stroke fill" d="M367 176c-25-29-61-43-109-43-83 0-145 50-145 123s62 123 145 123c49 0 86-15 112-47l-79-47c-8 12-20 18-36 18-25 0-42-19-42-47s17-47 42-47c16 0 28 6 36 19l76-52Z"/>
 </svg>`;
   }
 
@@ -435,6 +413,11 @@
     const themeColor = document.querySelector('meta[name="theme-color"]');
     if (themeColor) themeColor.setAttribute("content", accent);
   }
+
+  document.addEventListener("clickoz:accent-change", (event) => {
+    const detail = event.detail || {};
+    if (detail.accent) syncDynamicFavicon(detail.accent, detail.accent2);
+  });
 
   function setAccent(a1, a2){
     const [accent, accent2] = normalizeAccentPair(a1, a2);
@@ -1723,9 +1706,7 @@
       brand.setAttribute("aria-label", "Clickoz Home");
       brand.innerHTML = `
         <span class="footer-logo-badge" aria-hidden="true">
-          <svg class="footer-logo-mark logo-mark" viewBox="0 0 48 48" width="1em" height="1em" aria-hidden="true" focusable="false">
-            <path d="M32.5 13.5c-2.4-2.2-5.4-3.3-8.9-3.3-7.2 0-12.6 5.1-12.6 13.8s5.4 13.8 12.6 13.8c3.6 0 6.7-1.2 9.2-3.6" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <img class="footer-logo-mark logo-mark logo-img" src="/assets/clickoz-logo-512.png" alt="" width="48" height="48" decoding="async" />
         </span>
         <span class="footer-brand-copy">
           <strong>Click<span>oz</span></strong>

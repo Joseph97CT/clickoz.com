@@ -1,22 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Clickoz logo">
   <defs>
-    <linearGradient id="badge" x1="84" y1="58" x2="428" y2="454" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#d8ffe4"/>
-      <stop offset=".54" stop-color="#5cff9d"/>
-      <stop offset="1" stop-color="#38e8ff"/>
+    <linearGradient id="clickozLogoBg" x1="72" y1="56" x2="438" y2="454" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8af3ff"/>
+      <stop offset=".55" stop-color="#38e8ff"/>
+      <stop offset="1" stop-color="#187d91"/>
     </linearGradient>
-    <radialGradient id="shine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(172 118) rotate(47) scale(190 118)">
-      <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
-      <stop offset=".34" stop-color="#ffffff" stop-opacity=".30"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
-    </radialGradient>
-    <filter id="glow" x="-24%" y="-24%" width="148%" height="148%" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="0" stdDeviation="18" flood-color="#5cff9d" flood-opacity=".54"/>
-      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#000000" flood-opacity=".28"/>
-    </filter>
   </defs>
-  <rect width="512" height="512" rx="118" fill="url(#badge)" filter="url(#glow)"/>
-  <rect width="512" height="512" rx="118" fill="url(#shine)"/>
-  <rect x="18" y="18" width="476" height="476" rx="104" fill="none" stroke="#ffffff" stroke-opacity=".34" stroke-width="8"/>
-  <path d="M347 151c-25-23-57-34-96-34-78 0-136 56-136 139s58 139 136 139c40 0 73-12 99-36" fill="none" stroke="#061018" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect width="512" height="512" rx="118" fill="url(#clickozLogoBg)"/>
+  <path fill="#f8fbff" stroke="#071018" stroke-width="24" stroke-linejoin="round" paint-order="stroke fill" d="M367 176c-25-29-61-43-109-43-83 0-145 50-145 123s62 123 145 123c49 0 86-15 112-47l-79-47c-8 12-20 18-36 18-25 0-42-19-42-47s17-47 42-47c16 0 28 6 36 19l76-52Z"/>
 </svg>

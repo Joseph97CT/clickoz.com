@@ -7,7 +7,7 @@ const ORIGIN = "https://clickoz.com";
  */
 const ASSET_VERSIONS = Object.freeze({
   siteCss: 14,
-  siteJs: 79,
+  siteJs: 83,
   homeCss: 21,
   homeLeadershipCss: 12,
   homeJs: 25,
@@ -20,7 +20,7 @@ const ASSET_VERSIONS = Object.freeze({
   cmsRegistry: 5,
   cmsSchema: 2,
   cmsEnhance: 8,
-  cmsFinal: 152,
+  cmsFinal: 158,
   toolsCss: 9,
   toolsJs: 15,
   cmsToolsCss: 22,
