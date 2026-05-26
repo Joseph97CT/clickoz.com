@@ -79,7 +79,8 @@ const featureIcon = {
   "Creator": entity.play,
   "Thumbnail": entity.brush,
   "Tracking": entity.chart,
-  "Campaigns": entity.chart,
+  "Campaigns": entity.target,
+  "Clean URLs": entity.link,
   "Crawl rules": entity.robot,
   "UUID v4": entity.id,
   "Unix time": entity.time,
@@ -89,6 +90,17 @@ const featureIcon = {
   "AI disclosure": entity.robot,
   "Sponsorship": entity.money,
   "Calendar": entity.calendar
+};
+
+const fallbackFeatureIcons = {
+  seo: [entity.tag, entity.search, entity.chart],
+  writing: [entity.write, entity.copy, entity.check],
+  dev: [entity.dev, entity.link, entity.check],
+  web: [entity.shield, entity.globe, entity.bolt],
+  tracking: [entity.chart, entity.target, entity.link],
+  youtube: [entity.play, entity.target, entity.brush],
+  socialai: [entity.spark, entity.write, entity.target],
+  default: [entity.spark, entity.tool, entity.check]
 };
 
 function esc(value) {
@@ -154,8 +166,39 @@ function toolIcon(tool) {
   return categoryUI[tool.category]?.icon || entity.tool;
 }
 
-function featureChip(feature) {
-  return `<span><b aria-hidden="true">${featureIcon[feature] || entity.spark}</b>${esc(feature)}</span>`;
+function semanticFeatureIcon(feature) {
+  const text = String(feature || "").toLowerCase();
+  if (/url|link|utm|source|medium/.test(text)) return entity.link;
+  if (/campaign|goal|intent|target|angle/.test(text)) return entity.target;
+  if (/copy|clipboard|ready|result|output/.test(text)) return entity.copy;
+  if (/mobile|phone|readability|scan/.test(text)) return entity.mobile;
+  if (/keyword|search|serp|query/.test(text)) return entity.search;
+  if (/snippet|tag|title|metadata|meta/.test(text)) return entity.tag;
+  if (/json|regex|base64|html|entity|encode|decode|payload/.test(text)) return entity.dev;
+  if (/security|password|safe|dns|http|crawl|robots/.test(text)) return entity.shield;
+  if (/thumbnail|image|visual/.test(text)) return entity.brush;
+  if (/video|youtube|creator|short|reel/.test(text)) return entity.play;
+  return null;
+}
+
+function featureIconFor(feature, tool, used, index) {
+  const pool = fallbackFeatureIcons[tool.category] || fallbackFeatureIcons.default;
+  const candidates = [
+    featureIcon[feature],
+    semanticFeatureIcon(feature),
+    ...pool,
+    ...fallbackFeatureIcons.default
+  ].filter(Boolean);
+  const chosen = candidates.find((icon) => !used.has(icon)) || candidates[index % candidates.length] || entity.spark;
+  used.add(chosen);
+  return chosen;
+}
+
+function featureChips(tool) {
+  const used = new Set();
+  return (tool.features || []).slice(0, 3)
+    .map((feature, index) => `<span><b aria-hidden="true">${featureIconFor(feature, tool, used, index)}</b>${esc(feature)}</span>`)
+    .join("");
 }
 
 function trustPills(tool) {
@@ -805,7 +848,7 @@ ${head({
 
 function card(tool) {
   const brief = toolBrief(tool);
-  const features = (tool.features || []).slice(0, 3).map(featureChip).join("");
+  const features = featureChips(tool);
   return `<a class="card tool-card-enhanced" href="${esc(tool.url)}" data-tool-slug="${esc(tool.slug)}">
     <div class="card-top">
       <span class="card-ico" aria-hidden="true">${toolIcon(tool)}</span>
@@ -855,14 +898,14 @@ function toolsJsonLd(items, title, url, description) {
 function sectionHtml(category, directoryControls = "") {
   const ui = categoryUI[category];
   const items = cms.tools.filter((tool) => tool.category === category);
-  return `<section class="tool-section" id="${esc(ui.key)}" data-section="${esc(ui.key)}" aria-label="${esc(ui.title)}">
+  return `<section class="tool-section" id="${esc(ui.key)}" data-section="${esc(ui.key)}" data-tool-count="${items.length}" aria-label="${esc(ui.title)}">
     ${directoryControls}
     <div class="section-head">
       <div>
         <div class="section-kicker"><span class="section-ico" aria-hidden="true">${ui.icon}</span><h2 class="section-name">${esc(ui.title)}</h2></div>
         <p class="section-desc">${esc(ui.intro)}</p>
       </div>
-      <span class="section-count">${items.length} tools</span>
+      <span class="section-count">${items.length} ${items.length === 1 ? "tool" : "tools"}</span>
     </div>
     <div class="cards-grid">${items.map(card).join("\n")}</div>
   </section>`;
@@ -969,10 +1012,10 @@ ${head({
         <a class="cluster-request-card" href="/contact/#request"><span>+</span><strong>Need another tool?</strong><em>Request the exact workflow you need.</em></a>
       </div>
     </section>
-    <section class="tool-section" id="${esc(ui.key)}" data-section="${esc(ui.key)}">
+    <section class="tool-section" id="${esc(ui.key)}" data-section="${esc(ui.key)}" data-tool-count="${items.length}">
       <div class="section-head">
         <div><div class="section-kicker"><span class="section-ico" aria-hidden="true">${ui.icon}</span><h2 class="section-name">Open the right tool</h2></div><p class="section-desc">${esc(ui.intro)}</p></div>
-        <span class="section-count">${items.length} tools</span>
+        <span class="section-count">${items.length} ${items.length === 1 ? "tool" : "tools"}</span>
       </div>
       <div class="cards-grid">${items.map(card).join("\n")}</div>
     </section>

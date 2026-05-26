@@ -269,13 +269,50 @@ function toolCard(tool) {
   </a>`;
 }
 
+const guideEntity = {
+  book: "&#128218;",
+  check: "&#9989;",
+  chart: "&#128200;",
+  dev: "&#129514;",
+  link: "&#128279;",
+  play: "&#9654;&#65039;",
+  search: "&#128269;",
+  shield: "&#128737;&#65039;",
+  spark: "&#10024;",
+  tag: "&#127991;&#65039;",
+  target: "&#127919;",
+  tool: "&#128736;&#65039;",
+  write: "&#9997;&#65039;"
+};
+
+function guideToolIcon(tool) {
+  if (!tool) return guideEntity.tool;
+  if (/youtube|video|short|tiktok|reel|ugc|podcast/i.test(tool.slug)) return guideEntity.play;
+  if (/instagram|caption|bio|hashtag|pinterest|reddit|linkedin|thread|social/i.test(tool.slug)) return guideEntity.spark;
+  if (/password|robots|dns|http|ip|subnet/i.test(tool.slug)) return guideEntity.shield;
+  if (/json|regex|base64|url|entity|uuid|timestamp|diff/i.test(tool.slug)) return guideEntity.dev;
+  if (/keyword|serp|slug|meta/i.test(tool.slug)) return guideEntity.search;
+  if (/word|character|readability|text|whitespace/i.test(tool.slug)) return guideEntity.write;
+  if (/utm|tracking|campaign/i.test(tool.slug)) return guideEntity.chart;
+  return ({ seo: guideEntity.search, writing: guideEntity.write, dev: guideEntity.dev, tracking: guideEntity.chart, youtube: guideEntity.play, creator: guideEntity.spark, socialai: guideEntity.spark, web: guideEntity.shield })[tool.category] || guideEntity.tool;
+}
+
+function guideMetaChips(guide, tool) {
+  const toolTitle = tool ? tool.title : "Related tool";
+  return `<div class="guide-card-meta"><span class="guide-tool-chip"><b aria-hidden="true">${guideToolIcon(tool)}</b>${esc(toolTitle)}</span><span><b aria-hidden="true">${guideEntity.target}</b>Problem first</span><span><b aria-hidden="true">${guideEntity.check}</b>Checklist</span></div>`;
+}
+
+function guideOverviewMeta(count) {
+  return `<div class="guide-card-meta"><span><b aria-hidden="true">${guideEntity.book}</b>${count} guides</span><span><b aria-hidden="true">${guideEntity.link}</b>Tool-linked</span><span><b aria-hidden="true">${guideEntity.check}</b>Checklist</span></div>`;
+}
+
 function guideCard(guide) {
   const mark = ({ seo: "SEO", writing: "TXT", dev: "DEV", tracking: "UTM", youtube: "YT", creator: "CR" })[guide.category] || "GUIDE";
   const tool = cms.toolBySlug[guide.tool];
   return `<a class="guide-hub-card" href="${guide.url}">
     <div class="authority-card-head"><span aria-hidden="true">${mark}</span><h3>${esc(guide.title)}</h3></div>
     <p>${esc(guide.description)}</p>
-    <div class="guide-card-meta"><span>${esc(tool ? tool.title : "Related tool")}</span><span>Problem first</span><span>Checklist</span></div>
+    <div class="guide-card-footer">${guideMetaChips(guide, tool)}<span class="guide-card-cta"><b aria-hidden="true">${guideEntity.book}</b>Open guide &rarr;</span></div>
   </a>`;
 }
 
@@ -472,7 +509,7 @@ function guidesIndexPage() {
       <a href="/guides/creator/"><b>Creator decision</b><span>Package titles, descriptions, hashtags and tracking as one upload route.</span></a>
     </section>
     <section class="guide-search-panel" aria-label="Search Clickoz guides">
-      <div>
+      <div class="guide-search-copy">
         <p class="guide-kicker">FIND THE RIGHT GUIDE</p>
         <h2>Search by decision, tool or problem.</h2>
         <p>Filter the library without losing the category structure. Use it when you know the job but not the article name.</p>
@@ -482,14 +519,8 @@ function guidesIndexPage() {
         <p id="guideSearchStatus" class="guide-search-status" aria-live="polite">Showing ${cms.guides.length} practical guides</p>
         <button type="button" id="guideSearchReset" hidden>Reset guide search</button>
       </div>
-      <div class="guide-search-chips" aria-label="Popular guide searches">
-        <button type="button" data-guide-search="meta title">Meta title</button>
-        <button type="button" data-guide-search="json error">JSON error</button>
-        <button type="button" data-guide-search="utm">UTM</button>
-        <button type="button" data-guide-search="youtube description">YouTube description</button>
-      </div>
     </section>
-    <section class="guide-hub-grid guide-hub-overview">${sections.map((section) => `<a class="guide-hub-card guide-hub-entry" href="${section.url}"><div class="authority-card-head"><span>${section.mark}</span><h2>${section.title}</h2></div><p>${section.desc}</p><div class="guide-card-meta"><span>${cms.guides.filter((g) => section.cats.includes(g.category)).length} guides</span><span>Tool-linked</span><span>Checklist</span></div></a>`).join("")}</section>
+    <section class="guide-hub-grid guide-hub-overview">${sections.map((section) => `<a class="guide-hub-card guide-hub-entry" href="${section.url}"><div class="authority-card-head"><span>${section.mark}</span><h2>${section.title}</h2></div><p>${section.desc}</p>${guideOverviewMeta(cms.guides.filter((g) => section.cats.includes(g.category)).length)}</a>`).join("")}</section>
     ${sections.map((section) => {
       const guides = cms.guides.filter((guide) => section.cats.includes(guide.category));
       return `<section class="guide-category-band" id="${section.mark.toLowerCase()}"><div class="authority-head"><p class="guide-kicker">${section.title}</p><h2>${section.desc}</h2><p><a href="${section.url}">Open the full ${section.title.toLowerCase()} hub</a></p></div><div class="guide-hub-grid">${guides.map(guideCard).join("")}</div></section>`;

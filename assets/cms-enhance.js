@@ -61,6 +61,21 @@
     "Robots.txt": "Crawl"
   };
 
+  const guideEntity = {
+    book: "&#128218;",
+    check: "&#9989;",
+    chart: "&#128200;",
+    dev: "&#129514;",
+    link: "&#128279;",
+    play: "&#9654;&#65039;",
+    search: "&#128269;",
+    shield: "&#128737;&#65039;",
+    spark: "&#10024;",
+    target: "&#127919;",
+    tool: "&#128736;&#65039;",
+    write: "&#9997;&#65039;"
+  };
+
   function esc(value) {
     return String(value || "").replace(/[&<>"']/g, (char) => ({
       "&": "&amp;",
@@ -77,6 +92,27 @@
 
   function toolName(slug) {
     return cms.toolBySlug?.[slug]?.title || slug.replace(/-/g, " ");
+  }
+
+  function guideToolIcon(tool) {
+    if (!tool) return guideEntity.tool;
+    if (/youtube|video|short|tiktok|reel|ugc|podcast/i.test(tool.slug)) return guideEntity.play;
+    if (/instagram|caption|bio|hashtag|pinterest|reddit|linkedin|thread|social/i.test(tool.slug)) return guideEntity.spark;
+    if (/password|robots|dns|http|ip|subnet/i.test(tool.slug)) return guideEntity.shield;
+    if (/json|regex|base64|url|entity|uuid|timestamp|diff/i.test(tool.slug)) return guideEntity.dev;
+    if (/keyword|serp|slug|meta/i.test(tool.slug)) return guideEntity.search;
+    if (/word|character|readability|text|whitespace/i.test(tool.slug)) return guideEntity.write;
+    if (/utm|tracking|campaign/i.test(tool.slug)) return guideEntity.chart;
+    return ({
+      seo: guideEntity.search,
+      writing: guideEntity.write,
+      dev: guideEntity.dev,
+      tracking: guideEntity.chart,
+      youtube: guideEntity.play,
+      creator: guideEntity.spark,
+      socialai: guideEntity.spark,
+      web: guideEntity.shield
+    })[tool.category] || guideEntity.tool;
   }
 
   function addToolCardFeatures() {
@@ -105,11 +141,10 @@
       const meta = document.createElement("div");
       meta.className = "guide-card-meta";
       meta.innerHTML = [
-        categoryLabel[guide.category] || "Guide route",
-        tool ? tool.title : toolName(guide.tool),
-        "Checklist"
-      ].map((trait) => `<span>${esc(trait)}</span>`).join("") +
-        `<span class="guide-tool-chip">${esc(categoryMark[guide.category] || "GO")} ${esc(toolName(guide.tool))}</span>`;
+        `<span class="guide-tool-chip"><b aria-hidden="true">${guideToolIcon(tool)}</b>${esc(tool ? tool.title : toolName(guide.tool))}</span>`,
+        `<span><b aria-hidden="true">${guideEntity.target}</b>${esc(categoryLabel[guide.category] || "Problem first")}</span>`,
+        `<span><b aria-hidden="true">${guideEntity.check}</b>Checklist</span>`
+      ].join("");
       const bottom = $(".guide-bottom", card);
       if (bottom) card.insertBefore(meta, bottom);
       else card.appendChild(meta);

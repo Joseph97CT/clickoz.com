@@ -1,0 +1,3406 @@
+﻿/* =========================================================
+   CLICKoz — site.css (CLEAN / ONE FILE) — MOBILE FIRST
+   - Base UI + Layout
+   - Accent glow background (ONE version)
+   - Nav + Accent dropdown + Mobile drawer styles
+   - Hero / Sections
+   - Cards (perfect alignment) + CTA pinned bottom
+   - Recommended cards
+   - Search + Chips
+   - Guides small cards
+   - Footer
+   - Cookie banner
+   - Google Translate dark (best-effort)
+   - Grain + Particles layers (CSS + canvas ready)
+========================================================= */
+
+/* ---------------- Root + Reset ---------------- */
+:root{
+  color-scheme: dark;
+
+  --bg:#0b0f19;
+  --panel: rgba(15,21,38,.78);
+  --panel2: rgba(17,26,48,.86);
+
+  --text: rgba(255,255,255,.92);
+  --muted: rgba(255,255,255,.72);
+
+  --border: rgba(255,255,255,.10);
+  --border2: rgba(255,255,255,.16);
+
+  --radius: 14px;
+
+  /* accent overridden by JS/color picker */
+ --accent: #22d3ee;        /* cyan */
+ --accent2:#06b6d4;        /* cyan 2 (opzionale) */
+  --accent-rgb: 34,211,238; /* rgb del cyan */
+
+
+  --shadow: 0 18px 60px rgba(0,0,0,.40);
+  --shadow2: 0 10px 26px rgba(0,0,0,.35);
+  --focus: 0 0 0 4px rgba(var(--accent-rgb), .16);
+
+  --navH: 72px;
+}
+
+*{ box-sizing:border-box; }
+a{ color: inherit; }
+img{ max-width:100%; display:block; }
+
+html, body{ overflow-x:hidden; }
+body{
+  margin: 0;
+  font-family: "Plus Jakarta Sans", Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  position: relative;
+}
+
+/* Optional: slightly bigger base text (your existing use) */
+body.bigtext{ font-size: 17px; }
+
+/* ---------------- Background (ONE only) ---------------- */
+body::before{
+  content:"";
+  position: fixed;
+  inset: -60%;
+  pointer-events:none;
+  z-index: -4;
+  background:
+    radial-gradient(1500px 900px at 50% -12%, rgba(var(--accent-rgb), .38), transparent 66%),
+    radial-gradient(1100px 900px at -10% 44%, rgba(var(--accent-rgb), .16), transparent 78%),
+    radial-gradient(1100px 900px at 110% 44%, rgba(var(--accent-rgb), .16), transparent 78%),
+    radial-gradient(1700px 1200px at 50% 62%, rgba(var(--accent-rgb), .10), transparent 84%),
+    radial-gradient(1700px 900px at 50% 118%, rgba(var(--accent-rgb), .08), transparent 90%);
+  filter: blur(62px);
+  opacity: .95;
+}
+body::after{
+  content:"";
+  position: fixed;
+  inset: -35%;
+  pointer-events:none;
+  z-index: -3;
+  background:
+    radial-gradient(1200px 900px at 18% 26%, rgba(var(--accent-rgb), .08), transparent 82%),
+    radial-gradient(1200px 900px at 82% 26%, rgba(var(--accent-rgb), .08), transparent 82%),
+    radial-gradient(1700px 1200px at 50% 72%, rgba(var(--accent-rgb), .06), transparent 86%);
+  filter: blur(84px);
+  opacity: .80;
+}
+
+/* ---------------- Grain ---------------- */
+.__grain{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -2;
+  opacity: .10;
+  mix-blend-mode: overlay;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,.05) 0px,
+      rgba(255,255,255,.05) 1px,
+      rgba(0,0,0,0) 2px,
+      rgba(0,0,0,0) 4px
+    );
+  filter: blur(.25px);
+}
+
+/* ---------------- Particles layer (your current DOM particles) ---------------- */
+#clickozParticles{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+.pidle, .pburst{
+  position:absolute;
+  border-radius:999px;
+  background: rgba(var(--accent-rgb), .96);
+  box-shadow:
+    0 0 14px rgba(var(--accent-rgb), .55),
+    0 0 44px rgba(var(--accent-rgb), .22);
+  will-change: transform, opacity;
+}
+.pidle{
+  width: 2px;
+  height: 2px;
+  opacity: .22;
+  animation: idleDrift var(--idur) ease-in-out infinite;
+}
+@keyframes idleDrift{
+  0%   { transform: translate3d(0,0,0); opacity: .10; }
+  50%  { transform: translate3d(var(--ix), var(--iy), 0); opacity: .20; }
+  100% { transform: translate3d(0,0,0); opacity: .10; }
+}
+.pburst{
+  left: var(--sx);
+  top:  var(--sy);
+  width: var(--sz);
+  height: var(--sz);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.65);
+  animation: burstFly var(--dur) cubic-bezier(.12,.9,.18,1) forwards;
+  animation-delay: var(--delay);
+  box-shadow:
+    0 0 18px rgba(var(--accent-rgb), .55),
+    0 0 70px rgba(var(--accent-rgb), .18);
+}
+@keyframes burstFly{
+  0%   { opacity: 0; transform: translate(-50%,-50%) scale(.55); }
+  10%  { opacity: var(--op); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.12); }
+}
+
+/* ---------------- Canvas particles (future: spaceParticles) ---------------- */
+#spaceParticles{
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .55;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce){
+  #clickozParticles, #spaceParticles, .__grain{ display:none !important; }
+}
+
+/* ---------------- Container ---------------- */
+.container{
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+/* ---------------- NAV ---------------- */
+.nav{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(11,15,25,.72);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(10px);
+}
+.nav-inner{
+  min-height: var(--navH);
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  padding: 14px 0;
+}
+
+/* Logo */
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  font-weight: 1000;
+  letter-spacing: -0.03em;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Badge = clean (no background), follows accent */
+.logo-badge{
+  width: 48px;
+  height: 48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius: 14px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--accent);
+}
+.logo-mark{ width: 40px; height: 40px; display:block; }
+.logo-text{ font-weight: 900; letter-spacing: -0.02em; font-size: 20px; }
+.logo-oz{ font-weight: 1000; color: var(--accent); }
+
+.spacer{ flex: 1; }
+
+.nav-links{
+  display:flex;
+  align-items:center;
+  gap: 14px;
+  margin-left: 12px;
+  font-weight: 900;
+  font-size: 14px;
+  color: rgba(255,255,255,.78);
+}
+.nav-links a{
+  text-decoration:none;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+.nav-links a:hover{
+  background: rgba(var(--accent-rgb), .12);
+  color: rgba(255,255,255,.94);
+}
+
+.nav-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* Accent dropdown */
+.dropdown{ position:relative; }
+.dot-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  cursor:pointer;
+  transition: background .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.dot-btn:hover{
+  background: rgba(255,255,255,.07);
+  border-color: var(--border2);
+  box-shadow: var(--shadow2);
+}
+.dot-btn:focus{
+  outline:none;
+  box-shadow: var(--focus);
+  border-color: rgba(var(--accent-rgb), .55);
+}
+.dot{
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--accent);
+  border: 2px solid rgba(255,255,255,.22);
+}
+
+.menu{
+  position:absolute;
+  top:52px;
+  right:0;
+  min-width:240px;
+  background: #0c1222;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow2);
+  padding: 10px;
+  display:none;
+  z-index:999;
+  text-align:left;
+}
+.menu.active{ display:block; }
+
+.menu-title{
+  font-size: 12px;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.58);
+  padding: 8px 10px 6px;
+}
+.color-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  padding:6px 8px 10px;
+}
+.color-option{
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,.12);
+  cursor:pointer;
+  transition: border-color .12s ease, transform .12s ease;
+}
+.color-option:hover{ border-color: rgba(255,255,255,.28); transform: translateY(-1px); }
+.color-option.active{ border-color: rgba(255,255,255,.85); }
+
+/* Google Translate wrapper in nav */
+#gtNavWrap{ display:none; align-items:center; }
+#gtNavWrap.show{ display:inline-flex; }
+
+/* ---------------- MOBILE NAV (drawer) ---------------- */
+.burger{
+  display:none;
+  width: 44px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  align-items:center;
+  justify-content:center;
+  gap: 5px;
+  flex-direction: column;
+}
+.burger span{
+  width: 18px;
+  height: 2px;
+  background: rgba(242,242,255,.88);
+  border-radius: 10px;
+}
+
+.m-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 80;
+}
+.m-menu{
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(360px, 88vw);
+  background: rgba(11,15,25,.92);
+  border-left: 1px solid rgba(255,255,255,.10);
+  backdrop-filter: blur(16px);
+  z-index: 90;
+  transform: translateX(102%);
+  transition: transform .22s ease;
+  padding: 14px;
+  display:flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.m-menu.open{ transform: translateX(0); }
+
+.m-head{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.m-title{
+  font-weight: 1000;
+  letter-spacing: -0.02em;
+}
+.m-close{
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+  color: rgba(242,242,255,.9);
+  font-size: 22px;
+}
+
+.m-links{
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.m-link{
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  text-decoration: none;
+  color: rgba(242,242,255,.92);
+  font-weight: 900;
+}
+
+.m-block{
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+}
+.m-label{
+  font-weight: 900;
+  margin-bottom: 10px;
+  color: rgba(242,242,255,.86);
+}
+.m-colors{ gap: 10px; }
+
+/* On mobile: hide top links, show burger, move GT to drawer */
+@media (max-width: 980px){
+  .nav-links{ display:none; }
+  .burger{ display:flex; }
+  #gtNavWrap{ display:none !important; }
+}
+
+/* ---------------- HERO / Sections ---------------- */
+.hero{ padding: 34px 0 10px; text-align:center; }
+.section{ padding: 28px 0; text-align:center; }
+
+.row{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content:center;
+}
+
+.badge{
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(var(--accent-rgb), .10);
+  border: 1px solid rgba(var(--accent-rgb), .24);
+  color: rgba(255,255,255,.82);
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: 0 18px 60px rgba(var(--accent-rgb), .10);
+}
+
+.hero h1{
+  font-size: clamp(34px, 4.2vw, 62px);
+  max-width: 1080px;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  margin: 12px auto 0;
+}
+.hero p{
+  font-size: 18px;
+  line-height: 1.75;
+  max-width: 980px;
+  color: var(--muted);
+  margin: 14px auto 10px;
+}
+
+.section-title{
+  font-size: clamp(26px, 2.8vw, 40px);
+  letter-spacing: -0.02em;
+  margin: 0 auto;
+  max-width: 980px;
+}
+.section-sub{
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 980px;
+  margin: 10px auto 18px;
+}
+
+/* hero-box (your transparent black panels) */
+.hero-box{
+  background: rgba(0,0,0,.38);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  padding: 16px 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+.box-title{ margin: 0 0 8px; font-size: 18px; font-weight: 1000; letter-spacing:-.02em; }
+.box-sub{ margin: 0; opacity: .9; }
+.box-foot{ margin-top: 12px; font-size: 14px; opacity: .8; }
+
+/* trust pills */
+.trust-strip{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content:center;
+}
+.trust-pill{
+  font-size: 14.5px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+  color: rgba(255,255,255,.86);
+}
+
+/* ---------------- Buttons ---------------- */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.90);
+  text-decoration:none;
+  font-weight: 900;
+  font-size: 16px;
+  cursor:pointer;
+  transition: background .12s ease, border-color .12s ease, filter .12s ease;
+}
+.btn:hover{
+  background: rgba(255,255,255,.07);
+  border-color: rgba(255,255,255,.18);
+}
+.btn.primary{
+  background: var(--accent);
+  border-color: rgba(255,255,255,.12);
+  box-shadow: 0 10px 22px rgba(var(--accent-rgb), .18);
+}
+.btn.primary:hover{ filter: brightness(1.05); }
+
+/* ---------------- Grids + Cards ---------------- */
+.small-grid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+.grid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 14px;
+  align-items: stretch;
+}
+
+/* Desktop columns */
+@media (min-width: 981px){
+  .small-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+}
+
+.small-card, .card{
+  padding: 16px;
+  border-radius: var(--radius);
+  text-decoration:none;
+
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(15,21,38,.58);
+  box-shadow: 0 16px 50px rgba(0,0,0,.28);
+  transition: border-color .12s ease, background .12s ease, box-shadow .12s ease;
+  text-align:left;
+}
+.small-card:hover, .card:hover{
+  background: rgba(17,26,48,.80);
+  border-color: rgba(var(--accent-rgb), .55);
+  box-shadow:
+    0 0 0 1px rgba(var(--accent-rgb), .18),
+    0 22px 70px rgba(0,0,0,.42),
+    0 18px 44px rgba(var(--accent-rgb), .12);
+}
+
+.small-card h3{ margin: 0 0 8px; font-size: 16px; font-weight: 1000; }
+.small-card p{
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: rgba(255,255,255,.72);
+}
+
+/* ---- Card content alignment (emoji + title SAME ROW) ---- */
+.card{
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+}
+
+/* Header row */
+.card-head{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-height: 46px;
+}
+
+/* Thumb (emoji) */
+.thumb{
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex: 0 0 auto;
+
+  background: rgba(var(--accent-rgb), .10);
+  border: 1px solid rgba(var(--accent-rgb), .22);
+  font-size: 20px;
+  box-shadow: 0 10px 22px rgba(var(--accent-rgb), .10);
+}
+
+/* Title aligned with thumb */
+.card-head h3,
+.card h3{
+  margin: 0;
+  font-size: 16px;
+  font-weight: 1000;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+/* Paragraphs */
+.card p{
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: rgba(255,255,255,.72);
+}
+
+.example-line{
+  margin-top: 2px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: rgba(255,255,255,.62);
+}
+
+/* CTA pinned bottom */
+.tool-cta{
+  margin-top: auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width: 100%;
+  height: 40px;
+  border-radius: 12px;
+  font-weight: 1000;
+  font-size: 13px;
+  letter-spacing: .01em;
+  background: var(--accent);
+  color: rgba(255,255,255,.96);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 10px 22px rgba(var(--accent-rgb), .18);
+}
+.tool-cta:hover{ filter: brightness(1.05); }
+
+/* ---------------- Recommended now ---------------- */
+.rec-grid{
+  display:grid;
+  gap: 12px;
+  margin-top: 14px;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  text-align:left;
+}
+@media (min-width: 981px){
+  .rec-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+}
+
+.rec-card{
+  display:flex;
+  flex-direction: column;
+  height: 100%;
+}
+.rec-head{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-height: 46px;
+}
+.rec-icon{
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(var(--accent-rgb), .10);
+  border: 1px solid rgba(var(--accent-rgb), .22);
+  font-size: 20px;
+  box-shadow: 0 10px 22px rgba(var(--accent-rgb), .10);
+}
+.rec-card h3{ margin: 0; font-size: 18px; font-weight: 1000; line-height: 1.15; }
+.rec-card p{ margin: 10px 0 0; color: var(--muted); }
+.rec-card .tool-cta{ margin-top: auto; }
+
+/* ---------------- Search + chips ---------------- */
+input.search{
+  background: rgba(15,21,38,.70);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 12px;
+  outline: none;
+  width: min(920px, 100%);
+  margin: 0 auto;
+  display:block;
+  text-align:left;
+  padding: 12px 12px;
+}
+input.search::placeholder{ color: rgba(255,255,255,.55); }
+input.search:focus{
+  border-color: rgba(var(--accent-rgb), .55);
+  box-shadow: var(--focus);
+}
+
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  margin: 14px 0 14px;
+  justify-content:center;
+}
+.chip{
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 1000;
+  cursor:pointer;
+  user-select:none;
+  background: rgba(255,255,255,.02);
+  border: 1px solid var(--border);
+  color: rgba(255,255,255,.78);
+  transition: background .12s ease, border-color .12s ease;
+}
+.chip:hover{ background: rgba(255,255,255,.05); }
+.chip.active{
+  color: var(--text);
+  border-color: rgba(var(--accent-rgb), .55);
+  background: rgba(var(--accent-rgb), .12);
+}
+
+/* ---------------- Footer ---------------- */
+.footer{
+  margin-top: 24px;
+  padding: 22px 0 14px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.38);
+  backdrop-filter: blur(10px);
+  text-align:center;
+}
+.footer-grid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  text-align:center;
+}
+@media (min-width: 981px){
+  .footer-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.footer h4{
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: rgba(255,255,255,.80);
+  font-weight: 900;
+}
+.footer-links{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+  align-items:center;
+  justify-content:center;
+}
+.footer a{
+  text-decoration:none;
+  color: rgba(255,255,255,.70);
+  font-weight: 800;
+  font-size: 14px;
+}
+.footer a:hover{ color: rgba(255,255,255,.92); }
+.sep{ border:none; border-top: 1px solid rgba(255,255,255,.08); }
+
+/* ---------------- Cookie banner ---------------- */
+.cookie{
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2000;
+  display: none;
+  pointer-events: none;
+}
+.cookie.show{ display:block; }
+
+.cookie-card{
+  pointer-events: auto;
+  width: min(920px, 100%);
+  margin: 0 auto;
+  background: rgba(15, 21, 38, .92);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.55);
+  backdrop-filter: blur(12px);
+
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+
+  padding: 14px 14px;
+  transform: translateY(10px);
+  opacity: 0;
+  transition: transform .18s ease, opacity .18s ease;
+  position: relative;
+}
+.cookie.show .cookie-card{ transform: translateY(0); opacity: 1; }
+
+@media (min-width: 721px){
+  .cookie-card{ grid-template-columns: 1fr auto; }
+}
+
+.cookie-x{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.88);
+  cursor: pointer;
+  font-weight: 1000;
+  line-height: 1;
+}
+.cookie-x:hover{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.18); }
+
+.cookie-content{ padding-right: 44px; }
+.cookie-title{
+  font-weight: 1000;
+  letter-spacing: -0.02em;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.cookie-text{
+  color: rgba(255,255,255,.72);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.cookie-text a{
+  color: rgba(255,255,255,.90);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cookie-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap: 10px;
+  flex-wrap:wrap;
+}
+.cookie-btn{ height: 40px; padding: 0 12px; font-size: 13px; border-radius: 12px; }
+.cookie-actions .btn.primary.cookie-btn{
+  box-shadow: 0 12px 26px rgba(var(--accent-rgb), .22);
+}
+@media (max-width: 720px){
+  .cookie-actions{ justify-content: stretch; }
+  .cookie-btn{ width: 100%; }
+}
+
+/* ---------------- Google Translate dark (best-effort) ---------------- */
+#google_translate_element{ display:inline-flex; align-items:center; position:relative; }
+#google_translate_element_mobile{ display:inline-flex; align-items:center; position:relative; }
+
+.goog-te-gadget{ font-size: 0 !important; color: transparent !important; }
+.goog-te-gadget span{ display:none !important; }
+
+.goog-te-gadget select,
+.goog-te-combo{
+  height: 42px !important;
+  min-width: 160px !important;
+  padding: 0 34px 0 12px !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--border) !important;
+  background: #000 !important;
+  color: #fff !important;
+  font-weight: 1000 !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+}
+
+#google_translate_element::after,
+#google_translate_element_mobile::after{
+  content:"▾";
+  position:absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,.85);
+  pointer-events:none;
+  font-size: 12px;
+}
+
+.goog-te-gadget select:hover,
+.goog-te-combo:hover{
+  border-color: rgba(var(--accent-rgb), .55) !important;
+  box-shadow: 0 10px 22px rgba(var(--accent-rgb), .12) !important;
+}
+.goog-te-gadget select:focus,
+.goog-te-combo:focus{
+  outline:none !important;
+  box-shadow: var(--focus) !important;
+  border-color: rgba(var(--accent-rgb), .65) !important;
+}
+
+.goog-te-banner-frame{ display:none !important; }
+body{ top:0 !important; }
+@media (max-width: 980px){
+  .nav-links{ display:none; }
+  .burger{ display:flex; }
+
+  /* NASCONDI accent picker in top bar su mobile */
+  .nav-actions .dropdown{ display:none; }
+
+  /* Translate resta solo nel drawer */
+  #gtNavWrap{ display:none !important; }
+}
+@media (min-width: 981px){
+  body::before{ opacity: 1; filter: blur(70px); }
+  body::after{ opacity: .95; filter: blur(92px); }
+}
+/* Burger: only on mobile */
+.burger{ display:none; }
+@media (max-width: 980px){
+  .burger{ display:flex; }
+  .nav-actions .dropdown{ display:none; } /* niente color picker in top bar */
+  #gtNavWrap{ display:none !important; }  /* translate solo nel drawer */
+}
+
+/* Make space canvas visible on desktop too */
+#spaceParticles{ opacity: .70; }
+@media (min-width: 981px){
+  body::before{ opacity: 1; filter: blur(72px); }
+  body::after{ opacity: .95; filter: blur(94px); }
+  #spaceParticles{ opacity: .95; }
+}
+#spaceParticles{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -2;     /* dietro ai DOM particles */
+  opacity: .95;    /* alza visibilità */
+}
+#clickozParticles{ z-index: -1; }  /* sopra canvas */
+.__grain{ z-index: -3; }           /* sotto canvas */
+body::before{ z-index: -6; }
+body::after{ z-index: -5; }
+/* ================================
+   CLICKoz — Typography + Scale Patch
+   Put this at the END of site.css
+================================ */
+
+/* Base scale: more premium, less oversized */
+:root{
+  --fontBase: 16px;
+  --fontBig: 17px; /* was 20 via body.bigtext */
+  --h1: clamp(30px, 3.2vw, 52px);
+  --h2: clamp(24px, 2.2vw, 36px);
+  --h3: 16px;
+
+  --lhText: 1.72;
+  --lhTight: 1.12;
+  --trackTight: -0.02em;
+}
+
+body{
+  font-size: var(--fontBase);
+  letter-spacing: -0.005em;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Your “bigtext” mode: keep it, but make it modern */
+body.bigtext{
+  font-size: var(--fontBig);
+}
+
+/* NAV / LOGO scale polish */
+.nav-inner{
+  min-height: var(--navH);
+  padding: 12px 0; /* slightly tighter */
+}
+
+.logo{
+  gap: 10px;
+}
+
+.logo-badge{
+  width: 40px;   /* was 48 */
+  height: 40px;  /* was 48 */
+  border-radius: 14px;
+}
+
+.logo-mark{
+  width: 34px;
+  height: 34px;
+}
+
+.logo-text{
+  font-weight: 1000;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  /* remove heavy outline vibe; keep premium glow */
+  -webkit-text-stroke: 0;
+  text-shadow: 0 0 18px rgba(var(--accent-rgb), .10);
+}
+
+.logo-oz{
+  font-weight: 1000;
+}
+
+/* Nav links: more “product”, less “chunky” */
+.nav-links{
+  gap: 10px;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+.nav-links a{
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+
+/* Titles */
+.hero h1,
+.section-title{
+  letter-spacing: var(--trackTight);
+}
+
+.hero h1{
+  font-size: var(--h1);
+  line-height: var(--lhTight);
+}
+
+.section-title{
+  font-size: var(--h2);
+  font-weight: 1000;
+  line-height: 1.14;
+}
+
+.hero p,
+.section-sub{
+  font-size: 15.5px;
+  line-height: var(--lhText);
+}
+
+/* Tools grid readability */
+.card-head{
+  min-height: 44px;
+}
+.card-head h3{
+  font-size: 16px;
+  line-height: 1.15;
+}
+
+.card p{
+  font-size: 14.5px;
+  line-height: 1.70;
+  color: rgba(255,255,255,.74);
+}
+
+.example-line{
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: rgba(255,255,255,.64);
+}
+
+/* Search input: slightly more premium spacing */
+input.search{
+  padding: 13px 14px;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+/* Pills + chips */
+.trust-pill{ font-size: 13.5px; }
+.chip{ font-size: 12.5px; }
+
+/* CTA: more compact, less “big button” feel */
+.tool-cta{
+  height: 38px;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+}
+
+/* Footer typography */
+.footer{
+  padding: 20px 0 14px;
+}
+.footer a{
+  font-size: 13px;
+}
+/* =========================================================
+   CLICKoz — Global UI improvements (Nav active + Home hero) 23.01
+========================================================= */
+
+/* Active state in nav (same behavior on all pages) */
+.nav-links a.active,
+.m-links a.active{
+  background: rgba(var(--accent-rgb), .12);
+  border: 1px solid rgba(var(--accent-rgb), .28);
+  color: rgba(255,255,255,.96);
+}
+
+/* Nav glow on scroll (works with your JS adding is-scrolled/is-down) */
+.nav.is-scrolled{
+  box-shadow:
+    0 18px 36px rgba(0,0,0,.34),
+    0 8px 0 rgba(0,0,0,0) inset;
+}
+.nav.is-scrolled::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:-1px; height:2px;
+  background: linear-gradient(90deg, transparent, var(--accent, #22d3ee), transparent);
+  filter: blur(.2px);
+  opacity:.55;
+  pointer-events:none;
+}
+.nav.is-down::after{
+  height:3px;
+  opacity:.95;
+  box-shadow: 0 0 18px rgba(var(--accent-rgb),.55);
+}
+
+/* Home hero “pro intro” block */
+.hero-intro{
+  margin-top: 18px;
+  text-align: center;
+}
+.hero-intro p{
+  max-width: 980px;
+  margin: 14px auto 0;
+  color: rgba(255,255,255,.78);
+  line-height: 1.75;
+  font-size: 16px;
+}
+.hero-cta{
+  margin-top: 16px;
+  display:flex;
+  gap: 10px;
+  justify-content:center;
+  flex-wrap: wrap;
+}
+.hero-cta .btn{
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 14px;
+  font-weight: 1000;
+}
+.hero-cta .btn.ghost{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+/* “What can I do here?” cards */
+.how-grid{
+  margin-top: 18px;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  max-width: 1120px;
+  margin-left:auto;
+  margin-right:auto;
+}
+@media (min-width: 981px){
+  .how-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.how-card{
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: linear-gradient(180deg, rgba(15,21,38,.62), rgba(0,0,0,.18));
+  box-shadow: 0 16px 50px rgba(0,0,0,.28);
+  position: relative;
+  overflow: hidden;
+  text-align:left;
+}
+.how-card::after{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  background: radial-gradient(620px 260px at 18% 30%, rgba(var(--accent-rgb), .14), transparent 60%);
+  filter: blur(28px);
+  opacity: .9;
+  pointer-events:none;
+}
+.how-head{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+.how-ico{
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(var(--accent-rgb), .10);
+  border: 1px solid rgba(var(--accent-rgb), .22);
+  font-size: 20px;
+  flex: 0 0 auto;
+}
+.how-card h3{
+  margin: 0;
+  font-size: 16px;
+  font-weight: 1000;
+  letter-spacing: -0.01em;
+}
+.how-card p{
+  margin: 10px 0 0;
+  position: relative;
+  z-index: 1;
+  color: rgba(255,255,255,.74);
+  line-height: 1.7;
+  font-size: 14.5px;
+}
+
+/* Recommended spacing */
+.rec-wrap{ margin-top: 18px; }
+
+/* Keep cards CTAs aligned */
+.card{ display:flex; flex-direction:column; }
+.card .tool-cta{ margin-top:auto; display:inline-flex; }
+.small-card.guide-card{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  min-height: 190px;
+}
+.small-card.guide-card .tool-cta{
+  margin-top:auto;
+  align-self:flex-start;
+  display:inline-flex;
+}
+
+/* ===========================
+   Recommended — Rail OUTSIDE
+   + Fix sfasamento card
+=========================== */
+
+/* Shell: rail outside + recommended box */
+.rec-shell{
+  display:grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+/* Mobile stack */
+@media (max-width: 979px){
+  .rec-shell{ grid-template-columns: 1fr; }
+  .rec-rail-outside{ order: 0; }
+  .rec-wrap{ order: 1; }
+}
+
+/* Desktop: left rail + right box */
+@media (min-width: 980px){
+  .rec-shell{
+    grid-template-columns: 290px 1fr;
+    align-items: start;
+  }
+}
+
+/* Rail outside (same card feel) */
+.rec-rail{
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+/* sticky only on desktop */
+@media (min-width: 980px){
+  .rec-rail-outside{
+    position: sticky;
+    top: 86px; /* sotto la nav */
+  }
+}
+
+/* Brand (ONLY text, centered) */
+.rec-brand{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align:center;
+  padding: 6px 6px 4px;
+  margin-bottom: 10px;
+}
+
+.rec-brandname{
+  font-weight: 1000;
+  letter-spacing: -0.04em;
+  font-size: 22px;
+  line-height: 1.05;
+  text-shadow: 0 0 18px rgba(var(--accent-rgb),.10);
+}
+
+.rec-brandsub{
+  margin-top: 8px;
+  font-size: 12.8px;
+  opacity: .80;
+  line-height: 1.45;
+  max-width: 240px;
+}
+
+/* Trust list = cards/pills */
+.rec-trust{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.rec-trust .trust-pill{
+  display:flex;
+  align-items:center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(8px);
+  font-size: 13px;
+  line-height: 1.35;
+  opacity: .92;
+}
+
+.rec-trust .trust-pill strong{
+  font-weight: 900;
+  opacity: .98;
+}
+
+/* Recommended grid inside box */
+.rec-wrap .rec-grid{
+  display:grid;
+  gap: 14px;
+  margin-top: 12px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 980px){
+  .rec-wrap .rec-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* CRITICAL: prevent global .card grid inheritance from breaking layout */
+.rec-card{
+  display:flex !important;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100%;
+}
+
+.rec-card .rec-head{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+
+.rec-card h3{ margin:0; }
+
+/* push bottom block stable */
+.rec-card .tool-cat{
+  margin-top: auto;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 6px;
+  font-size: 13px;
+  opacity: .82;
+}
+.rec-card .tool-cta{
+  display:inline-flex;
+  margin-top: 10px;
+  align-self: stretch;
+  justify-content:center;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+
+/* prevent odd wrapping overflow */
+.rec-card p, .rec-card li{ overflow-wrap:anywhere; }
+/* =========================================================
+   HOME (index) — moved from index.html into site.css
+   - Section titles
+   - Recommended rail outside + grid fix
+   - Two-words trust pills
+   - Button differentiation (list buttons vs tool/guide CTAs)
+========================================================= */
+
+/* Stronger section title */
+.section-title{
+  font-size: clamp(34px, 3.3vw, 48px);
+  font-weight: 1000;
+  letter-spacing: -0.03em;
+  text-shadow:
+    0 0 18px rgba(var(--accent-rgb),.14),
+    0 1px 0 rgba(0,0,0,.65);
+}
+
+/* Slightly bigger text on desktop (safe) */
+@media (min-width: 980px){
+  body.bigtext{ font-size: 17px; }
+  .hero h1{
+    font-size: clamp(42px, 3.2vw, 56px);
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+  }
+  .hero p{ font-size: 18px; line-height: 1.75; }
+}
+
+/* Recommended now top row */
+.rec-toprow{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.rec-toprow .box-title{ margin: 0; }
+
+.rec-refresh{
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 14px;
+  font-weight: 1000;
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  user-select: none;
+}
+.rec-refresh:hover{ background: rgba(255,255,255,.09); }
+.rec-refresh:active{ transform: translateY(1px); }
+
+/* ===========================
+   Recommended — Rail OUTSIDE
+   + Fix sfasamento card
+=========================== */
+
+/* Shell: rail outside + recommended box */
+.rec-shell{
+  display:grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+/* Mobile stack */
+@media (max-width: 979px){
+  .rec-shell{ grid-template-columns: 1fr; }
+  .rec-rail-outside{ order: 0; }
+  .rec-wrap{ order: 1; }
+}
+
+/* Desktop: left rail + right box */
+@media (min-width: 980px){
+  .rec-shell{
+    grid-template-columns: 290px 1fr;
+    align-items: start;
+  }
+}
+
+/* Rail outside (separate card) */
+.rec-rail{
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+/* sticky only on desktop */
+@media (min-width: 980px){
+  .rec-rail-outside{
+    position: sticky;
+    top: 86px; /* under nav */
+  }
+}
+
+/* Brand (ONLY text, centered) */
+.rec-brand{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align:center;
+  padding: 6px 6px 4px;
+  margin-bottom: 10px;
+}
+.rec-brandname{
+  font-weight: 1000;
+  letter-spacing: -0.04em;
+  font-size: 22px;
+  line-height: 1.05;
+  text-shadow: 0 0 18px rgba(var(--accent-rgb),.10);
+}
+.rec-brandsub{
+  margin-top: 8px;
+  font-size: 12.8px;
+  opacity: .80;
+  line-height: 1.45;
+  max-width: 240px;
+}
+
+/* Trust list = two-words pills */
+.rec-trust{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* 2 words max = keep it compact */
+.rec-trust .trust-pill{
+  display:flex;
+  align-items:center;
+  justify-content: center;
+  text-align:center;
+  padding: 11px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(8px);
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  opacity: .95;
+  white-space: nowrap;
+}
+
+/* Recommended grid inside the box */
+.rec-wrap .rec-grid{
+  display:grid;
+  gap: 14px;
+  margin-top: 12px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 980px){
+  .rec-wrap .rec-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* CRITICAL: stop global .card layout inheritance that causes "Category" to detach */
+.rec-card{
+  display:flex !important;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100%;
+}
+
+/* tool card head row */
+.rec-card .rec-head{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+.rec-card h3{ margin:0; }
+
+/* examples list */
+.tool-examples{
+  margin: 10px 0 0 0;
+  padding-left: 18px;
+  font-size: 13.5px;
+  opacity: .88;
+  line-height: 1.55;
+}
+.tool-examples li{ margin: 6px 0; }
+
+/* push bottom block stable */
+.rec-card .tool-cat{
+  margin-top: auto;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 6px;
+  font-size: 13px;
+  opacity: .82;
+}
+.rec-card .tool-cat a{
+  text-decoration:none;
+  font-weight: 1000;
+  opacity: .95;
+}
+.rec-card .tool-cat a:hover{ text-decoration: underline; }
+
+/* ===== Button differentiation =====
+   - Tool/Guide CTA (inside cards) = subtle
+   - Full list buttons = stronger / different look
+*/
+
+/* Tool CTA inside cards (subtle, not same as primary) */
+.tool-cta,
+.guide-cta{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 11px 14px;
+  border-radius: 14px;
+  font-weight: 1000;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.05);
+  opacity: .95;
+}
+.tool-cta:hover,
+.guide-cta:hover{
+  background: rgba(255,255,255,.08);
+}
+.tool-cta{ margin-top: 10px; }
+.guide-cta{ margin-top: 10px; }
+
+/* Full list buttons (strong, wide) */
+.rec-actions{
+  margin-top: 12px;
+  display:flex;
+  justify-content:center;
+}
+.btn-wide{
+  width:100%;
+  height: 46px;
+  border-radius: 14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 1000;
+}
+
+/* Dedicated "list" buttons: make them slightly different from normal primary */
+.btn.list-btn{
+  letter-spacing: -0.01em;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.08) inset,
+    0 10px 28px rgba(0,0,0,.35);
+}
+.btn.list-btn:hover{
+  transform: translateY(-1px);
+}
+.btn.list-btn:active{
+  transform: translateY(0px);
+}
+
+/* Prevent odd wrapping overflow */
+.rec-card p, .rec-card li{ overflow-wrap:anywhere; }
+/* ===== HOTFIX: Force rail LEFT of recommended on desktop ===== */
+@media (min-width: 860px){
+  .rec-shell{
+    display: grid !important;
+    grid-template-columns: 290px minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+}
+
+/* fallback if something breaks grid */
+@media (min-width: 860px){
+  .rec-shell{
+    display: flex !important;
+    gap: 14px !important;
+  }
+  .rec-shell > .rec-rail-outside{
+    flex: 0 0 290px !important;
+  }
+  .rec-shell > .rec-wrap{
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+}
+/* =========================================================
+   Clickoz — guide.css
+   SAFE MODE:
+   - Styles apply ONLY when guide.js adds: body.page-guide
+   - Does NOT reset site.css, does NOT change global tokens
+   ========================================================= */
+
+/* ---- Page container spacing ---- */
+body.page-guide main {
+  padding-bottom: 34px;
+}
+
+/* ---- Improve long-form readability without breaking tools ---- */
+body.page-guide h1 {
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+
+body.page-guide h2 {
+  margin-top: 26px;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+body.page-guide h3 {
+  margin-top: 18px;
+  margin-bottom: 8px;
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+}
+
+body.page-guide p,
+body.page-guide li {
+  line-height: 1.85;
+}
+
+/* ---- “Meta line” at top (Guide • Updated...) ---- */
+body.page-guide .guide-meta-line,
+body.page-guide p:first-of-type {
+  opacity: 0.86;
+}
+
+/* ---- Guide actions row (Open tool / Jump) ---- */
+body.page-guide .guide-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0 6px;
+}
+
+body.page-guide .guide-actions a {
+  text-decoration: none;
+}
+
+/* ---- CTA blocks (tool-like card) ---- */
+body.page-guide .guide-cta {
+  margin: 14px 0;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+}
+
+body.page-guide .guide-cta strong {
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+body.page-guide .guide-cta a {
+  text-decoration: none;
+  font-weight: 800;
+  border-bottom: 1px solid rgba(255,255,255,.14);
+}
+
+/* ---- Callouts (Quick Wins / Pro tip / Common issue) ---- */
+body.page-guide .callout {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.14);
+}
+
+body.page-guide .callout .title {
+  font-weight: 900;
+  margin: 0 0 6px;
+}
+
+body.page-guide .callout.tip {
+  border-color: rgba(46,233,166,.26);
+  background: rgba(46,233,166,.07);
+}
+
+body.page-guide .callout.warn {
+  border-color: rgba(255,204,102,.26);
+  background: rgba(255,204,102,.07);
+}
+
+/* ---- Images / figures ---- */
+body.page-guide figure {
+  margin: 14px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+}
+
+body.page-guide figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+body.page-guide figcaption {
+  padding: 10px 12px;
+  font-size: 13px;
+  opacity: .78;
+  line-height: 1.55;
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+
+/* ---- Tables (nice, still minimal) ---- */
+body.page-guide table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+body.page-guide th,
+body.page-guide td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  text-align: left;
+  vertical-align: top;
+}
+
+body.page-guide th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  opacity: .82;
+  background: rgba(255,255,255,.03);
+}
+
+/* ---- Code blocks with copy (works even if markup is plain) ----
+   guide.js will wrap code blocks in .codeblock when needed.
+*/
+body.page-guide .codeblock {
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.22);
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+body.page-guide .codeblock__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+  font-size: 13px;
+  opacity: .92;
+}
+
+body.page-guide .codeblock__head button {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.04);
+  border-radius: 12px;
+  height: 34px;
+  padding: 0 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+body.page-guide .codeblock__head button:hover {
+  background: rgba(255,255,255,.07);
+}
+
+body.page-guide pre {
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+body.page-guide code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+}
+
+/* ---- TOC (guide.js can auto-create if missing) ---- */
+body.page-guide .guide-toc {
+  margin: 16px 0 6px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
+}
+
+body.page-guide .guide-toc h2,
+body.page-guide .guide-toc h3 {
+  margin: 0 0 8px;
+}
+
+body.page-guide .guide-toc ol {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+body.page-guide .guide-toc a {
+  text-decoration: none;
+  opacity: .86;
+}
+
+body.page-guide .guide-toc a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+body.page-guide .guide-toc a[aria-current="true"] {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* ---- Reading progress bar (optional) ---- */
+body.page-guide .readingbar {
+  height: 3px;
+  width: 100%;
+  background: rgba(255,255,255,.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 10px 0 0;
+}
+
+body.page-guide .readingbar > i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(124,92,255,.95), rgba(46,233,166,.95));
+}
+
+/* ---- Toast (copy feedback) ---- */
+body.page-guide .toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.62);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+  z-index: 9999;
+  max-width: min(520px, calc(100% - 28px));
+  text-align: center;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+body.page-guide .toast[data-show="true"] {
+  opacity: 1;
+}
+/* =========================================================
+   FIX: Skip link + horizontal shift (GLOBAL)
+   Paste at the VERY END of /assets/site.css
+========================================================= */
+
+/* Prevent any horizontal layout shift caused by overflowing elements */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Some components might use 100vw and create a scrollbar on desktop */
+.section, .container, main, header, footer {
+  max-width: 100%;
+}
+
+/* ✅ Skip link: always top-left, hidden off-canvas until focus */
+.skip-link{
+  position: fixed !important;
+  top: 12px !important;
+  left: 12px !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translateY(-140%) !important;
+  z-index: 99999 !important;
+
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+  text-decoration: none !important;
+  font-weight: 700 !important;
+
+  background: rgba(10,14,28,.92) !important;
+  color: rgba(242,242,255,.95) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  box-shadow: 0 14px 40px rgba(0,0,0,.45) !important;
+
+  /* ensure it doesn't get “inline” layout weirdness */
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* Visible only when keyboard focuses it */
+.skip-link:focus,
+.skip-link:focus-visible{
+  transform: translateY(0) !important;
+  outline: none !important;
+}
+
+/* Optional: avoid content being hidden under fixed nav after skip */
+#content {
+  scroll-margin-top: 90px;
+}
+/* =========================================================
+   GUIDES: stable layout + no right-shift
+   Paste at the VERY END of /assets/guide.css
+========================================================= */
+
+.guides-page main.section.container{
+  width: 100%;
+}
+
+/* Ensure hero + grid stay centered and never overflow */
+.guides-page .guide-hero,
+.guides-page .guide-grid{
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Robust grid: content + aside, collapses on mobile */
+.guides-page .guide-grid{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 18px;
+  align-items: start;
+}
+
+/* Prevent long code/URLs in article from expanding the grid */
+.guides-page .guide-content{
+  min-width: 0;
+}
+
+/* Aside never forces width overflow */
+.guides-page .guide-aside{
+  min-width: 0;
+  position: sticky;
+  top: 92px;
+}
+
+/* Mobile: stack */
+@media (max-width: 980px){
+  .guides-page .guide-grid{
+    grid-template-columns: 1fr;
+  }
+  .guides-page .guide-aside{
+    position: static;
+    top: auto;
+  }
+}
+
+/* Code blocks: wrap safely (long tokens won’t push layout) */
+.guides-page pre,
+.guides-page code{
+  max-width: 100%;
+}
+.guides-page pre{
+  overflow: auto;
+}
+
+/* Images never overflow */
+.guides-page img{
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+/* =========================================================
+   PATCH — Particles: no burst + idle more visible
+   Paste at END of /assets/site.css
+========================================================= */
+
+/* Make the floating particles more visible */
+#clickozParticles{
+  opacity: .92; /* was effectively lower due to idle opacity */
+}
+
+/* Increase idle visibility + slightly bigger dots (premium look) */
+.pidle{
+  width: 2.6px;      /* was 2px */
+  height: 2.6px;     /* was 2px */
+  opacity: .42;      /* was .22 */
+  filter: saturate(1.05);
+}
+
+/* Keep a gentle drift but with more presence */
+@keyframes idleDrift{
+  0%   { transform: translate3d(0,0,0); opacity: .30; }
+  50%  { transform: translate3d(var(--ix), var(--iy), 0); opacity: .52; }
+  100% { transform: translate3d(0,0,0); opacity: .30; }
+}
+
+/* Optional: soften glow so it looks “spacey” not “cheap neon” */
+.pidle, .pburst{
+  box-shadow:
+    0 0 12px rgba(var(--accent-rgb), .45),
+    0 0 34px rgba(var(--accent-rgb), .18);
+}
+
+/* Hard-disable burst visibility (safety net even if JS still creates them) */
+.pburst{
+  display: none !important;
+}
+/* Optional: tiny twinkle for idle particles (subtle) */
+.pidle{
+  animation:
+    idleDrift var(--idur) ease-in-out infinite,
+    idleTwinkle calc(var(--idur) * .85) ease-in-out infinite;
+}
+@keyframes idleTwinkle{
+  0%,100% { filter: brightness(1); }
+  50%     { filter: brightness(1.25); }
+}
+/* =========================================================
+   PATCH 2026-02 — Nav glow always ON + bigger nav typography
+   Paste at the VERY END of /assets/site.css
+========================================================= */
+
+/* 1) NAV typography bigger + more premium spacing */
+.logo-text{ font-size: 21px; }              /* was 20 */
+.nav-links{ font-size: 14px; gap: 12px; }   /* was 13 + 10 */
+.nav-links a{ padding: 9px 12px; border-radius: 13px; }
+
+@media (min-width: 981px){
+  .nav-inner{ padding: 13px 0; }            /* slight breathing room */
+}
+
+/* Google Translate select slightly bigger (desktop) */
+.goog-te-gadget select,
+.goog-te-combo{
+  font-size: 14px !important;               /* was 13 */
+  min-width: 172px !important;              /* was 160 */
+}
+
+/* 2) NAV glow ALWAYS visible from first paint */
+.nav{
+  position: sticky; /* keep */
+}
+
+/* Always create the bottom glow line */
+.nav::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:-1px; height:2px;
+  background: linear-gradient(90deg, transparent, var(--accent, #22d3ee), transparent);
+  filter: blur(.2px);
+  opacity: .65;
+  pointer-events:none;
+}
+
+/* When scrolling, keep your nicer elevated shadow */
+.nav.is-scrolled{
+  box-shadow:
+    0 18px 36px rgba(0,0,0,.34),
+    0 8px 0 rgba(0,0,0,0) inset;
+}
+
+/* If JS adds is-down, just intensify (not toggle) */
+.nav.is-down::after{
+  height:3px;
+  opacity:.95;
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), .50);
+}
+
+/* 3) HARD-KILL any DOM burst particles */
+.pburst{ display:none !important; }
+
+/* 4) OPTIONAL: if the central "burst" is canvas-based, keep canvas but lower "flash" look */
+#spaceParticles{
+  opacity: .70; /* reduce sudden perceived flash while keeping stars visible */
+}
+/* =========================================================
+   PATCH — Bigger NAV typography (logo + links + actions)
+   Paste at the VERY END of /assets/site.css
+========================================================= */
+
+:root{
+  /* nav scale tokens */
+  --navLogoText: 22px;   /* Clickoz text */
+  --navLinks: 15px;      /* Home/Tools/Guides/Updates */
+  --navAction: 14px;     /* Translate select + small UI */
+  --navPadY: 14px;       /* inner vertical padding */
+  --navH: 78px;          /* was 72px */
+}
+
+/* Keep nav height consistent */
+.nav-inner{
+  min-height: var(--navH);
+  padding: var(--navPadY) 0;
+}
+
+/* Logo sizing */
+.logo{ gap: 12px; }
+.logo-badge{
+  width: 44px;
+  height: 44px;
+}
+.logo-mark{
+  width: 38px;
+  height: 38px;
+}
+.logo-text{
+  font-size: var(--navLogoText);
+  font-weight: 1000;
+  letter-spacing: -0.02em;
+}
+.logo-oz{ font-weight: 1000; }
+
+/* Desktop links sizing */
+.nav-links{
+  font-size: var(--navLinks);
+  gap: 14px;
+  letter-spacing: 0.005em;
+}
+.nav-links a{
+  padding: 10px 14px;
+  border-radius: 14px;
+}
+
+/* Buttons in nav (color picker / burger) slightly larger */
+.dot-btn{
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+}
+.dot{ width: 15px; height: 15px; }
+
+.burger{
+  width: 48px;
+  height: 46px;
+  border-radius: 14px;
+}
+.burger span{
+  width: 20px;
+  height: 2px;
+}
+
+/* Translate select bigger + nicer spacing */
+.goog-te-gadget select,
+.goog-te-combo{
+  height: 46px !important;
+  min-width: 180px !important;
+  padding: 0 38px 0 14px !important;
+  border-radius: 14px !important;
+  font-size: var(--navAction) !important;
+}
+
+/* Dropdown arrow alignment for bigger select */
+#google_translate_element::after,
+#google_translate_element_mobile::after{
+  right: 14px;
+  font-size: 12.5px;
+}
+
+/* Mobile drawer links bigger too */
+.m-link{
+  font-size: 15px;
+  padding: 13px 14px;
+  border-radius: 16px;
+}
+
+/* Mobile drawer title a bit bigger */
+.m-title{
+  font-size: 16px;
+}
+/* =========================================================
+   PATCH 2026-02 — Modern font + brighter idle particles + remove center canvas
+   Paste at the VERY END of /assets/site.css
+   ========================================================= */
+
+/* ---------- 1) Modern font (site-wide) ----------
+   We’ll load the font in HTML next step.
+   This CSS switches the whole UI to the new stack.
+*/
+:root{
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+               Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* Apply everywhere for a consistent modern look */
+html, body{
+  font-family: var(--font-sans) !important;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Make form controls match (important for “modern” feel) */
+button, input, select, textarea{
+  font-family: var(--font-sans) !important;
+}
+
+/* Optional: a tiny bit more modern letter spacing on headings
+   (subtle, avoids “too tight” look with newer fonts) */
+h1, h2, h3{
+  letter-spacing: -0.02em;
+}
+
+/* ---------- 2) Particles brightness (idle) ----------
+   You already have a patch, here we push it a bit more “visible premium”
+*/
+#clickozParticles{
+  opacity: 1 !important;
+}
+
+/* Idle dots brighter + a bit larger */
+.pidle{
+  width: 2.8px !important;
+  height: 2.8px !important;
+  opacity: .62 !important; /* more visible */
+  filter: saturate(1.12) brightness(1.08);
+}
+
+/* Stronger glow but still elegant (no cheap neon) */
+.pidle{
+  box-shadow:
+    0 0 14px rgba(var(--accent-rgb), .62),
+    0 0 44px rgba(var(--accent-rgb), .22) !important;
+}
+
+/* Slightly stronger twinkle (still subtle) */
+@keyframes idleTwinkle{
+  0%,100% { filter: brightness(1.02); }
+  50%     { filter: brightness(1.30); }
+}
+
+/* ---------- 3) Remove the center canvas entirely (visual kill) ----------
+   We will also remove it in JS + HTML next step, but this is a safety net.
+*/
+#spaceParticles{
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+/* =========================================================
+   PATCH 2026-02 (FORTE) — Font moderno + Particles brighter + Kill canvas
+   INCOLLA ALLA FINE di /assets/site.css
+   ========================================================= */
+
+/* ---------- FONT: forza il nuovo font ovunque ---------- */
+:root{
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+               Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* Forza su TUTTO, anche se altrove c'è un font settato */
+html, body, body.bigtext, .nav, .m-menu, .footer, button, input, select, textarea{
+  font-family: var(--font-sans) !important;
+}
+
+h1, h2, h3, .logo-text{
+  font-family: var(--font-sans) !important;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- PARTICLES: più luminose e presenti ---------- */
+/* Alza la visibilità del layer */
+#clickozParticles{
+  opacity: 1 !important;
+  filter: saturate(1.18) brightness(1.12) !important;
+}
+
+/* Dots idle: più grandi e molto più visibili */
+.pidle{
+  width: 3px !important;
+  height: 3px !important;
+  opacity: .72 !important;
+  filter: saturate(1.15) brightness(1.20) !important;
+  box-shadow:
+    0 0 18px rgba(var(--accent-rgb), .72),
+    0 0 56px rgba(var(--accent-rgb), .26) !important;
+}
+
+/* twinkle un filo più evidente */
+@keyframes idleTwinkle{
+  0%,100% { filter: brightness(1.05); }
+  50%     { filter: brightness(1.45); }
+}
+
+/* ---------- KILL CANVAS: sparisce proprio ---------- */
+#spaceParticles{
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* =========================================================
+   ABSOLUTE FINAL CMS OVERRIDE
+   This block intentionally stays last: one font, +2px readability,
+   uppercase titles everywhere, stable language control.
+========================================================= */
+:root{
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+  --cms-text-size: 19px;
+  --cms-ui-size: 16px;
+  --cms-card-title-size: 18px;
+}
+
+html,
+body,
+body *,
+button,
+input,
+select,
+textarea{
+  font-family: var(--font-sans) !important;
+}
+
+body,
+body.bigtext{
+  font-size: var(--cms-text-size) !important;
+  line-height: 1.68 !important;
+}
+
+p,
+li,
+.section-sub,
+.tools-sub,
+.updates-sub,
+.guides-hero .section-sub,
+.box-sub,
+.card p,
+.small-card p,
+.guide-x p,
+.release-card p,
+.tool-standard-card p,
+.seo-card p,
+.faq-a,
+.wc-stat .label,
+.callout{
+  font-size: max(16px, 1em) !important;
+  line-height: 1.72 !important;
+}
+
+button,
+.btn,
+.cz-btn,
+.chip,
+.guide-cta,
+.tool-cta,
+.gt-fallback,
+.goog-te-combo,
+.goog-te-gadget select,
+.nav-links a,
+.m-link{
+  font-size: var(--cms-ui-size) !important;
+  line-height: 1 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.section-title,
+.tools-title,
+.guides-title,
+.updates-title,
+.hero h1,
+.friendly-hero-copy h1,
+.box-title,
+.card h3,
+.small-card h3,
+.guide-x h3,
+.release-card h3,
+.tool-standard-card h3,
+.seo-card h4,
+.faq-q,
+.guide-kicker,
+.menu-title,
+.m-title,
+.logo-text,
+.nav-links a{
+  font-family: var(--font-display) !important;
+  text-transform: uppercase !important;
+  letter-spacing: .035em !important;
+  line-height: 1.12 !important;
+  font-weight: 800 !important;
+}
+
+h1,
+.section-title,
+.tools-title,
+.guides-title,
+.updates-title,
+.tool-hero h1,
+.cz-hero h1,
+.hero h1,
+.friendly-hero-copy h1,
+main h1{
+  letter-spacing: .02em !important;
+  line-height: .98 !important;
+}
+
+.card h3,
+.small-card h3,
+.guide-x h3,
+.release-card h3,
+.tool-standard-card h3,
+.box-title{
+  font-size: var(--cms-card-title-size) !important;
+}
+
+.gt-fallback.error{
+  border-color: rgba(var(--accent-rgb), .24) !important;
+}
+
+.gt-fallback.loading{
+  opacity: 1 !important;
+}
+
+/* =========================================================
+   ABSOLUTE FINAL CMS OVERRIDE
+   This block intentionally stays last: one font, +2px readability,
+   uppercase titles everywhere, stable language control.
+========================================================= */
+:root{
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+  --cms-text-size: 19px;
+  --cms-ui-size: 16px;
+  --cms-card-title-size: 18px;
+}
+
+html,
+body,
+body *,
+button,
+input,
+select,
+textarea{
+  font-family: var(--font-sans) !important;
+}
+
+body,
+body.bigtext{
+  font-size: var(--cms-text-size) !important;
+  line-height: 1.68 !important;
+}
+
+p,
+li,
+.section-sub,
+.tools-sub,
+.updates-sub,
+.guides-hero .section-sub,
+.box-sub,
+.card p,
+.small-card p,
+.guide-x p,
+.release-card p,
+.tool-standard-card p,
+.seo-card p,
+.faq-a,
+.wc-stat .label,
+.callout{
+  font-size: max(16px, 1em) !important;
+  line-height: 1.72 !important;
+}
+
+button,
+.btn,
+.cz-btn,
+.chip,
+.guide-cta,
+.tool-cta,
+.gt-fallback,
+.goog-te-combo,
+.goog-te-gadget select,
+.nav-links a,
+.m-link{
+  font-size: var(--cms-ui-size) !important;
+  line-height: 1 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.section-title,
+.tools-title,
+.guides-title,
+.updates-title,
+.hero h1,
+.friendly-hero-copy h1,
+.box-title,
+.card h3,
+.small-card h3,
+.guide-x h3,
+.release-card h3,
+.tool-standard-card h3,
+.seo-card h4,
+.faq-q,
+.guide-kicker,
+.menu-title,
+.m-title,
+.logo-text,
+.nav-links a{
+  font-family: var(--font-display) !important;
+  text-transform: uppercase !important;
+  letter-spacing: .035em !important;
+  line-height: 1.12 !important;
+  font-weight: 800 !important;
+}
+
+h1,
+.section-title,
+.tools-title,
+.guides-title,
+.updates-title,
+.tool-hero h1,
+.cz-hero h1,
+.hero h1,
+.friendly-hero-copy h1,
+main h1{
+  letter-spacing: .02em !important;
+  line-height: .98 !important;
+}
+
+.card h3,
+.small-card h3,
+.guide-x h3,
+.release-card h3,
+.tool-standard-card h3,
+.box-title{
+  font-size: var(--cms-card-title-size) !important;
+}
+
+.gt-fallback.error{
+  border-color: rgba(var(--accent-rgb), .24) !important;
+}
+
+.gt-fallback.loading{
+  opacity: 1 !important;
+}
+
+/* =========================================================
+   FINAL CMS LOCK - single font, readable scale, aligned boxes
+========================================================= */
+:root{
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+  --cms-text-size: 18px;
+  --cms-small-size: 15px;
+  --cms-card-title-size: 18px;
+}
+
+html,
+body,
+body *,
+button,
+input,
+select,
+textarea{
+  font-family: var(--font-sans) !important;
+}
+
+body,
+body.bigtext{
+  font-size: var(--cms-text-size) !important;
+  line-height: 1.68 !important;
+}
+
+p,
+li,
+.section-sub,
+.tools-sub,
+.updates-sub,
+.box-sub,
+.card p,
+.small-card p,
+.guide-x p,
+.release-card p,
+.tool-standard-card p,
+.seo-card p,
+.faq-a{
+  font-size: max(16px, 1em) !important;
+  line-height: 1.72 !important;
+}
+
+button,
+.btn,
+.cz-btn,
+.chip,
+.guide-cta,
+.tool-cta,
+.gt-fallback,
+.goog-te-combo,
+.goog-te-gadget select{
+  font-size: 16px !important;
+  line-height: 1 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.section-title,
+.tools-title,
+.guides-title,
+.updates-title,
+.box-title,
+.card h3,
+.small-card h3,
+.guide-x h3,
+.release-card h3,
+.tool-standard-card h3,
+.seo-card h4,
+.faq-q,
+.guide-kicker,
+.menu-title,
+.m-title,
+.logo-text,
+.nav-links a{
+  font-family: var(--font-display) !important;
+  text-transform: uppercase !important;
+  letter-spacing: .035em !important;
+  line-height: 1.12 !important;
+  font-weight: 800 !important;
+}
+
+h1,
+.section-title,
+.tools-title,
+.guides-title,
+.updates-title,
+.tool-hero h1,
+.cz-hero h1,
+.hero h1,
+main h1{
+  letter-spacing: .02em !important;
+  line-height: .98 !important;
+}
+
+h2,
+.box-title,
+.tools-command-main h2,
+.guides-command-main h2,
+.tool-standard-head h2{
+  letter-spacing: .03em !important;
+}
+
+.card h3,
+.small-card h3,
+.guide-x h3,
+.release-card h3,
+.tool-standard-card h3{
+  font-size: var(--cms-card-title-size) !important;
+}
+
+.hero-box,
+.card,
+.small-card,
+.guide-x,
+.release-card,
+.tool-panel,
+.cz-panel,
+.tool-standard-card,
+.seo-card,
+.wc-first-use article,
+.reading-map-grid article,
+.wc-relbox,
+.guides-command-main,
+.guides-command-side a,
+.tools-command-main,
+.tools-command-side a{
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px !important;
+  border-color: rgba(var(--accent-rgb), .22) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.082), rgba(255,255,255,.026)),
+    radial-gradient(620px 260px at var(--spot-x, 18%) var(--spot-y, 0%), rgba(var(--accent-rgb), .14), transparent 66%),
+    rgba(8,16,30,.82) !important;
+}
+
+.hero-box::before,
+.card::before,
+.small-card::before,
+.guide-x::before,
+.release-card::before,
+.tool-panel::before,
+.cz-panel::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,.075) 42%, transparent 72%);
+  opacity:.18;
+  transform: translateX(-38%);
+  transition: transform .55s ease, opacity .25s ease;
+}
+
+.hero-box:hover::before,
+.card:hover::before,
+.small-card:hover::before,
+.guide-x:hover::before,
+.release-card:hover::before,
+.tool-panel:hover::before,
+.cz-panel:hover::before{
+  opacity:.42;
+  transform: translateX(28%);
+}
+
+.card-head,
+.rec-head,
+.guide-top,
+.tool-standard-card h3,
+.seo-card h4,
+.box-title,
+.wc-first-use article,
+.reading-map-grid article{
+  align-items: center !important;
+}
+
+.card,
+.small-card,
+.guide-x,
+.release-card,
+.tool-standard-card,
+.seo-card{
+  justify-content: flex-start;
+}
+
+.card-head h3,
+.guide-top h3,
+.rec-head h3,
+.small-card h3{
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.thumb,
+.rec-icon,
+.guide-ico,
+.wc-first-use .wc-first-icon,
+.reading-map-grid span{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex: 0 0 auto;
+}
+
+.hero-box h2::before,
+.box-title::before{
+  content:"✦ ";
+  color: var(--accent);
+  text-shadow: 0 0 18px rgba(var(--accent-rgb), .52);
+}
+
+.guide-kicker::before{
+  content:"◆ ";
+  color: var(--accent);
+}
+
+.card:hover,
+.small-card:hover,
+.guide-x:hover,
+.release-card:hover,
+.tool-standard-card:hover,
+.seo-card:hover,
+.wc-first-use article:hover,
+.reading-map-grid article:hover,
+.wc-relbox:hover{
+  transform: translateY(-3px) scale(1.006) !important;
+}
+
+@keyframes cmsRiseIn{
+  from{ opacity:0; transform: translateY(14px); }
+  to{ opacity:1; transform: translateY(0); }
+}
+
+.hero-box,
+.tools-hero,
+.guides-hero,
+.updates-hero,
+.card,
+.small-card,
+.guide-x,
+.release-card,
+.tool-panel,
+.cz-panel{
+  animation: cmsRiseIn .46s ease both;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .hero-box,
+  .tools-hero,
+  .guides-hero,
+  .updates-hero,
+  .card,
+  .small-card,
+  .guide-x,
+  .release-card,
+  .tool-panel,
+  .cz-panel{
+    animation:none !important;
+  }
+}
+
+/* =========================================================
+   CLICKoz 2026-05 CMS typography + title system
+========================================================= */
+:root{
+  --font-sans: "Space Grotesk", "Plus Jakarta Sans", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-display: "Oxanium", "Space Grotesk", "Plus Jakarta Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea{
+  font-family: var(--font-sans) !important;
+}
+
+.logo-text,
+.nav-links,
+.m-link,
+h1,
+h2,
+h3,
+.hero h1,
+main h1,
+main h2,
+.section-title,
+.tools-title,
+.guides-title,
+.updates-title,
+.cz-hero h1,
+.tool-hero h1,
+.guide-article h1,
+.guide-x h3,
+.card h3,
+.small-card h3{
+  font-family: var(--font-display) !important;
+}
+
+.section-title,
+.tools-title,
+.guides-title,
+.updates-title,
+.hero h1,
+main h1,
+.cz-hero h1,
+.tool-hero h1,
+.guide-article h1{
+  text-transform: uppercase !important;
+  letter-spacing: .015em !important;
+  line-height: .98 !important;
+  font-weight: 800 !important;
+}
+
+.tools-command-main h2,
+.guides-command-main h2,
+.guides-finish h3,
+.tool-standard-head h2,
+.reading-map-head h3{
+  font-family: var(--font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: .01em !important;
+}
+
+.card h3,
+.small-card h3,
+.guide-x h3,
+.release-card h3,
+.tool-standard-card h3{
+  text-transform: uppercase;
+  letter-spacing: .035em !important;
+}
+
+#google_translate_element:has(.goog-te-combo) .gt-fallback,
+#google_translate_element.gt-ready .gt-fallback,
+#google_translate_element_mobile:has(.goog-te-combo) .gt-fallback{
+  display:none !important;
+}
+
+/* =========================================================
+   CMS NAV SYSTEM - one language/color component everywhere
+========================================================= */
+.nav{
+  overflow: visible;
+}
+
+.nav-actions{
+  min-height: 46px;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:10px !important;
+  flex: 0 0 auto;
+}
+
+.nav-actions .dropdown,
+#gtNavWrap{
+  flex: 0 0 auto;
+}
+
+.dot-btn,
+.burger,
+.gt-fallback,
+.goog-te-gadget select,
+.goog-te-combo{
+  height:46px !important;
+  border-radius:14px !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025)),
+    rgba(3,7,14,.92) !important;
+  color:rgba(255,255,255,.94) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 14px 34px rgba(0,0,0,.24) !important;
+}
+
+.dot-btn,
+.burger{
+  width:46px !important;
+}
+
+.dot-btn:hover,
+.burger:hover,
+.gt-fallback:hover,
+.goog-te-gadget select:hover,
+.goog-te-combo:hover{
+  border-color:rgba(var(--accent-rgb), .55) !important;
+  box-shadow:
+    0 0 0 1px rgba(var(--accent-rgb), .18),
+    0 16px 42px rgba(var(--accent-rgb), .13),
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+.dot-btn:focus,
+.burger:focus,
+.gt-fallback:focus,
+.goog-te-gadget select:focus,
+.goog-te-combo:focus{
+  outline:none !important;
+  border-color:rgba(var(--accent-rgb), .70) !important;
+  box-shadow:0 0 0 4px rgba(var(--accent-rgb), .16), 0 14px 34px rgba(0,0,0,.24) !important;
+}
+
+.dot{
+  background:var(--accent) !important;
+  box-shadow:0 0 20px rgba(var(--accent-rgb), .62);
+}
+
+.menu{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025)),
+    rgba(5,10,20,.96) !important;
+  border-color:rgba(var(--accent-rgb), .24) !important;
+  box-shadow:0 24px 70px rgba(0,0,0,.52), 0 0 48px rgba(var(--accent-rgb), .10) !important;
+}
+
+.color-option{
+  position:relative;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 10px 24px rgba(0,0,0,.28);
+}
+
+.color-option.active::after{
+  content:"";
+  position:absolute;
+  inset:7px;
+  border-radius:999px;
+  border:2px solid rgba(255,255,255,.88);
+  box-shadow:0 0 16px rgba(255,255,255,.32);
+}
+
+#gtNavWrap{
+  display:none;
+  align-items:center;
+  min-width:190px;
+}
+
+#gtNavWrap.show{
+  display:inline-flex !important;
+}
+
+#google_translate_element,
+#google_translate_element_mobile{
+  display:inline-flex !important;
+  align-items:center !important;
+  position:relative !important;
+  min-height:46px;
+}
+
+#google_translate_native{
+  display:inline-flex;
+  align-items:center;
+}
+
+#google_translate_element.gt-ready .gt-fallback{
+  display:none !important;
+}
+
+.gt-fallback{
+  min-width:190px;
+  padding:0 38px 0 14px;
+  font-size:14px;
+  font-weight:1000;
+  text-align:left;
+  cursor:pointer;
+  position:relative;
+}
+
+.gt-fallback::after,
+#google_translate_element::after,
+#google_translate_element_mobile::after{
+  content:"▾" !important;
+  position:absolute !important;
+  right:14px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  color:rgba(255,255,255,.82) !important;
+  pointer-events:none !important;
+  font-size:12px !important;
+}
+
+.gt-fallback.loading{
+  cursor:progress;
+  opacity:.82;
+}
+
+.gt-fallback.error{
+  border-color:rgba(239,68,68,.45) !important;
+}
+
+.goog-te-gadget select,
+.goog-te-combo{
+  min-width:190px !important;
+  padding:0 38px 0 14px !important;
+  font-size:14px !important;
+  font-weight:1000 !important;
+  line-height:46px !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  -moz-appearance:none !important;
+}
+
+.goog-te-gadget{
+  height:46px !important;
+  overflow:hidden !important;
+}
+
+.goog-logo-link,
+.goog-te-gadget span{
+  display:none !important;
+}
+
+body > .skiptranslate,
+.goog-te-banner-frame{
+  display:none !important;
+}
+
+body{
+  top:0 !important;
+}
+
+@media (max-width: 980px){
+  .nav-actions{
+    gap:8px !important;
+  }
+  .nav-actions .dropdown,
+  #gtNavWrap{
+    display:none !important;
+  }
+  .m-menu .color-grid{
+    grid-template-columns:repeat(4, 34px);
+    justify-content:start;
+  }
+  #google_translate_element_mobile,
+  #google_translate_element_mobile .gt-fallback,
+  #google_translate_element_mobile .goog-te-combo{
+    width:100% !important;
+    min-width:0 !important;
+  }
+}
+
+/* CMS visual rhythm: clearer titles, richer cards, accent-driven UI */
+.section-title,
+.tools-title,
+.guides-title,
+.updates-title,
+.cz-hero h1,
+.tool-hero h1,
+.guide-article h1{
+  letter-spacing:-0.025em !important;
+  line-height:1.04 !important;
+}
+
+.card,
+.small-card,
+.guide-x,
+.release-card,
+.tool-standard-card,
+.seo-card,
+.wc-first-use article,
+.reading-map-grid article,
+.wc-relbox{
+  border-color:rgba(var(--accent-rgb), .18) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.078), rgba(255,255,255,.024)),
+    radial-gradient(520px 240px at var(--spot-x, 18%) var(--spot-y, 0%), rgba(var(--accent-rgb), .13), transparent 62%),
+    rgba(8,16,30,.78) !important;
+}
+
+.card:hover,
+.small-card:hover,
+.guide-x:hover,
+.release-card:hover,
+.tool-standard-card:hover,
+.seo-card:hover,
+.wc-first-use article:hover,
+.reading-map-grid article:hover,
+.wc-relbox:hover{
+  transform:translateY(-2px);
+  border-color:rgba(var(--accent-rgb), .42) !important;
+  box-shadow:
+    0 28px 90px rgba(0,0,0,.42),
+    0 0 0 1px rgba(var(--accent-rgb), .16),
+    0 0 46px rgba(var(--accent-rgb), .13) !important;
+}
+
+.thumb,
+.rec-icon,
+.wc-first-use .wc-first-icon,
+.reading-map-grid span{
+  background:rgba(var(--accent-rgb), .13) !important;
+  border-color:rgba(var(--accent-rgb), .28) !important;
+  box-shadow:0 14px 34px rgba(var(--accent-rgb), .13) !important;
+}
+
+/* =========================================================
+   Clickoz improvement layer
+   Keeps the original dark identity, but makes cards, boxes,
+   forms and focus states cleaner across the existing site.
+========================================================= */
+.hero-box,
+.rec-wrap,
+.card,
+.pick-card,
+.guide-card,
+.faq-card,
+.update-card,
+.tool-panel,
+.tool-card,
+.metric-pill,
+.qchip {
+  border-color: rgba(255,255,255,.14) !important;
+  box-shadow: 0 18px 54px rgba(0,0,0,.30) !important;
+}
+
+.card,
+.pick-card,
+.guide-card,
+.update-card,
+.tool-panel,
+.hero-box {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035)),
+    rgba(13,18,33,.76) !important;
+}
+
+.card:hover,
+.pick-card:hover,
+.guide-card:hover,
+.update-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--accent-rgb), .36) !important;
+}
+
+input,
+textarea,
+select,
+.search,
+.input,
+.textarea {
+  border-color: rgba(255,255,255,.14) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.search:focus,
+.input:focus,
+.textarea:focus {
+  outline: none !important;
+  border-color: rgba(var(--accent-rgb), .58) !important;
+  box-shadow: var(--focus) !important;
+}
+
+.btn,
+.btn-small,
+button {
+  letter-spacing: 0 !important;
+}
+
+.section-title,
+.tools-title,
+.guide-title,
+.article-title {
+  letter-spacing: 0 !important;
+}
+
+.footer {
+  border-top-color: rgba(255,255,255,.11) !important;
+}
+
+@media (max-width: 560px) {
+  .hero-box,
+  .rec-wrap,
+  .card,
+  .pick-card,
+  .guide-card,
+  .update-card,
+  .tool-panel {
+    border-radius: 14px !important;
+  }
+}
+/* =========================================================
+   PATCH 2026-02 (FORTE) — Font moderno + Particles brighter + Kill canvas
+   INCOLLA ALLA FINE di /assets/site.css
+   ========================================================= */
+
+/* ---------- FONT: forza il nuovo font ovunque ---------- */
+:root{
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+               Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* Forza su TUTTO, anche se altrove c'è un font settato */
+html, body, body.bigtext, .nav, .m-menu, .footer, button, input, select, textarea{
+  font-family: var(--font-sans) !important;
+}
+
+h1, h2, h3, .logo-text{
+  font-family: var(--font-sans) !important;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- PARTICLES: più luminose e presenti ---------- */
+/* Alza la visibilità del layer */
+#clickozParticles{
+  opacity: 1 !important;
+  filter: saturate(1.18) brightness(1.12) !important;
+}
+
+/* Dots idle: più grandi e molto più visibili */
+.pidle{
+  width: 3px !important;
+  height: 3px !important;
+  opacity: .72 !important;
+  filter: saturate(1.15) brightness(1.20) !important;
+  box-shadow:
+    0 0 18px rgba(var(--accent-rgb), .72),
+    0 0 56px rgba(var(--accent-rgb), .26) !important;
+}
+
+/* twinkle un filo più evidente */
+@keyframes idleTwinkle{
+  0%,100% { filter: brightness(1.05); }
+  50%     { filter: brightness(1.45); }
+}
+
+/* ---------- KILL CANVAS: sparisce proprio ---------- */
+#spaceParticles{
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
