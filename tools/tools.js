@@ -95,7 +95,7 @@
 
   const toolFeatures = {
     "meta-tags": [["🏷️", "Title + description"], ["📏", "Length checks"], ["🧲", "CTR polish"]],
-    "meta-tag-optimizer": [["✨", "Pro snippet"], ["🎯", "Intent match"], ["📋", "Copy-ready"]],
+    "meta-tag-optimizer": [["✨", "Pro snippet"], ["🎯", "Intent match"], ["📋", "Ready to copy"]],
     "serp-preview": [["🧩", "SERP preview"], ["👁️", "Visual snippet"], ["🧲", "Click appeal"]],
     "keyword-density": [["📈", "Term frequency"], ["⚖️", "Stuffing check"], ["🔎", "Focus keyword"]],
     "slug-generator": [["🔗", "Clean URLs"], ["✂️", "Short slugs"], ["📌", "Stable paths"]],
@@ -125,7 +125,7 @@
     "ip-subnet-calculator": [["🌐", "IPv4 range"], ["🧮", "CIDR math"], ["📋", "Network output"]],
     "password-generator": [["🛡️", "Crypto random"], ["🔐", "Strong output"], ["🔒", "Browser-only"]],
     "uuid-generator": [["🆔", "UUID v4"], ["📦", "Bulk output"], ["📋", "Copy list"]],
-    "timestamp-converter": [["⏱️", "Unix time"], ["🌍", "Local + UTC"], ["📋", "Copy-ready"]],
+    "timestamp-converter": [["⏱️", "Unix time"], ["🌍", "Local + UTC"], ["📋", "Ready to copy"]],
     "regex-tester": [["🧪", "Regex match"], ["🎯", "Groups"], ["🔁", "Replace preview"]],
     "text-diff-checker": [["🧾", "Line diff"], ["✅", "Review changes"], ["📋", "Copy result"]],
     "color-converter": [["🎨", "HEX RGB HSL"], ["👁️", "Contrast"], ["📋", "Copy values"]],
@@ -135,7 +135,7 @@
   function enhanceToolCards() {
     sections.forEach((section) => {
       const key = section.getAttribute("data-section") || section.id || "seo";
-      const features = sectionFallbackFeatures[key] || [["⚡", "Fast"], ["🔒", "Private"], ["📋", "Copy-ready"]];
+      const features = sectionFallbackFeatures[key] || [["⚡", "Fast"], ["🔒", "Private"], ["📋", "Ready to copy"]];
 
       $$(".card", section).forEach((card) => {
         if (!$(".tool-mini-features", card)) {
@@ -217,14 +217,21 @@
   });
 
   const allCards = $$(".card", sectionsWrap);
+  const previewTotal = allCards.length;
+  const fullTotal = sections.reduce((sum, section) => {
+    const sectionCards = $$(".card", section).length;
+    return sum + Number(section.dataset.toolCount || sectionCards);
+  }, 0);
   const searchMeta = $("#toolsSearchMeta");
   const searchMetaText = searchMeta ? searchMeta.querySelector("span") || searchMeta : null;
   const resetButton = $("#toolsReset");
   const originalCounts = new Map(sections.map((section) => {
     const count = $(".section-count", section);
-    const total = $$(".card", section).length;
+    const preview = Number(section.dataset.previewCount || $$(".card", section).length);
+    const total = Number(section.dataset.toolCount || preview);
     return [section, {
       total,
+      preview,
       label: count ? count.textContent.trim() : `${total} ${total === 1 ? "tool" : "tools"}`
     }];
   }));
@@ -236,8 +243,8 @@
   function setDirectoryStatus(query, shown) {
     if (searchMetaText) {
       searchMetaText.textContent = query
-        ? `Showing ${toolCountLabel(shown)} for "${query}"`
-        : `Showing ${toolCountLabel(allCards.length)} across ${sections.length} categories`;
+        ? `Showing ${toolCountLabel(shown)} in newest previews for "${query}"`
+        : `Showing ${previewTotal} newest tools across ${sections.length} categories${fullTotal > previewTotal ? ` (${fullTotal} total)` : ""}`;
     }
     if (resetButton) resetButton.hidden = !query;
   }
@@ -384,7 +391,7 @@
       const original = originalCounts.get(section);
       if (count) {
         count.textContent = q && hasVisible
-          ? `${visibleCards.length} / ${original?.total || visibleCards.length} tools`
+          ? `${visibleCards.length} / ${original?.preview || visibleCards.length} previews`
           : original?.label || toolCountLabel(visibleCards.length);
       }
     });

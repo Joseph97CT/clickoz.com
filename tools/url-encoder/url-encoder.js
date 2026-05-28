@@ -321,7 +321,7 @@
     }else{
       setMeta(mode === "query"
         ? "Query-only mode encodes keys/values but keeps the base URL intact."
-        : "Copy-ready output. Browser-only.");
+        : "Output is ready to copy. Browser-only.");
     }
 
     let output = "";

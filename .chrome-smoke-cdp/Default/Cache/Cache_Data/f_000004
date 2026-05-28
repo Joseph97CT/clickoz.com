@@ -497,6 +497,62 @@ html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .h
   }
 }
 
+/* v22: home pick-color buttons use the same crisp CTA text as the CMS. */
+body.bigtext main.home-workdesk :is(
+  .btn.btn-accent,
+  .btn-accent,
+  .pick-cta,
+  .rec-refresh
+){
+  color:#06111f !important;
+  -webkit-text-fill-color:#06111f !important;
+  -webkit-text-stroke:0 transparent !important;
+  paint-order:normal !important;
+  font-weight:950 !important;
+  font-size:max(15px, 1em) !important;
+  line-height:1.12 !important;
+  letter-spacing:.005em !important;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.72),
+    0 0 10px rgba(255,255,255,.24) !important;
+  text-rendering:geometricPrecision !important;
+}
+
+body.bigtext main.home-workdesk :is(
+  .btn.btn-accent,
+  .btn-accent,
+  .pick-cta,
+  .rec-refresh
+) *{
+  color:inherit !important;
+  -webkit-text-fill-color:inherit !important;
+  -webkit-text-stroke:inherit !important;
+  text-shadow:inherit !important;
+}
+
+@media (hover:hover) and (pointer:fine){
+  body.bigtext main.home-workdesk :is(
+    .btn.btn-accent,
+    .btn-accent,
+    .pick-cta,
+    .rec-refresh
+  ):hover,
+  body.bigtext main.home-workdesk :is(
+    .btn.btn-accent,
+    .btn-accent,
+    .pick-cta,
+    .rec-refresh
+  ):focus-visible{
+    color:#020812 !important;
+    -webkit-text-fill-color:#020812 !important;
+    -webkit-text-stroke:0 transparent !important;
+    text-shadow:
+      0 1px 0 rgba(255,255,255,.88),
+      0 0 12px rgba(255,255,255,.32) !important;
+    filter:saturate(1.08) brightness(1.04) contrast(1.04) !important;
+  }
+}
+
 /* v20: stronger palette LEDs for the hero promise rail. */
 html body.bigtext main.home-workdesk > header.cz-workdesk-hero.hero-simple-v2 .hero-assurance-row a::before{
   width:8px !important;

@@ -29,7 +29,9 @@ const configuredAssetVersions = new Map([
   ["/tools/tools.css", "toolsCss"],
   ["/tools/tools.js", "toolsJs"],
   ["/tools/cms-tools.css", "cmsToolsCss"],
-  ["/tools/cms-tools.js", "cmsToolsJs"]
+  ["/tools/cms-tools.js", "cmsToolsJs"],
+  ["/updates/cms-map.css", "cmsMapCss"],
+  ["/updates/cms-map.js", "cmsMapJs"]
 ]);
 
 /**
@@ -99,7 +101,7 @@ function scanLinks(file) {
 function scanConfiguredAssetVersions(file) {
   const source = fs.readFileSync(file, "utf8");
   const fileRel = rel(file);
-  const re = /((?:\/assets|\/tools)\/[a-z0-9-]+\.(?:css|js))\?v=(\d+)/gi;
+  const re = /((?:\/assets|\/tools|\/updates)\/[a-z0-9-]+(?:\/[a-z0-9-]+)?\.(?:css|js))\?v=(\d+)/gi;
   let match;
   while ((match = re.exec(source))) {
     const [, url, version] = match;
@@ -339,6 +341,43 @@ function validatePages(cms) {
   return { toolPagesNotUnified, guidePagesWeak };
 }
 
+function escapeRegexLiteral(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function validateGeneratedStructure(cms) {
+  const issues = [];
+  const toolsIndex = htmlForUrl("/tools/");
+  const clusters = cms.clusters || {};
+
+  Object.keys(clusters).forEach((key) => {
+    const expectedCount = cms.tools.filter((tool) => tool.category === key).length;
+    const sectionKey = key === "writing" ? "text" : key;
+    const sectionPattern = new RegExp(`<section class="tool-section"[^>]+id="${escapeRegexLiteral(sectionKey)}"[^>]+data-section="${escapeRegexLiteral(sectionKey)}"[^>]+data-tool-count="${expectedCount}"`);
+    if (!sectionPattern.test(toolsIndex)) {
+      issues.push(`/tools/ category ${key} expected data-tool-count="${expectedCount}"`);
+    }
+
+    const clusterSource = htmlForUrl(clusters[key].url);
+    if (!sectionPattern.test(clusterSource)) {
+      issues.push(`${clusters[key].url} expected data-tool-count="${expectedCount}"`);
+    }
+
+    if (expectedCount > 0 && !clusterSource.includes("cards-grid")) {
+      issues.push(`${clusters[key].url} missing generated cards-grid`);
+    }
+  });
+
+  const canonicalToolUrls = cms.tools.filter((tool) => !tool.canonicalSlug || tool.canonicalSlug === tool.slug).map((tool) => tool.url);
+  const sitemap = read("sitemap.xml");
+  canonicalToolUrls.forEach((url) => {
+    if (!sitemap.includes(`${ORIGIN}${url}`)) issues.push(`sitemap missing canonical tool ${url}`);
+  });
+
+  issues.forEach((issue) => addFinding("cms-generated-structure", "generated CMS", issue));
+  return issues;
+}
+
 function parseSitemapLocs(source) {
   return [...source.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
 }
@@ -517,14 +556,81 @@ function validateSmokeTemplates() {
   });
 }
 
+function validateMetaverseLab(sitemap, robots) {
+  const url = "/metaverse/";
+  const report = {
+    exists: fileExistsForUrl(url),
+    noindex: false,
+    blockedInRobots: /^Disallow:\s*\/metaverse\/\s*$/mi.test(robots),
+    omittedFromSitemap: !sitemap.includes(`${ORIGIN}${url}`),
+    allowsSelfFrame: CSP.includes("frame-src 'self'"),
+    hasRuntime: fs.existsSync(path.join(root, "metaverse", "metaverse.js")),
+    hasStyles: fs.existsSync(path.join(root, "metaverse", "metaverse.css"))
+  };
+
+  if (!report.exists) {
+    addFinding("metaverse-lab-missing", "metaverse/index.html", "debug lab route should exist");
+    return report;
+  }
+
+  const source = htmlForUrl(url);
+  report.noindex = /<meta name="robots" content="[^"]*noindex/i.test(source);
+
+  if (!report.noindex) addFinding("metaverse-indexable", "metaverse/index.html", "debug lab must stay noindex");
+  if (!report.blockedInRobots) addFinding("metaverse-robots-missing", "robots.txt", "expected Disallow: /metaverse/");
+  if (!report.omittedFromSitemap) addFinding("metaverse-in-sitemap", "sitemap.xml", "debug lab should stay out of sitemap");
+  if (!report.allowsSelfFrame) addFinding("metaverse-csp-frame-blocked", "_maintenance/cms-config.js", "frame-src must include 'self'");
+  if (!report.hasRuntime) addFinding("metaverse-runtime-missing", "metaverse/metaverse.js", "debug lab runtime missing");
+  if (!report.hasStyles) addFinding("metaverse-style-missing", "metaverse/metaverse.css", "debug lab styles missing");
+
+  return report;
+}
+
+function validateCmsMapRoute(sitemap) {
+  const url = "/updates/cms-map/";
+  const report = {
+    exists: fileExistsForUrl(url),
+    noindex: false,
+    omittedFromSitemap: !sitemap.includes(`${ORIGIN}${url}`),
+    hasRuntime: fs.existsSync(path.join(root, "updates", "cms-map.js")),
+    hasStyles: fs.existsSync(path.join(root, "updates", "cms-map.css")),
+    noFooter: false,
+    updatesNavActive: false,
+    readsRegistry: false
+  };
+
+  if (!report.exists) {
+    addFinding("cms-map-route-missing", "updates/cms-map/index.html", "full CMS map route should exist");
+    return report;
+  }
+
+  const source = htmlForUrl(url);
+  report.noindex = /<meta name="robots" content="[^"]*noindex/i.test(source);
+  report.noFooter = !/<footer\b/i.test(source);
+  report.updatesNavActive = /aria-current="page" href="\/updates\/"/i.test(source);
+  report.readsRegistry = source.includes(asset("/assets/cms-registry.js", "cmsRegistry")) && source.includes(asset("/updates/cms-map.js", "cmsMapJs"));
+
+  if (!report.noindex) addFinding("cms-map-indexable", "updates/cms-map/index.html", "interactive CMS map should stay noindex");
+  if (!report.omittedFromSitemap) addFinding("cms-map-in-sitemap", "sitemap.xml", "interactive CMS map should stay out of sitemap");
+  if (!report.hasRuntime) addFinding("cms-map-runtime-missing", "updates/cms-map.js", "full CMS map runtime missing");
+  if (!report.hasStyles) addFinding("cms-map-style-missing", "updates/cms-map.css", "full CMS map styles missing");
+  if (!report.noFooter) addFinding("cms-map-footer-present", "updates/cms-map/index.html", "full CMS map route should not render the footer");
+  if (!report.updatesNavActive) addFinding("cms-map-nav-inactive", "updates/cms-map/index.html", "Updates nav should stay active on full map route");
+  if (!report.readsRegistry) addFinding("cms-map-registry-missing", "updates/cms-map/index.html", "full CMS map must load the CMS registry and map runtime");
+
+  return report;
+}
+
 function registryStats(cms) {
   const pageStats = validatePages(cms);
+  const generatedStructureIssues = validateGeneratedStructure(cms);
   return {
     tools: cms.tools.length,
     guides: cms.guides.length,
     clusters: Object.keys(cms.clusters || {}).length,
     toolPagesMissing: cms.tools.filter((item) => !fileExistsForUrl(item.url)).map((item) => item.url),
     guidePagesMissing: cms.guides.filter((item) => !fileExistsForUrl(item.url)).map((item) => item.url),
+    generatedStructureIssues,
     ...pageStats,
     registryFindings
   };
@@ -556,6 +662,8 @@ const robotsReport = validateRobots(robots, sitemapIndexedUrls);
 const securityHeadersReport = validateSecurityConfig();
 const htmlSecurityMetaReport = validateHtmlSecurityMeta();
 const smokeTemplates = validateSmokeTemplates();
+const metaverseLab = validateMetaverseLab(sitemap, robots);
+const cmsMapRoute = validateCmsMapRoute(sitemap);
 
 const report = {
   ok: !findings.length &&
@@ -578,7 +686,9 @@ const report = {
     headers: securityHeadersReport,
     htmlMeta: htmlSecurityMetaReport,
     sitemap: sitemapReport,
-    robots: robotsReport
+    robots: robotsReport,
+    metaverseLab,
+    cmsMapRoute
   },
   smokeTemplates,
   findings

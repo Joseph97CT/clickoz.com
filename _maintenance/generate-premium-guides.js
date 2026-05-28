@@ -19,10 +19,10 @@ const cms = ctx.window.ClickozCMS;
 const cat = {
   seo: {
     label: "SEO workflow", icon: "SEO", visual: "seo",
-    problem: "The page may be technically published, but it does not clearly answer search intent or guide the visitor to the next action.",
-    cause: "Most SEO issues come from vague intent, weak snippets, repeated keywords, missing internal links or content that answers the topic without helping the user complete the task.",
+    problem: "The page may be published, but it does not clearly answer search intent or guide the visitor to the next step.",
+    cause: "Most SEO issues come from vague intent, weak snippets, repeated keywords, missing internal links or content that explains a topic without helping the user act.",
     avoid: "Do not chase one magic number. Prioritize intent match, clarity, useful structure and internal links.",
-    primary: ["Map the searcher need", "Improve the visible snippet", "Add a next-click path"],
+    primary: ["Map the searcher need", "Improve the visible snippet", "Add a clear next step"],
     alternatives: [
       ["If the page is thin", "Expand the section that answers the exact user task before adding keyword variants."],
       ["If the snippet is weak", "Rewrite the title and description before editing the whole article."],
@@ -31,7 +31,7 @@ const cat = {
   },
   writing: {
     label: "Writing workflow", icon: "TXT", visual: "writing",
-    problem: "The draft contains the right idea, but it feels too long, too unclear or too hard to scan on mobile.",
+    problem: "The draft contains the right idea, but it feels too long, unclear or hard to scan on mobile.",
     cause: "Writing usually fails because the structure is unclear: long sentences, weak first paragraph, mixed intent, repeated filler or no obvious next step.",
     avoid: "Do not polish every sentence at once. Fix structure first, then length, then wording.",
     primary: ["Measure the draft", "Simplify the structure", "Check the final scan"],
@@ -58,7 +58,7 @@ const cat = {
     problem: "Campaign links exist, but analytics becomes messy because naming, source or medium choices are inconsistent.",
     cause: "Tracking problems usually start before launch: unclear naming conventions, unencoded URLs, duplicate campaign names or links pasted in the wrong place.",
     avoid: "Do not create campaign names on the fly. Decide a naming system before publishing.",
-    primary: ["Define source and medium", "Build the tracked URL", "Test before launch"],
+    primary: ["Define source and medium", "Build the tracked URL", "Test before publishing"],
     alternatives: [
       ["If reports are messy", "Standardize source, medium and campaign naming before building more links."],
       ["If links break", "Encode parameters and check the final URL before posting."],
@@ -67,10 +67,10 @@ const cat = {
   },
   youtube: {
     label: "YouTube workflow", icon: "YT", visual: "youtube",
-    problem: "The video may be good, but the packaging does not make the click promise obvious enough.",
+    problem: "The video may be good, but the title, thumbnail and description do not make the reason to click obvious enough.",
     cause: "Creator pages underperform when title, thumbnail, description, hashtags and tracking are treated as separate tasks instead of one upload system.",
     avoid: "Do not optimize tags before the title and thumbnail promise is clear.",
-    primary: ["Define the click promise", "Package the upload", "Route viewers to the next action"],
+    primary: ["Define the click promise", "Prepare the upload", "Guide viewers to the next step"],
     alternatives: [
       ["If the idea is unclear", "Write five title angles before building the thumbnail brief."],
       ["If discovery is weak", "Use hashtags and description lines as labels, not as spam."],
@@ -79,10 +79,10 @@ const cat = {
   },
   creator: {
     label: "Creator system", icon: "CR", visual: "creator",
-    problem: "Content is created one piece at a time, so ideas, uploads and follow-up posts are hard to repeat.",
+    problem: "Content is created one piece at a time, so ideas, uploads and follow-up posts are hard to repeat consistently.",
     cause: "Creator workflows become fragile when planning, packaging, community posts and tracking are not connected.",
     avoid: "Do not plan uploads without planning the follow-up action.",
-    primary: ["Plan the content lane", "Package each asset", "Measure the follow-up"],
+    primary: ["Plan the content lane", "Prepare each piece", "Measure the follow-up"],
     alternatives: [
       ["If posting feels random", "Create a weekly lane for long video, short clip, community post and link tracking."],
       ["If engagement drops", "Use polls, teasers and follow-up posts tied to the upload topic."],
@@ -94,8 +94,8 @@ const cat = {
 const specific = {
   "word-counter": {
     toolUse: "Paste the draft and inspect words, paragraphs, sentence length and reading time before deciding whether to cut or expand.",
-    output: "A clear length target based on the page purpose, not a generic word-count myth.",
-    example: ["Weak: the article is short because someone said 600 words is enough.", "Better: the page answers the exact query, covers objections and uses short sections.", "Premium: the guide includes examples, FAQs, internal links and a measurable next action."]
+    output: "A clear length target based on the page purpose, not a generic word-count rule.",
+    example: ["Weak: the article is short because someone said 600 words is enough.", "Better: the page answers the exact query, covers objections and uses short sections.", "Premium: the guide includes examples, FAQs, internal links and a measurable next step."]
   },
   "readability-analyzer": {
     toolUse: "Run the draft, identify dense sentences and rewrite the sections that slow mobile scanning.",
@@ -110,7 +110,7 @@ const specific = {
   "serp-preview": {
     toolUse: "Preview title, URL and description together so the imagined snippet matches what users may see.",
     output: "A cleaner snippet with less truncation and stronger click context.",
-    example: ["Weak: a description that repeats the title.", "Better: a description that explains the benefit and next action.", "Premium: the snippet sets the exact expectation the page fulfills."]
+    example: ["Weak: a description that repeats the title.", "Better: a description that explains the benefit and next step.", "Premium: the snippet sets the exact expectation the page fulfills."]
   },
   "keyword-density": {
     toolUse: "Check repeated terms, then replace mechanical repetition with natural variants and supporting phrases.",
@@ -120,7 +120,7 @@ const specific = {
   "slug-generator": {
     toolUse: "Generate a clean slug, remove filler words and keep only the durable page concept.",
     output: "A short URL that stays readable after the page grows.",
-    example: ["Weak: /best-free-online-super-seo-tool-for-everyone-now/", "Better: /seo-content-checklist/", "Premium: the URL, title and internal links all describe the same asset."]
+    example: ["Weak: /best-free-online-super-seo-tool-for-everyone-now/", "Better: /seo-content-checklist/", "Premium: the URL, title and internal links all describe the same page."]
   },
   "json-formatter": {
     toolUse: "Paste the exact JSON, format it, read the error and fix the smallest broken part first.",
@@ -201,22 +201,22 @@ function relatedTools(guide) {
 
 function specFor(tool) {
   return specific[tool.canonicalSlug] || specific[tool.slug] || {
-    toolUse: `Open ${tool.title}, test the real input and copy the result only after checking the output.`,
+    toolUse: `Open ${tool.title}, test real input and copy the result only after checking the output.`,
     output: "A practical result that helps the user finish the current task.",
-    example: ["Weak: explaining the topic without helping the reader finish the task.", "Better: apply the tool to a real input.", "Premium: connect the result to the next guide or tool."]
+    example: ["Weak: explaining the topic without helping the reader finish the task.", "Better: apply the tool to real input.", "Premium: connect the result to the next guide or tool."]
   };
 }
 
 function guideFocus(guide, tool, cluster) {
   const map = {
-    "how-to-write-meta-title-description": ["Snippet writing", "Turn a rough page promise into a title and description users can understand before clicking.", "A title, description and first-screen promise that all say the same useful thing."],
+    "how-to-write-meta-title-description": ["Snippet writing", "Turn a rough page promise into a title and description users can understand before clicking.", "A title, description and first screen that all communicate the same useful promise."],
     "meta-tags-length": ["Length control", "Fix truncation risk without reducing the snippet to empty keyword fragments.", "A snippet that stays readable inside common title and description limits."],
     "meta-tags-checklist": ["Publishing audit", "Check the full metadata routine before the page goes live.", "A practical pre-publish checklist with no fake ranking promises."],
     "serp-preview": ["Visual preview", "See title, URL and description together before pushing the page live.", "A cleaner search result preview with a visible next edit."],
     "serp-snippet-ctr": ["CTR testing", "Improve click clarity without drifting into clickbait.", "A testable snippet angle that still matches the real page."],
     "keyword-density-explained": ["Topic diagnosis", "Use repeated terms as a signal, not as a mechanical ranking target.", "A natural wording plan with variants, examples and supporting phrases."],
     "keyword-variations": ["Intent coverage", "Expand the topic with adjacent phrases that help the reader, not keyword stuffing.", "A page outline that covers the real search intent more completely."],
-    "seo-content-checklist": ["Whole-page audit", "Review intent, structure, internal links, trust and next action in one pass.", "A page that is ready to publish because the workflow is complete."],
+    "seo-content-checklist": ["Whole-page audit", "Review intent, structure, internal links, trust and the next step in one pass.", "A page that is ready to publish because the workflow is complete."],
     "slug-best-practices": ["URL durability", "Create a slug that will still make sense after the page changes.", "A short URL that matches the title and internal link wording."],
     "internal-linking-tools-sites": ["Discovery flow", "Connect tools and guides so users do not hit dead ends.", "A linked path from problem to tool to next useful page."],
     "core-web-vitals-tools-sites": ["Performance trust", "Keep interactive pages fast, stable and usable on mobile.", "A tool page that feels responsive before the user reads the copy."],
@@ -224,7 +224,7 @@ function guideFocus(guide, tool, cluster) {
     "readability-score": ["Score interpretation", "Turn a readability number into practical edits.", "A rewrite plan that explains exactly what to shorten or restructure."],
     "readability-for-ranking": ["Helpful content clarity", "Use clarity to support search usefulness instead of chasing a score.", "A page that reads fast and still answers the query with depth."],
     "word-count-for-seo": ["Length decision", "Choose page depth from intent and usefulness, not arbitrary word-count targets.", "A content length plan based on the task the page must finish."],
-    "content-brief-template": ["Brief building", "Turn intent into a usable page outline before writing.", "A brief with audience, sections, examples, FAQ and next action."],
+    "content-brief-template": ["Brief building", "Turn intent into a usable page outline before writing.", "A brief with audience, sections, examples, FAQ and next step."],
     "text-cleanup-workflow": ["Paste cleanup", "Normalize messy text before editing the message itself.", "Clean copy that can move into a CMS, doc, post or email without broken spacing."],
     "json-formatter-online": ["JSON inspection", "Format and inspect payloads without losing the original debugging context.", "A readable JSON payload plus the reason it is safe to copy."],
     "json-formatting-debug": ["Error repair", "Find the smallest broken part before rewriting a payload.", "A focused debugging routine for invalid JSON."],
@@ -251,7 +251,7 @@ function guideFocus(guide, tool, cluster) {
     "youtube-community-post-ideas": ["Retention loop", "Turn one upload into follow-up posts, polls and questions.", "A community post connected to a real viewer action."],
     "creator-content-calendar": ["Creator system", "Plan long videos, short clips, posts and tracking as one weekly routine.", "A repeatable content lane instead of isolated ideas."]
   };
-  const item = map[guide.slug] || [cluster.label, `Use ${tool.title} on real input and turn the guide into an action, not a passive read.`, "A practical next step connected to a tool, guide or workflow."];
+  const item = map[guide.slug] || [cluster.label, `Use ${tool.title} with real input and turn the guide into an action, not a passive read.`, "A practical next step connected to a tool, guide or workflow."];
   return { role: item[0], job: item[1], deliverable: item[2] };
 }
 
@@ -263,7 +263,7 @@ function page(guide) {
   const relatedT = relatedTools(guide);
   const relatedG = relatedGuides(guide);
   const title = `${guide.title} | Clickoz Guide`;
-  const desc = clipMeta(`${guide.description} See the Clickoz workflow, common mistakes, checklist and next action.`);
+  const desc = clipMeta(`${guide.description} See the Clickoz workflow, common mistakes, checklist and next step.`);
   const url = `${ORIGIN}${guide.url}`;
   const visual = `/assets/img/guides/${cluster.visual}.svg`;
   const alt1 = cluster.alternatives[0];
@@ -278,7 +278,7 @@ function page(guide) {
     ["Define the real problem", cluster.problem],
     [`Open ${tool.title}`, spec.toolUse],
     ["Compare alternatives", `${alt1[1]} ${alt2[1]}`],
-    ["Finish with a next action", `Copy the useful output, then continue with ${relatedG[0]?.title || "a related guide"} or ${relatedT[1]?.title || "a related tool"}.`]
+    ["Finish with a next step", `Copy the useful output, then continue with ${relatedG[0]?.title || "a related guide"} or ${relatedT[1]?.title || "a related tool"}.`]
   ];
 
   return `<!doctype html>
@@ -366,7 +366,7 @@ function page(guide) {
           <div class="guide-hero-text">
             <p class="guide-kicker">${esc(cluster.label)}</p>
             <h1>${esc(guide.title)}</h1>
-            <p class="guide-lead">${esc(guide.description)} Use this as a working routine: diagnose the blocker, run the right tool, compare the output and finish with a clear next action.</p>
+            <p class="guide-lead">${esc(guide.description)} Use this as a working routine: diagnose the blocker, run the right tool, compare the output and finish with a clear next step.</p>
             <div class="guide-intent-row">
               <span>${cluster.icon} Problem-led</span>
               <span>Tool-connected</span>
@@ -396,7 +396,7 @@ function page(guide) {
 
       <section class="guide-block guide-tutorial-map">
         <h2>Tutorial path</h2>
-        <p>Follow this guide in order. The goal is not to read every tip; the goal is to finish one real job with ${esc(tool.title)} and know what to do next.</p>
+        <p>Follow this guide in order. The goal is not to read every tip; the goal is to finish one real task with ${esc(tool.title)} and know what to do next.</p>
         <ol class="guide-tutorial-steps">
           <li><b>Diagnose</b><span>${esc(focus.job)}</span></li>
           <li><b>Use the tool</b><span>${esc(spec.toolUse)}</span></li>
@@ -421,13 +421,13 @@ function page(guide) {
         <div class="guide-problem-grid">
           <div class="guide-problem-card"><span class="mark">1</span><strong>Context</strong><span>Where will this be used: Google result, mobile page, creator upload, campaign link or technical payload?</span></div>
           <div class="guide-problem-card"><span class="mark">2</span><strong>Constraint</strong><span>What is limiting the result: length, clarity, intent, platform format, escaping, tracking or trust?</span></div>
-          <div class="guide-problem-card"><span class="mark">3</span><strong>Next action</strong><span>Pick one tool, run it on real input, then compare the output against the problem before copying.</span></div>
+          <div class="guide-problem-card"><span class="mark">3</span><strong>Next step</strong><span>Pick one tool, run it on real input, then compare the output against the problem before copying.</span></div>
         </div>
       </section>
 
       <section class="guide-block">
         <h2>Define the finished result</h2>
-        <p>This page has a specific job inside the Clickoz system, so it does not duplicate nearby guides with different intent.</p>
+        <p>This page has a specific role inside Clickoz, so it does not duplicate nearby guides with different intent.</p>
         <div class="guide-check-grid">
           <div class="guide-check-card"><span class="mark">01</span><strong>${esc(focus.role)}</strong><span>${esc(focus.job)}</span></div>
           <div class="guide-check-card"><span class="mark">02</span><strong>Use ${esc(tool.title)}</strong><span>${esc(spec.toolUse)}</span></div>
@@ -459,10 +459,10 @@ function page(guide) {
         <h2>Practical playbook</h2>
         <p>Use this playbook when you need a repeatable decision under time pressure. It turns the guide into a practical routine instead of a passive read.</p>
         <div class="guide-playbook-grid">
-          <article><span>Input</span><strong>Use real material</strong><p>Paste the actual draft, title, URL, payload or creator idea. Sample text is useful for learning the flow, but real input exposes the actual problem.</p></article>
+          <article><span>Input</span><strong>Use real material</strong><p>Paste the actual draft, title, URL, payload or creator idea. Sample text is useful for learning the flow, but real input reveals the actual problem.</p></article>
           <article><span>Tool pass</span><strong>Run ${esc(tool.title)}</strong><p>${esc(spec.toolUse)}</p></article>
-          <article><span>Human pass</span><strong>Apply judgment</strong><p>Keep the output only if it matches the user intent, context, platform and next action.</p></article>
-          <article><span>Next click</span><strong>Continue internally</strong><p>Move to ${esc(relatedT[1]?.title || "the next related tool")} or ${esc(relatedG[0]?.title || "the next related guide")} so the workflow does not end too early.</p></article>
+          <article><span>Human pass</span><strong>Apply judgment</strong><p>Keep the output only if it matches the user intent, context, platform and next step.</p></article>
+          <article><span>Next step</span><strong>Continue the workflow</strong><p>Move to ${esc(relatedT[1]?.title || "the next related tool")} or ${esc(relatedG[0]?.title || "the next related guide")} so the work does not end too early.</p></article>
         </div>
       </section>
 
@@ -471,7 +471,7 @@ function page(guide) {
         <p>The output is only valuable when it can be copied, checked and used in the next step without guessing.</p>
         <div class="guide-check-grid">
           <div class="guide-check-card"><span class="mark">A</span><strong>Specific input</strong><span>Use the real draft, URL, payload, page type, platform or campaign placement.</span></div>
-          <div class="guide-check-card"><span class="mark">B</span><strong>Copy-ready output</strong><span>The result should be readable, complete and safe to review in its final context.</span></div>
+          <div class="guide-check-card"><span class="mark">B</span><strong>Output ready to copy</strong><span>The result should be readable, complete and safe to review in its final context.</span></div>
           <div class="guide-check-card"><span class="mark">C</span><strong>Next action</strong><span>Finish with ${esc(relatedT[1]?.title || "the next related tool")} or ${esc(relatedG[0]?.title || "a related guide")} instead of stopping at one isolated fix.</span></div>
         </div>
       </section>
@@ -492,8 +492,8 @@ function page(guide) {
           <thead><tr><th>Situation</th><th>Action</th><th>Best Clickoz page</th></tr></thead>
           <tbody>
             <tr><td>Need a quick check</td><td>${esc(spec.toolUse)}</td><td><a href="${tool.url}">${esc(tool.title)}</a></td></tr>
-            <tr><td>Need a broader workflow</td><td>Read the related guide and compare the next action.</td><td><a href="${relatedG[0]?.url || "/guides/"}">${esc(relatedG[0]?.title || "Guide library")}</a></td></tr>
-            <tr><td>Need a second tool</td><td>Move to the tool that handles the next layer of the task.</td><td><a href="${relatedT[1]?.url || "/tools/"}">${esc(relatedT[1]?.title || "Tools library")}</a></td></tr>
+            <tr><td>Need a broader workflow</td><td>Read the related guide and compare the next step.</td><td><a href="${relatedG[0]?.url || "/guides/"}">${esc(relatedG[0]?.title || "Guide library")}</a></td></tr>
+            <tr><td>Need a second tool</td><td>Move to the tool that handles the next part of the task.</td><td><a href="${relatedT[1]?.url || "/tools/"}">${esc(relatedT[1]?.title || "Tools library")}</a></td></tr>
           </tbody>
         </table>
       </section>
@@ -503,7 +503,7 @@ function page(guide) {
         <div class="guide-trouble-grid">
           <article><strong>The result lacks context</strong><p>Add the platform, audience, target keyword, page type, campaign source or technical constraint before running the tool again.</p></article>
           <article><strong>The output is technically correct but not useful</strong><p>Compare it against the problem statement. If it does not help the user act faster, simplify the input and rerun.</p></article>
-          <article><strong>The page still feels weak for SEO</strong><p>Add a concrete example, one related tool, one related guide, a short FAQ and a clearer first-screen promise.</p></article>
+          <article><strong>The page still feels weak for SEO</strong><p>Add a concrete example, one related tool, one related guide, a short FAQ and a clearer promise above the fold.</p></article>
         </div>
       </section>
 
@@ -521,7 +521,7 @@ function page(guide) {
         <div class="guide-check-grid">
           <div class="guide-check-card"><span class="mark">01</span><strong>Clear intent</strong><span>The reader knows why the page exists in the first screen.</span></div>
           <div class="guide-check-card"><span class="mark">02</span><strong>Working tool</strong><span>The guide links to a tool that completes the task, not just another article.</span></div>
-          <div class="guide-check-card"><span class="mark">03</span><strong>Next action</strong><span>The final section routes to a related tool or guide so the user continues naturally.</span></div>
+          <div class="guide-check-card"><span class="mark">03</span><strong>Next step</strong><span>The final section links to a related tool or guide so the user continues naturally.</span></div>
         </div>
       </section>
 

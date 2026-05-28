@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src https://translate.google.com https://*.google.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src 'self' https://translate.google.com https://*.google.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), interest-cohort=()" />
-  <title>YouTube Hashtag Generator - Free Browser Tool | Clickoz</title>
-  <meta name="description" content="YouTube Hashtag Generator: Packaging a YouTube upload from idea to publishable assets. Creator-ready angles and the next upload tool to keep the package" />
-  <link rel="canonical" href="https://clickoz.com/tools/youtube-hashtag-generator/" />
+  <title>Thumbnail Brief Generator - Free Browser Tool | Clickoz</title>
+  <meta name="description" content="Thumbnail Brief Generator: Preparing a YouTube upload from idea to publishable sections. Creator-ready angles and the next upload tool needed to keep the" />
+  <link rel="canonical" href="https://clickoz.com/tools/thumbnail-brief-generator/" />
   <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
   <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
   <meta name="application-name" content="Clickoz" />
@@ -16,19 +16,19 @@
   <meta name="theme-color" content="#101828" />
   <meta property="og:locale" content="en_US" />
   <meta property="og:site_name" content="Clickoz" />
-  <meta property="og:title" content="YouTube Hashtag Generator - Free Browser Tool | Clickoz" />
-  <meta property="og:description" content="YouTube Hashtag Generator: Packaging a YouTube upload from idea to publishable assets. Creator-ready angles and the next upload tool to keep the package" />
-  <meta property="og:url" content="https://clickoz.com/tools/youtube-hashtag-generator/" />
+  <meta property="og:title" content="Thumbnail Brief Generator - Free Browser Tool | Clickoz" />
+  <meta property="og:description" content="Thumbnail Brief Generator: Preparing a YouTube upload from idea to publishable sections. Creator-ready angles and the next upload tool needed to keep the" />
+  <meta property="og:url" content="https://clickoz.com/tools/thumbnail-brief-generator/" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://clickoz.com/assets/og/default.svg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="YouTube Hashtag Generator - Free Browser Tool | Clickoz" />
+  <meta property="og:image:alt" content="Thumbnail Brief Generator - Free Browser Tool | Clickoz" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="YouTube Hashtag Generator - Free Browser Tool | Clickoz" />
-  <meta name="twitter:description" content="YouTube Hashtag Generator: Packaging a YouTube upload from idea to publishable assets. Creator-ready angles and the next upload tool to keep the package" />
+  <meta name="twitter:title" content="Thumbnail Brief Generator - Free Browser Tool | Clickoz" />
+  <meta name="twitter:description" content="Thumbnail Brief Generator: Preparing a YouTube upload from idea to publishable sections. Creator-ready angles and the next upload tool needed to keep the" />
   <meta name="twitter:image" content="https://clickoz.com/assets/og/default.svg" />
-  <meta name="twitter:image:alt" content="YouTube Hashtag Generator - Free Browser Tool | Clickoz" />
+  <meta name="twitter:image:alt" content="Thumbnail Brief Generator - Free Browser Tool | Clickoz" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
@@ -38,12 +38,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/assets/site.css?v=15" />
-  <link rel="stylesheet" href="/tools/cms-tools.css?v=22" />
+  <link rel="stylesheet" href="/tools/cms-tools.css?v=25" />
   <link rel="stylesheet" href="/assets/clickoz-premium.css?v=5" />
-  <link rel="stylesheet" href="/assets/cms-final.css?v=180" />
-  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Clickoz","item":"https://clickoz.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://clickoz.com/tools/"},{"@type":"ListItem","position":3,"name":"YouTube Hashtag Generator","item":"https://clickoz.com/tools/youtube-hashtag-generator/"}]},{"@type":"WebApplication","name":"YouTube Hashtag Generator","url":"https://clickoz.com/tools/youtube-hashtag-generator/","description":"Create relevant hashtag mixes without stuffing the description.","applicationCategory":"UtilitiesApplication","operatingSystem":"All","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Clickoz","url":"https://clickoz.com/","logo":{"@type":"ImageObject","url":"https://clickoz.com/assets/clickoz-logo-512.png","width":512,"height":512}},"image":"https://clickoz.com/assets/clickoz-logo-512.png","featureList":["Tags","Niche","No stuffing","Examples","Related tools","Related guides","Copy-ready output"]},{"@type":"HowTo","name":"How to use YouTube Hashtag Generator","description":"The upload asset needs a stronger title, hook, description or metadata structure before publishing.","step":[{"@type":"HowToStep","position":1,"name":"Understand the problem","text":"The upload asset needs a stronger title, hook, description or metadata structure before publishing."},{"@type":"HowToStep","position":2,"name":"Run the tool","text":"Paste the topic or draft, generate options, then refine the hook, clarity and next action."},{"@type":"HowToStep","position":3,"name":"Review before copying","text":"Check the first line, mobile scan value and search angle before publishing."}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does YouTube Hashtag Generator upload my data?","acceptedAnswer":{"@type":"Answer","text":"Most Clickoz tools run in the browser. Network diagnostic tools only contact the target or public resolver needed for the check."}},{"@type":"Question","name":"What should I do after using YouTube Hashtag Generator?","acceptedAnswer":{"@type":"Answer","text":"Review the output, copy the useful version, then continue with related tools such as YouTube Title Generator or YouTube Description Generator and guides such as YouTube Hashtags Guide or Keyword Variations."}}]}]}</script>
+  <link rel="stylesheet" href="/assets/cms-final.css?v=206" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Clickoz","item":"https://clickoz.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://clickoz.com/tools/"},{"@type":"ListItem","position":3,"name":"Thumbnail Brief Generator","item":"https://clickoz.com/tools/thumbnail-brief-generator/"}]},{"@type":"WebApplication","name":"Thumbnail Brief Generator","url":"https://clickoz.com/tools/thumbnail-brief-generator/","description":"Plan thumbnail concepts with contrast, focal point and mobile readability.","applicationCategory":"UtilitiesApplication","operatingSystem":"All","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Clickoz","url":"https://clickoz.com/","logo":{"@type":"ImageObject","url":"https://clickoz.com/assets/clickoz-logo-512.png","width":512,"height":512}},"image":"https://clickoz.com/assets/clickoz-logo-512.png","featureList":["Thumbnail","Mobile","Visual brief","Examples","Related tools","Related guides","Output ready to copy"]},{"@type":"HowTo","name":"How to use Thumbnail Brief Generator","description":"The upload needs a stronger title, hook, description or metadata structure before publishing.","step":[{"@type":"HowToStep","position":1,"name":"Understand the problem","text":"The upload needs a stronger title, hook, description or metadata structure before publishing."},{"@type":"HowToStep","position":2,"name":"Run the tool","text":"Paste the topic or draft, generate options, then refine the hook, clarity and next step."},{"@type":"HowToStep","position":3,"name":"Review before copying","text":"Check the first line, mobile readability and search angle before publishing."}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does Thumbnail Brief Generator upload my data?","acceptedAnswer":{"@type":"Answer","text":"Most Clickoz tools run in the browser. Network diagnostic tools only contact the target or public resolver needed for the check."}},{"@type":"Question","name":"What should I do after using Thumbnail Brief Generator?","acceptedAnswer":{"@type":"Answer","text":"Review the output, copy the useful version, then continue with related tools such as YouTube Title Generator or YouTube Description Generator and guides such as YouTube Title and Thumbnail Checklist or Creator Content Calendar."}}]}]}</script>
 </head>
-<body class="bigtext cms-tool-body" data-tool-slug="youtube-hashtag-generator">
+<body class="bigtext cms-tool-body" data-tool-slug="thumbnail-brief-generator">
   <div id="clickozParticles" aria-hidden="true"></div>
   <canvas id="spaceParticles" aria-hidden="true"></canvas>
   <div class="__grain" aria-hidden="true"></div>
@@ -68,33 +68,62 @@
   <main class="section container cms-tool-page">
     <div class="cms-tool-hero">
       <nav class="crumbs" aria-label="Breadcrumb">
-        <a href="/">Home</a><span>&rsaquo;</span><a href="/tools/">Tools</a><span>&rsaquo;</span><span aria-current="page">YouTube Hashtag Generator</span>
+        <a href="/">Home</a><span>&rsaquo;</span><a href="/tools/">Tools</a><span>&rsaquo;</span><span aria-current="page">Thumbnail Brief Generator</span>
       </nav>
-      <h1 class="cms-tool-title">YouTube Hashtag Generator</h1>
-      <p class="cms-tool-sub">Create relevant hashtag mixes without stuffing the description.</p>
-      <div class="cms-tool-trust" aria-label="Key benefits">
-        <span class="cms-pill"><span class="cms-pill-icon" aria-hidden="true"></span>Tags</span>
-<span class="cms-pill"><span class="cms-pill-icon" aria-hidden="true"></span>Niche</span>
-<span class="cms-pill"><span class="cms-pill-icon" aria-hidden="true"></span>No stuffing</span>
+      <div class="cms-hero-layout">
+        <div class="cms-hero-copy">
+          <p class="cms-tool-kicker">YouTube Creator Tools</p>
+          <h1 class="cms-tool-title">Thumbnail Brief Generator</h1>
+          <p class="cms-tool-sub">Plan thumbnail concepts with contrast, focal point and mobile readability.</p>
+          <div class="cms-tool-trust" aria-label="Key benefits">
+            <span class="cms-pill"><span class="cms-pill-icon" aria-hidden="true"></span>Thumbnail</span>
+<span class="cms-pill"><span class="cms-pill-icon" aria-hidden="true"></span>Mobile</span>
+<span class="cms-pill"><span class="cms-pill-icon" aria-hidden="true"></span>Visual brief</span>
 <span class="cms-pill"><span class="cms-pill-icon" aria-hidden="true"></span>Mobile-ready</span>
+          </div>
+        </div>
+        <aside class="cms-tool-promise" aria-label="Thumbnail Brief Generator best use">
+          <span>Use it when</span>
+          <strong>The video exists, but the title, thumbnail, description, hashtags, tags or next step still feels weak.</strong>
+          <p>Preparing a YouTube upload from idea to publishable sections</p>
+        </aside>
       </div>
     </div>
 
-    <section class="cms-tool-brief cms-box-signal" aria-label="YouTube Hashtag Generator quick guide">
-      <article><strong><span class="cms-brief-icon" aria-hidden="true">01</span>Problem it solves</strong><span>The upload asset needs a stronger title, hook, description or metadata structure before publishing.</span></article>
-      <article><strong><span class="cms-brief-icon" aria-hidden="true">02</span>How to use it</strong><span>Paste the topic or draft, generate options, then refine the hook, clarity and next action.</span></article>
-      <article><strong><span class="cms-brief-icon" aria-hidden="true">03</span>Check before copying</strong><span>Check the first line, mobile scan value and search angle before publishing.</span></article>
+    <section class="cms-tool-brief cms-box-signal" aria-label="Thumbnail Brief Generator quick guide">
+      <article><strong><span class="cms-brief-icon" aria-hidden="true">01</span>Use case</strong><span>The upload needs a stronger title, hook, description or metadata structure before publishing.</span></article>
+      <article><strong><span class="cms-brief-icon" aria-hidden="true">02</span>Input to paste</strong><span>Video topic, rough title, outline, thumbnail phrase or upload notes.</span></article>
+      <article><strong><span class="cms-brief-icon" aria-hidden="true">03</span>Output to expect</strong><span>Creator-ready angles and the next upload tool needed to keep the package aligned.</span></article>
     </section>
 
-    <section class="cms-tool-panel cms-box-action" id="tool-app" data-tool-app="youtube-hashtag-generator" aria-label="YouTube Hashtag Generator app">
+    <section class="cms-tool-panel cms-box-action" id="tool-app" data-tool-app="thumbnail-brief-generator" aria-label="Thumbnail Brief Generator app">
+      <div class="cms-workbench-head">
+        <div>
+          <p class="cms-tool-kicker">Tool workbench</p>
+          <h2>Run Thumbnail Brief Generator in three clear steps.</h2>
+          <p>Start from a sample, replace it with real input, then review the result and the next recommended action.</p>
+        </div>
+        <div class="cms-workbench-meta" aria-label="Tool guarantees">
+          <span>No account</span>
+          <span>Browser-first</span>
+          <span>Copy controls</span>
+        </div>
+      </div>
       <div class="cms-tool-grid">
         <div class="cms-tool-app cms-box-action">
+          <div class="cms-panel-heading">
+            <span>01 Input</span>
+            <h2>Load a sample or paste your own content.</h2>
+            <p>Real input gives the most useful output. Samples only show the expected format.</p>
+          </div>
           <div class="cms-example-box">
-            <h3>Examples</h3>
+            <h3>Sample input</h3>
+            <p class="cms-panel-note">Pick one to understand the format, then replace it with your actual task.</p>
             <pre></pre>
             <div class="cms-example-options" aria-label="Example inputs"></div>
           </div>
-          <div class="cms-form-grid" aria-label="YouTube Hashtag Generator inputs"></div>
+          <div class="cms-section-label"><span>02</span><strong>Your input</strong><small>Edit the fields below, then run the tool.</small></div>
+          <div class="cms-form-grid" aria-label="Thumbnail Brief Generator inputs"></div>
           <div class="cms-tool-actions">
             <button class="btn primary" type="button" data-action="run">&#9889; Run tool</button>
             <button class="btn ghost" type="button" data-action="copy">&#128203; Copy result</button>
@@ -102,62 +131,73 @@
           </div>
         </div>
         <aside class="cms-result-card cms-box-action" aria-label="Result">
-          <h3>Result</h3>
-          <p class="cms-result-status">Enter input and run the tool.</p>
+          <div class="cms-panel-heading cms-result-heading">
+            <span>03 Output</span>
+            <h2>Review the result.</h2>
+            <p>Metrics, final output, quality checks and next tools appear here after you run it.</p>
+          </div>
+          <p class="cms-result-status">Load a sample or enter your input, then run the tool.</p>
           <div class="cms-metrics"></div>
           <div class="cms-output" role="region" aria-live="polite"></div>
         </aside>
       </div>
     </section>
 
-    <section class="cms-related cms-box-flow" aria-label="YouTube Hashtag Generator related tools and guides">
+    <section class="cms-related cms-box-flow" aria-label="Thumbnail Brief Generator related tools and guides">
       <div class="cms-related-box cms-box-flow">
         <h3>Related tools</h3>
         <div class="cms-related-links"><a href="/tools/youtube-title-generator/">&#9654;&#65039; YouTube Title Generator</a>
 <a href="/tools/youtube-description-generator/">&#9654;&#65039; YouTube Description Generator</a>
-<a href="/tools/youtubevideotagoptimizer/">&#9654;&#65039; YouTube Video Tag Optimizer</a></div>
+<a href="/tools/youtube-hashtag-generator/">&#9654;&#65039; YouTube Hashtag Generator</a></div>
       </div>
       <div class="cms-related-box cms-box-flow">
         <h3>Related guides</h3>
-        <div class="cms-related-links"><a href="/guides/youtube-hashtags-guide/">&#128218; YouTube Hashtags Guide</a>
-<a href="/guides/keyword-variations/">&#128218; Keyword Variations</a>
+        <div class="cms-related-links"><a href="/guides/youtube-title-thumbnail-checklist/">&#128218; YouTube Title and Thumbnail Checklist</a>
+<a href="/guides/creator-content-calendar/">&#128218; Creator Content Calendar</a>
 <a href="/guides/youtube-description-template/">&#128218; YouTube Description Template</a></div>
       </div>
     </section>
 
-    <section class="cms-ops-strip cms-box-support" aria-label="YouTube Hashtag Generator quality signals">
-      <article><span>&#128737;&#65039;</span><strong>Input safety</strong><p>Outputs are rendered through the Clickoz safe result layer, with script-like markup blocked from executable output.</p></article>
-      <article><span>&#9889;</span><strong>Faster task flow</strong><p>Examples load instantly, inputs auto-run after changes and results stay copy-ready.</p></article>
-      <article><span>&#128269;</span><strong>Search support</strong><p>This page has canonical URL, schema, FAQs, related tools, related guides and clear task intent.</p></article>
+    <section class="cms-ops-strip cms-box-support" aria-label="Thumbnail Brief Generator quality signals">
+      <article><span>&#128737;&#65039;</span><strong>Input safety</strong><p>Outputs are rendered in a safe result area, with script-like markup blocked from executable output.</p></article>
+      <article><span>&#9889;</span><strong>Faster task flow</strong><p>Examples load instantly, inputs update after changes and results stay easy to copy.</p></article>
+      <article><span>&#128269;</span><strong>Search support</strong><p>This page includes a canonical URL, schema, FAQs, related tools, related guides and clear task intent.</p></article>
     </section>
 
-    <section class="cms-info-grid cms-box-support" aria-label="YouTube Hashtag Generator explanation and FAQ">
+    <section class="cms-info-grid cms-box-support" aria-label="Thumbnail Brief Generator explanation and FAQ">
       <article class="cms-info-card">
-        <h2>What is YouTube Hashtag Generator?</h2>
-        <p>YouTube Hashtag Generator helps turn a creator idea into a publishable YouTube asset.</p>
+        <h2>What is Thumbnail Brief Generator?</h2>
+        <p>Thumbnail Brief Generator helps turn a creator idea into a publishable YouTube section.</p>
       </article>
       <article class="cms-info-card">
         <h2>When should you use it?</h2>
-        <p>Use it before upload when the title, thumbnail, description, hashtags, tags or community post still needs structure. The related tools and guides are placed directly under the result so the next step is visible without searching again.</p>
+        <p>Use it before upload when the title, thumbnail, description, hashtags, tags or community post still needs structure. Related tools and guides appear directly under the result, so the next step is visible without another search.</p>
       </article>
       <article class="cms-info-card cms-faq">
         <h2>FAQ</h2>
-        <details><summary>Does YouTube Hashtag Generator upload my data?</summary><p>Text tools run on the page and do not require an account. Diagnostic tools only contact the public resolver or target needed for that specific check.</p></details>
-<details><summary>Can I use the output directly?</summary><p>Use the result as a ready draft, then review it in the place where it will be published. Creator-ready angles and the next upload tool to keep the package aligned.</p></details>
+        <details><summary>Does Thumbnail Brief Generator upload my data?</summary><p>Text tools run on the page and do not require an account. Diagnostic tools only contact the public resolver or target needed for that specific check.</p></details>
+<details><summary>Can I use the output directly?</summary><p>Use the result as a ready draft, then review it in the place where it will be published. Creator-ready angles and the next upload tool needed to keep the package aligned.</p></details>
 <details><summary>Why are examples included?</summary><p>Examples remove the blank-page problem. They show the expected input shape and help you test the tool before pasting real work.</p></details>
       </article>
-      <article class="cms-info-card">
-        <h2>Useful search intents</h2>
-        <p>These phrases describe real tasks users search for. They keep the page focused on problems, not repeated keywords.</p>
-        <div class="cms-query-chips"><span>youtube hashtag generator online</span>
-<span>free youtube hashtag generator</span>
-<span>youtube hashtag generator example</span>
-<span>youtube hashtag generator checker</span>
-<span>youtube hashtag generator generator</span>
-<span>youtube hashtag generator for youtube</span>
-<span>tags youtube tool</span>
-<span>niche youtube tool</span>
-<span>no stuffing youtube tool</span></div>
+      <article class="cms-info-card cms-search-card">
+        <div>
+          <h2>Search engine route</h2>
+          <p>Use the same task language on search engines, compare the live SERP wording, then return here to create a cleaner output.</p>
+        </div>
+        <div class="cms-search-actions" aria-label="Thumbnail Brief Generator search shortcuts">
+          <a href="https://www.google.com/search?q=Thumbnail%20Brief%20Generator%20online" target="_blank" rel="noopener noreferrer">&#128269; Google</a>
+<a href="https://www.bing.com/search?q=Thumbnail%20Brief%20Generator%20online" target="_blank" rel="noopener noreferrer">&#128269; Bing</a>
+<a href="https://duckduckgo.com/?q=Thumbnail%20Brief%20Generator%20online" target="_blank" rel="noopener noreferrer">&#128269; DuckDuckGo</a>
+        </div>
+        <div class="cms-query-chips" aria-label="Thumbnail Brief Generator useful search intents"><span>thumbnail brief generator online</span>
+<span>free thumbnail brief generator</span>
+<span>thumbnail brief generator example</span>
+<span>thumbnail brief generator for youtube</span>
+<span>thumbnail brief generator tool no signup</span>
+<span>thumbnail brief generator workflow</span>
+<span>thumbnail youtube tool</span>
+<span>mobile youtube tool</span>
+<span>visual brief youtube tool</span></div>
       </article>
     </section>
   </main>
@@ -171,12 +211,12 @@
     </div>
     <div class="container" style="margin-top:14px"><hr class="sep" /><div style="text-align:center;font-size:13px;color:rgba(242,242,255,.60)">&copy; 2026 Clickoz &middot; Fast browser tools for SEO, writing, developers and creators</div></div>
   </footer>
-  <script src="/assets/cms-registry.js?v=5" defer></script>
+  <script src="/assets/cms-registry.js?v=7" defer></script>
   <script src="/assets/cms-schema.js?v=2" defer></script>
-  <script src="/assets/cms-enhance.js?v=9" defer></script>
-  <script src="/assets/site.js?v=87" defer></script>
+  <script src="/assets/cms-enhance.js?v=10" defer></script>
+  <script src="/assets/site.js?v=101" defer></script>
   <script src="/assets/clickoz-premium.js?v=15" defer></script>
-  <script src="/tools/cms-tools.js?v=28" defer></script>
+  <script src="/tools/cms-tools.js?v=31" defer></script>
 <!-- Code injected by live-server -->
 <script>
 	// <![CDATA[  <-- For SVG support

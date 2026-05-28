@@ -24,7 +24,7 @@
     revealStepMs: 70,
     sequence: {
       writing: [
-        ["Paste", "Use a real paragraph, caption or intro, not a perfect sample."],
+        ["Paste", "Use a real paragraph, caption or intro, not a polished sample."],
         ["Check", "Look for length, density and the first edit that removes friction."],
         ["Finish", "Copy the cleaner version, then test readability if it still feels heavy."]
       ],
@@ -59,7 +59,7 @@
         ["Post", "Remove any line that could fit every creator before publishing."]
       ],
       default: [
-        ["Start", "Paste the real job you need to finish."],
+        ["Start", "Paste the real task you need to finish."],
         ["Review", "Use the result to make one clear decision."],
         ["Next", "Continue with the related tool or guide while the context is fresh."]
       ]
@@ -272,7 +272,7 @@
     if (/youtube|thumbnail|chapter|video|community/i.test(slug) || tool?.category === "youtube") return "A YouTube upload about cleaning messy text, checking the snippet and preparing the tracking link before publishing.";
     if (tool?.category === "socialai") return "A practical post for creators who want to turn one rough idea into a hook, useful body and platform-native CTA.";
     if (tool?.category === "seo") return "A tool page that helps creators finish a specific SEO task in the browser without signup.";
-    if (tool?.category === "writing") return "Most readers scan on mobile first. Shorter paragraphs, clearer headings and one direct next action make the page easier to use.";
+    if (tool?.category === "writing") return "Most readers scan on mobile first. Shorter paragraphs, clearer headings and one direct next step make the page easier to use.";
     if (tool?.category === "dev") return "{\"campaign\":\"spring launch\",\"source\":\"youtube description\",\"tools\":[\"formatter\",\"encoder\"]}";
     if (tool?.category === "web") return "clickoz.com";
     if (tool?.category === "tracking") return "Landing page: https://example.com/offer, source: youtube, medium: description, campaign: spring launch";
@@ -328,13 +328,13 @@
       $(".cms-example-box pre", root)?.insertAdjacentHTML("afterend", `<div class="cms-example-sequence" aria-label="Example workflow sequence"></div>`);
     }
     if (!$(".cms-local-history", root)) {
-      $(".cms-example-box", root)?.insertAdjacentHTML("afterend", `<details class="cms-local-history" aria-label="Recent local inputs"><summary><strong>Recent inputs</strong><span>Local only</span></summary><div class="cms-history-items"></div></details>`);
+      $(".cms-example-box", root)?.insertAdjacentHTML("afterend", `<details class="cms-local-history" aria-label="Private recent inputs"><summary><strong>Private recents</strong><span>Stored on this device</span></summary><div class="cms-history-items"></div></details>`);
     }
     if (!$(".cms-run-meter", root)) {
       $(".cms-tool-actions", root)?.insertAdjacentHTML("afterend", `<div class="cms-run-meter" aria-live="polite"></div>`);
     }
     if (!$(".cms-shortcut-row", root)) {
-      $(".cms-tool-actions", root)?.insertAdjacentHTML("beforebegin", `<div class="cms-shortcut-row" aria-label="Keyboard shortcuts"><span>Ctrl+Enter</span><span>Ctrl+Shift+C</span><span>Ctrl+Shift+D</span></div>`);
+      $(".cms-tool-actions", root)?.insertAdjacentHTML("beforebegin", `<div class="cms-shortcut-row" aria-label="Keyboard shortcuts"><span>Run: Ctrl+Enter</span><span>Copy: Ctrl+Shift+C</span><span>Duplicate input: Ctrl+Shift+D</span></div>`);
     }
   }
 
@@ -346,7 +346,7 @@
     const steps = toolUx.sequence[family] || toolUx.sequence.default;
     const label = typeof example === "string" ? `Example ${index + 1}` : example?.label || `Example ${index + 1}`;
     box.dataset.state = state;
-    box.innerHTML = `<div class="cms-sequence-head"><strong>Sample flow</strong><span>${esc(label)}</span></div>
+    box.innerHTML = `<div class="cms-sequence-head"><strong>How this tool works</strong><span>${esc(label)}</span></div>
       <div class="cms-sequence-track">${steps.map(([title, text], stepIndex) => `<span class="cms-sequence-step${stepIndex === 0 ? " is-active" : ""}" style="--seq-delay:${stepIndex * toolUx.revealStepMs}ms" title="${esc(text)}"><b>${esc(stepIndex + 1)} ${esc(title)}</b><span>${esc(text)}</span></span>`).join("")}</div>`;
   }
 
@@ -356,7 +356,7 @@
     const steps = toolUx.runStates[state] || toolUx.runStates.idle;
     const activeIndex = state === "ready" ? 2 : state === "running" ? 1 : state === "error" ? 1 : 0;
     meter.dataset.state = state;
-    meter.innerHTML = steps.map((label, index) => `<span class="${index <= activeIndex ? "is-active" : ""}"><i aria-hidden="true"></i>${esc(label)}</span>`).join("");
+    meter.innerHTML = `<strong>Run status</strong>${steps.map((label, index) => `<span class="${index <= activeIndex ? "is-active" : ""}"><i aria-hidden="true"></i>${esc(label)}</span>`).join("")}`;
   }
 
   function renderToolHistory(root, slug) {
@@ -372,7 +372,7 @@
         const label = item.label || "Saved input";
         return `<button type="button" class="cms-history-chip" data-history="${index}" title="Restore ${esc(label)}" aria-label="Restore local input from ${esc(date)}: ${esc(label)}"><span>${esc(date)}</span>${esc(label)}</button>`;
       }).join("")
-      : `<span class="cms-history-empty">Run a real job and it appears here.</span>`;
+      : `<span class="cms-history-empty">Run a real task and it appears here.</span>`;
   }
 
   function flashTool(root, message, tone = "ok") {
@@ -508,7 +508,7 @@
       : `${title}\nFor ${audience}\n${promise}\n${cta}`;
     const optionB = isModel
       ? `${title} for brands + photographers\nCampaign-ready visuals and clean portfolio work\n${cta}`
-      : `${title} for ${audience}\nUseful posts, simple structure and one clear next action\n${cta}`;
+      : `${title} for ${audience}\nUseful posts, simple structure and one clear next step\n${cta}`;
     const optionC = isModel
       ? "Model portfolio + collaborations\nEditorial, lifestyle and social campaigns\n" + cta
       : title + "\nHelping " + audience + "\nNew ideas, practical posts and honest recommendations\n" + cta;
@@ -553,7 +553,7 @@
         </div>
         <div class="cms-output-list">
           <b>Why this is stronger</b>
-          <span>It removes vague wording and gives the profile four jobs: identity, niche, audience value and next action.</span>
+          <span>It removes vague wording and gives the profile four clear roles: identity, niche, audience value and next step.</span>
         </div>
       </div>`;
     return result("Instagram bio rebuilt for profile clarity.", [
@@ -672,7 +672,7 @@
         "2. Context: explain why it matters.",
         "3. Steps: split the fix into short blocks.",
         "4. Proof: add example, metric or constraint.",
-        "5. CTA: one next action.",
+        "5. CTA: one next step.",
         "",
         "Spacing: keep paragraphs short enough to scan on mobile."
       ].join("\n");
@@ -835,7 +835,7 @@
         "1. Define the promise.",
         "2. Split it into 3 practical sections.",
         "3. Add proof, example or constraint.",
-        "4. End with one clear next action.",
+        "4. End with one clear next step.",
         "",
         "Reusable structure:",
         "- Hook",
@@ -860,7 +860,7 @@
         "Avoid:",
         "- Repeating the same keyword in every line.",
         "- Tags that do not match the actual content.",
-        "- Spam-style bundles that make the post look generic."
+        "- Spam-style bundles that make the post look vague."
       ].join("\n");
     }
 
@@ -884,7 +884,7 @@
       "- Specific > clever.",
       "- Short first line.",
       "- Plain language.",
-      "- One measurable next action."
+      "- One measurable next step."
     ].join("\n");
   }
 
@@ -925,7 +925,7 @@
         <article><b>Next tool</b><span>${esc(nextTool?.title || "Related workflow")}</span></article>
       </div>
       <div class="cms-output-list">
-        <b>Copy-ready result</b>
+        <b>Result ready to copy</b>
         <span>${esc(output).replace(/\n/g, "<br>")}</span>
       </div>
       <div class="cms-output-list">
@@ -971,7 +971,7 @@
       ],
       sections: [
         ["What this means", advice],
-        ["Copy-ready summary", `Words: ${stats.w.length}\nCharacters: ${stats.chars}\nSentences: ${stats.sentences}\nParagraphs: ${stats.paragraphs}\nReading time: ${duration(stats.w.length / 235 * 60)}`],
+        ["Summary ready to copy", `Words: ${stats.w.length}\nCharacters: ${stats.chars}\nSentences: ${stats.sentences}\nParagraphs: ${stats.paragraphs}\nReading time: ${duration(stats.w.length / 235 * 60)}`],
         ["Next edit", "If the text feels heavy, split the longest paragraph and remove one filler sentence before publishing."]
       ]
     });
@@ -983,7 +983,7 @@
       hero: primary || "Result ready",
       cards,
       sections: [
-        ["Copy-ready output", primary || "No output yet."],
+        ["Output ready to copy", primary || "No output yet."],
         ["How to use it", note]
       ]
     });
@@ -1076,7 +1076,7 @@
         { label: "Voice script", values: { text: "Today we are checking a quick publishing workflow. Paste the draft, review reading time, then remove the slow parts before recording." } }
       ],
       "character-counter": [
-        { label: "Instagram bio", values: { text: "Tools for creators, SEO writers and developers. Fast, private and copy-ready." } },
+        { label: "Instagram bio", values: { text: "Tools for creators, SEO writers and developers. Fast, private and easy to copy." } },
         { label: "Meta snippet", values: { text: "Free online tools for SEO, writing, developers and creators. No signup." } },
         { label: "Short caption", values: { text: "New guide live. Save it before your next upload." } }
       ],
@@ -1122,12 +1122,12 @@
       ],
       "meta-tags": [
         { label: "Tool page", values: { title: "Free Word Counter Online | Clickoz", description: "Count words, characters, sentences and reading time instantly. Browser-only, mobile-ready and free." } },
-        { label: "Guide page", values: { title: "SEO Content Checklist for Better Pages", description: "Use this checklist to match search intent, improve snippets and link to the right next action." } },
+        { label: "Guide page", values: { title: "SEO Content Checklist for Better Pages", description: "Use this checklist to match search intent, improve snippets and link to the right next step." } },
         { label: "Creator page", values: { title: "YouTube Title Generator for Better Hooks", description: "Generate clearer title angles, thumbnail promises and upload-ready ideas before publishing." } }
       ],
       "meta-tag-optimizer": [
         { label: "Tool page", values: { url: "https://clickoz.com/tools/word-counter/", title: "Free Word Counter Online | Clickoz", description: "Count words, characters, sentences and reading time instantly. Browser-only, mobile-ready and free.", intent: "count words and reading time quickly" } },
-        { label: "Guide page", values: { url: "https://clickoz.com/guides/seo-content-checklist/", title: "SEO Content Checklist for Better Pages", description: "Use this checklist to match search intent, improve snippets and link to the right next action.", intent: "audit a page before publishing" } },
+        { label: "Guide page", values: { url: "https://clickoz.com/guides/seo-content-checklist/", title: "SEO Content Checklist for Better Pages", description: "Use this checklist to match search intent, improve snippets and link to the right next step.", intent: "audit a page before publishing" } },
         { label: "Weak snippet", values: { url: "https://example.com/page", title: "Best Tools", description: "Useful tools online.", intent: "find fast tools for SEO and creator work" } }
       ],
       "serp-preview": [
@@ -1166,7 +1166,7 @@
         { label: "Proof", values: { input: "A workflow that turns one video into five useful posts", platform: "Short-form" } }
       ],
       "linkedin-post-formatter": [
-        { label: "Launch", values: { input: "We rebuilt our tools page so every utility has examples, guides and next actions.", platform: "LinkedIn" } },
+        { label: "Launch", values: { input: "We rebuilt our tools page so every utility has examples, guides and useful next steps.", platform: "LinkedIn" } },
         { label: "Lesson", values: { input: "Good SEO tools should solve one task clearly before asking users to read more.", platform: "LinkedIn" } },
         { label: "Checklist", values: { input: "Before publishing: snippet, readability, internal links, tracking link.", platform: "LinkedIn" } }
       ],
@@ -1199,13 +1199,13 @@
       const sample = humanSampleFor(tool);
       return [
         { label: "Real brief", values: { [firstField]: sample, platform: tool.category === "youtube" ? "YouTube" : "Short-form" } },
-        { label: "Launch note", values: { [firstField]: "A creator workflow that turns one rough idea into a hook, caption, CTA and next post without sounding generic.", platform: "Instagram" } },
+        { label: "Launch note", values: { [firstField]: "A creator workflow that turns one rough idea into a hook, caption, CTA and next post without sounding vague.", platform: "Instagram" } },
         { label: "How-to", values: { [firstField]: "How to plan a week of content from one long video without repeating the same point on every platform.", platform: "TikTok" } }
       ];
     }
     const sample = humanSampleFor(tool);
     return [
-      { label: "Real job", values: Object.fromEntries((config.fields || []).map((f) => [f.id, f.value || config.sample || sample])) },
+      { label: "Real task", values: Object.fromEntries((config.fields || []).map((f) => [f.id, f.value || config.sample || sample])) },
       { label: "Messy input", values: { [firstField]: sample } },
       { label: "Publish check", values: { [firstField]: config.sample || sample } }
     ];
@@ -1249,7 +1249,7 @@
           badge: "Limit check",
           hero: `${t.length} characters - ${words(t).length} words`,
           cards: [["No spaces", noSpaces], ["Lines", t.split(/\n/).length], ["Best for", "Bios/snippets"], ["Status", t.length > 160 ? "Review length" : "Clean"]],
-          sections: [["Copy-ready summary", output], ["How to use it", "Use this before pasting into bios, captions, titles, forms, ads or metadata fields with strict limits."]]
+          sections: [["Summary ready to copy", output], ["How to use it", "Use this before pasting into bios, captions, titles, forms, ads or metadata fields with strict limits."]]
         }));
       }
     },
@@ -1266,7 +1266,7 @@
           badge: "Readability",
           hero: `${score}/100 clarity estimate`,
           cards: [["Avg sentence", `${avg.toFixed(1)} words`], ["Words", s.w.length], ["Sentences", s.sentences], ["Action", avg > 20 ? "Shorten" : "Polish"]],
-          sections: [["Recommendation", recommendation], ["Copy-ready note", output]]
+          sections: [["Recommendation", recommendation], ["Note ready to copy", output]]
         }));
       }
     },
@@ -1278,7 +1278,7 @@
         const title = t.toLowerCase().replace(/\b\w/g, (m) => m.toUpperCase());
         const sentence = t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
         const output = `UPPERCASE:\n${t.toUpperCase()}\n\nlowercase:\n${t.toLowerCase()}\n\nTitle Case:\n${title}\n\nSentence case:\n${sentence}`;
-        return result("Case formats generated with copy-ready variants.", [metric("Original chars", t.length), metric("Formats", 4), metric("Words", words(t).length), metric("Copy", "Ready")], output, outputPackHtml({
+        return result("Case formats generated with variants ready to copy.", [metric("Original chars", t.length), metric("Formats", 4), metric("Words", words(t).length), metric("Copy", "Ready")], output, outputPackHtml({
           badge: "Text case",
           hero: title || "No text yet",
           cards: [["Formats", 4], ["Words", words(t).length], ["Best for", "Titles/forms"], ["Status", t ? "Ready" : "Needs input"]],
@@ -1289,7 +1289,7 @@
     "whitespace-cleaner": {
       sample: "Messy    text\n\n\nwith too many      spaces.",
       fields: [field("text", "Messy text", "textarea", "Messy    text\n\n\nwith too many      spaces.", true)],
-      run(v) { const before = String(v.text || ""); const out = before.replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim(); return result("Output ready: spacing and paragraph breaks cleaned.", [metric("Before", before.length), metric("After", out.length), metric("Removed", Math.max(0, before.length - out.length)), metric("Status", "Clean")], out, transformPackHtml("Clean text", out, [["Before", before.length], ["After", out.length], ["Removed", Math.max(0, before.length - out.length)], ["Status", "Copy-ready"]], "Paste the cleaned output back into the editor, then check readability if the draft still feels dense.")); }
+      run(v) { const before = String(v.text || ""); const out = before.replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim(); return result("Output ready: spacing and paragraph breaks cleaned.", [metric("Before", before.length), metric("After", out.length), metric("Removed", Math.max(0, before.length - out.length)), metric("Status", "Clean")], out, transformPackHtml("Clean text", out, [["Before", before.length], ["After", out.length], ["Removed", Math.max(0, before.length - out.length)], ["Status", "Ready to copy"]], "Paste the cleaned output back into the editor, then check readability if the draft still feels dense.")); }
     },
     "meta-tags": {
       sample: "Title: Free SEO Tools for Faster Publishing\nDescription: Use Clickoz to write snippets, check readability and clean URLs before publishing.",
@@ -1436,17 +1436,17 @@
         return result("UTM link built with clean naming.", [metric("Source", source), metric("Medium", medium), metric("Campaign", campaign), metric("URL", "Ready")], out, outputPackHtml({
           badge: "Tracking URL",
           hero: u.toString(),
-          cards: [["Source", source], ["Medium", medium], ["Campaign", campaign], ["Status", "Copy-ready"]],
+          cards: [["Source", source], ["Medium", medium], ["Campaign", campaign], ["Status", "Ready to copy"]],
           sections: [["Final URL", u.toString()], ["Naming rule", "Keep source, medium and campaign lowercase with hyphens. Use the same values across every creator, social and email placement."], ["Next step", "Paste this into the exact placement you want to measure, then keep a separate link for each placement."]]
         }));
       }
     },
     "http-ping": { sample: "https://example.com", fields: [field("url", "Website URL", "url", "https://example.com", true)], async run(v) { const tries = []; for (let i = 0; i < 3; i++) tries.push(await pingUrl(v.url)); const target = new URL(normUrl(v.url)).hostname; const avg = Math.round(tries.reduce((a, x) => a + x.ms, 0) / tries.length); const rows = tries.map((x, i) => `Attempt ${i + 1}: ${x.ms} ms (${x.status})`).join("\n"); return result("Browser HTTP latency estimate.", [metric("Average", `${avg} ms`), metric("Attempts", 3), metric("Mode", "HTTP"), metric("Target", target)], rows, outputPackHtml({ badge: "Reachability check", hero: `${target} averaged ${avg} ms`, cards: [["Average", `${avg} ms`], ["Attempts", "3"], ["Mode", "HTTP favicon"], ["Target", target]], sections: [["Attempts", rows], ["How to read it", "This is a browser-side reachability estimate. Use it for quick comparison, not as a full uptime or Core Web Vitals report."]] })); } },
     "dns-lookup": { sample: "example.com A", fields: [field("domain", "Domain", "text", "example.com"), field("record", "Record", "select", "A", false, ["A", "AAAA", "CNAME", "MX", "TXT", "NS"].map((x) => ({ value: x, label: x })))], async run(v) { const d = String(v.domain || "").replace(/^https?:\/\//, "").split("/")[0]; const type = v.record || "A"; const r = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(d)}&type=${encodeURIComponent(type)}`, { headers: { accept: "application/dns-json" } }); const j = await r.json(); const ans = j.Answer || []; const rows = ans.length ? ans.map((a) => `${a.name} ${a.TTL} ${type} ${a.data}`).join("\n") : JSON.stringify(j, null, 2); return result("DNS lookup complete.", [metric("Domain", d), metric("Type", type), metric("Answers", ans.length), metric("Resolver", "Cloudflare")], rows, outputPackHtml({ badge: "DNS result", hero: `${ans.length} ${type} answer${ans.length === 1 ? "" : "s"} for ${d}`, cards: [["Domain", d], ["Record", type], ["Answers", ans.length], ["Resolver", "Cloudflare"]], sections: [["Records", rows], ["Next step", "If a record changed recently, compare TTL and repeat the lookup after propagation time."]] })); } },
-    "ip-subnet-calculator": { sample: "192.168.1.10 / 24", fields: [field("ip", "IPv4", "text", "192.168.1.10"), field("cidr", "CIDR", "number", "24")], run(v) { const ip = ipv4ToNumber(v.ip), cidr = Math.max(0, Math.min(32, int(v.cidr, 24))); const mask = cidr === 0 ? 0 : (0xffffffff << (32 - cidr)) >>> 0; const net = (ip & mask) >>> 0, broad = (net | (~mask >>> 0)) >>> 0; const first = cidr >= 31 ? "n/a" : numberToIpv4(net + 1); const last = cidr >= 31 ? "n/a" : numberToIpv4(broad - 1); const out = `Network: ${numberToIpv4(net)}\nFirst host: ${first}\nLast host: ${last}\nBroadcast: ${numberToIpv4(broad)}\nSubnet mask: ${numberToIpv4(mask)}`; return result("Subnet calculated.", [metric("Network", numberToIpv4(net)), metric("Broadcast", numberToIpv4(broad)), metric("Mask", numberToIpv4(mask)), metric("Usable", cidr >= 31 ? 0 : broad - net - 1)], out, outputPackHtml({ badge: "IPv4 subnet", hero: `${numberToIpv4(net)}/${cidr}`, cards: [["Network", numberToIpv4(net)], ["Broadcast", numberToIpv4(broad)], ["Usable hosts", cidr >= 31 ? 0 : broad - net - 1], ["Mask", numberToIpv4(mask)]], sections: [["Range", `First host: ${first}\nLast host: ${last}`], ["Copy-ready summary", out]] })); } },
+    "ip-subnet-calculator": { sample: "192.168.1.10 / 24", fields: [field("ip", "IPv4", "text", "192.168.1.10"), field("cidr", "CIDR", "number", "24")], run(v) { const ip = ipv4ToNumber(v.ip), cidr = Math.max(0, Math.min(32, int(v.cidr, 24))); const mask = cidr === 0 ? 0 : (0xffffffff << (32 - cidr)) >>> 0; const net = (ip & mask) >>> 0, broad = (net | (~mask >>> 0)) >>> 0; const first = cidr >= 31 ? "n/a" : numberToIpv4(net + 1); const last = cidr >= 31 ? "n/a" : numberToIpv4(broad - 1); const out = `Network: ${numberToIpv4(net)}\nFirst host: ${first}\nLast host: ${last}\nBroadcast: ${numberToIpv4(broad)}\nSubnet mask: ${numberToIpv4(mask)}`; return result("Subnet calculated.", [metric("Network", numberToIpv4(net)), metric("Broadcast", numberToIpv4(broad)), metric("Mask", numberToIpv4(mask)), metric("Usable", cidr >= 31 ? 0 : broad - net - 1)], out, outputPackHtml({ badge: "IPv4 subnet", hero: `${numberToIpv4(net)}/${cidr}`, cards: [["Network", numberToIpv4(net)], ["Broadcast", numberToIpv4(broad)], ["Usable hosts", cidr >= 31 ? 0 : broad - net - 1], ["Mask", numberToIpv4(mask)]], sections: [["Range", `First host: ${first}\nLast host: ${last}`], ["Summary ready to copy", out]] })); } },
     "password-generator": { sample: "Length 20, symbols on", fields: [field("length", "Length", "number", "20"), field("symbols", "Symbols", "select", "yes", false, [{ value: "yes", label: "Include symbols" }, { value: "no", label: "No symbols" }])], run(v) { const chars = `abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789${v.symbols === "no" ? "" : "!@#$%^&*_-+=?"}`; const bytes = new Uint32Array(Math.min(128, Math.max(8, int(v.length, 20)))); crypto.getRandomValues(bytes); const out = [...bytes].map((b) => chars[b % chars.length]).join(""); return result("Password generated locally.", [metric("Length", out.length), metric("Symbols", v.symbols), metric("Random", "Crypto"), metric("Saved", "No")], out, outputPackHtml({ badge: "Local password", hero: out, cards: [["Length", out.length], ["Symbols", v.symbols === "no" ? "No" : "Yes"], ["Randomness", "Crypto API"], ["Storage", "Not saved"]], sections: [["Password", out], ["Use safely", "Paste it into a password manager immediately. Do not send generated secrets through chat, email or screenshots."]] })); } },
     "uuid-generator": { sample: "5 UUIDs", fields: [field("count", "Count", "number", "5")], run(v) { const count = Math.min(100, Math.max(1, int(v.count, 5))); const out = Array.from({ length: count }, uuidv4).join("\n"); return result("UUID v4 generated.", [metric("Count", count), metric("Version", "v4"), metric("Format", "RFC 4122"), metric("Copy", "Ready")], out, outputPackHtml({ badge: "UUID v4", hero: `${count} identifier${count === 1 ? "" : "s"} generated`, cards: [["Count", count], ["Version", "v4"], ["Format", "RFC 4122"], ["Copy", "Ready"]], sections: [["UUID list", out], ["Best use", "Use these as non-sequential IDs for tests, mocks, records or temporary references."]] })); } },
-    "timestamp-converter": { sample: "now", fields: [field("timestamp", "Timestamp or date", "text", "now", true)], run(v) { const raw = String(v.timestamp || "now"); const d = raw.toLowerCase() === "now" ? new Date() : /^\d{10}$/.test(raw) ? new Date(+raw * 1000) : /^\d{13}$/.test(raw) ? new Date(+raw) : new Date(raw); if (Number.isNaN(d.getTime())) throw new Error("Invalid date or timestamp."); const unix = Math.floor(d.getTime() / 1000); const out = `ISO: ${d.toISOString()}\nLocal: ${d.toLocaleString()}\nUTC: ${d.toUTCString()}\nUnix seconds: ${unix}`; return result("Timestamp converted.", [metric("Unix seconds", unix), metric("Milliseconds", d.getTime()), metric("Local", d.toLocaleString()), metric("UTC", d.toUTCString())], out, outputPackHtml({ badge: "Time value", hero: d.toISOString(), cards: [["Unix seconds", unix], ["Milliseconds", d.getTime()], ["Local", d.toLocaleString()], ["UTC", d.toUTCString()]], sections: [["Copy-ready formats", out], ["Next step", "Use ISO for logs and APIs, Unix seconds for many backends, and local time only when presenting to humans."]] })); } },
+    "timestamp-converter": { sample: "now", fields: [field("timestamp", "Timestamp or date", "text", "now", true)], run(v) { const raw = String(v.timestamp || "now"); const d = raw.toLowerCase() === "now" ? new Date() : /^\d{10}$/.test(raw) ? new Date(+raw * 1000) : /^\d{13}$/.test(raw) ? new Date(+raw) : new Date(raw); if (Number.isNaN(d.getTime())) throw new Error("Invalid date or timestamp."); const unix = Math.floor(d.getTime() / 1000); const out = `ISO: ${d.toISOString()}\nLocal: ${d.toLocaleString()}\nUTC: ${d.toUTCString()}\nUnix seconds: ${unix}`; return result("Timestamp converted.", [metric("Unix seconds", unix), metric("Milliseconds", d.getTime()), metric("Local", d.toLocaleString()), metric("UTC", d.toUTCString())], out, outputPackHtml({ badge: "Time value", hero: d.toISOString(), cards: [["Unix seconds", unix], ["Milliseconds", d.getTime()], ["Local", d.toLocaleString()], ["UTC", d.toUTCString()]], sections: [["Formats ready to copy", out], ["Next step", "Use ISO for logs and APIs, Unix seconds for many backends, and local time only when presenting to humans."]] })); } },
     "regex-tester": { sample: "Email regex test", fields: [field("pattern", "Pattern", "text", "\\b[\\w.-]+@[\\w.-]+\\.\\w+\\b"), field("flags", "Flags", "text", "gi"), field("text", "Text", "textarea", "Contact sales@clickoz.com or support@example.com", true)], run(v) { const re = new RegExp(v.pattern, v.flags || "g"); const matches = [...String(v.text || "").matchAll(re)]; const rows = matches.map((m, i) => `${i + 1}. ${m[0]} at ${m.index}`).join("\n") || "No matches"; return result("Regex tested.", [metric("Matches", matches.length), metric("Flags", v.flags), metric("Groups", matches[0] ? matches[0].length - 1 : 0), metric("Status", "Done")], rows, outputPackHtml({ badge: "Regex result", hero: matches.length ? `${matches.length} match${matches.length === 1 ? "" : "es"} found` : "No matches found", cards: [["Matches", matches.length], ["Flags", v.flags || "g"], ["Groups", matches[0] ? matches[0].length - 1 : 0], ["Status", "Done"]], sections: [["Matches", rows], ["Next step", "If the match is too broad, add anchors, word boundaries or a more specific character class before using it in production."]] })); } },
     "text-diff-checker": { sample: "Compare two drafts", fields: [field("left", "Original", "textarea", "The product is fast.\nIt works on mobile.", true), field("right", "Updated", "textarea", "The product is fast and private.\nIt works on mobile.", true)], run(v) { const a = String(v.left || "").split(/\r?\n/), b = String(v.right || "").split(/\r?\n/); const max = Math.max(a.length, b.length); const lines = []; let changed = 0; for (let i = 0; i < max; i++) { if (a[i] === b[i]) lines.push(`  ${a[i] || ""}`); else { changed++; if (a[i] !== undefined) lines.push(`- ${a[i]}`); if (b[i] !== undefined) lines.push(`+ ${b[i]}`); } } const out = lines.join("\n"); return result("Line diff complete.", [metric("Original lines", a.length), metric("New lines", b.length), metric("Changed rows", changed), metric("Mode", "Line")], out, outputPackHtml({ badge: "Line diff", hero: changed ? `${changed} changed row${changed === 1 ? "" : "s"}` : "No line changes found", cards: [["Original lines", a.length], ["New lines", b.length], ["Changed rows", changed], ["Mode", "Line"]], sections: [["Diff", out || "No content to compare."], ["Review rule", "Read deletions and additions together before copying. A clean diff is still a draft review, not an approval."]] })); } },
     "color-converter": { sample: "#3b82f6", fields: [field("color", "Color", "text", "#3b82f6", true)], run(v) { const rgb = parseColor(v.color), hsl = rgbToHsl(rgb), hex = `#${[rgb.r, rgb.g, rgb.b].map((n) => n.toString(16).padStart(2, "0")).join("")}`.toUpperCase(); const luma = Math.round((0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b) / 255 * 100); const out = `HEX: ${hex}\nRGB: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})\nHSL: hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`; return result("Color converted.", [metric("HEX", hex), metric("RGB", `${rgb.r}, ${rgb.g}, ${rgb.b}`), metric("HSL", `${hsl.h}, ${hsl.s}%, ${hsl.l}%`), metric("CSS", "Ready")], out, outputPackHtml({ badge: "Color values", hero: hex, cards: [["RGB", `${rgb.r}, ${rgb.g}, ${rgb.b}`], ["HSL", `${hsl.h}, ${hsl.s}%, ${hsl.l}%`], ["Luma", `${luma}%`], ["Text hint", luma > 58 ? "Dark text" : "Light text"]], sections: [["CSS values", out], ["Next step", "Check final contrast in the real UI before using the color for small text or controls."]] })); } },
@@ -1522,7 +1522,7 @@
       field("url", "Page URL", "url", "https://clickoz.com/tools/", false),
       field("title", "Current SEO title", "text", "Clickoz Tools - Free Online Tools", false),
       field("description", "Current meta description", "textarea", "Fast browser tools for SEO, writing, developers and creators.", true),
-      field("intent", "Search intent or page job", "text", "find a fast browser tool", true)
+      field("intent", "Search intent or page task", "text", "find a fast browser tool", true)
     ],
     run(v) {
       const title = compactText(v.title);
@@ -1535,11 +1535,11 @@
       const descStatus = !desc ? "Missing" : desc.length < 80 ? "Too short" : desc.length <= 158 ? "Ready" : desc.length <= 170 ? "Tighten" : "Too long";
       const hasAction = /\b(fix|check|create|build|write|clean|format|convert|generate|preview|plan|save|find|use|finish|inspect|measure|compare)\b/i.test(`${title} ${desc} ${intent}`);
       const priority = titleStatus !== "Ready" ? "Fix the title first" : descStatus !== "Ready" ? "Fix the description next" : hasAction ? "Ready for SERP preview" : "Add a stronger action word";
-      const baseIntent = intent || title || "the page job";
+      const baseIntent = intent || title || "the page task";
       const suggestedTitle = titleStatus === "Ready" ? title : smartTitle(baseIntent).slice(0, 58).replace(/\s+\S*$/, "");
       const suggestedDesc = descStatus === "Ready" && hasAction
         ? desc
-        : `Use this page to ${baseIntent.toLowerCase().replace(/[.!?]$/, "")} with a clear result, practical steps and a next action.`;
+        : `Use this page to ${baseIntent.toLowerCase().replace(/[.!?]$/, "")} with a clear result, practical steps and a next step.`;
       const output = `Current snippet\n${title || "Missing title"}\n${desc || "Missing description"}\n\nPriority\n${priority}\n\nSuggested title\n${suggestedTitle || "Add a specific title"}\n\nSuggested description\n${suggestedDesc}\n\nHTML\n<title>${suggestedTitle}</title>\n<meta name="description" content="${suggestedDesc.replace(/"/g, "&quot;")}" />`;
       const html = `<div class="cms-output-pack serp-pack">
         <div class="serp-url">${esc(host)} &gt; snippet-check</div>
@@ -1547,7 +1547,7 @@
         <div class="serp-desc">${esc(suggestedDesc || desc || "Missing description")}</div>
         <div class="cms-quality-grid">
           <div class="cms-quality-card"><strong>Priority</strong><span>${esc(priority)}</span></div>
-          <div class="cms-quality-card"><strong>Intent signal</strong><span>${esc(hasAction ? "Action wording found." : "Add the job the page helps finish.")}</span></div>
+          <div class="cms-quality-card"><strong>Intent signal</strong><span>${esc(hasAction ? "Action wording found." : "Add the task the page helps finish.")}</span></div>
         </div>
       </div>`;
       return result("Meta title and description checked with a publishing priority.", [metric("Title", `${title.length} chars`), metric("Description", `${desc.length} chars`), metric("Priority", priority), metric("Intent", hasAction ? "Clear" : "Weak")], output, html);
@@ -1739,7 +1739,7 @@
           hero: built.hero || firstUsefulLine(output, input),
           cards: built.cards || [["Score", `${scoreHook(input)}/100`], ["Platform", selectedPlatform], ["Mode", "Specific"], ["Next", "Review"]],
           sections: [
-            ["Copy-ready result", output],
+            ["Result ready to copy", output],
             ["Human check", built.check || "Use this as a structured draft. Remove any line that does not match the real audience, platform or offer."]
           ]
         }));
@@ -2007,7 +2007,7 @@
         `Trend observation: ${phrase}`,
         "Adapted angle: show the messy before-state, then the cleaner result and one repeatable step.",
         "Shot plan: 1) problem close-up, 2) quick process, 3) final output, 4) save CTA.",
-        "Caption job: name the searchable problem in plain language.",
+        "Caption task: name the searchable problem in plain language.",
         "Risk check: do not copy audio, claims or visual identity if they do not fit the brand."
       ].join("\n");
       return { output, hero: "Trend turned into a usable brief", cards: [["Angle", "Adapted"], ["Shots", 4], ["Caption", "Searchable"], ["Risk", "Checked"]] };
@@ -2068,10 +2068,10 @@
         "What changed:",
         "- one clear problem",
         "- one practical workflow",
-        "- one next action",
+        "- one next step",
         "",
         "Why it matters:",
-        "People do not need more generic tooling. They need a result they can trust, copy and test in the real workflow.",
+        "People do not need more vague tooling. They need a result they can trust, copy and test in the real workflow.",
         "",
         "CTA: What part of your publishing flow still feels too messy?"
       ].join("\n");
@@ -2084,7 +2084,7 @@
         "",
         "Most people make it harder than it needs to be.",
         "",
-        "2/ Start with the actual job: title, snippet, readability, link or tracking.",
+        "2/ Start with the actual task: title, snippet, readability, link or tracking.",
         "",
         "3/ Use one tool, copy one cleaner result, then move to the next related check.",
         "",
@@ -2241,7 +2241,7 @@
         "",
         "Rule: every repurpose should carry one idea, not a compressed version of the whole video."
       ].join("\n");
-      return { output, hero: "6 assets from one video", cards: [["Shorts", 2], ["Carousel", 1], ["Newsletter", 1], ["Community", 1]] };
+      return { output, hero: "6 pieces from one video", cards: [["Shorts", 2], ["Carousel", 1], ["Newsletter", 1], ["Community", 1]] };
     }),
     "content-gap-finder": creatorConfig("content-gap-finder", "A page about free SEO tools for creators with examples and guides.", "Topic, page draft or outline", "General", (input) => {
       const terms = topicTerms(input, ["tool", "guide", "workflow"]);
@@ -2455,13 +2455,13 @@
       label.className = "cms-output-label";
       out.insertAdjacentElement("beforebegin", label);
     }
-    label.innerHTML = `<span>${hasOutput ? `Output for ${esc(tool.title || "this tool")}` : "Ready when you are"}</span><small>${hasOutput ? "Copy, review, continue" : "Load a sample or paste real input"}</small>`;
+    label.innerHTML = `<span>${hasOutput ? `Final output for ${esc(tool.title || "this tool")}` : "Output area"}</span><small>${hasOutput ? "Copy, review, continue" : "Run the tool to generate a result"}</small>`;
     if (hasOutput) {
       if (res.html) renderSafeHtml(out, res.html);
       else renderTextOutput(out, res.output || "");
       out.dataset.copy = normalizedOutputText(res.output || out.textContent || "");
     } else {
-      out.innerHTML = `<div class="cms-output-empty"><b>No output yet</b><span>Load an example, paste real input or type directly. The tool runs in the browser and keeps the last input locally.</span></div>`;
+      out.innerHTML = `<div class="cms-output-empty"><b>No output yet</b><span>Choose a sample or paste your real input, then press Run tool. Your last input is stored locally on this device.</span></div>`;
       out.dataset.copy = "";
     }
 
@@ -2473,7 +2473,7 @@
     }
     next.innerHTML = hasOutput
       ? `<strong>Next best action</strong><span>${esc(nextActionFor(tool, slug))}</span>${nextToolChipsFor(tool)}`
-      : `<strong>Start fast</strong><span>Load a sample, paste real input or use Ctrl+K to jump to the next Clickoz job.</span>`;
+      : `<strong>Start fast</strong><span>Load a sample, paste real input or use Ctrl+K to jump to the next Clickoz task.</span>`;
 
     let quality = $(".cms-quality-action", root);
     if (!quality || quality.tagName !== "DETAILS") {
@@ -2522,7 +2522,7 @@
       return "Copy the final URL and keep the same source, medium and campaign naming rules across every channel.";
     }
     if (tool.category === "socialai") {
-      return "Keep the version that sounds specific to the platform, then remove any generic line before posting.";
+      return "Keep the version that sounds specific to the platform, then remove any vague line before posting.";
     }
     return "Copy the result, review it once in context, then continue with the related guide or next connected tool.";
   }

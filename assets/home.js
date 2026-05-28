@@ -3,7 +3,7 @@
    - Quickchips appear 1 -> 2 -> 3
    - Top tools box + pick cards stagger
    - Guides box + guide cards stagger
-   - Route box + pills + cards stagger
+   - Workflow box + pills + cards stagger
 */
 
 (() => {
@@ -237,9 +237,9 @@
       card.classList.add("is-open");
       button.setAttribute("aria-expanded", "true");
       card.innerHTML = `
-        <small>Suggested route</small>
+        <small>Suggested workflow</small>
         <b>${pick.title}</b>
-        <p>Open the matching tool, then use the guide to finish the workflow.</p>
+        <p>Open the matching tool, then use the guide to finish the task.</p>
         <div class="surprise-links">
           <a href="${pick.tool[0]}">${pick.tool[1]}</a>
           <a href="${pick.guide[0]}">${pick.guide[1]}</a>
@@ -254,7 +254,7 @@
     if (!grid || !button) return;
 
     const tools = [
-      { href: "/tools/json-formatter/", icon: "{ }", title: "JSON Formatter", desc: "Format, validate, and minify JSON for clean debugging and copy-ready output.", cat: "Developer Utilities" },
+      { href: "/tools/json-formatter/", icon: "{ }", title: "JSON Formatter", desc: "Format, validate and minify JSON for clean debugging and easy-to-copy output.", cat: "Developer Utilities" },
       { href: "/tools/meta-tags/", icon: "SEO", title: "Meta Tag Optimizer", desc: "Preview titles and descriptions, avoid truncation, and improve click appeal.", cat: "SEO Tools" },
       { href: "/tools/youtube-title-generator/", icon: "YT", title: "YouTube Title Generator", desc: "Generate stronger video title angles with hook, clarity, and keyword intent.", cat: "Creator Tools" },
       { href: "/tools/thumbnail-brief-generator/", icon: "IMG", title: "Thumbnail Brief Generator", desc: "Turn a video idea into a clear thumbnail concept with text, subject, and emotion.", cat: "Creator Tools" },
@@ -321,8 +321,8 @@
     let mode = "snippet";
     const samples = {
       snippet: "browser tools with no signup and fast output",
-      readability: "This paragraph has a useful idea, but it is doing too many jobs at once. Clickoz helps you break the work into a shorter draft, a clearer action and a next tool.",
-      clean: "  This   AI draft has     broken spacing.\n\n\nIt needs cleaner paragraphs, fewer blank lines, and a copy-ready version.  ",
+      readability: "This paragraph has a useful idea, but it is trying to do too much at once. Clickoz helps you turn it into a shorter draft, a clearer action and a useful next tool.",
+      clean: "  This   AI draft has     broken spacing.\n\n\nIt needs cleaner paragraphs, fewer blank lines, and a version that is easy to copy.  ",
       json: "{\"title\":\"Clickoz work desk\",\"status\":\"fast\",\"tasks\":[\"seo\",\"json\",\"clean text\"]}",
       youtube: "Package a YouTube upload about faster creator workflows"
     };
@@ -341,11 +341,11 @@
       youtube: "Continue in title tool"
     };
     const modeStatus = {
-      snippet: "SEO route active",
-      clean: "Writing route active",
-      json: "Dev route active",
-      readability: "Writing route active",
-      youtube: "Creator route active"
+      snippet: "SEO workflow active",
+      clean: "Writing workflow active",
+      json: "Developer workflow active",
+      readability: "Writing workflow active",
+      youtube: "Creator workflow active"
     };
     const modeRoute = {
       snippet: "seo",
@@ -428,7 +428,7 @@
       output.innerHTML = `
         <div class="demo-result">
           <small>Clean text</small>
-          <strong>Copy-ready in one pass</strong>
+          <strong>Ready to copy in one pass</strong>
           <p>${escapeHtml(normalized.length > 170 ? `${normalized.slice(0, 167).trim()}...` : normalized)}</p>
           <div class="demo-stat-grid">
             <span><b>${words(normalized).length}</b>words</span>
@@ -489,7 +489,7 @@
         link.href = modeLinks[mode] || "/tools/";
         link.textContent = modeCtas[mode] || "Open matching tool";
       }
-      if (status) status.textContent = modeStatus[mode] || "Workflow route active";
+      if (status) status.textContent = modeStatus[mode] || "Workflow active";
       routeCards.forEach((card) => {
         card.classList.toggle("active", card.dataset.dashboardRoute === modeRoute[mode]);
       });
@@ -540,7 +540,7 @@
       clean: {
         query: "clean pasted text",
         mode: "clean",
-        sample: "  This   AI draft has     broken spacing.\n\n\nIt needs cleaner paragraphs, fewer blank lines, and a copy-ready version.  "
+        sample: "  This   AI draft has     broken spacing.\n\n\nIt needs cleaner paragraphs, fewer blank lines, and a version that is easy to copy.  "
       },
       youtube: {
         query: "prepare youtube upload",

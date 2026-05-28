@@ -7,28 +7,30 @@ const ORIGIN = "https://clickoz.com";
  */
 const ASSET_VERSIONS = Object.freeze({
   siteCss: 15,
-  siteJs: 87,
+  siteJs: 101,
   homeCss: 21,
-  homeLeadershipCss: 21,
-  homeJs: 25,
+  homeLeadershipCss: 22,
+  homeJs: 27,
   guideCss: 4,
   guideJs: 3,
   guidePremiumCss: 5,
   guidePremiumJs: 6,
   clickozPremiumCss: 5,
   clickozPremiumJs: 15,
-  cmsRegistry: 5,
+  cmsRegistry: 7,
   cmsSchema: 2,
-  cmsEnhance: 9,
-  cmsFinal: 180,
+  cmsEnhance: 10,
+  cmsFinal: 206,
   toolsCss: 9,
-  toolsJs: 15,
-  cmsToolsCss: 22,
-  cmsToolsJs: 28
+  toolsJs: 17,
+  cmsToolsCss: 25,
+  cmsToolsJs: 31,
+  cmsMapCss: 4,
+  cmsMapJs: 4
 });
 
 /** @type {string} */
-const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src https://translate.google.com https://*.google.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests";
+const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src 'self' https://translate.google.com https://*.google.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests";
 const CSP_HEADER = `${CSP}; frame-ancestors 'self'`;
 const PERMISSIONS_POLICY = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), interest-cohort=()";
 

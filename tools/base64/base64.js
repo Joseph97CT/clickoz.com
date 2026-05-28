@@ -285,7 +285,7 @@
     outTa.value = b64;
 
     setBadge(true, "✅ Encoded");
-    setMeta(hint || "Copy-ready Base64 output. Toggle URL-safe for tokens / URLs.");
+    setMeta(hint || "Base64 output is ready to copy. Toggle URL-safe for tokens or URLs.");
 
     updateStats(raw, b64, bytes, utf8Encode(b64));
     inspectJwt(b64);
@@ -366,7 +366,7 @@
     },
     {
       title: "Plain text (encode)",
-      text: `Track clicks cleanly. No uploads. Copy-ready output.`
+      text: `Track clicks cleanly. No uploads. Output ready to copy.`
     },
     {
       title: "Binary-ish text (decode)",

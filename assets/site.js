@@ -140,10 +140,6 @@
 
   function mobileMenuInnerMarkup(){
     return `
-      <div class="m-head m-head-minimal">
-        <button class="m-close" id="mClose" type="button" aria-label="Close menu">&times;</button>
-      </div>
-
       <div class="m-category-block" aria-label="Categories">
         <div class="m-label">Categories</div>
         <div class="m-links" aria-label="Main sections">
@@ -159,7 +155,7 @@
         <span class="m-command-icon" aria-hidden="true">K</span>
         <div>
           <strong>Advanced Search</strong>
-          <p>Press Ctrl+K or make 5 quick taps anywhere.</p>
+          <p>Press Ctrl+K or tap five times quickly anywhere.</p>
         </div>
       </button>
 
@@ -291,6 +287,71 @@
   }
 
   enhanceMobileMenu();
+
+  function hardenCmsGrowthSurface(root = document){
+    const gridSelectors = [
+      ".cards-grid",
+      ".guide-hub-grid",
+      ".release-lab-grid",
+      ".picks-grid",
+      ".authority-grid",
+      ".tools-route-grid",
+      ".route-final-strip",
+      ".cluster-focus-grid",
+      ".cms-info-grid"
+    ];
+    const cardSelector = [
+      ".card.tool-card-enhanced",
+      ".guide-hub-card",
+      ".release-card",
+      ".pick-card",
+      ".authority-card",
+      ".tools-route-grid > a",
+      ".route-final-strip > article",
+      ".cluster-focus-grid > a",
+      ".cms-info-card"
+    ].join(",");
+
+    gridSelectors.forEach((selector) => {
+      $$(selector, root).forEach((grid) => {
+        const items = Array.from(grid.children).filter((item) => item.nodeType === 1 && !item.hidden);
+        grid.classList.add("cms-growth-grid");
+        grid.dataset.cmsItems = String(items.length);
+        items.forEach((item, index) => {
+          item.classList.add("cms-growth-card");
+          item.style.setProperty("--cms-item-index", String(index));
+        });
+      });
+    });
+
+    $$(".tool-section", root).forEach((section) => {
+      const cards = $$(".cards-grid > .card.tool-card-enhanced", section).filter((card) => !card.hidden);
+      if (cards.length && !section.dataset.toolCount) section.dataset.toolCount = String(cards.length);
+      if (cards.length) section.dataset.renderedToolCount = String(cards.length);
+      section.classList.add("cms-growth-section");
+    });
+
+    $$(cardSelector, root).forEach((card) => {
+      card.classList.add("cms-growth-card");
+    });
+  }
+
+  hardenCmsGrowthSurface();
+  try {
+    let cmsGrowthQueued = false;
+    const scheduleCmsGrowthSurface = () => {
+      if (cmsGrowthQueued) return;
+      cmsGrowthQueued = true;
+      requestAnimationFrame(() => {
+        cmsGrowthQueued = false;
+        hardenCmsGrowthSurface();
+      });
+    };
+    new MutationObserver(scheduleCmsGrowthSurface).observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+  } catch(_) {}
 
   function hardenRuntimeSurface(){
     $$('a').forEach((link) => {
@@ -465,7 +526,7 @@
     const menu    = $('#mobileMenu');
     const overlay = $('#mOverlay');
     const closeBtn= $('#mClose');
-    if(!burger || !menu || !overlay || !closeBtn) return;
+    if(!burger || !menu || !overlay) return;
 
     const root = document.documentElement;
     let closeTimer = 0;
@@ -481,7 +542,7 @@
       menu.setAttribute('aria-hidden','false');
       burger.setAttribute('aria-expanded','true');
       root.classList.add('no-scroll');
-      closeBtn.focus?.({ preventScroll: true });
+      burger.focus?.({ preventScroll: true });
     }
 
     function closeMenu(skipDelay = false){
@@ -508,7 +569,7 @@
       menu.classList.contains('open') ? closeMenu() : openMenu();
     });
 
-    closeBtn.addEventListener('click', () => closeMenu());
+    closeBtn?.addEventListener('click', () => closeMenu());
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) closeMenu();
     });
@@ -920,11 +981,11 @@
             <div class="cookie-content">
               <div class="cookie-title" id="clickozConsentTitle">Tiny browser handshake?</div>
               <p class="cookie-text" id="clickozConsentText">
-                Clickoz can remember useful browser preferences for this device. Essential keeps theme, language and this privacy choice; smart cache adds faster internal routes and optional translation only when requested. No account, no uploads, no dark pattern.
+                Clickoz can remember useful browser preferences on this device. Essential keeps theme, language and this privacy choice; smart cache prepares internal pages faster and enables optional translation only when requested. No account, no uploads, no dark pattern.
                 <a href="/privacy/#cookies">Read cache and cookie notes</a>.
               </p>
               <div class="cookie-mini-grid" aria-label="Consent details">
-                <span data-choice="all"><b>Allow smart cache</b> faster routes + optional translate</span>
+                <span data-choice="all"><b>Allow smart cache</b> faster pages + optional translation</span>
                 <span data-choice="essential"><b>Essential only</b> theme, language, consent</span>
                 <span data-choice="none"><b>No extras</b> only remember this choice</span>
               </div>
@@ -1801,6 +1862,11 @@
   const overview = document.querySelector(".guide-hub-overview");
   const bands = Array.from(document.querySelectorAll(".guide-category-band"));
   const cards = Array.from(document.querySelectorAll(".guide-category-band .guide-hub-card"));
+  const previewTotal = cards.length;
+  const fullTotal = bands.reduce((sum, band) => {
+    const bandCards = band.querySelectorAll(".guide-hub-card").length;
+    return sum + Number(band.dataset.guideCount || bandCards);
+  }, 0);
 
   if (!cards.length) return;
 
@@ -1825,7 +1891,7 @@
   empty.setAttribute("role", "status");
   empty.innerHTML = `
     <strong>No guide matches that search.</strong>
-    <span>Try a job or tool name: meta title, JSON error, UTM, readability, YouTube description.</span>
+    <span>Try a task or tool name: meta title, JSON error, UTM, readability, YouTube description.</span>
     <a href="/contact/#request">Request a guide</a>
   `;
   panel?.insertAdjacentElement("afterend", empty);
@@ -1875,8 +1941,8 @@
     if (empty) empty.hidden = !query || shown > 0;
     if (status) {
       status.textContent = query
-        ? `Showing ${shown} of ${cards.length} guides for "${raw}"`
-        : `Showing ${cards.length} practical guides`;
+        ? `Showing ${shown} of ${previewTotal} newest guide previews for "${raw}"`
+        : `Showing ${previewTotal} newest guide previews${fullTotal > previewTotal ? ` (${fullTotal} total)` : ""}`;
     }
     guideSearchChips.forEach((chip) => {
       const active = Boolean(query) && norm(chip.getAttribute("data-guide-search")) === query;
@@ -2000,6 +2066,47 @@
   setFilter(allowed, { sync: false });
 })();
 
+/* Updates manifesto typewriter: real text reveal, not a layout-only animation. */
+(() => {
+  "use strict";
+
+  function initUpdatesTypewriter() {
+    const line = document.querySelector(".updates-manifesto [data-typewriter]");
+    if (!line || line.dataset.typed === "1") return;
+    const text = (line.getAttribute("data-typewriter") || line.textContent || "").trim();
+    if (!text) return;
+    line.dataset.typed = "1";
+
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      line.textContent = text;
+      line.classList.add("is-complete");
+      return;
+    }
+
+    line.textContent = "";
+    line.classList.add("is-typing");
+    let index = 0;
+
+    const tick = () => {
+      line.textContent = text.slice(0, index);
+      index += 1;
+      if (index <= text.length) {
+        const punctuationPause = /[,.]/.test(text[index - 2] || "") ? 120 : 0;
+        window.setTimeout(tick, 22 + Math.min(index, 18) + punctuationPause);
+      } else {
+        line.classList.remove("is-typing");
+        line.classList.add("is-complete");
+      }
+    };
+
+    window.setTimeout(tick, 420);
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initUpdatesTypewriter, { once: true });
+  else initUpdatesTypewriter();
+})();
+
 /* Browser-only work memory: command palette, favorites, recent tools and next steps. */
 (() => {
   "use strict";
@@ -2026,7 +2133,7 @@
       id: "json",
       title: "Fix broken JSON",
       url: "/tools/json-formatter/",
-      meta: "Quick job",
+      meta: "Quick task",
       description: "Paste a payload, format it, validate it and keep debugging.",
       sampleInput: "{\"title\":\"Clickoz\",\"status\":\"fast\"}",
       sampleOutput: "Valid formatted JSON",
@@ -2038,7 +2145,7 @@
       id: "snippet",
       title: "Create SEO snippet",
       url: "/tools/meta-tags/",
-      meta: "Quick job",
+      meta: "Quick task",
       description: "Turn a rough page idea into a title, description and preview.",
       sampleInput: "landing page idea",
       sampleOutput: "Search-ready title and meta description",
@@ -2050,10 +2157,10 @@
       id: "clean",
       title: "Clean pasted text",
       url: "/tools/whitespace-cleaner/",
-      meta: "Quick job",
+      meta: "Quick task",
       description: "Remove spacing noise, blank lines and messy paste formatting.",
       sampleInput: "messy AI draft",
-      sampleOutput: "Copy-ready clean text",
+      sampleOutput: "Clean text ready to copy",
       timeSaved: "Clean in 5 sec",
       usedFor: "Client work",
       search: "clean text whitespace cleaner pulire testo sistemare testo spazi ai draft"
@@ -2062,7 +2169,7 @@
       id: "youtube",
       title: "Prepare YouTube upload",
       url: "/tools/youtube-title-generator/",
-      meta: "Quick job",
+      meta: "Quick task",
       description: "Start with title angles, then move to thumbnail, description and tracking.",
       sampleInput: "video idea",
       sampleOutput: "Title angles plus next upload tools",
@@ -2074,7 +2181,7 @@
       id: "utm",
       title: "Build tracking URL",
       url: "/tools/utm-builder/",
-      meta: "Quick job",
+      meta: "Quick task",
       description: "Create measurable campaign links without messy parameters.",
       sampleInput: "campaign link",
       sampleOutput: "Clean UTM URL",
@@ -2098,7 +2205,7 @@
       problem: "Clean, count or improve a draft before sending.",
       quickJob: "Text cleanup",
       sampleInput: "messy draft",
-      sampleOutput: "Copy-ready text",
+      sampleOutput: "Text ready to copy",
       timeSaved: "Fix in seconds",
       usedFor: "Client work",
       aliases: "clean text writing readability count parole testo pulire"
@@ -2116,7 +2223,7 @@
       problem: "Package a YouTube upload without opening extra tools.",
       quickJob: "Upload sprint",
       sampleInput: "video idea",
-      sampleOutput: "Creator-ready upload asset",
+      sampleOutput: "Creator-ready upload section",
       timeSaved: "Upload faster",
       usedFor: "Creator uploads",
       aliases: "youtube video title thumbnail description hashtag creator upload"
@@ -2140,8 +2247,8 @@
       aliases: "dns http ping password uuid timestamp robots security"
     },
     socialai: {
-      problem: "Turn creator ideas into usable social assets.",
-      quickJob: "Creator asset",
+      problem: "Turn creator ideas into usable social content.",
+      quickJob: "Creator content",
       sampleInput: "post or content idea",
       sampleOutput: "Ready-to-use creator copy",
       timeSaved: "Create faster",
@@ -2154,7 +2261,7 @@
     "meta-tags": { problem: "Create a search-ready snippet.", quickJob: "SEO snippet", sampleInput: "rough page title", sampleOutput: "Title + meta description", timeSaved: "Fix in 30 sec", usedFor: "SEO publishing", aliases: "snippet meta descrizione title seo" },
     "word-counter": { problem: "Check if a draft fits the target length.", quickJob: "Live count", sampleInput: "draft text", sampleOutput: "Words, chars and reading time", timeSaved: "Count instantly", usedFor: "Client work", aliases: "count words parole caratteri reading time" },
     "readability-analyzer": { problem: "Find where a draft feels heavy.", quickJob: "Draft pressure", sampleInput: "long paragraph", sampleOutput: "Readability and sentence pressure", timeSaved: "Edit faster", usedFor: "Readable drafts", aliases: "readability clarity scan sentence testo leggibilita" },
-    "whitespace-cleaner": { problem: "Remove messy spaces and blank lines.", quickJob: "Clean pasted text", sampleInput: "messy AI draft", sampleOutput: "Copy-ready text", timeSaved: "Clean in 5 sec", usedFor: "Text cleanup", aliases: "clean text whitespace spaces pulire testo spazi" },
+    "whitespace-cleaner": { problem: "Remove messy spaces and blank lines.", quickJob: "Clean pasted text", sampleInput: "messy AI draft", sampleOutput: "Text ready to copy", timeSaved: "Clean in 5 sec", usedFor: "Text cleanup", aliases: "clean text whitespace spaces pulire testo spazi" },
     "json-formatter": { problem: "Repair and read JSON quickly.", quickJob: "Fix broken JSON", sampleInput: "{\"status\":\"messy\"}", sampleOutput: "Valid formatted JSON", timeSaved: "Debug in 10 sec", usedFor: "Fast formatting", aliases: "json rotto payload config validate" },
     "utm-builder": { problem: "Build campaign links without mistakes.", quickJob: "Tracking URL", sampleInput: "landing page URL", sampleOutput: "Clean UTM link", timeSaved: "Track in 20 sec", usedFor: "Campaign work", aliases: "utm tracking link campaign url" },
     "youtube-title-generator": { problem: "Create usable title angles for an upload.", quickJob: "YouTube title", sampleInput: "video idea", sampleOutput: "Title options", timeSaved: "Upload faster", usedFor: "Creator uploads", aliases: "youtube title titolo video upload creator" },
@@ -2233,9 +2340,14 @@
     $$("[data-cz-fav-toggle]").forEach((button) => {
       const slug = button.getAttribute("data-cz-fav-toggle");
       const saved = isFavorite(slug);
+      const style = button.getAttribute("data-cz-fav-style") || "";
+      const tool = slug ? toolBySlug(slug) : null;
       button.classList.toggle("is-saved", saved);
       button.setAttribute("aria-pressed", String(saved));
-      button.textContent = saved ? "Saved" : "Save tool";
+      button.setAttribute("aria-label", `${saved ? "Remove" : "Save"} ${tool?.title || "tool"} ${saved ? "from" : "to"} favorites`);
+      if (style === "icon") button.textContent = saved ? "★" : "☆";
+      else if (style === "detail") button.textContent = saved ? "Saved in Favorites" : "Add to Favorites";
+      else button.textContent = saved ? "Saved" : "Save tool";
     });
   }
 
@@ -2269,7 +2381,7 @@
       <div class="cz-next-head">
         <p class="guide-kicker">NEXT TOOL</p>
         <h2>Keep the workflow moving.</h2>
-        <span>After ${esc(profile?.quickJob || tool.title)}, these are the most useful next actions.</span>
+        <span>After ${esc(profile?.quickJob || tool.title)}, these are the most useful next steps.</span>
       </div>
       <div class="cz-next-grid">
         ${related.map((item) => {
@@ -2318,42 +2430,222 @@
     return score;
   }
 
+  const commandFilters = [
+    ["all", "All"],
+    ["quick", "Quick Fix"],
+    ["seo", "SEO"],
+    ["content", "Content"],
+    ["dev", "Dev"],
+    ["cleanup", "Cleanup"],
+    ["ai", "AI"],
+    ["utility", "Utility"]
+  ];
+  const commandTabs = [
+    ["recommended", "Best Matches"],
+    ["recent", "Recent"],
+    ["saved", "Favorites"],
+    ["guides", "Guides"]
+  ];
+  const commandSuggestions = [
+    ["fix json", "Fix JSON", "Format and validate"],
+    ["clean text", "Clean text", "Remove paste noise"],
+    ["seo snippet", "SEO snippet", "Title and meta"],
+    ["youtube title", "YouTube title", "Upload ideas"],
+    ["utm link", "UTM link", "Tracking URL"]
+  ];
+  let activeCommandFilter = "all";
+  let activeCommandTab = "recommended";
+
+  function categoryTitle(category) {
+    const explicit = cms.clusters?.[category]?.title;
+    if (explicit) return explicit.replace(/\s+Tools$/i, "");
+    const fallback = { writing: "Content", socialai: "Creator", seo: "SEO", dev: "Developer", youtube: "YouTube", tracking: "Tracking", web: "Web" };
+    return fallback[category] || "Clickoz";
+  }
+
+  function compactTags(values, limit = 3) {
+    const seen = new Set();
+    return values.map((value) => String(value || "").trim())
+      .filter(Boolean)
+      .filter((value) => {
+        const key = norm(value);
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .slice(0, limit);
+  }
+
+  function commandGlyph(item) {
+    const text = norm(`${item.slug || ""} ${item.title || ""} ${item.category || ""} ${item.meta || ""}`);
+    if (item.type === "guide") return "DOC";
+    if (/json|base64|url|regex|html|entity|developer|payload|dev/.test(text)) return "{..}";
+    if (/youtube|thumbnail|creator|upload|social|tiktok|instagram|linkedin/.test(text)) return "YT";
+    if (/utm|tracking|campaign|link/.test(text)) return "UTM";
+    if (/word|text|clean|readability|writing|copy|case|draft/.test(text)) return "TXT";
+    if (/seo|serp|meta|snippet|slug|keyword/.test(text)) return "SEO";
+    if (/web|dns|security|http|password|uuid|timestamp/.test(text)) return "WEB";
+    return "CMD";
+  }
+
+  function commandKind(item) {
+    if (item.type === "guide") return "Guide";
+    if (item.type === "job") return "Quick task";
+    return categoryTitle(item.category);
+  }
+
+  function commandCategoryForJob(job) {
+    const text = norm(`${job.title} ${job.search} ${job.usedFor}`);
+    if (/json|payload|developer|debug/.test(text)) return "dev";
+    if (/youtube|creator|upload/.test(text)) return "youtube";
+    if (/utm|tracking|campaign/.test(text)) return "tracking";
+    if (/clean|text|draft/.test(text)) return "writing";
+    return "seo";
+  }
+
   function commandItems() {
     const tools = (cms.tools || []).map((tool) => {
       const profile = profileForTool(tool);
+      const cluster = cms.clusters?.[tool.category] || {};
+      const tags = compactTags([categoryTitle(tool.category), profile?.quickJob, ...(tool.features || [])]);
       return {
         type: "tool",
         title: tool.title,
         url: tool.url,
         slug: tool.slug,
+        category: tool.category,
         description: profile?.problem || tool.description,
-        meta: profile?.quickJob || cms.clusters?.[tool.category]?.title || "Tool",
+        meta: profile?.quickJob || cluster.title || "Tool",
         output: profile?.sampleOutput || "",
         time: profile?.timeSaved || "",
+        sampleInput: profile?.sampleInput || "",
+        usedFor: profile?.usedFor || cluster.title || "Browser tool",
+        tags,
+        icon: commandGlyph({ ...tool, type: "tool", meta: profile?.quickJob || "" }),
         search: profile?.search || `${tool.title} ${tool.description} ${(tool.features || []).join(" ")} ${tool.category}`
       };
     });
-    const guides = (cms.guides || []).map((guide) => ({
-      type: "guide",
-      title: guide.title,
-      url: guide.url,
-      slug: guide.slug,
-      description: guide.description,
-      meta: "Guide",
-      search: `${guide.title} ${guide.description} ${guide.category}`
-    }));
-    const jobs = jobCatalog.map((job) => ({
-      type: "job",
-      title: job.title,
-      url: job.url,
-      slug: job.id,
-      description: job.description,
-      meta: job.meta,
-      output: job.sampleOutput,
-      time: job.timeSaved,
-      search: `${job.title} ${job.description} ${job.sampleInput} ${job.sampleOutput} ${job.usedFor} ${job.search}`
-    }));
+    const guides = (cms.guides || []).map((guide) => {
+      const tool = guide.tool ? toolBySlug(guide.tool) : null;
+      const category = guide.category || tool?.category || "";
+      return {
+        type: "guide",
+        title: guide.title,
+        url: guide.url,
+        slug: guide.slug,
+        category,
+        description: guide.description,
+        meta: "Decision guide",
+        output: "Readable decision path",
+        time: "Read when needed",
+        sampleInput: "Problem or tool decision",
+        usedFor: categoryTitle(category),
+        tags: compactTags([categoryTitle(category), tool?.title, "Guide"]),
+        icon: commandGlyph({ ...guide, type: "guide", category }),
+        search: `${guide.title} ${guide.description} ${guide.category || ""} ${tool?.title || ""}`
+      };
+    });
+    const jobs = jobCatalog.map((job) => {
+      const category = commandCategoryForJob(job);
+      return {
+        type: "job",
+        title: job.title,
+        url: job.url,
+        slug: job.id,
+        category,
+        description: job.description,
+        meta: job.meta,
+        output: job.sampleOutput,
+        time: job.timeSaved,
+        sampleInput: job.sampleInput,
+        usedFor: job.usedFor,
+        tags: compactTags([categoryTitle(category), job.usedFor, job.meta]),
+        icon: commandGlyph({ ...job, type: "job", category }),
+        search: `${job.title} ${job.description} ${job.sampleInput} ${job.sampleOutput} ${job.usedFor} ${job.search}`
+      };
+    });
     return [...jobs, ...tools, ...guides];
+  }
+
+  function commandFilterMatches(item, filter) {
+    if (!filter || filter === "all") return true;
+    if (filter === item.category) return true;
+    if (filter === "content" && item.category === "writing") return true;
+    if (filter === "ai" && item.category === "socialai") return true;
+    if (filter === "utility" && /^(web|tracking)$/.test(item.category || "")) return true;
+    const text = norm(`${item.type} ${item.title} ${item.category} ${item.meta} ${item.description} ${(item.tags || []).join(" ")} ${item.search}`);
+    if (filter === "quick") return item.type === "job" || /quick|fix|broken|clean|snippet|upload|tracking|repair/.test(text);
+    if (filter === "seo") return /seo|serp|meta|snippet|slug|keyword|search/.test(text);
+    if (filter === "content") return /content|writing|text|copy|youtube|creator|social|caption|draft|title/.test(text);
+    if (filter === "dev") return /dev|developer|json|payload|url|base64|regex|html|entity|debug/.test(text);
+    if (filter === "cleanup") return /cleanup|clean|format|readability|counter|space|case|minify/.test(text);
+    if (filter === "ai") return /ai|prompt|hook|creator|social/.test(text);
+    if (filter === "utility") return /utility|web|tracking|utm|dns|http|password|uuid|timestamp|security/.test(text);
+    return true;
+  }
+
+  function commandPriority(item) {
+    if (item.type === "job") return 3;
+    if (item.type === "tool") return 2;
+    return 1;
+  }
+
+  function commandFavoriteSlug(item) {
+    if (!item) return "";
+    if (item.type === "tool") return item.slug || "";
+    if (item.type === "job") {
+      const tool = (cms.tools || []).find((entry) => entry.url === item.url);
+      return tool?.slug || "";
+    }
+    return "";
+  }
+
+  function commandSearchScore(query, item) {
+    const q = norm(query);
+    if (!q) return 1;
+    const title = norm(item.title);
+    const words = q.split(/\s+/).filter(Boolean);
+    let score = fuzzyScore(q, item.search);
+    let matched = score > 0;
+    if (title === q) {
+      score += 120;
+      matched = true;
+    } else if (title.includes(q)) {
+      score += 90;
+      matched = true;
+    } else if (words.length && words.every((word) => title.includes(word))) {
+      score += 60;
+      matched = true;
+    }
+    if (!matched) return 0;
+    if (item.type === "job") score += 80;
+    else if (item.type === "tool") score += 45;
+    return score;
+  }
+
+  function itemsForActiveTab(items) {
+    if (activeCommandTab === "saved") return items.filter((item) => item.type === "tool" && isFavorite(item.slug));
+    if (activeCommandTab === "guides") return items.filter((item) => item.type === "guide");
+    if (activeCommandTab === "recent") {
+      const order = new Map(readList(storage.recent).map((slug, index) => [slug, index]));
+      return items
+        .filter((item) => item.type === "tool" && order.has(item.slug))
+        .sort((a, b) => order.get(a.slug) - order.get(b.slug));
+    }
+    return items;
+  }
+
+  function updateCommandControlState(shell) {
+    $$("[data-command-filter]", shell).forEach((button) => {
+      const active = button.getAttribute("data-command-filter") === activeCommandFilter;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+    $$("[data-command-tab]", shell).forEach((button) => {
+      const active = button.getAttribute("data-command-tab") === activeCommandTab;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
   }
 
   function ensurePalette() {
@@ -2365,21 +2657,76 @@
     shell.hidden = true;
     shell.innerHTML = `
       <div class="cz-command-backdrop" data-command-close></div>
-      <div class="cz-command-dialog" role="dialog" aria-modal="true" aria-label="Clickoz command palette">
-        <div class="cz-command-titlebar">
-          <span>CLICKOZ COMMAND DESK</span>
-          <strong>What do you need to fix?</strong>
-          <em>Ctrl+K on desktop. Five quick clicks or taps anywhere.</em>
-        </div>
-        <div class="cz-command-input-row">
-          <span aria-hidden="true">K</span>
-          <input id="czCommandInput" type="search" placeholder="Try: broken JSON, clean text, YouTube title, SEO snippet..." autocomplete="off" />
-          <button type="button" data-command-close aria-label="Close command palette">Close</button>
-        </div>
-        <div class="cz-command-sections">
-          <div class="cz-command-memory" id="czCommandMemory"></div>
-          <div class="cz-command-results" id="czCommandResults" role="listbox"></div>
-        </div>
+      <div class="cz-command-dialog cz-command-desk" role="dialog" aria-modal="true" aria-label="Clickoz advanced search">
+        <aside class="cz-command-sidebar" aria-label="Command desk navigation">
+          <a class="cz-command-brand" href="/" aria-label="Clickoz home"><span>C</span><strong>CLICKOZ</strong></a>
+          <div class="cz-command-side-group">
+            <p>Command desk</p>
+            <a href="/">Dashboard</a>
+            <button type="button" class="is-active" data-command-tab="recommended">Fix & Tools</button>
+            <a href="/tools/">Workflows</a>
+            <button type="button" data-command-tab="recent">History</button>
+            <button type="button" data-command-tab="saved">Favorites</button>
+            <button type="button" data-command-tab="guides">Guides</button>
+          </div>
+          <div class="cz-command-side-group">
+            <p>Tool collections</p>
+            <div id="czCommandCollections"></div>
+          </div>
+          <div class="cz-command-side-group cz-command-memory-group">
+            <p>Fast access</p>
+            <div class="cz-command-memory" id="czCommandMemory"></div>
+          </div>
+          <div class="cz-command-local-card">
+            <strong>Browser workspace</strong>
+            <span>No account, local recents and saved tools in this browser.</span>
+          </div>
+        </aside>
+        <main class="cz-command-main">
+          <div class="cz-command-topbar">
+            <label class="cz-command-search" for="czCommandInput">
+              <span>Command bar</span>
+              <div>
+                <input id="czCommandInput" type="search" placeholder="Try: broken JSON, clean text, YouTube title, SEO snippet..." autocomplete="off" aria-controls="czCommandResults" />
+                <kbd>Ctrl</kbd><kbd>K</kbd>
+              </div>
+            </label>
+            <div class="cz-command-actions">
+              <button type="button" class="cz-command-return" data-command-close>Back to site</button>
+              <a class="cz-command-launch" href="/tools/">Launch Workflow</a>
+              <button type="button" class="cz-command-close-icon" data-command-close aria-label="Close command palette">Close</button>
+            </div>
+          </div>
+          <section class="cz-command-hero">
+            <span>What do you need to fix?</span>
+            <h2>Solve it. Optimize it. <span>Ship it.</span></h2>
+            <p>Smart tools. Fast results. Zero friction.</p>
+          </section>
+          <div class="cz-command-quick-picks" aria-label="Quick search suggestions">
+            ${commandSuggestions.map(([query, label, meta]) => `<button type="button" data-command-query-pick="${esc(query)}"><span>${esc(label)}</span><em>${esc(meta)}</em></button>`).join("")}
+          </div>
+          <div class="cz-command-filter-row" id="czCommandFilters">
+            ${commandFilters.map(([id, label]) => `<button type="button" data-command-filter="${esc(id)}" aria-pressed="${id === activeCommandFilter ? "true" : "false"}">${esc(label)}</button>`).join("")}
+          </div>
+          <section class="cz-command-mobile-task" id="czCommandMobileTask" aria-live="polite"></section>
+          <section class="cz-command-results-shell">
+            <div class="cz-command-result-head">
+              <div class="cz-command-tabs" id="czCommandTabs">
+                ${commandTabs.map(([id, label]) => `<button type="button" data-command-tab="${esc(id)}" aria-pressed="${id === activeCommandTab ? "true" : "false"}">${esc(label)}</button>`).join("")}
+              </div>
+              <span id="czCommandResultCount">Ready</span>
+            </div>
+            <div class="cz-command-results" id="czCommandResults" role="listbox"></div>
+          </section>
+        </main>
+        <aside class="cz-command-detail" id="czCommandDetail" aria-live="polite"></aside>
+        <footer class="cz-command-status">
+          <span><strong>No account required</strong><em>Start instantly</em></span>
+          <span><strong>100% free tools</strong><em>Always will be</em></span>
+          <span><strong>Privacy first</strong><em>Everything local</em></span>
+          <span><strong>Blazing fast</strong><em>Built for speed</em></span>
+          <a href="/contact/#request">Request a tool</a>
+        </footer>
       </div>`;
     document.body.appendChild(shell);
     return shell;
@@ -2387,42 +2734,170 @@
 
   function renderCommandMemory() {
     const shell = ensurePalette();
-    const target = $("#czCommandMemory", shell);
-    if (!target) return;
+    const memoryTarget = $("#czCommandMemory", shell);
+    const collectionsTarget = $("#czCommandCollections", shell);
     const recent = readList(storage.recent).map(toolBySlug).filter(Boolean).slice(0, 3);
     const favorites = readList(storage.favorites).map(toolBySlug).filter(Boolean).slice(0, 3);
-    const items = [
+    const quickItems = [
       ...favorites.map((tool) => ({ label: "Saved", tool })),
       ...recent.map((tool) => ({ label: "Recent", tool }))
     ].slice(0, 5);
-    target.innerHTML = items.length ? `
-      <div class="cz-memory-title">Fast access</div>
-      ${items.map(({ label, tool }) => `<a href="${tool.url}"><span>${esc(label)}</span><strong>${esc(tool.title)}</strong></a>`).join("")}
-    ` : `<div class="cz-command-hint">Tip: press Ctrl+K and type a job like "snippet", "json" or "youtube".</div>`;
+
+    if (memoryTarget) {
+      memoryTarget.innerHTML = quickItems.length ? quickItems.map(({ label, tool }) => `
+        <a href="${tool.url}"><span>${esc(label)}</span><strong>${esc(tool.title)}</strong></a>
+      `).join("") : `<div class="cz-command-hint">Type a task like "snippet", "json", "youtube" or "clean text".</div>`;
+    }
+
+    if (collectionsTarget) {
+      const counts = new Map();
+      (cms.tools || []).forEach((tool) => counts.set(tool.category, (counts.get(tool.category) || 0) + 1));
+      collectionsTarget.innerHTML = Object.entries(cms.clusters || {}).slice(0, 6).map(([key, cluster]) => `
+        <button type="button" data-command-filter="${esc(key === "writing" ? "content" : key === "socialai" ? "ai" : key)}">
+          <span>${esc(cluster.title.replace(/\s+Tools$/i, ""))}</span><em>${counts.get(key) || 0}</em>
+        </button>
+      `).join("");
+    }
   }
 
   let selectedIndex = 0;
   let lastResults = [];
 
+  function commandHowSteps(item) {
+    if (!item) return [];
+    if (item.type === "guide") return ["Open the decision guide", "Use the connected tool", "Apply the cleaner workflow"];
+    return [
+      item.sampleInput ? `Start with: ${item.sampleInput}` : "Paste the input",
+      item.output ? `Get: ${item.output}` : "Generate a clean result",
+      item.time || "Copy or continue instantly"
+    ];
+  }
+
+  function renderCommandMobileTask(item) {
+    const shell = ensurePalette();
+    const target = $("#czCommandMobileTask", shell);
+    if (!target) return;
+    if (!item) {
+      target.hidden = true;
+      target.innerHTML = "";
+      return;
+    }
+    const favoriteSlug = commandFavoriteSlug(item);
+    const primaryLabel = item.type === "guide" ? "Open Guide" : "Open Tool";
+    target.hidden = false;
+    target.innerHTML = `
+      <div class="cz-command-mobile-task-card">
+        <div class="cz-command-mobile-task-head">
+          <span>${esc(commandKind(item))}</span>
+          <em>${esc(item.time || "Instant")}</em>
+        </div>
+        <a class="cz-command-mobile-task-main" href="${item.url}">
+          <span class="cz-command-mobile-task-icon">${esc(item.icon || commandGlyph(item))}</span>
+          <span>
+            <strong>${esc(item.title)}</strong>
+            <em>${esc(item.description)}</em>
+          </span>
+        </a>
+        <div class="cz-command-mobile-task-actions">
+          <a href="${item.url}">${primaryLabel}</a>
+          ${favoriteSlug ? `<button type="button" data-cz-fav-toggle="${esc(favoriteSlug)}" data-cz-fav-style="icon" aria-pressed="false">☆</button>` : ""}
+        </div>
+      </div>`;
+  }
+
+  function renderCommandDetail(item) {
+    const shell = ensurePalette();
+    const target = $("#czCommandDetail", shell);
+    renderCommandMobileTask(item);
+    if (!target) return;
+    if (!item) {
+      target.innerHTML = `<div class="cz-command-detail-card"><p>No command selected yet.</p></div>`;
+      return;
+    }
+    const recents = readList(storage.recent).map(toolBySlug).filter(Boolean).slice(0, 3);
+    const favoriteSlug = commandFavoriteSlug(item);
+    const primaryLabel = item.type === "guide" ? "Open Guide" : "Open Tool";
+    target.innerHTML = `
+      <div class="cz-command-detail-card">
+        <span class="cz-command-detail-kicker">${esc(commandKind(item))}</span>
+        <div class="cz-command-detail-title">
+          <span>${esc(item.icon || commandGlyph(item))}</span>
+          <h3>${esc(item.title)}</h3>
+        </div>
+        <p>${esc(item.description)}</p>
+        <dl>
+          <div><dt>Category</dt><dd>${esc(categoryTitle(item.category))}</dd></div>
+          <div><dt>Speed</dt><dd>${esc(item.time || "Instant")}</dd></div>
+          <div><dt>Use</dt><dd>${esc(item.usedFor || commandKind(item))}</dd></div>
+        </dl>
+        <a class="cz-command-primary" href="${item.url}">${primaryLabel}</a>
+        ${favoriteSlug ? `<button class="cz-command-secondary" type="button" data-cz-fav-toggle="${esc(favoriteSlug)}" data-cz-fav-style="detail" aria-pressed="false">Add to Favorites</button>` : ""}
+        <div class="cz-command-how">
+          <strong>How it works</strong>
+          ${commandHowSteps(item).map((step, index) => `<span><em>${index + 1}</em>${esc(step)}</span>`).join("")}
+        </div>
+        <div class="cz-command-recent">
+          <strong>Recent tools</strong>
+          ${recents.length ? recents.map((tool) => `<a href="${tool.url}"><span>${esc(tool.title)}</span><em>Local browser</em></a>`).join("") : `<p>No recent tools yet.</p>`}
+        </div>
+      </div>`;
+    syncFavoriteControls();
+  }
+
+  function updateSelectedCommand() {
+    const shell = ensurePalette();
+    $$("[data-command-index]", shell).forEach((row) => {
+      const active = Number(row.getAttribute("data-command-index")) === selectedIndex;
+      row.classList.toggle("is-active", active);
+      row.setAttribute("aria-selected", String(active));
+    });
+    renderCommandDetail(lastResults[selectedIndex] || null);
+  }
+
   function renderCommandResults(query = "") {
     const shell = ensurePalette();
     const target = $("#czCommandResults", shell);
-    const items = commandItems()
-      .map((item) => ({ item, score: fuzzyScore(query, item.search) }))
-      .filter((entry) => !query || entry.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 9)
+    if (!target) return;
+    updateCommandControlState(shell);
+    const q = String(query || "").trim();
+    const scoredItems = itemsForActiveTab(commandItems())
+      .filter((item) => commandFilterMatches(item, activeCommandFilter))
+      .map((item, index) => ({ item, index, score: commandSearchScore(q, item) }))
+      .filter((entry) => !q || entry.score > 0)
+      .sort((a, b) => (q ? b.score - a.score : 0) || commandPriority(b.item) - commandPriority(a.item) || a.index - b.index);
+    const items = scoredItems
+      .slice(0, 12)
       .map((entry) => entry.item);
+    const countTarget = $("#czCommandResultCount", shell);
+    if (countTarget) {
+      const total = scoredItems.length;
+      const tabLabel = commandTabs.find(([id]) => id === activeCommandTab)?.[1] || "matches";
+      countTarget.textContent = q
+        ? `${total} ${total === 1 ? "match" : "matches"} for "${q}"`
+        : `${items.length} ${tabLabel.toLowerCase()}`;
+    }
     lastResults = items;
     selectedIndex = Math.min(selectedIndex, Math.max(0, items.length - 1));
-    target.innerHTML = items.length ? items.map((item, index) => `
-      <a class="${index === selectedIndex ? "is-active" : ""}" href="${item.url}" role="option" aria-selected="${index === selectedIndex ? "true" : "false"}" data-command-index="${index}">
-        <span>${esc(item.meta)}</span>
-        <strong>${esc(item.title)}</strong>
-        <em>${esc(item.description)}</em>
-        ${item.output || item.time ? `<small>${esc(item.output || "Useful output")}${item.time ? ` - ${esc(item.time)}` : ""}</small>` : ""}
-      </a>
-    `).join("") : `<div class="cz-command-empty">No exact match. Try "seo", "json", "youtube", "clean text" or "utm".</div>`;
+    target.innerHTML = items.length ? items.map((item, index) => {
+      const tags = (item.tags || []).slice(0, 3).map((tag) => `<span>${esc(tag)}</span>`).join("");
+      const favoriteSlug = commandFavoriteSlug(item);
+      return `
+        <div class="cz-command-result-row ${index === selectedIndex ? "is-active" : ""}" role="option" aria-selected="${index === selectedIndex ? "true" : "false"}" data-command-index="${index}">
+          <a class="cz-command-result-main" href="${item.url}">
+            <span class="cz-command-item-icon">${esc(item.icon || commandGlyph(item))}</span>
+            <span class="cz-command-item-copy">
+              <strong>${esc(item.title)}</strong>
+              <em>${esc(item.description)}</em>
+              <span class="cz-command-tags">${tags}</span>
+            </span>
+          </a>
+          <span class="cz-command-item-time">${esc(item.time || "Instant")}</span>
+          <a class="cz-command-open-btn" href="${item.url}">${item.type === "guide" ? "Open Guide" : "Open Tool"}</a>
+          ${favoriteSlug ? `<button class="cz-command-favorite" type="button" data-cz-fav-toggle="${esc(favoriteSlug)}" data-cz-fav-style="icon" aria-pressed="false">☆</button>` : `<span class="cz-command-favorite is-static">DOC</span>`}
+        </div>`;
+    }).join("") : `<div class="cz-command-empty">No exact match. Try "seo", "json", "youtube", "clean text" or "utm".</div>`;
+    updateSelectedCommand();
+    syncFavoriteControls();
   }
 
   function openPalette(query = "") {
@@ -2454,7 +2929,9 @@
       if (event.defaultPrevented || (event.button != null && event.button !== 0)) return false;
       if (event.ctrlKey || event.metaKey || event.altKey) return false;
       const target = event.target;
-      if (!target || target.closest("input, textarea, select, option, [contenteditable='true'], .m-menu, .menu, .cookie, .cz-command-palette, #google_translate_element, #google_translate_element_mobile")) return false;
+      if (!target) return false;
+      if (target.closest("input, textarea, select, option, [contenteditable='true'], .cookie, .cz-command-palette, #google_translate_element, #google_translate_element_mobile")) return false;
+      if (target.closest(".menu") && !target.closest(".m-menu")) return false;
       return true;
     }
 
@@ -2473,6 +2950,7 @@
         commandBurstTimes = [];
         delete document.documentElement.dataset.commandBurst;
         if (event.cancelable) event.preventDefault();
+        event.stopPropagation();
         openPalette("");
       }
     }
@@ -2493,11 +2971,46 @@
       if (event.key === "Escape" && !ensurePalette().hidden) closePalette();
     });
 
+    document.addEventListener("click", trackCommandBurst, { capture: true });
+
     document.addEventListener("click", (event) => {
       const commandTrigger = event.target.closest("[data-open-command]");
       if (commandTrigger) {
         event.preventDefault();
         openPalette(commandTrigger.getAttribute("data-command-query") || "");
+        return;
+      }
+      const commandPick = event.target.closest("[data-command-query-pick]");
+      if (commandPick && commandPick.closest(".cz-command-palette")) {
+        event.preventDefault();
+        activeCommandTab = "recommended";
+        selectedIndex = 0;
+        const input = $("#czCommandInput", ensurePalette());
+        const query = commandPick.getAttribute("data-command-query-pick") || "";
+        if (input) {
+          input.value = query;
+          input.focus({ preventScroll: true });
+        }
+        renderCommandResults(query);
+        return;
+      }
+      const commandFilter = event.target.closest("[data-command-filter]");
+      if (commandFilter && commandFilter.closest(".cz-command-palette")) {
+        event.preventDefault();
+        const nextFilter = commandFilter.getAttribute("data-command-filter") || "all";
+        activeCommandFilter = nextFilter;
+        selectedIndex = 0;
+        const input = $("#czCommandInput", ensurePalette());
+        renderCommandResults(input?.value || "");
+        return;
+      }
+      const commandTab = event.target.closest("[data-command-tab]");
+      if (commandTab && commandTab.closest(".cz-command-palette")) {
+        event.preventDefault();
+        activeCommandTab = commandTab.getAttribute("data-command-tab") || "recommended";
+        selectedIndex = 0;
+        const input = $("#czCommandInput", ensurePalette());
+        renderCommandResults(input?.value || "");
         return;
       }
       if (event.target.closest("[data-command-close]")) closePalette();
@@ -2506,8 +3019,11 @@
         event.preventDefault();
         const slug = fav.getAttribute("data-cz-fav-toggle");
         setFavorite(slug, !isFavorite(slug));
+        renderCommandMemory();
+        const input = $("#czCommandInput", ensurePalette());
+        renderCommandResults(input?.value || "");
+        return;
       }
-      trackCommandBurst(event);
     });
 
     document.addEventListener("clickoz:open-command", (event) => {
@@ -2524,15 +3040,24 @@
       if (event.key === "ArrowDown") {
         event.preventDefault();
         selectedIndex = Math.min(lastResults.length - 1, selectedIndex + 1);
-        renderCommandResults(input.value);
+        updateSelectedCommand();
       } else if (event.key === "ArrowUp") {
         event.preventDefault();
         selectedIndex = Math.max(0, selectedIndex - 1);
-        renderCommandResults(input.value);
+        updateSelectedCommand();
       } else if (event.key === "Enter" && lastResults[selectedIndex]) {
         event.preventDefault();
         window.location.href = lastResults[selectedIndex].url;
       }
+    });
+    const results = $("#czCommandResults", shell);
+    results?.addEventListener("pointerover", (event) => {
+      const row = event.target.closest("[data-command-index]");
+      if (!row) return;
+      const index = Number(row.getAttribute("data-command-index"));
+      if (!Number.isFinite(index) || index === selectedIndex) return;
+      selectedIndex = index;
+      updateSelectedCommand();
     });
   }
 
@@ -2550,7 +3075,7 @@
     hint.setAttribute("data-open-command", "");
     hint.setAttribute("data-command-query", "");
     hint.setAttribute("aria-label", "Open Advanced Search with Ctrl K or five quick taps");
-    hint.innerHTML = `Advanced Search <span class="command-shortcut">press <kbd>Ctrl</kbd> + <kbd>K</kbd></span> <span class="command-burst">or 5 quick taps/clicks anywhere</span>`;
+    hint.innerHTML = `Advanced Search <span class="command-shortcut">press <kbd>Ctrl</kbd> + <kbd>K</kbd></span> <span class="command-burst">or tap/click 5 times quickly anywhere</span>`;
     const title = $(".tools-hero .tools-title");
     if (title) title.insertAdjacentElement("afterend", hint);
     else input.insertAdjacentElement("afterend", hint);
@@ -3023,6 +3548,7 @@
     let dragging = false;
     let moved = false;
     let last = { x: 0, y: 0 };
+    let userAdjusted = false;
 
     function requestStaticDraw(){
       if (liveAnimate) return;
@@ -3041,6 +3567,16 @@
       return `rgba(${a[0]},${a[1]},${a[2]},${alpha})`;
     }
 
+    function fittedZoom(){
+      return Math.max(.64, Math.min(.96, size.w / 680, size.h / 500));
+    }
+
+    function centerMap(node = focus){
+      const target = node && node.type !== "file" ? node : { x: 0, y: 0 };
+      pan.x = size.w / 2 - target.x * zoom;
+      pan.y = size.h / 2 - target.y * zoom;
+    }
+
     function resize(){
       const rect = shell.getBoundingClientRect();
       size.w = Math.max(320, rect.width);
@@ -3050,8 +3586,8 @@
       canvas.style.width = `${size.w}px`;
       canvas.style.height = `${size.h}px`;
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      pan.x = size.w / 2;
-      pan.y = size.h / 2;
+      if (!userAdjusted || coarse) zoom = fittedZoom();
+      centerMap();
     }
 
     function worldToScreen(n){
@@ -3105,7 +3641,9 @@
     function setTip(node){
       if (!tip) return;
       if (!node){
-        tip.textContent = "Hover a folder to inspect the CMS layer. Scroll to zoom, drag to move.";
+        tip.textContent = coarse
+          ? "Tap a folder to reveal connected files. Drag the map lightly to inspect the CMS graph."
+          : "Hover or click a folder to reveal files. Scroll to zoom, drag to move.";
         return;
       }
       if (node.type === "file"){
@@ -3208,6 +3746,7 @@
     }
 
     function zoomAt(nextZoom, clientX, clientY){
+      userAdjusted = true;
       const rect = canvas.getBoundingClientRect();
       const sx = clientX == null ? size.w / 2 : clientX - rect.left;
       const sy = clientY == null ? size.h / 2 : clientY - rect.top;
@@ -3220,11 +3759,14 @@
 
     function focusNode(node){
       if (!node || node.type === "file") return;
+      userAdjusted = true;
       focus = focus && focus.id === node.id ? null : node;
       if (focus){
-        zoom = Math.max(zoom, 1.48);
-        pan.x = size.w / 2 - focus.x * zoom;
-        pan.y = size.h / 2 - focus.y * zoom;
+        zoom = coarse ? Math.max(zoom, 1.06) : Math.max(zoom, 1.48);
+        centerMap(focus);
+      } else if (coarse) {
+        zoom = fittedZoom();
+        centerMap();
       }
       setTip(node);
       requestStaticDraw();
@@ -3239,6 +3781,7 @@
     canvas.addEventListener("pointerdown", (e) => {
       dragging = true;
       moved = false;
+      userAdjusted = true;
       last.x = e.clientX;
       last.y = e.clientY;
       canvas.setPointerCapture?.(e.pointerId);
@@ -3280,10 +3823,10 @@
     shell.querySelector("[data-neural-zoom='in']")?.addEventListener("click", () => zoomAt(zoom * 1.18));
     shell.querySelector("[data-neural-zoom='out']")?.addEventListener("click", () => zoomAt(zoom * .84));
     shell.querySelector("[data-neural-reset]")?.addEventListener("click", () => {
+      userAdjusted = false;
       focus = null;
-      zoom = 1;
-      pan.x = size.w / 2;
-      pan.y = size.h / 2;
+      zoom = fittedZoom();
+      centerMap();
       setTip(null);
       requestStaticDraw();
     });

@@ -10,14 +10,14 @@
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
   const categoryLabel = {
-    seo: "Search route",
-    writing: "Writing route",
-    dev: "Developer route",
-    web: "Web route",
-    socialai: "Creator route",
-    tracking: "Tracking route",
-    youtube: "YouTube route",
-    creator: "Creator route"
+    seo: "SEO workflow",
+    writing: "Writing workflow",
+    dev: "Developer workflow",
+    web: "Web workflow",
+    socialai: "Creator workflow",
+    tracking: "Tracking workflow",
+    youtube: "YouTube workflow",
+    creator: "Creator workflow"
   };
 
   const categoryMark = {
@@ -194,7 +194,7 @@
       <article>
         <span>01</span>
         <h2>Problem</h2>
-        <p>${esc(guide.description)} Start with the problem, test a real input, then decide what to change.</p>
+        <p>${esc(guide.description)} Start with the problem, test real input, then decide what to change.</p>
       </article>
       <article>
         <span>02</span>
@@ -204,7 +204,7 @@
       <article>
         <span>03</span>
         <h2>Next step</h2>
-        <p>Move into <a href="${esc(cluster?.url || "/tools/")}">${esc(cluster?.title || "the related route")}</a> when you need the next connected action.</p>
+        <p>Open <a href="${esc(cluster?.url || "/tools/")}">${esc(cluster?.title || "the related workflow")}</a> when you need the next connected step.</p>
       </article>
     `;
     hero.insertAdjacentElement("afterend", summary);

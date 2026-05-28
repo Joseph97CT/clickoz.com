@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src 'self' https://translate.google.com https://*.google.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests" />
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), interest-cohort=()" />
+  <link rel="canonical" href="https://clickoz.com/metaverse/" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="googlebot" content="noindex,nofollow" />
+    <meta name="application-name" content="Clickoz" />
+  <meta name="apple-mobile-web-app-title" content="Clickoz" />
+<meta name="theme-color" content="#101828" />
+  <title>Clickoz Metaverse Debug Lab</title>
+  <meta name="description" content="Internal Clickoz viewport lab for mobile, tablet, desktop and TV responsive debugging." />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="stylesheet" href="/metaverse/metaverse.css" />
+  <script>
+  (function(){
+    try{
+      var saved = JSON.parse(localStorage.getItem("clickoz_accent") || "null");
+      var a1 = saved && saved.a1 ? saved.a1 : "#9b8cff";
+      var a2 = saved && saved.a2 ? saved.a2 : "#d6ccff";
+      var map = {"#22d3ee":["#38e8ff","#8af3ff"],"#38e8ff":["#38e8ff","#8af3ff"],"#6366f1":["#9b8cff","#d6ccff"],"#8b7cff":["#9b8cff","#d6ccff"],"#3b82f6":["#6fb6ff","#b9e2ff"],"#5ea8ff":["#6fb6ff","#b9e2ff"],"#10b981":["#5cff9d","#c7ffd6"],"#31f5bd":["#5cff9d","#c7ffd6"],"#39f5c7":["#5cff9d","#c7ffd6"],"#ef4444":["#ff6f7d","#ffc0c7"],"#ff5c6c":["#ff6f7d","#ffc0c7"],"#ff6fa8":["#ff6f7d","#ffc0c7"],"#ec4899":["#ff6fde","#ffc2f0"],"#ff5fbd":["#ff6fde","#ffc2f0"],"#fde047":["#fff36d","#fff8b8"],"#ffe45c":["#fff36d","#fff8b8"],"#f59e0b":["#ffc85f","#ffe0a3"],"#ffb238":["#ffc85f","#ffe0a3"],"#f97316":["#ffc85f","#ffe0a3"],"#ff7a1a":["#ffc85f","#ffe0a3"],"#cbd5e1":["#38e8ff","#8af3ff"],"#f8fafc":["#38e8ff","#8af3ff"],"#ffffff":["#38e8ff","#8af3ff"]};
+      var pair = map[String(a1).toLowerCase()] || ["#9b8cff","#d6ccff"];
+      a1 = pair[0]; a2 = pair[1];
+      var h = String(a1).replace("#", "");
+      var rgb = "155,140,255";
+      if(h.length === 3) rgb = [h[0]+h[0], h[1]+h[1], h[2]+h[2]].map(function(x){ return parseInt(x,16); }).join(",");
+      if(h.length === 6) rgb = [h.slice(0,2), h.slice(2,4), h.slice(4,6)].map(function(x){ return parseInt(x,16); }).join(",");
+      document.documentElement.style.setProperty("--accent", a1);
+      document.documentElement.style.setProperty("--accent2", a2);
+      document.documentElement.style.setProperty("--accent-rgb", rgb);
+      document.documentElement.style.setProperty("--cz-accent", a1);
+      document.documentElement.style.setProperty("--cz-accent2", a2);
+      document.documentElement.style.setProperty("--cz-accent-rgb", rgb);
+    }catch(e){}
+  })();
+</script>
+</head>
+<body>
+  <main class="metaverse-shell" data-device-family="mobile">
+    <header class="lab-topbar" aria-label="Metaverse controls">
+      <a class="lab-brand" href="/" aria-label="Back to Clickoz home">
+        <span class="lab-logo" aria-hidden="true">C</span>
+        <span>
+          <strong>Clickoz</strong>
+          <small>Metaverse Debug Lab</small>
+        </span>
+      </a>
+
+      <nav class="device-tabs" aria-label="Device family">
+        <button class="device-tab is-active" type="button" data-family="mobile">Mobile</button>
+        <button class="device-tab" type="button" data-family="tablet">Tablet</button>
+        <button class="device-tab" type="button" data-family="desktop">PC</button>
+        <button class="device-tab" type="button" data-family="tv">TV</button>
+      </nav>
+    </header>
+
+    <section class="control-deck" aria-label="Viewport setup">
+      <label class="control-field">
+        <span>Viewport preset</span>
+        <select id="presetSelect"></select>
+      </label>
+
+      <label class="control-field">
+        <span>Page route</span>
+        <select id="pageSelect">
+          <option value="/">Home</option>
+          <option value="/tools/">Tools hub</option>
+          <option value="/tools/seo-tools/">SEO tools</option>
+          <option value="/tools/json-formatter/">JSON Formatter</option>
+          <option value="/guides/">Guides hub</option>
+          <option value="/updates/">Updates</option>
+          <option value="/privacy/">Privacy</option>
+          <option value="custom">Custom route</option>
+        </select>
+      </label>
+
+      <label class="control-field route-field">
+        <span>Custom route</span>
+        <input id="routeInput" type="text" value="/" spellcheck="false" inputmode="url" aria-label="Custom local route" />
+      </label>
+
+      <div class="control-actions" aria-label="Viewport actions">
+        <button id="rotateBtn" class="lab-button" type="button">Rotate</button>
+        <button id="fitBtn" class="lab-button" type="button">Fit</button>
+        <button id="zoomOutBtn" class="lab-button" type="button" aria-label="Zoom out">-</button>
+        <button id="zoomInBtn" class="lab-button" type="button" aria-label="Zoom in">+</button>
+        <button id="reloadBtn" class="lab-button primary" type="button">Reload</button>
+        <a id="openLiveLink" class="lab-button live" href="/" target="_blank" rel="noopener">Open live</a>
+      </div>
+    </section>
+
+    <section class="lab-body">
+      <aside class="debug-panel" aria-label="Debug information">
+        <div>
+          <p class="panel-kicker">Current simulation</p>
+          <h1 id="deviceName">Modern phone</h1>
+          <p id="deviceNote">390 x 844 CSS pixels</p>
+        </div>
+
+        <dl class="metric-grid">
+          <div>
+            <dt>Viewport</dt>
+            <dd id="metricViewport">390 x 844</dd>
+          </div>
+          <div>
+            <dt>Scale</dt>
+            <dd id="metricScale">100%</dd>
+          </div>
+          <div>
+            <dt>Route</dt>
+            <dd id="metricRoute">/</dd>
+          </div>
+          <div>
+            <dt>Mode</dt>
+            <dd id="metricMode">Fit</dd>
+          </div>
+        </dl>
+
+        <div class="debug-checklist" aria-label="Visual checklist">
+          <span>Nav spacing</span>
+          <span>Hero fold</span>
+          <span>Drawer fit</span>
+          <span>Card grid</span>
+          <span>Text crop</span>
+          <span>Glow load</span>
+        </div>
+      </aside>
+
+      <section class="preview-panel" aria-label="Responsive preview">
+        <div class="preview-head">
+          <div>
+            <p class="panel-kicker">Live viewport</p>
+            <strong id="previewLabel">Mobile / 390 x 844</strong>
+          </div>
+          <span id="loadState" class="load-state">Loading</span>
+        </div>
+
+        <div class="stage-viewport" id="stageViewport">
+          <div class="stage-rulers" aria-hidden="true"></div>
+          <div class="device-frame" id="deviceFrame">
+            <iframe id="previewFrame" title="Clickoz responsive preview" src="/"></iframe>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="/metaverse/metaverse.js" defer></script>
+</body>
+</html>

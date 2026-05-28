@@ -22,6 +22,15 @@ function loadCMS() {
 }
 
 const cms = loadCMS();
+const GUIDE_PREVIEW_LIMIT = 8;
+
+function newestFirst(items) {
+  return [...items].reverse();
+}
+
+function previewItems(items, limit = GUIDE_PREVIEW_LIMIT) {
+  return newestFirst(items).slice(0, limit);
+}
 
 function esc(value) {
   return String(value || "").replace(/[&<>"']/g, (char) => ({
@@ -173,17 +182,17 @@ function footer() {
   </footer>`;
 }
 
-function routeFinalStrip(label = "Clickoz route") {
-  return `<section class="route-final-strip" aria-label="${esc(label)} operating route">
+function routeFinalStrip(label = "Clickoz workflow") {
+  return `<section class="route-final-strip" aria-label="${esc(label)} operating workflow">
       <article><span>01</span><strong>Search by problem</strong><p>Start from the messy input or task, not from a long category list.</p></article>
-      <article><span>02</span><strong>Use the exact tool</strong><p>Open the focused utility that matches the job you need to finish.</p></article>
-      <article><span>03</span><strong>Copy a clean result</strong><p>Keep output, copy controls and checks in one predictable surface.</p></article>
+      <article><span>02</span><strong>Use the exact tool</strong><p>Open the focused utility that matches the task you need to finish.</p></article>
+      <article><span>03</span><strong>Copy a clean result</strong><p>Keep output, copy controls and checks in one predictable place.</p></article>
       <article><span>04</span><strong>Read when needed</strong><p>Use guides only when the copied result needs a better decision behind it.</p></article>
-      <article><span>05</span><strong>Request gaps</strong><p>Ask for a missing tool, fix or guide when the current route does not cover the job.</p></article>
+      <article><span>05</span><strong>Request gaps</strong><p>Ask for a missing tool, fix or guide when the current workflow does not cover the task.</p></article>
     </section>`;
 }
 
-function requestMegaCta(title = "Missing a tool, guide or workflow?", copy = "Send the exact job you are trying to finish. Clickoz requests go through the validated contact form and email fallback.") {
+function requestMegaCta(title = "Missing a tool, guide or workflow?", copy = "Send the exact task you are trying to finish. Clickoz requests go through the validated contact form and email fallback.") {
   return `<section class="request-mega-cta" aria-label="Request a Clickoz tool">
       <div>
         <p class="guide-kicker">CONTACT / REQUEST</p>
@@ -332,8 +341,8 @@ function homePage() {
   const main = `<main class="home-workdesk">
     <header class="cz-workdesk-hero hero-simple-v2" aria-label="Clickoz tool network">
       <section class="workdesk-copy">
-        <h1>Your browser is now a free full web workstation.</h1>
-        <p class="hero-workdesk-sub">SEO tools, creator utilities, cleanup systems, packaging flows and developer fixes are connected inside one intelligent workspace.</p>
+        <h1>Your browser can be a free web workstation.</h1>
+        <p class="hero-workdesk-sub">SEO tools, creator utilities, text cleanup, publishing workflows and developer fixes are connected inside one practical workspace.</p>
         <div class="dash-actions hero-direct-actions">
           <a class="btn btn-accent" href="/tools/">Open tools hub</a>
           <a class="btn btn-outline" href="/guides/">Read guides</a>
@@ -358,7 +367,7 @@ function homePage() {
 
     <section class="section container friendly-tools-section" aria-label="Daily tool picks">
       <div class="friendly-section-intro">
-        <div><h2>Tools that match real daily jobs.</h2><p class="section-sub">Start from the problem, not from a directory. Each card points to a practical route through the Clickoz system.</p></div>
+        <div><h2>Tools for real daily tasks.</h2><p class="section-sub">Start from the problem, not from a directory. Each card points to a practical workflow inside Clickoz.</p></div>
       </div>
       <div class="picks-grid" id="picksGrid">
         <a class="pick-card" href="/tools/meta-tags/"><div class="pick-head"><span class="pick-icon">SEO</span><h3 class="pick-title">Meta Tag Optimizer</h3></div><p class="pick-desc">Preview titles and descriptions before publishing a search result.</p><div class="pick-meta"><span class="pick-cat">SEO Tools</span><span class="pick-cta">Open</span></div></a>
@@ -369,10 +378,10 @@ function homePage() {
     </section>
 
     <section class="section container authority-picker" aria-label="Choose a task">
-      <div class="authority-head"><p class="guide-kicker pulse-kicker">START FROM THE PROBLEM</p><h2 class="type-on-view">Pick the job. The site routes the next action.</h2><p>Every path has a first tool, a guide, and a useful next step. That is the difference between a generic tool list and a product people can reuse.</p></div>
+      <div class="authority-head"><p class="guide-kicker pulse-kicker">START FROM THE PROBLEM</p><h2 class="type-on-view">Pick the task. Clickoz shows the next step.</h2><p>Every path has a first tool, a guide, and a useful next step. That is the difference between a generic tool list and a product people can reuse.</p></div>
       <div class="authority-grid">
         <a class="authority-card" href="/tools/meta-tags/"><div class="authority-card-head"><span>SEO</span><h3>Publish a page</h3></div><p>Preview the snippet, check title length, scan readability and connect the page to a guide before publishing.</p></a>
-        <a class="authority-card" href="/tools/youtube-title-generator/"><div class="authority-card-head"><span>YT</span><h3>Package an upload</h3></div><p>Build title angles, thumbnail text, description structure, hashtags and tracking links from one creator route.</p></a>
+        <a class="authority-card" href="/tools/youtube-title-generator/"><div class="authority-card-head"><span>YT</span><h3>Prepare an upload</h3></div><p>Build title angles, thumbnail text, description structure, hashtags and tracking links from one creator workflow.</p></a>
         <a class="authority-card" href="/tools/readability-analyzer/"><div class="authority-card-head"><span>TXT</span><h3>Improve a draft</h3></div><p>Count, simplify and structure copy so mobile readers understand the point quickly.</p></a>
         <a class="authority-card" href="/tools/json-formatter/"><div class="authority-card-head"><span>DEV</span><h3>Fix broken data</h3></div><p>Format JSON, encode URL values, decode Base64 and escape HTML without heavy developer tools.</p></a>
       </div>
@@ -382,7 +391,7 @@ function homePage() {
       <div class="authority-panel">
         <p class="guide-kicker">WHY IT DOES NOT FEEL RANDOM</p>
         <h2>Three authority lanes first. Everything else supports them.</h2>
-        <p>Clickoz is built around search growth, creator packaging and readable web work. Developer tools exist because broken links, encoded payloads and messy JSON are part of the same publishing job.</p>
+        <p>Clickoz is built around search growth, creator packaging and readable web work. Developer tools exist because broken links, encoded payloads and messy JSON are part of the same publishing workflow.</p>
       </div>
       <div class="pillar-grid">
         <a href="/guides/seo/"><strong>SEO utilities</strong><span>Snippets, slugs, keywords, internal links and content checklists.</span></a>
@@ -393,11 +402,11 @@ function homePage() {
     </section>
 
     <section class="section container" aria-label="Featured tools">
-      <div class="authority-head"><p class="guide-kicker pulse-kicker">HIGH-INTENT TOOLS</p><h2 class="type-on-view">Useful pages people search for every day.</h2><p>These are not filler utilities. They solve frequent jobs for SEO, creators, writers and builders.</p></div>
+      <div class="authority-head"><p class="guide-kicker pulse-kicker">HIGH-INTENT TOOLS</p><h2 class="type-on-view">Useful pages people search for every day.</h2><p>These are not filler utilities. They solve frequent tasks for SEO, creators, writers and builders.</p></div>
       <div class="authority-grid authority-grid-3">${featured.map(toolCard).join("")}</div>
     </section>
-    ${routeFinalStrip("Clickoz home route")}
-    ${requestMegaCta("Need a tool that is missing?", "Send the exact job, output or guide you expected to find. Clickoz uses requests to prioritize the next browser utility without adding random filler.")}
+    ${routeFinalStrip("Clickoz home workflow")}
+    ${requestMegaCta("Need a tool that is missing?", "Send the exact task, output or guide you expected to find. Clickoz uses requests to prioritize the next browser utility without adding random filler.")}
   </main>`;
   return page({ active: "home", title, description, canonical: "/", jsonLd: schema, extraCss: `<link rel="stylesheet" href="${asset("/assets/home.css", "homeCss")}" />
   <link rel="stylesheet" href="${asset("/assets/home-leadership.css", "homeLeadershipCss")}" />`, main, extraScripts: `<script src="${asset("/assets/home.js", "homeJs")}" defer></script>` });
@@ -457,7 +466,7 @@ function guideHubPage(url, hub) {
         <div class="dash-actions"><a class="btn btn-accent" href="${hub.toolHref}">Open matching tools</a><a class="btn btn-outline" href="/guides/">All guides</a></div>
       </div>
       <aside class="guide-hub-checklist">
-        ${hub.focus.map((item, index) => `<article><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(item)}</strong><p>Do this before moving to the next page so the route stays practical.</p></article>`).join("")}
+        ${hub.focus.map((item, index) => `<article><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(item)}</strong><p>Check this before opening the next page so the workflow stays practical.</p></article>`).join("")}
       </aside>
     </header>
     <section class="authority-head"><p class="guide-kicker">GUIDES IN THIS HUB</p><h2>Start with the article that matches the problem.</h2><p>Each guide links back into a working Clickoz tool, related guides and a concrete checklist.</p></section>
@@ -488,6 +497,10 @@ function guidesIndexPage() {
     breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Guides", url: "/guides/" }]),
     collectionSchema({ name: "Clickoz Guides", url: "/guides/", description: "Problem-first Clickoz guides connected to browser tools, examples, checklists and practical next steps.", items: cms.guides })
   ].map(jsonLd).join("\n  ");
+  const previewTotal = sections.reduce((sum, section) => {
+    const guides = cms.guides.filter((guide) => section.cats.includes(guide.category));
+    return sum + Math.min(guides.length, GUIDE_PREVIEW_LIMIT);
+  }, 0);
   const main = `<main class="section container guide-hub-shell">
     <header class="guide-hub-hero guides-library-hero">
       <div>
@@ -498,7 +511,7 @@ function guidesIndexPage() {
       </div>
       <aside class="guide-hub-checklist">
         <article><span>01</span><strong>Find the problem</strong><p>Search by decision, not by random article title.</p></article>
-        <article><span>02</span><strong>Run the tool</strong><p>Use real input and keep the result copy-ready.</p></article>
+        <article><span>02</span><strong>Run the tool</strong><p>Use real input and keep the result easy to copy.</p></article>
         <article><span>03</span><strong>Move to the next page</strong><p>Every article connects into another useful Clickoz action.</p></article>
       </aside>
     </header>
@@ -506,24 +519,28 @@ function guidesIndexPage() {
       <a href="/guides/seo/"><b>SEO decision</b><span>Make titles, snippets, slugs and internal links search-ready.</span></a>
       <a href="/guides/writing/"><b>Writing decision</b><span>Use word count and readability as practical editing signals.</span></a>
       <a href="/guides/dev/"><b>Technical decision</b><span>Understand encoding, escaping and payload fixes before copying.</span></a>
-      <a href="/guides/creator/"><b>Creator decision</b><span>Package titles, descriptions, hashtags and tracking as one upload route.</span></a>
+      <a href="/guides/creator/"><b>Creator decision</b><span>Prepare titles, descriptions, hashtags and tracking as one upload workflow.</span></a>
     </section>
     <section class="guide-search-panel" aria-label="Search Clickoz guides">
       <div class="guide-search-copy">
         <p class="guide-kicker">FIND THE RIGHT GUIDE</p>
         <h2>Search by decision, tool or problem.</h2>
-        <p>Filter the library without losing the category structure. Use it when you know the job but not the article name.</p>
+        <p>Filter the library without losing the category structure. Use it when you know the task but not the article name.</p>
       </div>
       <div class="guide-search-control">
         <input id="guideSearch" class="search" type="search" placeholder="Try: meta title, JSON error, UTM, readability, YouTube description" aria-describedby="guideSearchStatus" />
-        <p id="guideSearchStatus" class="guide-search-status" aria-live="polite">Showing ${cms.guides.length} practical guides</p>
+        <p id="guideSearchStatus" class="guide-search-status" aria-live="polite">Showing ${previewTotal} newest guide previews across ${sections.length} hubs (${cms.guides.length} total)</p>
         <button type="button" id="guideSearchReset" hidden>Reset guide search</button>
       </div>
     </section>
     <section class="guide-hub-grid guide-hub-overview">${sections.map((section) => `<a class="guide-hub-card guide-hub-entry" href="${section.url}"><div class="authority-card-head"><span>${section.mark}</span><h2>${section.title}</h2></div><p>${section.desc}</p>${guideOverviewMeta(cms.guides.filter((g) => section.cats.includes(g.category)).length)}</a>`).join("")}</section>
     ${sections.map((section) => {
-      const guides = cms.guides.filter((guide) => section.cats.includes(guide.category));
-      return `<section class="guide-category-band" id="${section.mark.toLowerCase()}"><div class="authority-head"><p class="guide-kicker">${section.title}</p><h2>${section.desc}</h2><p><a href="${section.url}">Open the full ${section.title.toLowerCase()} hub</a></p></div><div class="guide-hub-grid">${guides.map(guideCard).join("")}</div></section>`;
+      const allGuides = cms.guides.filter((guide) => section.cats.includes(guide.category));
+      const guides = previewItems(allGuides);
+      const countLabel = allGuides.length > guides.length
+        ? `Latest ${guides.length} of ${allGuides.length} guides`
+        : `${allGuides.length} ${allGuides.length === 1 ? "guide" : "guides"}`;
+      return `<section class="guide-category-band" id="${section.mark.toLowerCase()}" data-guide-count="${allGuides.length}" data-preview-count="${guides.length}"><div class="authority-head"><div><p class="guide-kicker">${section.title}</p><h2>${section.desc}</h2></div><div class="guide-band-actions"><span class="section-count">${countLabel}</span><a class="section-hub-link guide-hub-link" href="${section.url}">Open full ${section.title}</a></div></div><div class="guide-hub-grid">${guides.map(guideCard).join("")}</div></section>`;
     }).join("")}
     ${routeFinalStrip("Guide library")}
     ${requestMegaCta("Missing a practical guide?", "Send the tool output or publishing decision that still feels unclear. Clickoz will turn useful requests into a focused guide or matching utility.")}
@@ -548,7 +565,7 @@ function aboutPage() {
       "@type": "AboutPage",
       "name": "About Clickoz",
       "url": abs("/about/"),
-      "description": "Clickoz is a browser-first toolbox for SEO, creators, writing and developer jobs.",
+      "description": "Clickoz is a browser-first toolbox for SEO, creators, writing and developer tasks.",
       "isPartOf": { "@type": "WebSite", "name": "Clickoz", "url": ORIGIN + "/" },
       "about": {
         "@type": "Organization",
@@ -572,7 +589,7 @@ function aboutPage() {
     <section class="authority-split">
       <div class="authority-panel"><p class="guide-kicker">QUALITY STANDARD</p><h2>What a Clickoz page must do.</h2><p>Every important page should explain the problem, provide a working utility or guide, include examples, link related pages, expose useful schema and stay fast on mobile.</p></div>
       <div class="pillar-grid">
-        <a href="/tools/"><strong>Tools</strong><span>Live inputs, examples, useful outputs and copy actions.</span></a>
+        <a href="/tools/"><strong>Tools</strong><span>Live inputs, examples, useful outputs and copy controls.</span></a>
         <a href="/guides/"><strong>Guides</strong><span>Problem, method, alternatives, checklist and linked tools.</span></a>
         <a href="/updates/"><strong>Updates</strong><span>Public release notes for design, SEO, performance and content fixes.</span></a>
         <a href="/contact/"><strong>Feedback</strong><span>Broken pages and weak tools become product priorities.</span></a>
@@ -592,9 +609,9 @@ function aboutPage() {
 
 function updatesPage() {
   const releases = [
-    ["v3.7", "Reactive app runtime", "May 2026", "Tools, guides and updates gained route state, reveal motion, scroll feedback, internal prefetch and stronger responsive surfaces.", ["App runtime", "Motion", "Performance", "UX"]],
+    ["v3.7", "Reactive app runtime", "May 2026", "Tools, guides and updates gained stateful navigation, reveal motion, scroll feedback, internal prefetch and stronger responsive layouts.", ["App runtime", "Motion", "Performance", "UX"]],
     ["v3.6", "Authority foundation pass", "May 2026", "Brand, About, guide hubs, schema and mobile-safe structure now support Clickoz as a product instead of a generic tool list.", ["Brand identity", "Guide hubs", "Schema", "Mobile stability"]],
-    ["v3.5", "Tool CMS standardization", "May 2026", "Tool pages share examples, first-use cards, related guides, related tools, SEO support and copy actions.", ["Tools", "Examples", "Internal links", "SEO"]],
+    ["v3.5", "Tool CMS standardization", "May 2026", "Tool pages share examples, first-use cards, related guides, related tools, SEO support and copy controls.", ["Tools", "Examples", "Internal links", "SEO"]],
     ["v3.4", "Premium visual polish", "May 2026", "Buttons, hover states, footer, cards, nav, theme colors and tool layout received a full visual correction pass.", ["Design", "UI", "Theme", "CMS"]],
     ["v3.3", "Creator packaging lane", "May 2026", "YouTube and social creator tools were expanded for titles, thumbnails, descriptions, hashtags, replies, hooks and tracking.", ["Creator", "YouTube", "Social", "Tracking"]],
     ["v3.0", "Tools and guides rewrite", "January 2026", "The site moved into a shared tool and guide architecture with cleaner routing, schemas and mobile-first pages.", ["Architecture", "Guides", "Tools", "Performance"]]
@@ -632,25 +649,31 @@ function updatesPage() {
         <h1 class="updates-title">Clickoz improvement log.</h1>
         <p class="updates-sub">A public control room for product quality: tool fixes, guide rewrites, SEO structure, design polish, schema coverage and mobile performance.</p>
         <div class="updates-actions"><a class="updates-btn updates-btn-primary" href="#all">View releases</a><a class="updates-btn" href="/tools/">Open tools</a><a class="updates-btn" href="/guides/">Open guides</a></div>
-        <div class="updates-manifesto"><span class="dot"></span><span>Every update must make Clickoz easier to use, trust or discover.</span></div>
+        <div class="updates-manifesto"><span class="dot"></span><span data-typewriter="Every update must make Clickoz easier to use, trust or discover.">Every update must make Clickoz easier to use, trust or discover.</span></div>
       </div>
       <aside class="source-command-panel source-command-panel-lite">
         <div class="source-panel-head"><span>CMS map</span><strong>Structure that stays light on mobile.</strong></div>
-        <div class="source-map-visual source-map-lite" aria-label="Clickoz release structure map">
-          <div class="source-lite-orbit source-lite-orbit-a" aria-hidden="true"></div>
-          <div class="source-lite-orbit source-lite-orbit-b" aria-hidden="true"></div>
-          <div class="source-lite-pulse" aria-hidden="true"></div>
-          <div class="source-lite-core"><strong>Clickoz</strong><span>CMS</span></div>
-          <div class="source-lite-row source-lite-row-top">
-            <a href="/tools/"><b>${cms.tools.length}</b><span>Tool pages</span></a>
-            <a href="/guides/"><b>${cms.guides.length}</b><span>Guide pages</span></a>
+        <div class="source-map-visual neural-map-shell" aria-label="Interactive Clickoz CMS neural map">
+          <canvas id="cmsNeuralMap" class="cms-neural-canvas" aria-hidden="true"></canvas>
+          <div class="neural-map-hud" aria-hidden="true"><span>${cms.tools.length} tools</span><span>${cms.guides.length} guides</span><span>Live graph</span></div>
+          <div class="neural-map-controls" aria-label="CMS map controls">
+            <button type="button" data-neural-zoom="in" aria-label="Zoom in">+</button>
+            <button type="button" data-neural-zoom="out" aria-label="Zoom out">-</button>
+            <button type="button" data-neural-reset aria-label="Reset map">0</button>
           </div>
-          <div class="source-lite-row source-lite-row-bottom">
-            <a href="/guides/seo/"><b>SEO</b><span>Schema + links</span></a>
-            <a href="/about/"><b>Trust</b><span>About + legal</span></a>
-          </div>
-          <div class="source-lite-status" aria-hidden="true"><span>Schema</span><span>Links</span><span>Mobile</span></div>
-          <div class="source-lite-lines" aria-hidden="true"></div>
+          <p id="cmsNeuralTip" class="neural-map-tip">Tap a folder to open connected files. Drag to move, pinch or use controls to zoom.</p>
+          <div class="source-grid-lines" aria-hidden="true"></div>
+          <div class="source-core" aria-hidden="true"><strong>Clickoz</strong><small>CMS</small></div>
+          <a class="source-node node-tools" href="/tools/" aria-label="Open tools">Tools</a>
+          <a class="source-node node-guides" href="/guides/" aria-label="Open guides">Guides</a>
+          <a class="source-node node-seo" href="/guides/seo/" aria-label="Open SEO guides">SEO</a>
+          <a class="source-node node-ui" href="/updates/" aria-label="Open updates">UX</a>
+          <a class="source-node node-updates" href="/updates/" aria-label="Open release log">Updates</a>
+          <span class="source-file file-a" aria-hidden="true">cms-final.css</span>
+          <span class="source-file file-b" aria-hidden="true">site.js</span>
+          <span class="source-file file-c" aria-hidden="true">sitemap.xml</span>
+          <span class="source-file file-d" aria-hidden="true">privacy</span>
+          <a class="updates-full-map-btn" href="/updates/cms-map/?from=updates" aria-label="Open the full interactive Clickoz CMS map">Open interactive map</a>
         </div>
       </aside>
     </header>
@@ -694,7 +717,7 @@ function updatesPage() {
 }
 
 function removedLegacyRoutePage() {
-  throw new Error("Removed legacy route; use tools and guides instead.");
+  throw new Error("Removed legacy path; use tools and guides instead.");
 }
 
 function sitemap() {
@@ -834,9 +857,9 @@ function errorPage(code, title, copy) {
       </div>
     </section>
     <section class="trust-card-grid">
-      <article class="trust-card"><h3>Text route</h3><p>Count, clean and improve draft readability.</p><p><a href="/tools/word-counter/">Open Word Counter</a></p></article>
-      <article class="trust-card"><h3>SEO route</h3><p>Fix snippets, metadata, URLs and internal links.</p><p><a href="/tools/meta-tags/">Open Meta Tags</a></p></article>
-      <article class="trust-card"><h3>Developer route</h3><p>Format JSON, encode URLs and inspect payloads.</p><p><a href="/tools/json-formatter/">Open JSON Formatter</a></p></article>
+      <article class="trust-card"><h3>Text workflow</h3><p>Count, clean and improve draft readability.</p><p><a href="/tools/word-counter/">Open Word Counter</a></p></article>
+      <article class="trust-card"><h3>SEO workflow</h3><p>Fix snippets, metadata, URLs and internal links.</p><p><a href="/tools/meta-tags/">Open Meta Tags</a></p></article>
+      <article class="trust-card"><h3>Developer workflow</h3><p>Format JSON, encode URLs and inspect payloads.</p><p><a href="/tools/json-formatter/">Open JSON Formatter</a></p></article>
     </section>
   </main>`
   });
@@ -891,6 +914,7 @@ Allow: /
 Disallow: /api/
 Disallow: /_maintenance/
 Disallow: /workflows/
+Disallow: /metaverse/
 Disallow: /404/
 Disallow: /500/
 Disallow: /tools/tool.html
