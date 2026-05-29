@@ -26,7 +26,9 @@ const versionedAssets = new Map([
   ["/tools/cms-tools.css", "cmsToolsCss"],
   ["/tools/cms-tools.js", "cmsToolsJs"],
   ["/updates/cms-map.css", "cmsMapCss"],
-  ["/updates/cms-map.js", "cmsMapJs"]
+  ["/updates/cms-map.js", "cmsMapJs"],
+  ["/assets/premium-tools.css", "premiumToolsCss"],
+  ["/assets/premium-tools.js", "premiumToolsJs"]
 ]);
 
 function walk(dir, out = []) {

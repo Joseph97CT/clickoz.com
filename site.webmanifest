@@ -1,12 +1,22 @@
 {
+  "id": "/",
   "name": "Clickoz",
   "short_name": "Clickoz",
   "description": "Free browser tools and practical guides for SEO, writing, creators and developers.",
+  "lang": "en",
+  "dir": "ltr",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "any",
   "background_color": "#090d16",
-  "theme_color": "#38e8ff",
+  "theme_color": "#101828",
+  "categories": ["productivity", "utilities", "developer", "business"],
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
   "icons": [
     {
       "src": "/assets/apple-touch-icon.png",
@@ -19,6 +29,47 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Open Tools",
+      "short_name": "Tools",
+      "description": "Open the Clickoz tools hub.",
+      "url": "/tools/",
+      "icons": [
+        {
+          "src": "/assets/clickoz-logo-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Read Guides",
+      "short_name": "Guides",
+      "description": "Open practical Clickoz guides.",
+      "url": "/guides/",
+      "icons": [
+        {
+          "src": "/assets/clickoz-logo-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "View Updates",
+      "short_name": "Updates",
+      "description": "Open the Clickoz updates feed.",
+      "url": "/updates/",
+      "icons": [
+        {
+          "src": "/assets/clickoz-logo-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }

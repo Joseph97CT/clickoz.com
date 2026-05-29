@@ -130,6 +130,97 @@
     return `<div id="gtNavWrap" aria-label="Translate"><div id="google_translate_element"><div id="google_translate_native"></div></div></div>`;
   }
 
+  const NAV_CATEGORY_GROUPS = {
+    tools: {
+      href: "/tools/",
+      label: "Tools",
+      indexLabel: "All tools",
+      indexNote: "Complete tools index",
+      mobileNote: "Open the full tools hub first.",
+      items: [
+        ["SEO Tools", "/tools/seo-tools/"],
+        ["Writing Tools", "/tools/writing-tools/"],
+        ["YouTube Tools", "/tools/youtube-tools/"],
+        ["Social & AI Tools", "/tools/social-ai-tools/"],
+        ["Developer Tools", "/tools/developer-tools/"],
+        ["Marketing Tools", "/tools/marketing-tracking-tools/"],
+        ["Web & Security Tools", "/tools/web-security-tools/"]
+      ]
+    },
+    premium: {
+      href: "/premium/",
+      label: "Premium",
+      indexLabel: "All premium",
+      indexNote: "Free complete workflow tools",
+      mobileNote: "Open the full premium workflow hub first.",
+      items: [
+        ["Dev Premium Tools", "/premium/dev-premium-tools/"],
+        ["Multi Device Tester", "/premium/multi-device-tester/"],
+        ["Site Map Pro", "/premium/sitemap-viewer/"]
+      ]
+    },
+    guides: {
+      href: "/guides/",
+      label: "Guides",
+      indexLabel: "All guides",
+      indexNote: "Complete guides library",
+      mobileNote: "Open the full guides index first.",
+      items: [
+        ["SEO Guides", "/guides/seo/"],
+        ["Writing Guides", "/guides/writing/"],
+        ["Developer Guides", "/guides/dev/"],
+        ["Creator Guides", "/guides/creator/"]
+      ]
+    }
+  };
+
+  function navSubLinksMarkup(groupKey, mode = "desktop"){
+    const group = NAV_CATEGORY_GROUPS[groupKey];
+    if(!group) return "";
+    const normalizePath = (value) => {
+      const clean = String(value || "/").toLowerCase().replace(/\/+$/, "");
+      return clean ? `${clean}/` : "/";
+    };
+    const path = normalizePath(window.location.pathname || "/");
+    const subLinks = group.items.map(([label, href]) => {
+      const isCurrent = path === normalizePath(href);
+      return `<a class="${mode === "mobile" ? "m-subnav-link" : "nav-sub-link"}${isCurrent ? " is-current" : ""}" href="${href}">${label}</a>`;
+    }).join("");
+
+    if(mode === "mobile"){
+      return `
+        <a class="m-subnav-index" href="${group.href}">
+          <strong>${group.indexLabel}</strong>
+          <span>${group.mobileNote}</span>
+        </a>
+        <div class="m-subnav-grid">${subLinks}</div>`;
+    }
+
+    return `
+      <div class="nav-subpanel" aria-label="${group.label} categories">
+        <a class="nav-index-link" href="${group.href}">
+          <strong>${group.indexLabel}</strong>
+          <span>${group.indexNote}</span>
+        </a>
+        <div class="nav-subgrid">${subLinks}</div>
+      </div>`;
+  }
+
+  function navCategoryMarkup(key, active){
+    const group = NAV_CATEGORY_GROUPS[key];
+    const isActive = active === key;
+    const activeClass = isActive ? " active" : "";
+    const current = isActive ? ' aria-current="page"' : "";
+    return `
+      <div class="nav-group nav-group-${key}${isActive ? " is-active" : ""}">
+        <a class="nav-main-link${activeClass}" href="${group.href}"${current}>
+          <span>${group.label}</span>
+          <span class="nav-caret" aria-hidden="true"></span>
+        </a>
+        ${navSubLinksMarkup(key)}
+      </div>`;
+  }
+
   function mobileMenuMarkup(){
     return `
       <div class="m-overlay" id="mOverlay" hidden></div>
@@ -145,10 +236,25 @@
         <div class="m-links" aria-label="Main sections">
           <a class="m-link" href="/"><span aria-hidden="true">⌂</span><strong>Home</strong></a>
           <a class="m-link" href="/tools/"><span aria-hidden="true">⚙</span><strong>Tools</strong></a>
+          <a class="m-link" href="/premium/"><span aria-hidden="true">✦</span><strong>Premium</strong></a>
           <a class="m-link" href="/guides/"><span aria-hidden="true">◇</span><strong>Guides</strong></a>
           <a class="m-link" href="/updates/"><span aria-hidden="true">↻</span><strong>Updates</strong></a>
-          <a class="m-link" href="/about/"><span aria-hidden="true">i</span><strong>About</strong></a>
         </div>
+      </div>
+
+      <div class="m-subnav" aria-label="Tools and guides categories">
+        <section class="m-subnav-section" aria-label="Tools categories">
+          <div class="m-label">Tools categories</div>
+          ${navSubLinksMarkup("tools", "mobile")}
+        </section>
+        <section class="m-subnav-section" aria-label="Premium workflows">
+          <div class="m-label">Premium workflows</div>
+          ${navSubLinksMarkup("premium", "mobile")}
+        </section>
+        <section class="m-subnav-section" aria-label="Guides categories">
+          <div class="m-label">Guides categories</div>
+          ${navSubLinksMarkup("guides", "mobile")}
+        </section>
       </div>
 
       <button class="m-command-card m-advanced-search" type="button" data-open-command data-command-query="" aria-label="Open advanced search">
@@ -188,19 +294,17 @@
     let links = $('.nav-links', navInner);
     const path = window.location.pathname || "/";
     const active = path.startsWith('/tools/') ? 'tools'
+      : path.startsWith('/premium/') ? 'premium'
       : path.startsWith('/guides/') ? 'guides'
       : path.startsWith('/updates/') ? 'updates'
       : 'home';
-    const items = [
-      ['home', '/', 'Home'],
-      ['tools', '/tools/', 'Tools'],
-      ['guides', '/guides/', 'Guides'],
-      ['updates', '/updates/', 'Updates']
-    ];
-    const html = items.map(([key, href, label]) => {
-      const current = active === key ? ' class="active" aria-current="page"' : '';
-      return `<a href="${href}"${current}>${label}</a>`;
-    }).join('');
+    const html = [
+      `<a href="/"${active === "home" ? ' class="active" aria-current="page"' : ""}>Home</a>`,
+      navCategoryMarkup("tools", active),
+      navCategoryMarkup("premium", active),
+      navCategoryMarkup("guides", active),
+      `<a href="/updates/"${active === "updates" ? ' class="active" aria-current="page"' : ""}>Updates</a>`
+    ].join('');
 
     if(!links){
       links = document.createElement('div');
@@ -1661,6 +1765,7 @@
     let section = 'home';
     if (path === '/' || path === '/index.html') section = 'home';
     else if (path.startsWith('/tools') || path.endsWith('/tools.html')) section = 'tools';
+    else if (path.startsWith('/premium') || path.endsWith('/premium.html')) section = 'premium';
     else if (path.startsWith('/guides') || path.endsWith('/guides.html')) section = 'guides';
     else if (path.startsWith('/updates') || path.endsWith('/updates.html')) section = 'updates';
 
@@ -1668,6 +1773,7 @@
       const href = (a.getAttribute('href') || '').toLowerCase().replace(/\/+$/, '');
       if (section === 'home')   return href === '' || href === '/' || href === '/index.html';
       if (section === 'tools')  return href === '/tools'  || href === '/tools.html'  || href.startsWith('/tools/');
+      if (section === 'premium') return href === '/premium' || href === '/premium.html' || href.startsWith('/premium/');
       if (section === 'guides') return href === '/guides' || href === '/guides.html' || href.startsWith('/guides/');
       if (section === 'updates') return href === '/updates' || href === '/updates.html' || href.startsWith('/updates/');
       return false;
@@ -1799,9 +1905,9 @@
 /* Premium footer brand: one footer identity across the CMS. */
 (() => {
   const standardFooterColumns = `
-    <div><h4>Clickoz</h4><div class="footer-links"><a href="/about/">About</a><a href="/tools/">Tools</a><a href="/guides/">Guides</a><a href="/updates/">Updates</a></div></div>
-    <div><h4>Tool hubs</h4><div class="footer-links"><a href="/tools/seo-tools/">SEO Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/tools/writing-tools/">Writing Tools</a><a href="/guides/creator/">Creator Guides</a></div></div>
-    <div><h4>Popular tools</h4><div class="footer-links"><a href="/tools/word-counter/">Word Counter</a><a href="/tools/meta-tags/">Meta Tags</a><a href="/tools/json-formatter/">JSON Formatter</a><a href="/tools/youtube-title-generator/">YouTube Titles</a></div></div>
+    <div><h4>Clickoz</h4><div class="footer-links"><a href="/about/">About</a><a href="/tools/">Tools</a><a href="/premium/">Premium</a><a href="/guides/">Guides</a><a href="/updates/">Updates</a></div></div>
+    <div><h4>Tool hubs</h4><div class="footer-links"><a href="/tools/seo-tools/">SEO Tools</a><a href="/premium/dev-premium-tools/">Dev Premium Tools</a><a href="/tools/youtube-tools/">YouTube Tools</a><a href="/tools/writing-tools/">Writing Tools</a><a href="/guides/creator/">Creator Guides</a></div></div>
+    <div><h4>Popular tools</h4><div class="footer-links"><a href="/premium/multi-device-tester/">Multi Device Tester</a><a href="/premium/sitemap-viewer/">Site Map Pro</a><a href="/tools/word-counter/">Word Counter</a><a href="/tools/json-formatter/">JSON Formatter</a></div></div>
     <div><h4>Legal</h4><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a><a href="/404/">404</a></div></div>`;
 
   function enhanceFooters(){
@@ -1846,6 +1952,81 @@
     document.addEventListener("DOMContentLoaded", enhanceFooters, { once: true });
   } else {
     enhanceFooters();
+  }
+})();
+
+/* Premium tag layer: guide pages stay first, Premium workflows appear before lite tools. */
+(() => {
+  "use strict";
+
+  const match = (window.location.pathname || "").match(/^\/tags\/([^/]+)\/?$/);
+  if (!match || !document.body.classList.contains("tag-page")) return;
+
+  const premiumTools = {
+    multiDevice: {
+      title: "Multi Device Tester",
+      url: "/premium/multi-device-tester/",
+      desc: "Preview a public site across mobile, tablet and desktop with direct or snapshot mode.",
+      tags: ["Premium workflow", "Responsive QA"]
+    },
+    sitemapViewer: {
+      title: "Site Map Pro",
+      url: "/premium/sitemap-viewer/",
+      desc: "Load a public sitemap and map URL structure in a searchable graph.",
+      tags: ["Premium workflow", "Technical SEO"]
+    }
+  };
+
+  const tagMap = {
+    "mobile-ready": [premiumTools.multiDevice],
+    "mobile": [premiumTools.multiDevice],
+    "instant-preview": [premiumTools.multiDevice],
+    "preview": [premiumTools.multiDevice],
+    "website-check": [premiumTools.multiDevice, premiumTools.sitemapViewer],
+    "workflow": [premiumTools.multiDevice, premiumTools.sitemapViewer],
+    "seo-technical": [premiumTools.sitemapViewer],
+    "crawl-rules": [premiumTools.sitemapViewer],
+    "debug": [premiumTools.sitemapViewer]
+  };
+
+  const items = tagMap[match[1]];
+  if (!items || !items.length || document.querySelector(".premium-tag-resource-section")) return;
+
+  const liteSection = document.querySelector(".tag-tool-section");
+  const target = liteSection || document.querySelector("main");
+  if (!target) return;
+
+  const esc = (value) => String(value || "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  }[char]));
+
+  const section = document.createElement("section");
+  section.className = "tag-resource-section premium-tag-resource-section";
+  section.setAttribute("aria-label", "Premium tools for this tag");
+  section.innerHTML = `
+    <div class="section-head">
+      <div><p class="guide-kicker">PREMIUM TOOLS NEXT</p><h2>Use the complete workflow tools.</h2><p class="section-desc">These Premium tools sit after the guides and before the lite tools for this tag.</p></div>
+      <span class="section-count">${items.length} premium ${items.length === 1 ? "tool" : "tools"}</span>
+    </div>
+    <div class="tag-guide-grid">
+      ${items.map((item) => `
+        <a class="tag-guide-card guide-hub-card premium-tag-card" href="${esc(item.url)}">
+          <div class="authority-card-head"><span aria-hidden="true">PRO</span><h2>${esc(item.title)}</h2></div>
+          <p>${esc(item.desc)}</p>
+          <div class="tag-card-meta">${item.tags.map((tag) => `<span>${esc(tag)}</span>`).join("")}</div>
+        </a>`).join("")}
+    </div>`;
+
+  if (liteSection) {
+    liteSection.insertAdjacentElement("beforebegin", section);
+    const liteHeading = liteSection.querySelector(".section-name");
+    if (liteHeading) liteHeading.textContent = "Open the related lite tools";
+  } else {
+    target.appendChild(section);
   }
 })();
 
@@ -2258,30 +2439,169 @@
   };
 
   const explicitProfiles = {
-    "meta-tags": { problem: "Create a search-ready snippet.", quickJob: "SEO snippet", sampleInput: "rough page title", sampleOutput: "Title + meta description", timeSaved: "Fix in 30 sec", usedFor: "SEO publishing", aliases: "snippet meta descrizione title seo" },
-    "word-counter": { problem: "Check if a draft fits the target length.", quickJob: "Live count", sampleInput: "draft text", sampleOutput: "Words, chars and reading time", timeSaved: "Count instantly", usedFor: "Client work", aliases: "count words parole caratteri reading time" },
-    "readability-analyzer": { problem: "Find where a draft feels heavy.", quickJob: "Draft pressure", sampleInput: "long paragraph", sampleOutput: "Readability and sentence pressure", timeSaved: "Edit faster", usedFor: "Readable drafts", aliases: "readability clarity scan sentence testo leggibilita" },
-    "whitespace-cleaner": { problem: "Remove messy spaces and blank lines.", quickJob: "Clean pasted text", sampleInput: "messy AI draft", sampleOutput: "Text ready to copy", timeSaved: "Clean in 5 sec", usedFor: "Text cleanup", aliases: "clean text whitespace spaces pulire testo spazi" },
+    "meta-tags": { problem: "Generate a sharper search snippet with length and intent signals.", quickJob: "SEO snippet", sampleInput: "rough page title", sampleOutput: "Title + meta description", timeSaved: "Fix in 30 sec", usedFor: "SEO publishing", aliases: "snippet meta descrizione title seo" },
+    "word-counter": { problem: "Measure draft size, reading time and content density instantly.", quickJob: "Live count", sampleInput: "draft text", sampleOutput: "Words, chars and reading time", timeSaved: "Count instantly", usedFor: "Client work", aliases: "count words parole caratteri reading time" },
+    "readability-analyzer": { problem: "Detect readability pressure, heavy sentences and weak content flow.", quickJob: "Readability scan", sampleInput: "long paragraph", sampleOutput: "Readability pressure map and sentence fixes", timeSaved: "Edit faster", usedFor: "Readable drafts", aliases: "readability clarity scan sentence testo leggibilita" },
+    "text-case-converter": { problem: "Instantly normalize messy headings, labels and copied AI text.", quickJob: "Case engine", sampleInput: "a MESSY heading, product name or pasted title", sampleOutput: "Clean heading variants ready to paste", timeSaved: "Fix in seconds", usedFor: "Typography cleanup", aliases: "case converter uppercase lowercase title sentence" },
+    "whitespace-cleaner": { problem: "Make pasted AI, PDF or CMS content clean and publish-ready.", quickJob: "Cleanup engine", sampleInput: "messy AI draft", sampleOutput: "Clean text with broken spacing repaired", timeSaved: "Clean in 5 sec", usedFor: "Text cleanup", aliases: "clean text whitespace spaces pulire testo spazi" },
     "json-formatter": { problem: "Repair and read JSON quickly.", quickJob: "Fix broken JSON", sampleInput: "{\"status\":\"messy\"}", sampleOutput: "Valid formatted JSON", timeSaved: "Debug in 10 sec", usedFor: "Fast formatting", aliases: "json rotto payload config validate" },
     "utm-builder": { problem: "Build campaign links without mistakes.", quickJob: "Tracking URL", sampleInput: "landing page URL", sampleOutput: "Clean UTM link", timeSaved: "Track in 20 sec", usedFor: "Campaign work", aliases: "utm tracking link campaign url" },
     "youtube-title-generator": { problem: "Create usable title angles for an upload.", quickJob: "YouTube title", sampleInput: "video idea", sampleOutput: "Title options", timeSaved: "Upload faster", usedFor: "Creator uploads", aliases: "youtube title titolo video upload creator" },
     "youtube-description-generator": { problem: "Package a video description faster.", quickJob: "YouTube description", sampleInput: "video topic", sampleOutput: "Description draft", timeSaved: "Write faster", usedFor: "Creator uploads", aliases: "youtube description descrizione video upload" },
     "thumbnail-brief-generator": { problem: "Turn a video idea into a visual brief.", quickJob: "Thumbnail brief", sampleInput: "video promise", sampleOutput: "Visual brief", timeSaved: "Brief faster", usedFor: "Creator uploads", aliases: "thumbnail brief youtube visual" },
-    "slug-generator": { problem: "Make a clean URL slug.", quickJob: "Clean slug", sampleInput: "page title", sampleOutput: "Short URL slug", timeSaved: "Fix in seconds", usedFor: "SEO publishing", aliases: "slug url seo permalink" },
-    "serp-preview": { problem: "See how a result will look before publishing.", quickJob: "SERP preview", sampleInput: "title and description", sampleOutput: "Search result preview", timeSaved: "Preview faster", usedFor: "SEO publishing", aliases: "serp preview google snippet" }
+    "slug-generator": { problem: "Compress page titles into clean, durable URL slugs.", quickJob: "Slug engine", sampleInput: "page title", sampleOutput: "Short URL slug", timeSaved: "Fix in seconds", usedFor: "SEO publishing", aliases: "slug url seo permalink" },
+    "serp-preview": { problem: "Preview the live search result shape before publishing.", quickJob: "SERP preview", sampleInput: "title and description", sampleOutput: "Search result preview", timeSaved: "Preview faster", usedFor: "SEO publishing", aliases: "serp preview google snippet" },
+    "meta-tag-optimizer": { problem: "Stress-test title and description before the snippet goes live.", quickJob: "Snippet check", sampleInput: "URL, SEO title and meta description.", sampleOutput: "Length status, risk note and next copy decision.", timeSaved: "Publish faster", usedFor: "SEO publishing", aliases: "meta title description checker snippet seo" },
+    "keyword-density": { problem: "Spot repetition patterns before SEO copy starts sounding stuffed.", quickJob: "Keyword balance", sampleInput: "A product paragraph, guide section or landing page draft.", sampleOutput: "Top terms, density signals and repetition warning.", timeSaved: "Scan in seconds", usedFor: "SEO copy review", aliases: "keyword density repetition stuffing seo copy" }
   };
+
+  const quickTaskVisuals = [
+    { match: /text case|uppercase|lowercase|title case|sentence case|typography/, vibe: "type", label: "AI fix", engine: "Case engine", processing: "normalizing structure...", cta: "Normalize text", visual: "letters" },
+    { match: /readability|hard to read|hard-to-read|clarity|pressure|word count|character|limit|reading time/, vibe: "analytics", label: "AI scan", engine: "Readability engine", processing: "mapping content pressure...", cta: "Run analyzer", visual: "bars" },
+    { match: /whitespace|cleanup|paste|spacing|pasted ai|clean pasted/, vibe: "repair", label: "AI repair", engine: "Cleanup engine", processing: "removing spacing noise...", cta: "Clean text", visual: "particles" },
+    { match: /json|payload|base64|url encode|entity|html|regex|developer|debug/, vibe: "dev", label: "Debug engine", engine: "Parser engine", processing: "validating payload...", cta: "Run utility", visual: "terminal" },
+    { match: /youtube|thumbnail|video|shorts|chapter|creator/, vibe: "creator", label: "Creator AI", engine: "Angle engine", processing: "scoring hook options...", cta: "Build upload", visual: "wave" },
+    { match: /utm|tracking|campaign/, vibe: "tracking", label: "Link engine", engine: "Tracking engine", processing: "assembling clean parameters...", cta: "Build link", visual: "nodes" },
+    { match: /seo|serp|slug|keyword|meta|snippet|title|description/, vibe: "seo", label: "SEO engine", engine: "Intent engine", processing: "checking search signals...", cta: "Run SEO check", visual: "radar" },
+    { match: /password|uuid|dns|http|subnet|timestamp|robots|color|diff|web/, vibe: "ops", label: "Ops engine", engine: "Check engine", processing: "reading technical signals...", cta: "Run check", visual: "grid" },
+    { match: /tiktok|instagram|linkedin|reddit|pinterest|caption|social|bio|hashtag|newsletter|podcast|ugc|cta|calendar|sponsorship|media kit|affiliate|disclosure/, vibe: "social", label: "Social AI", engine: "Draft engine", processing: "shaping platform output...", cta: "Generate copy", visual: "pulse" }
+  ];
+
+  const quickTaskExamples = [
+    { match: /character|bio|caption|form|limit/, input: "Bio, snippet or form copy near a strict limit.", output: "Character count, limit warning and copy-ready text.", usedFor: "Tight copy fields" },
+    { match: /text case|uppercase|lowercase|title case|sentence case/, input: "A messy heading, product name or pasted title.", output: "Clean case variants ready to paste.", usedFor: "Copy cleanup" },
+    { match: /json minifier|minify/, input: "{\"title\":\"Clickoz\",\"draft\":true}", output: "Compact JSON and size difference.", usedFor: "Payload cleanup" },
+    { match: /url encode|url encoder|query|string|parameter/, input: "campaign name=spring launch & source=instagram", output: "Encoded and decoded URL-safe values.", usedFor: "Query repair" },
+    { match: /base64/, input: "Plain text, token-like text or encoded payload.", output: "Encoded text, decoded attempt and safety note.", usedFor: "Payload inspection" },
+    { match: /html entity|entity|markup|escaping/, input: "<strong>Sale & update</strong>", output: "Escaped or repaired HTML-safe text.", usedFor: "Markup repair" },
+    { match: /http ping|latency|reachability/, input: "https://example.com or your public page URL.", output: "Status, latency and reachability signal.", usedFor: "Website checks" },
+    { match: /dns|domain/, input: "Domain name you want to check.", output: "Readable DNS records and lookup status.", usedFor: "DNS checks" },
+    { match: /subnet|cidr|ipv4/, input: "192.168.1.0/24 or another IPv4 CIDR.", output: "Network range, hosts and broadcast values.", usedFor: "Network math" },
+    { match: /password|passphrase/, input: "Length, symbols and passphrase preferences.", output: "Strong browser-only password options.", usedFor: "Credential setup" },
+    { match: /uuid/, input: "Number of UUID values needed.", output: "RFC 4122 UUID v4 list ready to copy.", usedFor: "IDs and testing" },
+    { match: /timestamp|unix|iso|timezone/, input: "Unix timestamp, ISO date or current time.", output: "Local date, ISO time and timestamp value.", usedFor: "Time conversion" },
+    { match: /regex|regular expression|match|replace/, input: "Pattern plus the text you want to test.", output: "Matches, groups and replace preview.", usedFor: "Regex debugging" },
+    { match: /diff|compare/, input: "Old text and revised text.", output: "Added, removed and changed lines.", usedFor: "Reviewing edits" },
+    { match: /color|hex|rgb|hsl|contrast/, input: "#38e8ff, rgb() or hsl() color value.", output: "Converted color values and quick contrast.", usedFor: "Design checks" },
+    { match: /robots|crawl|sitemap/, input: "Allowed paths, blocked paths and sitemap URL.", output: "Clean robots.txt rules.", usedFor: "Technical SEO" },
+    { match: /hashtag/, input: "Topic, niche and draft hashtag list.", output: "Balanced hashtag mix without stuffing.", usedFor: "Creator metadata" },
+    { match: /thumbnail/, input: "Video promise, focal point and thumbnail text.", output: "Mobile-readable thumbnail direction.", usedFor: "Upload packaging" },
+    { match: /chapter/, input: "Rough video outline with timestamps or sections.", output: "Clean YouTube chapters ready to paste.", usedFor: "Description structure" },
+    { match: /\bugc\b|\bscript\b|ad flow|video script/, input: "Offer, audience, proof point and CTA.", output: "Hook, beats and CTA in a short script.", usedFor: "Video scripting" },
+    { match: /comment reply|community/, input: "Viewer comment, tone and reply goal.", output: "Respectful response draft.", usedFor: "Audience replies" },
+    { match: /competitor|title analyzer/, input: "Competing title ideas or titles you like.", output: "Hook patterns and safer title angles.", usedFor: "Title research" },
+    { match: /tiktok|reels|shorts|hook/, input: "Short-form idea, viewer and first-second promise.", output: "Hook options or retention warning.", usedFor: "Short-form ideas" },
+    { match: /instagram bio|profile/, input: "Current bio, niche, proof and link goal.", output: "Clearer bio with CTA and trust signal.", usedFor: "Profile cleanup" },
+    { match: /carousel/, input: "Topic, audience and main takeaway.", output: "Slide-by-slide outline.", usedFor: "Social planning" },
+    { match: /alt text/, input: "Image context, visible text and purpose.", output: "Useful alt text for social images.", usedFor: "Accessibility" },
+    { match: /linkedin/, input: "Idea, audience and desired response.", output: "Spaced post with hook, body and CTA.", usedFor: "Professional posts" },
+    { match: /x thread|thread/, input: "Idea, proof points and CTA.", output: "Numbered thread structure.", usedFor: "Thread writing" },
+    { match: /pinterest|pin title/, input: "Pin topic, keyword and destination intent.", output: "Search-friendly pin title options.", usedFor: "Pinterest search" },
+    { match: /reddit/, input: "Subreddit, topic and draft title.", output: "Specific non-spammy title check.", usedFor: "Community posts" },
+    { match: /disclosure|affiliate|ai-use|ai disclosure/, input: "Platform, relationship and disclosure need.", output: "Clear disclosure text.", usedFor: "Transparency copy" },
+    { match: /calendar/, input: "Content pillars, channels and weekly cadence.", output: "Repeatable creator schedule.", usedFor: "Publishing rhythm" },
+    { match: /sponsorship|rate/, input: "Views, engagement, deliverables and usage rights.", output: "Estimated sponsorship range.", usedFor: "Brand deal pricing" },
+    { match: /media kit/, input: "Niche, audience, metrics and offer.", output: "Media kit summary sections.", usedFor: "Brand deals" },
+    { match: /newsletter|subject/, input: "Email topic, audience and promise.", output: "Subject line options with risk notes.", usedFor: "Email opens" },
+    { match: /podcast|show notes/, input: "Episode notes, links and key moments.", output: "Summary, chapters and promo snippets.", usedFor: "Episode packaging" },
+    { match: /repurposing/, input: "Main video topic and strongest moments.", output: "Shorts, posts and newsletter angles.", usedFor: "Content reuse" },
+    { match: /content gap/, input: "Topic, page angle and current outline.", output: "Missing questions, angles and links.", usedFor: "Content planning" },
+    { match: /cta|call to action/, input: "Platform, offer and next action.", output: "Platform-fit CTA options.", usedFor: "Conversion copy" }
+  ];
+
+  function derivedQuickProfile(tool, base, explicit) {
+    const text = norm(`${tool.slug || ""} ${tool.title || ""} ${tool.description || ""} ${(tool.features || []).join(" ")}`);
+    const preset = quickTaskExamples.find((item) => item.match.test(text)) || {};
+    const visual = quickTaskVisuals.find((item) => item.match.test(text)) || { vibe: "default", label: "AI fix", engine: "Tool engine", processing: "processing input...", cta: "Launch AI tool", visual: "grid" };
+    const featureOutput = (tool.features || []).filter(Boolean).slice(0, 2).join(" + ");
+    return {
+      problem: explicit.problem || tool.description || base.problem,
+      quickJob: explicit.quickJob || String(tool.title || base.quickJob).replace(/\s+(Generator|Checker|Tool)$/i, ""),
+      sampleInput: explicit.sampleInput || preset.input || base.sampleInput,
+      sampleOutput: explicit.sampleOutput || preset.output || (featureOutput ? `${featureOutput} result ready to copy` : base.sampleOutput),
+      timeSaved: explicit.timeSaved || preset.timeSaved || base.timeSaved,
+      usedFor: explicit.usedFor || preset.usedFor || base.usedFor,
+      engine: explicit.engine || visual.engine,
+      processing: explicit.processing || visual.processing,
+      primaryBadge: explicit.primaryBadge || visual.label,
+      ctaLabel: explicit.ctaLabel || visual.cta,
+      visual: explicit.visual || visual.visual,
+      vibe: explicit.vibe || visual.vibe
+    };
+  }
+
+  function toolOutcomeCopy(tool, profile) {
+    const title = String(tool.title || "");
+    if (/readability/i.test(title)) return "Detect heavy sentences, weak flow and mobile reading friction in seconds.";
+    if (/case/i.test(title)) return "Normalize messy headings, labels and copied AI text without manual retyping.";
+    if (/whitespace|cleaner/i.test(title)) return "Repair pasted AI, PDF and CMS spacing so the copy is ready to publish.";
+    if (/word counter/i.test(title)) return "Measure draft length, density and reading time before you ship the copy.";
+    if (/character/i.test(title)) return "Check strict copy limits for bios, snippets, captions and form fields.";
+    if (/json/i.test(title)) return "Validate, format or compress payloads while you stay in the browser.";
+    if (/youtube|thumbnail|chapter|shorts/i.test(title)) return "Package creator ideas into upload-ready titles, hooks and sections.";
+    if (/seo|meta|serp|slug|keyword/i.test(`${title} ${tool.category || ""}`)) return "Turn rough page inputs into search-ready publishing decisions.";
+    return profile?.problem || tool.description || "";
+  }
+
+  function quickTaskVisualMarkup(type) {
+    const bars = `<i></i><i></i><i></i><i></i>`;
+    const letters = `<span>Aa</span><span>AA</span><span>Title</span>`;
+    const particles = `<i></i><i></i><i></i><i></i><i></i>`;
+    const terminal = `<span>{ }</span><span>OK</span><span>01</span>`;
+    const wave = `<i></i><i></i><i></i><i></i><i></i>`;
+    const nodes = `<i></i><i></i><i></i><b></b>`;
+    const radar = `<i></i><i></i><i></i>`;
+    const pulse = `<i></i><i></i><i></i><i></i>`;
+    const grid = `<i></i><i></i><i></i><i></i>`;
+    const map = { bars, letters, particles, terminal, wave, nodes, radar, pulse, grid };
+    return `<div class="quick-task-visual quick-task-visual-${esc(type || "grid")}" aria-hidden="true">${map[type] || map.grid}</div>`;
+  }
 
   function profileForTool(toolOrSlug) {
     const tool = typeof toolOrSlug === "string" ? (cms.toolBySlug?.[toolOrSlug] || null) : toolOrSlug;
     if (!tool) return null;
     const base = categoryDefaults[tool.category] || categoryDefaults.text;
     const explicit = explicitProfiles[tool.slug] || {};
+    const derived = derivedQuickProfile(tool, base, explicit);
     return {
       ...base,
+      ...derived,
       ...explicit,
       nextTools: tool.relatedTools || [],
       search: `${tool.title} ${tool.description} ${(tool.features || []).join(" ")} ${tool.category} ${base.aliases || ""} ${explicit.aliases || ""} ${explicit.problem || base.problem} ${explicit.quickJob || base.quickJob}`
     };
+  }
+
+  function initToolCardQuickTasks() {
+    if (!document.body.classList.contains("tools-page")) return;
+    const toolBySlug = cms.toolBySlug || Object.fromEntries((cms.tools || []).map((tool) => [tool.slug, tool]));
+    $$(".tool-card-enhanced[data-tool-slug]").forEach((card) => {
+      const slug = card.getAttribute("data-tool-slug");
+      const tool = toolBySlug[slug];
+      const profile = profileForTool(tool || slug);
+      const preview = $(".tool-output-preview", card);
+      if (!tool || !profile || !preview) return;
+      preview.classList.add("tool-output-preview-concrete");
+      card.setAttribute("data-card-vibe", profile.vibe || "default");
+      card.style.setProperty("--tool-cta-label", `"${profile.ctaLabel || "Launch AI tool"}"`);
+      card.setAttribute("data-quick-task-ready", "true");
+      const topCopy = $(".card-top p", card);
+      if (topCopy) topCopy.textContent = toolOutcomeCopy(tool, profile);
+      preview.innerHTML = `
+        <div class="quick-task-head">
+          <span class="quick-task-label">${esc(profile.primaryBadge || "AI fix")}</span>
+          <span class="quick-task-badge">${esc(profile.timeSaved || "2 sec")}</span>
+        </div>
+        <strong class="quick-task-title">${esc(profile.problem || tool.description)}</strong>
+        ${quickTaskVisualMarkup(profile.visual)}
+        <div class="tool-card-flow quick-task-flow quick-task-engine-flow" aria-label="${esc(tool.title)} live example workflow">
+          <p class="quick-task-step quick-task-step-input"><span class="quick-task-num" aria-hidden="true">01</span><b>Raw input</b><span>${esc(profile.sampleInput || "Paste the input you need to finish.")}</span></p>
+          <p class="quick-task-step quick-task-step-process"><span class="quick-task-num" aria-hidden="true">02</span><b>${esc(profile.engine || "AI engine")}</b><span>${esc(profile.processing || "processing input...")}</span></p>
+          <p class="quick-task-step quick-task-step-output"><span class="quick-task-num" aria-hidden="true">03</span><b>Ready output</b><span>${esc(profile.sampleOutput || "A clean result you can review and copy.")}</span></p>
+        </div>
+        <div class="quick-task-next"><span>Copy ready</span><em>${esc(profile.usedFor || "Focused browser work")}</em></div>
+      `;
+    });
   }
 
   function readList(key) {
@@ -2478,6 +2798,7 @@
 
   function commandGlyph(item) {
     const text = norm(`${item.slug || ""} ${item.title || ""} ${item.category || ""} ${item.meta || ""}`);
+    if (item.type === "premium") return "PRO";
     if (item.type === "guide") return "DOC";
     if (/json|base64|url|regex|html|entity|developer|payload|dev/.test(text)) return "{..}";
     if (/youtube|thumbnail|creator|upload|social|tiktok|instagram|linkedin/.test(text)) return "YT";
@@ -2490,6 +2811,7 @@
 
   function commandKind(item) {
     if (item.type === "guide") return "Guide";
+    if (item.type === "premium") return "Premium tool";
     if (item.type === "job") return "Quick task";
     return categoryTitle(item.category);
   }
@@ -2502,6 +2824,35 @@
     if (/clean|text|draft/.test(text)) return "writing";
     return "seo";
   }
+
+  const premiumCommandCatalog = [
+    {
+      slug: "multi-device-tester",
+      title: "Multi Device Tester",
+      url: "/premium/multi-device-tester/",
+      category: "dev",
+      description: "Test a public site across mobile, tablet and desktop viewports with direct or snapshot preview.",
+      tags: ["Mobile-ready", "Website check", "Instant preview", "Workflow"],
+      sampleInput: "https://google.com/",
+      output: "Responsive preview or external-site snapshot",
+      time: "Full workflow",
+      usedFor: "Public site QA",
+      search: "premium multi device tester mobile-ready website check instant preview responsive viewport external site google snapshot workflow"
+    },
+    {
+      slug: "sitemap-viewer",
+      title: "Site Map Pro",
+      url: "/premium/sitemap-viewer/",
+      category: "dev",
+      description: "Load a public sitemap, map URL structure and search nodes in an interactive graph.",
+      tags: ["SEO technical", "Crawl rules", "Website check", "Workflow"],
+      sampleInput: "https://clickoz.com/sitemap.xml",
+      output: "Sitemap graph with searchable URLs",
+      time: "Full workflow",
+      usedFor: "Technical SEO map",
+      search: "premium sitemap viewer seo technical crawl rules website check sitemap xml graph search urls workflow"
+    }
+  ];
 
   function commandItems() {
     const tools = (cms.tools || []).map((tool) => {
@@ -2545,6 +2896,22 @@
         search: `${guide.title} ${guide.description} ${guide.category || ""} ${tool?.title || ""}`
       };
     });
+    const premiumTools = premiumCommandCatalog.map((tool) => ({
+      type: "premium",
+      title: tool.title,
+      url: tool.url,
+      slug: tool.slug,
+      category: tool.category,
+      description: tool.description,
+      meta: "Premium workflow",
+      output: tool.output,
+      time: tool.time,
+      sampleInput: tool.sampleInput,
+      usedFor: tool.usedFor,
+      tags: compactTags(tool.tags, 4),
+      icon: commandGlyph({ ...tool, type: "premium" }),
+      search: `${tool.title} ${tool.description} ${(tool.tags || []).join(" ")} ${tool.search}`
+    }));
     const jobs = jobCatalog.map((job) => {
       const category = commandCategoryForJob(job);
       return {
@@ -2564,7 +2931,7 @@
         search: `${job.title} ${job.description} ${job.sampleInput} ${job.sampleOutput} ${job.usedFor} ${job.search}`
       };
     });
-    return [...jobs, ...tools, ...guides];
+    return [...jobs, ...guides, ...premiumTools, ...tools];
   }
 
   function commandFilterMatches(item, filter) {
@@ -2585,9 +2952,11 @@
   }
 
   function commandPriority(item) {
-    if (item.type === "job") return 3;
-    if (item.type === "tool") return 2;
-    return 1;
+    if (item.type === "job") return 4;
+    if (item.type === "guide") return 3;
+    if (item.type === "premium") return 2;
+    if (item.type === "tool") return 1;
+    return 0;
   }
 
   function commandFavoriteSlug(item) {
@@ -2619,7 +2988,9 @@
     }
     if (!matched) return 0;
     if (item.type === "job") score += 80;
-    else if (item.type === "tool") score += 45;
+    else if (item.type === "guide") score += 70;
+    else if (item.type === "premium") score += 56;
+    else if (item.type === "tool") score += 35;
     return score;
   }
 
@@ -3098,6 +3469,7 @@
     rememberCurrentTool();
     addFavoriteControl();
     addNextTools();
+    initToolCardQuickTasks();
     bindPalette();
     enhanceToolsSearch();
     ensureAppDock();
@@ -4346,4 +4718,393 @@
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
   else init();
+})();
+
+/* PWA bridge: install prompt, service worker lifecycle and network state. */
+(() => {
+  "use strict";
+
+  if (window.ClickozPWA) return;
+
+  const SW_URL = "/sw.js";
+  const INSTALL_DISMISS_KEY = "clickoz_install_dismissed_until";
+  const INSTALL_SESSION_KEY = "clickoz_install_seen_session";
+  const INSTALL_IDLE_DELAY = 24000;
+  const INSTALL_INTERACTION_DELAY = 2200;
+  const doc = document.documentElement;
+
+  let deferredInstallPrompt = null;
+  let installCard = null;
+  let installPromptTimer = 0;
+  let installAutoHideTimer = 0;
+  let installOfferArmed = false;
+  let toast = null;
+  let toastTimer = 0;
+  let updateWorker = null;
+  let reloadOnControllerChange = false;
+  let wasOffline = navigator.onLine === false;
+  let updateCheckTimer = 0;
+
+  function storageGet(key) {
+    try { return localStorage.getItem(key) || ""; } catch (_) { return ""; }
+  }
+
+  function storageSet(key, value) {
+    try { localStorage.setItem(key, value); } catch (_) {}
+  }
+
+  function sessionGet(key) {
+    try { return sessionStorage.getItem(key) || ""; } catch (_) { return ""; }
+  }
+
+  function sessionSet(key, value) {
+    try { sessionStorage.setItem(key, value); } catch (_) {}
+  }
+
+  function onDomReady(fn) {
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn, { once: true });
+    else fn();
+  }
+
+  function isStandalone() {
+    return Boolean(
+      window.matchMedia?.("(display-mode: standalone)")?.matches ||
+      window.navigator.standalone === true
+    );
+  }
+
+  function dismissedInstallPrompt() {
+    const until = Number(storageGet(INSTALL_DISMISS_KEY) || 0);
+    return Number.isFinite(until) && until > Date.now();
+  }
+
+  function setInstallDismissal(days) {
+    storageSet(INSTALL_DISMISS_KEY, String(Date.now() + days * 86400000));
+  }
+
+  function hideInstallCard() {
+    if (installAutoHideTimer) window.clearTimeout(installAutoHideTimer);
+    installAutoHideTimer = 0;
+    installCard?.remove();
+    installCard = null;
+  }
+
+  function toastIsVisible() {
+    return toast?.getAttribute("data-show") === "true";
+  }
+
+  function ensureToast() {
+    if (toast) return toast;
+    toast = document.createElement("div");
+    toast.className = "cz-app-toast";
+    toast.setAttribute("role", "status");
+    toast.setAttribute("aria-live", "polite");
+
+    const text = document.createElement("span");
+    text.className = "cz-app-toast-text";
+    toast.appendChild(text);
+
+    const actions = document.createElement("div");
+    actions.className = "cz-app-toast-actions";
+    toast.appendChild(actions);
+
+    document.body.appendChild(toast);
+    return toast;
+  }
+
+  function clearToastTimer() {
+    if (toastTimer) window.clearTimeout(toastTimer);
+    toastTimer = 0;
+  }
+
+  function hideToast() {
+    clearToastTimer();
+    toast?.setAttribute("data-show", "false");
+  }
+
+  function showToast(message, options = {}) {
+    onDomReady(() => {
+      const node = ensureToast();
+      const text = node.querySelector(".cz-app-toast-text");
+      const actions = node.querySelector(".cz-app-toast-actions");
+      if (text) text.textContent = message;
+      if (actions) actions.textContent = "";
+      node.dataset.kind = options.kind || "status";
+
+      if (options.action && typeof options.onAction === "function" && actions) {
+        const action = document.createElement("button");
+        action.type = "button";
+        action.className = "cz-app-toast-action";
+        action.textContent = options.action;
+        action.addEventListener("click", () => {
+          options.onAction();
+        });
+        actions.appendChild(action);
+      }
+
+      const close = document.createElement("button");
+      close.type = "button";
+      close.className = "cz-app-toast-close";
+      close.setAttribute("aria-label", "Dismiss");
+      close.textContent = "x";
+      close.addEventListener("click", hideToast);
+      actions?.appendChild(close);
+
+      clearToastTimer();
+      node.setAttribute("data-show", "true");
+      if (!options.persist) {
+        toastTimer = window.setTimeout(hideToast, options.ttl || 4200);
+      }
+    });
+  }
+
+  function shouldOfferInstall() {
+    return Boolean(
+      deferredInstallPrompt &&
+      !isStandalone() &&
+      !dismissedInstallPrompt() &&
+      sessionGet(INSTALL_SESSION_KEY) !== "1"
+    );
+  }
+
+  async function promptInstall() {
+    if (!deferredInstallPrompt) return;
+    const promptEvent = deferredInstallPrompt;
+    deferredInstallPrompt = null;
+    hideInstallCard();
+
+    try {
+      await promptEvent.prompt();
+      const choice = await promptEvent.userChoice;
+      if (choice?.outcome === "accepted") {
+        showToast("Clickoz installed", { kind: "success" });
+      } else {
+        setInstallDismissal(7);
+      }
+    } catch (_) {
+      showToast("Install unavailable", { kind: "status" });
+    }
+  }
+
+  function showInstallCard() {
+    if (!shouldOfferInstall() || installCard) return;
+    if (toastIsVisible()) return;
+
+    installCard = document.createElement("div");
+    installCard.className = "cz-install-card";
+    installCard.setAttribute("role", "dialog");
+    installCard.setAttribute("aria-label", "Install Clickoz");
+
+    const copy = document.createElement("div");
+    copy.className = "cz-install-copy";
+
+    const title = document.createElement("strong");
+    title.textContent = "Install Clickoz";
+    copy.appendChild(title);
+
+    const detail = document.createElement("span");
+    detail.textContent = "Open as app.";
+    copy.appendChild(detail);
+
+    const actions = document.createElement("div");
+    actions.className = "cz-install-actions";
+
+    const install = document.createElement("button");
+    install.type = "button";
+    install.className = "cz-install-action";
+    install.textContent = "Install";
+    install.addEventListener("click", promptInstall);
+    actions.appendChild(install);
+
+    const later = document.createElement("button");
+    later.type = "button";
+    later.className = "cz-install-dismiss";
+    later.setAttribute("aria-label", "Dismiss install prompt");
+    later.textContent = "Later";
+    later.addEventListener("click", () => {
+      setInstallDismissal(14);
+      hideInstallCard();
+    });
+    actions.appendChild(later);
+
+    installCard.appendChild(copy);
+    installCard.appendChild(actions);
+    document.body.appendChild(installCard);
+    sessionSet(INSTALL_SESSION_KEY, "1");
+    requestAnimationFrame(() => installCard?.setAttribute("data-show", "true"));
+    installAutoHideTimer = window.setTimeout(() => {
+      if (!installCard?.matches(":hover, :focus-within")) hideInstallCard();
+    }, 14000);
+  }
+
+  function scheduleInstallOffer(delay = INSTALL_IDLE_DELAY) {
+    if (!shouldOfferInstall()) return;
+    if (installPromptTimer) window.clearTimeout(installPromptTimer);
+    installPromptTimer = window.setTimeout(() => {
+      installPromptTimer = 0;
+      showInstallCard();
+    }, delay);
+  }
+
+  function armInstallOffer() {
+    if (installOfferArmed || !shouldOfferInstall()) return;
+    installOfferArmed = true;
+
+    const interactionOptions = { once: true, passive: true };
+    const onInteraction = () => scheduleInstallOffer(INSTALL_INTERACTION_DELAY);
+    window.addEventListener("scroll", onInteraction, interactionOptions);
+    document.addEventListener("pointerdown", onInteraction, interactionOptions);
+    document.addEventListener("keydown", onInteraction, { once: true });
+    document.addEventListener("focusin", onInteraction, { once: true });
+    scheduleInstallOffer(INSTALL_IDLE_DELAY);
+  }
+
+  function handleNetworkState(announce) {
+    const online = navigator.onLine !== false;
+    doc.classList.toggle("cz-is-offline", !online);
+    doc.classList.toggle("cz-is-online", online);
+    doc.dataset.network = online ? "online" : "offline";
+
+    if (!online) {
+      wasOffline = true;
+      showToast("Offline mode", { kind: "offline", persist: true });
+      return;
+    }
+
+    if (wasOffline && announce) {
+      showToast("Back online", { kind: "online" });
+    } else if (toast?.dataset.kind === "offline") {
+      hideToast();
+    }
+    wasOffline = false;
+  }
+
+  function offerUpdate(worker) {
+    if (!worker || !navigator.serviceWorker?.controller) return;
+    updateWorker = worker;
+    hideInstallCard();
+    showToast("Update ready", {
+      action: "Refresh",
+      kind: "update",
+      persist: true,
+      onAction() {
+        if (!updateWorker) return;
+        reloadOnControllerChange = true;
+        updateWorker.postMessage({ type: "CLICKOZ_SKIP_WAITING" });
+        window.setTimeout(() => window.location.reload(), 1800);
+      }
+    });
+  }
+
+  function watchRegistration(registration) {
+    if (registration.waiting) offerUpdate(registration.waiting);
+
+    registration.addEventListener("updatefound", () => {
+      const worker = registration.installing;
+      if (!worker) return;
+      worker.addEventListener("statechange", () => {
+        if (worker.state === "installed" && navigator.serviceWorker.controller) {
+          offerUpdate(worker);
+        }
+      });
+    });
+
+    const scheduleUpdateCheck = () => {
+      if (document.hidden || updateCheckTimer) return;
+      updateCheckTimer = window.setTimeout(() => {
+        updateCheckTimer = 0;
+        registration.update().catch(() => {});
+      }, 1400);
+    };
+
+    window.addEventListener("focus", scheduleUpdateCheck);
+    document.addEventListener("visibilitychange", scheduleUpdateCheck);
+  }
+
+  function registerServiceWorker() {
+    const isLocalHost = /^(localhost|127\.0\.0\.1|\[::1\])$/i.test(window.location.hostname || "");
+    const localPwaEnabled = new URLSearchParams(window.location.search || "").has("pwa");
+    if (isLocalHost && !localPwaEnabled) {
+      doc.classList.add("cz-sw-skipped");
+      return;
+    }
+
+    if (!("serviceWorker" in navigator) || !window.isSecureContext) {
+      doc.classList.add("cz-sw-unavailable");
+      return;
+    }
+
+    const startRegistration = () => {
+      navigator.serviceWorker.register(SW_URL, { scope: "/" })
+        .then((registration) => {
+          doc.classList.add("cz-sw-registered");
+          watchRegistration(registration);
+          return navigator.serviceWorker.ready;
+        })
+        .then(() => {
+          doc.classList.add("cz-sw-ready");
+        })
+        .catch(() => {
+          doc.classList.add("cz-sw-unavailable");
+        });
+    };
+
+    if (document.readyState === "complete") startRegistration();
+    else window.addEventListener("load", startRegistration, { once: true });
+
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      doc.classList.add("cz-sw-ready");
+      if (reloadOnControllerChange) window.location.reload();
+    });
+
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data?.type === "CLICKOZ_SW_ACTIVE") {
+        doc.dataset.swVersion = event.data.version || "active";
+      }
+    });
+  }
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    armInstallOffer();
+  });
+
+  window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    hideInstallCard();
+    setInstallDismissal(365);
+    doc.classList.add("cz-installed");
+    showToast("Clickoz installed", { kind: "success" });
+  });
+
+  window.addEventListener("online", () => handleNetworkState(true));
+  window.addEventListener("offline", () => handleNetworkState(true));
+
+  onDomReady(() => {
+    doc.classList.toggle("cz-installed", isStandalone());
+    handleNetworkState(false);
+    registerServiceWorker();
+  });
+
+  window.ClickozPWA = Object.freeze({
+    status() {
+      return {
+        standalone: isStandalone(),
+        online: navigator.onLine !== false,
+        serviceWorker: "serviceWorker" in navigator,
+        controlled: Boolean(navigator.serviceWorker?.controller),
+        installPrompt: Boolean(deferredInstallPrompt)
+      };
+    },
+    install: promptInstall,
+    refresh() {
+      if (updateWorker) {
+        reloadOnControllerChange = true;
+        updateWorker.postMessage({ type: "CLICKOZ_SKIP_WAITING" });
+      } else {
+        window.location.reload();
+      }
+    }
+  });
 })();

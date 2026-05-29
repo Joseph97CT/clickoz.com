@@ -210,9 +210,77 @@ function featureChips(tool) {
     .join("");
 }
 
+function tagSlug(label) {
+  return plain(label)
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "workflow";
+}
+
+function tagUrl(label) {
+  return `/tags/${tagSlug(label)}/`;
+}
+
+function visibleToolTags(tool) {
+  const seen = new Set();
+  return [...(tool.features || []), "Mobile-ready"]
+    .map((item) => plain(item))
+    .filter(Boolean)
+    .filter((item) => {
+      const key = item.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
 function trustPills(tool) {
-  const items = [...(tool.features || []).slice(0, 3), "Mobile-ready"].slice(0, 4);
-  return items.map((item) => `<span class="cms-pill"><span class="cms-pill-icon" aria-hidden="true"></span>${esc(item)}</span>`).join("\n");
+  const used = new Set();
+  return visibleToolTags(tool).slice(0, 4)
+    .map((item, index) => `<a class="cms-pill cms-tag-pill" href="${esc(tagUrl(item))}"><span class="cms-pill-icon" aria-hidden="true">${featureIconFor(item, tool, used, index)}</span><span>${esc(item)}</span></a>`)
+    .join("\n");
+}
+
+function tagEntries() {
+  const tags = new Map();
+  for (const tool of cms.tools) {
+    const used = new Set();
+    const labels = tool.category === "seo"
+      ? visibleToolTags(tool).concat(seoCardTags(tool).map((item) => item.label))
+      : visibleToolTags(tool);
+    labels.forEach((label, index) => {
+      const slug = tagSlug(label);
+      if (!tags.has(slug)) {
+        tags.set(slug, {
+          slug,
+          label,
+          url: `/tags/${slug}/`,
+          icon: featureIconFor(label, tool, used, index),
+          tools: [],
+          guides: []
+        });
+      }
+      const entry = tags.get(slug);
+      if (!entry.tools.some((item) => item.slug === tool.slug)) entry.tools.push(tool);
+    });
+  }
+
+  for (const entry of tags.values()) {
+    const guideSlugs = new Set();
+    for (const tool of entry.tools) {
+      cms.guides
+        .filter((guide) => guide.tool === tool.slug || (tool.relatedGuides || []).includes(guide.slug))
+        .forEach((guide) => guideSlugs.add(guide.slug));
+    }
+    entry.guides = [...guideSlugs]
+      .map((slug) => guidesBySlug[slug])
+      .filter(Boolean)
+      .sort((a, b) => a.title.localeCompare(b.title));
+    entry.tools = entry.tools.sort((a, b) => a.title.localeCompare(b.title));
+  }
+
+  return [...tags.values()].sort((a, b) => a.label.localeCompare(b.label));
 }
 
 function workflowCopy(tool) {
@@ -486,11 +554,23 @@ const specificBriefs = {
     exampleInput: "A page intro, script, caption, client draft or article section.",
     whatYouGet: "Words, characters, sentences, paragraphs, reading time and next edit advice."
   },
+  "character-counter": {
+    bestFor: "Fitting copy into strict fields without guessing",
+    useWhen: "A bio, snippet, caption or form field needs a hard character limit check.",
+    exampleInput: "A bio, ad line, snippet or CTA close to its character limit.",
+    whatYouGet: "Character count, limit pressure and copy-ready length signal."
+  },
   "readability-analyzer": {
     bestFor: "Finding heavy sentences and mobile scan problems",
     useWhen: "The draft contains the right idea but feels slow to read.",
     exampleInput: "A real section from a page, post, guide or email.",
     whatYouGet: "Readability score, sentence pressure and practical rewrite guidance."
+  },
+  "text-case-converter": {
+    bestFor: "Normalizing headings, labels and copied AI text",
+    useWhen: "A heading, product name or pasted title has inconsistent capitalization.",
+    exampleInput: "a MESSY heading, product name or pasted title",
+    whatYouGet: "Clean case variants ready to paste into the final field."
   },
   "whitespace-cleaner": {
     bestFor: "Cleaning pasted AI, PDF, doc or CMS text",
@@ -549,6 +629,143 @@ function toolBrief(tool) {
     nextToolsText: rel.map((item) => item.title).join(" -> ") || "Browse the matching Clickoz cluster",
     guideText: guide ? guide.title : "Open the related Clickoz guide"
   };
+}
+
+function cardTone(tool) {
+  const text = plain(`${tool.slug} ${tool.title} ${tool.description} ${(tool.features || []).join(" ")}`).toLowerCase();
+  if (/text case|uppercase|lowercase|title case|sentence case/.test(text)) return { vibe: "type", badge: "AI fix", engine: "Case engine", processing: "normalizing structure...", visual: "letters", cta: "Normalize text" };
+  if (/readability|hard to read|hard-to-read|clarity|pressure|word count|character|limit|reading time/.test(text)) return { vibe: "analytics", badge: "AI scan", engine: "Readability engine", processing: "mapping content pressure...", visual: "bars", cta: "Run analyzer" };
+  if (/slug|seo|serp|keyword|meta|snippet|title|description/.test(text)) return { vibe: "seo", badge: "SEO engine", engine: "Intent engine", processing: "checking search signals...", visual: "radar", cta: "Run SEO check" };
+  if (/whitespace|cleanup|paste|spacing|pasted ai|clean pasted/.test(text)) return { vibe: "repair", badge: "AI repair", engine: "Cleanup engine", processing: "removing spacing noise...", visual: "particles", cta: "Clean text" };
+  if (/json|payload|base64|url encode|entity|html|regex|developer|debug/.test(text)) return { vibe: "dev", badge: "Debug engine", engine: "Parser engine", processing: "validating payload...", visual: "terminal", cta: "Run utility" };
+  if (/youtube|thumbnail|video|shorts|chapter|creator/.test(text)) return { vibe: "creator", badge: "Creator AI", engine: "Angle engine", processing: "scoring hook options...", visual: "wave", cta: "Build upload" };
+  if (/utm|tracking|campaign/.test(text)) return { vibe: "tracking", badge: "Link engine", engine: "Tracking engine", processing: "assembling clean parameters...", visual: "nodes", cta: "Build link" };
+  if (/password|uuid|dns|http|subnet|timestamp|robots|color|diff|web/.test(text)) return { vibe: "ops", badge: "Ops engine", engine: "Check engine", processing: "reading technical signals...", visual: "grid", cta: "Run check" };
+  if (/tiktok|instagram|linkedin|reddit|pinterest|caption|social|bio|hashtag|newsletter|podcast|ugc|cta|calendar|sponsorship|media kit|affiliate|disclosure/.test(text)) return { vibe: "social", badge: "Social AI", engine: "Draft engine", processing: "shaping platform output...", visual: "pulse", cta: "Generate copy" };
+  return { vibe: "default", badge: "AI fix", engine: "Tool engine", processing: "processing input...", visual: "grid", cta: "Launch AI tool" };
+}
+
+function cardOutcomeCopy(tool) {
+  const text = plain(`${tool.title} ${tool.description} ${tool.category}`).toLowerCase();
+  if (/readability/.test(text)) return "Detect heavy sentences, weak flow and mobile reading friction in seconds.";
+  if (/case/.test(text)) return "Normalize messy headings, labels and copied AI text without manual retyping.";
+  if (/whitespace|cleaner/.test(text)) return "Repair pasted AI, PDF and CMS spacing so the copy is ready to publish.";
+  if (/word counter/.test(text)) return "Measure draft length, density and reading time before you ship the copy.";
+  if (/character/.test(text)) return "Check strict copy limits for bios, snippets, captions and form fields.";
+  if (/json/.test(text)) return "Validate, format or compress payloads while you stay in the browser.";
+  if (/youtube|thumbnail|chapter|shorts/.test(text)) return "Package creator ideas into upload-ready titles, hooks and sections.";
+  if (/seo|meta|serp|slug|keyword/.test(text)) return "Turn rough page inputs into search-ready publishing decisions.";
+  return tool.description;
+}
+
+function quickVisual(type) {
+  const map = {
+    bars: "<i></i><i></i><i></i><i></i>",
+    letters: "<span>Aa</span><span>AA</span><span>Title</span>",
+    particles: "<i></i><i></i><i></i><i></i><i></i>",
+    terminal: "<span>{ }</span><span>OK</span><span>01</span>",
+    wave: "<i></i><i></i><i></i><i></i><i></i>",
+    nodes: "<i></i><i></i><i></i><b></b>",
+    radar: "<i></i><i></i><i></i>",
+    pulse: "<i></i><i></i><i></i><i></i>",
+    grid: "<i></i><i></i><i></i><i></i>"
+  };
+  const key = map[type] ? type : "grid";
+  return `<div class="quick-task-visual quick-task-visual-${esc(key)}" aria-hidden="true">${map[key]}</div>`;
+}
+
+const seoCardProfiles = {
+  "slug-generator": {
+    subtitle: "SEO-ready URLs",
+    description: "Turn rough titles into clean, SEO-friendly slugs.",
+    icon: entity.search,
+    useful: "SEO publishing",
+    cta: "Open Slug Generator",
+    ctaSub: "Create SEO-friendly slugs",
+    preview: `<div class="seo-card-preview-grid seo-preview-slug">
+      <div class="seo-preview-row"><span>Input</span><code>Best AI Content Tools for 2025</code></div>
+      <div class="seo-preview-arrow" aria-hidden="true">&darr;</div>
+      <div class="seo-preview-row seo-preview-output"><span>Output</span><code>best-ai-content-tools-for-2025</code></div>
+    </div>`,
+    chips: [["&#128279;", "Clean URLs"], ["&#127919;", "SEO Optimized"], ["&#128737;&#65039;", "Safe Characters"], ["&#128065;&#65039;", "Instant Preview"]]
+  },
+  "keyword-density": {
+    subtitle: "Balanced content",
+    description: "Check keyword balance before publishing.",
+    icon: entity.chart,
+    useful: "SEO content",
+    cta: "Open Density Checker",
+    ctaSub: "Analyze keyword balance",
+    preview: `<div class="seo-card-preview-grid seo-preview-density">
+      <div class="seo-preview-row"><span>Keyword</span><code>artificial intelligence</code></div>
+      <div class="seo-density-line"><span>Density</span><strong>1.8%</strong><i aria-hidden="true"></i></div>
+      <div class="seo-preview-row seo-preview-output"><span>Status</span><code>Balanced &amp; Natural</code></div>
+    </div>`,
+    chips: [["&#127919;", "Keyword Balance"], ["&#128200;", "Density Score"], ["&#10024;", "Natural Copy"], ["&#128737;&#65039;", "No Keyword Stuffing"]]
+  },
+  "serp-preview": {
+    subtitle: "Preview and optimize",
+    description: "Preview how your page appears in Google.",
+    icon: entity.eye,
+    useful: "SEO publishing",
+    cta: "Open SERP Preview",
+    ctaSub: "See how it looks in Google",
+    preview: `<div class="seo-serp-mini">
+      <span>clickoz.com</span>
+      <small>https://clickoz.com/ai-tools</small>
+      <strong>Best AI Tools for Content Creators in 2025</strong>
+      <p>Discover practical tools for content creators. Save time, improve workflow and publish cleaner pages.</p>
+    </div>`,
+    chips: [["&#128065;&#65039;", "Google Preview"], ["&#127991;&#65039;", "Meta Preview"], ["&#9989;", "Title Check"], ["&#128200;", "CTR Friendly"]]
+  },
+  "meta-tags": {
+    subtitle: "Snippet control",
+    description: "Write cleaner titles and descriptions before publishing.",
+    icon: entity.tag,
+    useful: "SEO publishing",
+    cta: "Open Meta Tag Optimizer",
+    ctaSub: "Improve title and meta copy",
+    preview: `<div class="seo-card-preview-grid">
+      <div class="seo-preview-row"><span>Title</span><code>Clickoz Tools | Fast Browser Utilities</code></div>
+      <div class="seo-preview-row"><span>Description</span><code>Free SEO, writing and developer tools.</code></div>
+      <div class="seo-preview-row seo-preview-output"><span>Check</span><code>Length and intent ready</code></div>
+    </div>`,
+    chips: [["&#127991;&#65039;", "Meta Preview"], ["&#128207;", "Title Length"], ["&#128200;", "CTR Friendly"], ["&#9989;", "Snippet Ready"]]
+  },
+  "meta-tag-optimizer": {
+    subtitle: "Title and description",
+    description: "Check page title and meta description before launch.",
+    icon: entity.spark,
+    useful: "SEO entry",
+    cta: "Open Title Checker",
+    ctaSub: "Validate search copy",
+    preview: `<div class="seo-card-preview-grid">
+      <div class="seo-preview-row"><span>Title</span><code>AI Content Tools: 12 Better Picks</code></div>
+      <div class="seo-preview-row"><span>Meta</span><code>Find practical tools before publishing.</code></div>
+      <div class="seo-preview-row seo-preview-output"><span>Status</span><code>Clear and focused</code></div>
+    </div>`,
+    chips: [["&#10024;", "Title Fixes"], ["&#128221;", "Description Check"], ["&#128269;", "SEO Entry"], ["&#128203;", "Copy Ready"]]
+  }
+};
+
+function seoCardProfile(tool) {
+  return seoCardProfiles[tool.slug] || {
+    subtitle: "SEO workflow",
+    description: sentence(tool.description),
+    icon: toolIcon(tool),
+    useful: "SEO publishing",
+    cta: `Open ${tool.title}`,
+    ctaSub: "Finish the SEO task",
+    preview: `<div class="seo-card-preview-grid">
+      <div class="seo-preview-row"><span>Input</span><code>${esc(toolBrief(tool).exampleInput)}</code></div>
+      <div class="seo-preview-row seo-preview-output"><span>Output</span><code>${esc(toolBrief(tool).whatYouGet)}</code></div>
+    </div>`,
+    chips: (tool.features || []).slice(0, 4).map((feature, index) => [featureIconFor(feature, tool, new Set(), index), feature])
+  };
+}
+
+function seoCardTags(tool) {
+  return (seoCardProfile(tool).chips || []).map(([, label]) => ({ label }));
 }
 
 function nav(active) {
@@ -820,17 +1037,17 @@ ${head({
     </div>
 
     <section class="cms-tool-brief cms-box-signal" aria-label="${esc(tool.title)} quick guide">
-      <article><strong><span class="cms-brief-icon" aria-hidden="true">01</span>Use case</strong><span>${esc(flow.problem)}</span></article>
-      <article><strong><span class="cms-brief-icon" aria-hidden="true">02</span>Input to paste</strong><span>${esc(brief.exampleInput)}</span></article>
-      <article><strong><span class="cms-brief-icon" aria-hidden="true">03</span>Output to expect</strong><span>${esc(brief.whatYouGet)}</span></article>
+      <article><strong><span class="cms-brief-icon" aria-hidden="true">01</span>What it fixes</strong><span>${esc(flow.problem)}</span></article>
+      <article><strong><span class="cms-brief-icon" aria-hidden="true">02</span>Try a sample first</strong><span>Use the preloaded example to understand the format: ${esc(brief.exampleInput)}</span></article>
+      <article><strong><span class="cms-brief-icon" aria-hidden="true">03</span>Replace and copy</strong><span>${esc(brief.whatYouGet)} Then replace the sample with your real input.</span></article>
     </section>
 
     <section class="cms-tool-panel cms-box-action" id="tool-app" data-tool-app="${esc(tool.slug)}" aria-label="${esc(tool.title)} app">
       <div class="cms-workbench-head">
         <div>
           <p class="cms-tool-kicker">Tool workbench</p>
-          <h2>Run ${esc(tool.title)} in three clear steps.</h2>
-          <p>Start from a sample, replace it with real input, then review the result and the next recommended action.</p>
+          <h2>Try a sample, then run your real input.</h2>
+          <p>The sample shows the expected structure. Replace it with your task, run the check and copy the clean result when it fits.</p>
         </div>
         <div class="cms-workbench-meta" aria-label="Tool guarantees">
           <span>No account</span>
@@ -923,28 +1140,63 @@ ${head({
 }
 
 function card(tool) {
+  if (tool.category === "seo") return seoToolCard(tool);
   const brief = toolBrief(tool);
   const features = featureChips(tool);
-  return `<a class="card tool-card-enhanced" href="${esc(tool.url)}" data-tool-slug="${esc(tool.slug)}">
+  const tone = cardTone(tool);
+  return `<a class="card tool-card-enhanced" href="${esc(tool.url)}" data-tool-slug="${esc(tool.slug)}" data-card-vibe="${esc(tone.vibe)}" style="--tool-cta-label:&quot;${esc(tone.cta)}&quot;">
     <div class="card-top">
       <span class="card-ico" aria-hidden="true">${toolIcon(tool)}</span>
       <div>
         <h3>${esc(tool.title)}</h3>
-        <p>${esc(tool.description)}</p>
+        <p>${esc(cardOutcomeCopy(tool))}</p>
       </div>
     </div>
-    <div class="tool-output-preview">
-      <span>Quick task</span>
-      <strong>${esc(brief.timeSaved)}</strong>
-      <div class="tool-card-flow">
-        <p><b>Input</b><span>${esc(brief.exampleInput)}</span></p>
-        <p><b>Output</b><span>${esc(brief.whatYouGet)}</span></p>
+    <div class="tool-output-preview tool-output-preview-concrete">
+      <div class="quick-task-head">
+        <span class="quick-task-label">${esc(tone.badge)}</span>
+        <span class="quick-task-badge">${esc(brief.timeSaved || "Fast run")}</span>
       </div>
-      <em>${esc(brief.bestFor)}</em>
+      <strong class="quick-task-title">${esc(brief.useWhen || tool.description)}</strong>
+      ${quickVisual(tone.visual)}
+      <div class="tool-card-flow quick-task-flow quick-task-engine-flow" aria-label="${esc(tool.title)} live example workflow">
+        <p class="quick-task-step quick-task-step-input"><span class="quick-task-num" aria-hidden="true">01</span><b>Raw input</b><span>${esc(brief.exampleInput)}</span></p>
+        <p class="quick-task-step quick-task-step-process"><span class="quick-task-num" aria-hidden="true">02</span><b>${esc(tone.engine)}</b><span>${esc(tone.processing)}</span></p>
+        <p class="quick-task-step quick-task-step-output"><span class="quick-task-num" aria-hidden="true">03</span><b>Ready output</b><span>${esc(brief.whatYouGet)}</span></p>
+      </div>
+      <div class="quick-task-next"><span>Copy ready</span><em>${esc(brief.bestFor)}</em></div>
     </div>
     <div class="tool-mini-features">${features}</div>
     <span class="tool-cta">Open ${esc(tool.title)} &rarr;</span>
   </a>`;
+}
+
+function seoToolCard(tool) {
+  const profile = seoCardProfile(tool);
+  const chips = (profile.chips || [])
+    .map(([icon, label]) => `<a class="seo-card-chip" href="${esc(tagUrl(label))}" data-tag="${esc(tagSlug(label))}"><b aria-hidden="true">${icon}</b><span>${esc(label)}</span></a>`)
+    .join("\n");
+  return `<article class="card seo-tool-card" data-tool-slug="${esc(tool.slug)}" data-card-vibe="seo" data-category="seo">
+    <div class="seo-card-head">
+      <span class="seo-card-icon" aria-hidden="true">${profile.icon}</span>
+      <div>
+        <h3><a href="${esc(tool.url)}">${esc(tool.title)}</a></h3>
+        <p class="seo-card-subtitle">${esc(profile.subtitle)}</p>
+      </div>
+    </div>
+    <p class="seo-card-description">${esc(profile.description)}</p>
+    <div class="tool-output-preview seo-card-preview" aria-label="${esc(tool.title)} useful preview">
+      ${profile.preview}
+    </div>
+    <div class="seo-card-useful"><span>Useful for</span><strong>${esc(profile.useful)}</strong></div>
+    <div class="tool-mini-features seo-card-chips" aria-label="${esc(tool.title)} tags">
+      ${chips}
+    </div>
+    <a class="seo-card-cta" href="${esc(tool.url)}">
+      <span>${esc(profile.cta)}</span>
+      <small>${esc(profile.ctaSub)}</small>
+    </a>
+  </article>`;
 }
 
 function toolsJsonLd(items, title, url, description) {
@@ -1123,12 +1375,170 @@ ${head({
 </html>`;
 }
 
+function tagJsonLd(entry) {
+  const items = entry.guides.concat(entry.tools);
+  return `<script type="application/ld+json">${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `${entry.label} tools and guides`,
+    url: abs(entry.url),
+    description: `Clickoz tools and practical guides connected to the ${entry.label} workflow tag.`,
+    isPartOf: { "@type": "WebSite", name: "Clickoz", url: `${ORIGIN}/` },
+    publisher: publisherNode(ORIGIN),
+    mainEntity: {
+      "@type": "ItemList",
+      name: `${entry.label} Clickoz resources`,
+      itemListOrder: "https://schema.org/ItemListUnordered",
+      numberOfItems: items.length,
+      itemListElement: items.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: abs(item.url),
+        name: item.title
+      }))
+    }
+  })}</script>`;
+}
+
+function tagGuideCard(guide, entry) {
+  const linkedTool = bySlug[guide.tool];
+  const toolMark = linkedTool ? categoryUI[linkedTool.category]?.label || "Tool" : "Guide";
+  const icon = linkedTool ? toolIcon(linkedTool) : entry.icon || entity.book;
+  return `<a class="tag-guide-card guide-hub-card" href="${esc(guide.url)}">
+    <div class="authority-card-head"><span aria-hidden="true">${icon}</span><h2>${esc(guide.title)}</h2></div>
+    <p>${esc(guide.description)}</p>
+    <div class="tag-card-meta"><span>${entity.book} Guide</span><span>${esc(toolMark)} linked</span></div>
+  </a>`;
+}
+
+function tagEmptyCard(kind, entry) {
+  const copy = kind === "guides"
+    ? `No guide is linked to ${entry.label} yet. Use the tools below and the related tool pages to continue the workflow.`
+    : `No tool is linked to ${entry.label} yet. Return to the tag index or browse the full tools hub.`;
+  return `<article class="tag-empty-card"><span aria-hidden="true">${entry.icon || entity.spark}</span><p>${esc(copy)}</p></article>`;
+}
+
+function tagPage(entry) {
+  const title = `${entry.label} Tools and Guides | Clickoz`;
+  const description = clipMeta(`Browse Clickoz guides first, then open tools connected to ${entry.label}. Each resource stays tied to practical browser workflows.`);
+  return `<!doctype html>
+<html lang="en">
+${head({
+  title,
+  description,
+  canonical: abs(entry.url),
+  og: "/assets/og/tools.svg",
+  extraCss: `<link rel="stylesheet" href="${asset("/tools/tools.css", "toolsCss")}" /><link rel="stylesheet" href="${asset("/tools/cms-tools.css", "cmsToolsCss")}" />`,
+  jsonLd: tagJsonLd(entry)
+})}
+<body class="bigtext tools-page tag-page">
+  <div id="clickozParticles" aria-hidden="true"></div>
+  <canvas id="spaceParticles" aria-hidden="true"></canvas>
+  <div class="__grain" aria-hidden="true"></div>
+  ${nav("tools")}
+  <main class="section container tools-shell tag-shell">
+    <section class="tools-hero tag-hero" aria-label="${esc(entry.label)} tag">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>&rsaquo;</span><a href="/tags/">Tags</a><span>&rsaquo;</span><span aria-current="page">${esc(entry.label)}</span>
+      </nav>
+      <div class="tools-hero-top">
+        <div>
+          <p class="guide-kicker">CLICKOZ TAG</p>
+          <h1 class="tools-title">${esc(entry.label)} tools and guides.</h1>
+          <p class="tools-sub">Start with the guides to understand the decision, then open the matching tools to finish the browser task with examples, output and copy controls.</p>
+        </div>
+      </div>
+      <div class="tag-hero-actions" aria-label="${esc(entry.label)} resource summary">
+        <span>${entry.icon} ${entry.guides.length} ${entry.guides.length === 1 ? "guide" : "guides"}</span>
+        <span>${entity.tool} ${entry.tools.length} ${entry.tools.length === 1 ? "tool" : "tools"}</span>
+        <a href="/tools/">Open tools hub</a>
+      </div>
+    </section>
+
+    <section class="tag-resource-section" aria-label="${esc(entry.label)} guides">
+      <div class="section-head">
+        <div><p class="guide-kicker">GUIDES FIRST</p><h2>Understand the ${esc(entry.label)} decision.</h2><p class="section-desc">These articles explain the publishing, cleanup or technical choice before you run a tool.</p></div>
+        <span class="section-count">${entry.guides.length} ${entry.guides.length === 1 ? "guide" : "guides"}</span>
+      </div>
+      <div class="tag-guide-grid">${entry.guides.map((guide) => tagGuideCard(guide, entry)).join("\n") || tagEmptyCard("guides", entry)}</div>
+    </section>
+
+    <section class="tool-section tag-tool-section" aria-label="${esc(entry.label)} tools" data-tool-count="${entry.tools.length}">
+      <div class="section-head">
+        <div><div class="section-kicker"><span class="section-ico" aria-hidden="true">${entry.icon}</span><h2 class="section-name">Open the related tools</h2></div><p class="section-desc">Use these tools when the tag matches the task you are trying to finish.</p></div>
+        <span class="section-count">${entry.tools.length} ${entry.tools.length === 1 ? "tool" : "tools"}</span>
+      </div>
+      <div class="cards-grid">${entry.tools.map(card).join("\n") || tagEmptyCard("tools", entry)}</div>
+    </section>
+  </main>
+  ${footer()}
+  ${scripts()}
+</body>
+</html>`;
+}
+
+function tagsIndexPage(entries) {
+  const title = "Clickoz Tags - Tools and Guides by Workflow";
+  const description = "Browse Clickoz workflow tags. Each tag groups practical guides first, then the browser tools connected to that job.";
+  return `<!doctype html>
+<html lang="en">
+${head({
+  title,
+  description,
+  canonical: abs("/tags/"),
+  og: "/assets/og/tools.svg",
+  extraCss: `<link rel="stylesheet" href="${asset("/tools/tools.css", "toolsCss")}" /><link rel="stylesheet" href="${asset("/tools/cms-tools.css", "cmsToolsCss")}" />`,
+  jsonLd: `<script type="application/ld+json">${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Clickoz workflow tags",
+    url: abs("/tags/"),
+    description,
+    publisher: publisherNode(ORIGIN),
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: entries.length,
+      itemListElement: entries.map((entry, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: abs(entry.url),
+        name: entry.label
+      }))
+    }
+  })}</script>`
+})}
+<body class="bigtext tools-page tag-page tags-index-page">
+  <div id="clickozParticles" aria-hidden="true"></div>
+  <canvas id="spaceParticles" aria-hidden="true"></canvas>
+  <div class="__grain" aria-hidden="true"></div>
+  ${nav("tools")}
+  <main class="section container tools-shell tag-shell">
+    <section class="tools-hero tag-hero">
+      <div class="tools-hero-top">
+        <div>
+          <p class="guide-kicker">CLICKOZ TAG INDEX</p>
+          <h1 class="tools-title">Find tools and guides by workflow tag.</h1>
+          <p class="tools-sub">Tags connect repeated CMS characteristics to the exact guides and tools that use them. Guides appear first inside each tag, then the related tools.</p>
+        </div>
+      </div>
+    </section>
+    <section class="tag-index-grid" aria-label="Clickoz tags">
+      ${entries.map((entry) => `<a class="tag-index-card" href="${esc(entry.url)}"><span aria-hidden="true">${entry.icon}</span><strong>${esc(entry.label)}</strong><small>${entry.guides.length} guides / ${entry.tools.length} tools</small></a>`).join("\n")}
+    </section>
+  </main>
+  ${footer()}
+  ${scripts()}
+</body>
+</html>`;
+}
+
 function sitemap() {
   const clusters = Object.values(cms.clusters).map((cluster) => cluster.url);
   const canonicalToolUrls = cms.tools
     .filter((tool) => !tool.canonicalSlug || tool.canonicalSlug === tool.slug)
     .map((tool) => tool.url);
-  const urls = [...new Set(CORE_URLS.concat(clusters, canonicalToolUrls, cms.guides.map((guide) => guide.url)))];
+  const tagUrls = ["/tags/"].concat(tagEntries().map((entry) => entry.url));
+  const urls = [...new Set(CORE_URLS.concat(clusters, canonicalToolUrls, cms.guides.map((guide) => guide.url), tagUrls))];
   const today = new Date().toISOString().slice(0, 10);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -1138,16 +1548,39 @@ ${urls.map((url) => `  <url><loc>${ORIGIN}${url}</loc><lastmod>${today}</lastmod
 }
 
 function main() {
+  if (process.argv.includes("--quick-task-pages-only")) {
+    writeUrl("/tools/", toolsIndexPage());
+    Object.keys(cms.clusters).forEach((category) => writeUrl(cms.clusters[category].url, clusterPage(category)));
+    console.log(JSON.stringify({
+      clusters: Object.keys(cms.clusters).length,
+      written: "tool index and cluster pages"
+    }, null, 2));
+    return;
+  }
+
+  const tags = tagEntries();
   cms.tools.forEach((tool) => writeUrl(tool.url, toolPage(tool)));
   writeUrl("/tools/", toolsIndexPage());
   Object.keys(cms.clusters).forEach((category) => writeUrl(cms.clusters[category].url, clusterPage(category)));
+  writeUrl("/tags/", tagsIndexPage(tags));
+  tags.forEach((entry) => writeUrl(entry.url, tagPage(entry)));
   fs.writeFileSync(path.join(root, "sitemap.xml"), sitemap(), "utf8");
   console.log(JSON.stringify({
     tools: cms.tools.length,
     clusters: Object.keys(cms.clusters).length,
     guides: cms.guides.length,
-    written: "all tool pages, tool index, cluster pages and sitemap"
+    tags: tags.length,
+    written: "all tool pages, tool index, cluster pages, tag pages and sitemap"
   }, null, 2));
 }
 
-main();
+if (require.main === module) main();
+
+module.exports = {
+  cms,
+  card,
+  clusterPage,
+  sitemap,
+  toolPage,
+  toolsIndexPage
+};

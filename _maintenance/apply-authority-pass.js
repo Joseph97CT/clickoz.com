@@ -32,6 +32,54 @@ function previewItems(items, limit = GUIDE_PREVIEW_LIMIT) {
   return newestFirst(items).slice(0, limit);
 }
 
+function tagSlug(label) {
+  return String(label || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "workflow";
+}
+
+function visibleToolTags(tool) {
+  const seen = new Set();
+  return [...(tool.features || []), "Mobile-ready"]
+    .map((item) => String(item || "").replace(/\s+/g, " ").trim())
+    .filter(Boolean)
+    .filter((item) => {
+      const key = item.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+const SEO_CARD_TAGS = Object.freeze({
+  "slug-generator": ["Clean URLs", "SEO Optimized", "Safe Characters", "Instant Preview"],
+  "keyword-density": ["Keyword Balance", "Density Score", "Natural Copy", "No Keyword Stuffing"],
+  "serp-preview": ["Google Preview", "Meta Preview", "Title Check", "CTR Friendly"],
+  "meta-tags": ["Meta Preview", "Title Length", "CTR Friendly", "Snippet Ready"],
+  "meta-tag-optimizer": ["Title Fixes", "Description Check", "SEO Entry", "Copy Ready"]
+});
+
+function toolTagLabels(tool) {
+  const extra = tool.category === "seo" ? (SEO_CARD_TAGS[tool.slug] || []) : [];
+  const seen = new Set();
+  return visibleToolTags(tool).concat(extra).filter((tag) => {
+    const key = String(tag || "").toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function tagUrls() {
+  const urls = new Set(["/tags/"]);
+  cms.tools.forEach((tool) => toolTagLabels(tool).forEach((tag) => urls.add(`/tags/${tagSlug(tag)}/`)));
+  return [...urls];
+}
+
 function esc(value) {
   return String(value || "").replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
@@ -165,7 +213,6 @@ function mobileShell(active) {
       <a class="m-link${current("tools")}" href="/tools/">Tools</a>
       <a class="m-link${current("guides")}" href="/guides/">Guides</a>
       <a class="m-link${current("updates")}" href="/updates/">Updates</a>
-      <a class="m-link" href="/about/">About</a>
     </div>
   </aside>`;
 }
@@ -741,7 +788,8 @@ function sitemap() {
     "/contact/",
     ...Object.values(cms.clusters).map((cluster) => cluster.url),
     ...canonicalToolUrls,
-    ...cms.guides.map((guide) => guide.url)
+    ...cms.guides.map((guide) => guide.url),
+    ...tagUrls()
   ];
   const unique = Array.from(new Set(urls)).sort();
   return `<?xml version="1.0" encoding="UTF-8"?>

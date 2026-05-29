@@ -31,7 +31,9 @@ const configuredAssetVersions = new Map([
   ["/tools/cms-tools.css", "cmsToolsCss"],
   ["/tools/cms-tools.js", "cmsToolsJs"],
   ["/updates/cms-map.css", "cmsMapCss"],
-  ["/updates/cms-map.js", "cmsMapJs"]
+  ["/updates/cms-map.js", "cmsMapJs"],
+  ["/assets/premium-tools.css", "premiumToolsCss"],
+  ["/assets/premium-tools.js", "premiumToolsJs"]
 ]);
 
 /**
@@ -112,6 +114,54 @@ function scanConfiguredAssetVersions(file) {
       addFinding("asset-version-mismatch", fileRel, `${url}?v=${version} should be ${url}?v=${expected}`);
     }
   }
+}
+
+function tagSlug(label) {
+  return String(label || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "workflow";
+}
+
+function visibleToolTags(tool) {
+  const seen = new Set();
+  return [...(tool.features || []), "Mobile-ready"]
+    .map((item) => String(item || "").replace(/\s+/g, " ").trim())
+    .filter(Boolean)
+    .filter((item) => {
+      const key = item.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+const SEO_CARD_TAGS = Object.freeze({
+  "slug-generator": ["Clean URLs", "SEO Optimized", "Safe Characters", "Instant Preview"],
+  "keyword-density": ["Keyword Balance", "Density Score", "Natural Copy", "No Keyword Stuffing"],
+  "serp-preview": ["Google Preview", "Meta Preview", "Title Check", "CTR Friendly"],
+  "meta-tags": ["Meta Preview", "Title Length", "CTR Friendly", "Snippet Ready"],
+  "meta-tag-optimizer": ["Title Fixes", "Description Check", "SEO Entry", "Copy Ready"]
+});
+
+function toolTagLabels(tool) {
+  const extra = tool.category === "seo" ? (SEO_CARD_TAGS[tool.slug] || []) : [];
+  const seen = new Set();
+  return visibleToolTags(tool).concat(extra).filter((tag) => {
+    const key = String(tag || "").toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function tagUrls(cms) {
+  const urls = new Set(["/tags/"]);
+  (cms.tools || []).forEach((tool) => toolTagLabels(tool).forEach((tag) => urls.add(`/tags/${tagSlug(tag)}/`)));
+  return [...urls];
 }
 
 function validateMaintenanceConfigUsage() {
@@ -387,7 +437,7 @@ function validateSitemap(cms, sitemap) {
   const canonicalToolUrls = cms.tools
     .filter((tool) => !tool.canonicalSlug || tool.canonicalSlug === tool.slug)
     .map((tool) => tool.url);
-  const expected = [...new Set(CORE_URLS.concat(clusters, canonicalToolUrls, cms.guides.map((guide) => guide.url)))];
+  const expected = [...new Set(CORE_URLS.concat(clusters, canonicalToolUrls, cms.guides.map((guide) => guide.url), tagUrls(cms)))];
   const nonCanonicalToolUrls = cms.tools
     .filter((tool) => tool.canonicalSlug && tool.canonicalSlug !== tool.slug)
     .map((tool) => `${ORIGIN}${tool.url}`);
@@ -624,12 +674,15 @@ function validateCmsMapRoute(sitemap) {
 function registryStats(cms) {
   const pageStats = validatePages(cms);
   const generatedStructureIssues = validateGeneratedStructure(cms);
+  const missingTagPages = tagUrls(cms).filter((url) => !fileExistsForUrl(url));
+  missingTagPages.forEach((url) => addFinding("tag-page-missing", urlToHtmlPath(url), url));
   return {
     tools: cms.tools.length,
     guides: cms.guides.length,
     clusters: Object.keys(cms.clusters || {}).length,
     toolPagesMissing: cms.tools.filter((item) => !fileExistsForUrl(item.url)).map((item) => item.url),
     guidePagesMissing: cms.guides.filter((item) => !fileExistsForUrl(item.url)).map((item) => item.url),
+    tagPagesMissing: missingTagPages,
     generatedStructureIssues,
     ...pageStats,
     registryFindings
@@ -656,7 +709,8 @@ const sitemapReport = validateSitemap(cms, sitemap);
 const sitemapIndexedUrls = CORE_URLS.concat(
   Object.values(cms.clusters || {}).map((cluster) => cluster.url),
   cms.tools.filter((tool) => !tool.canonicalSlug || tool.canonicalSlug === tool.slug).map((tool) => tool.url),
-  cms.guides.map((guide) => guide.url)
+  cms.guides.map((guide) => guide.url),
+  tagUrls(cms)
 );
 const robotsReport = validateRobots(robots, sitemapIndexedUrls);
 const securityHeadersReport = validateSecurityConfig();

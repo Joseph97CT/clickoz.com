@@ -7,7 +7,7 @@ const ORIGIN = "https://clickoz.com";
  */
 const ASSET_VERSIONS = Object.freeze({
   siteCss: 15,
-  siteJs: 101,
+  siteJs: 112,
   homeCss: 21,
   homeLeadershipCss: 22,
   homeJs: 27,
@@ -20,17 +20,19 @@ const ASSET_VERSIONS = Object.freeze({
   cmsRegistry: 7,
   cmsSchema: 2,
   cmsEnhance: 10,
-  cmsFinal: 206,
+  cmsFinal: 214,
   toolsCss: 9,
   toolsJs: 17,
   cmsToolsCss: 25,
   cmsToolsJs: 31,
   cmsMapCss: 4,
-  cmsMapJs: 4
+  cmsMapJs: 4,
+  premiumToolsCss: 2,
+  premiumToolsJs: 4
 });
 
 /** @type {string} */
-const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src 'self' https://translate.google.com https://*.google.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests";
+const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' https://translate.google.com https://translate.googleapis.com https://www.gstatic.com https://*.google.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https:; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://clickoz.com https://www.clickoz.com https://translate.googleapis.com https://translate.google.com https://cloudflare-dns.com; frame-src 'self' https: http: https://translate.google.com https://*.google.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests";
 const CSP_HEADER = `${CSP}; frame-ancestors 'self'`;
 const PERMISSIONS_POLICY = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), interest-cohort=()";
 
@@ -38,6 +40,10 @@ const PERMISSIONS_POLICY = "camera=(), microphone=(), geolocation=(), payment=()
 const CORE_URLS = Object.freeze([
   "/",
   "/tools/",
+  "/premium/",
+  "/premium/dev-premium-tools/",
+  "/premium/multi-device-tester/",
+  "/premium/sitemap-viewer/",
   "/guides/",
   "/guides/seo/",
   "/guides/writing/",
@@ -59,6 +65,9 @@ const SMOKE_PATHS = Object.freeze([
   "/tools/word-counter/",
   "/tools/json-formatter/",
   "/tools/youtube-title-generator/",
+  "/premium/",
+  "/premium/multi-device-tester/",
+  "/premium/sitemap-viewer/",
   "/guides/",
   "/guides/word-count-for-seo/",
   "/updates/",
